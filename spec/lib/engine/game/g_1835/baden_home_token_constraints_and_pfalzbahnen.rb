@@ -49,19 +49,36 @@ describe Engine::Game::G1835::Game do
       end.to raise_error(Engine::GameError)
     end
 
-    it 'lets corporations token in L6 using the Pfalzbahnen private after Baden has placed its home toke' do
+    it 'lets corporations token in L6 using the Pfalzbahnen private after Baden has placed its home token' do
       game = fixture_at_action(367)
 
       expect(game.current_entity).to eq(game.corporation_by_id('BY'))
       expect(game.round.active_step).to be_a(Engine::Step::Token)
       expect(game.corporation_by_id('BA').floated?).to be true
 
+      pfalzbahnen = game.company_by_id('PB')
       expect do
-        pfalzbahnen = game.company_by_id('PB')
         bayern = game.corporation_by_id('BY')
         l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
         game.process_action(Engine::Action::PlaceToken.new(pfalzbahnen, city: l6, tokener: bayern)).maybe_raise!
       end.to_not raise_error
+
+      expect(pfalzbahnen.closed?).to be true
+    end
+
+    it 'leaves the Pfalzbahnen open after using the lay track ability' do
+      game = fixture_at_action(299)
+
+      expect(game.current_entity).to eq(game.corporation_by_id('BY'))
+      expect(game.round.active_step).to be_a(Engine::Step::Track)
+
+      # Lay green tile on L6 without connectivity
+      pfalzbahnen = game.company_by_id('PB')
+      l6 = game.hex_by_id('L6')
+      green_tile = game.tile_by_id('210-0')
+      game.process_action(Engine::Action::LayTile.new(pfalzbahnen, tile: green_tile, hex: l6, rotation: 0)).maybe_raise!
+
+      expect(pfalzbahnen.closed?).to be false
     end
   end
 
