@@ -57,9 +57,9 @@ describe Engine::Game::G1835::Game do
       expect(game.corporation_by_id('BA').floated?).to be true
 
       pfalzbahnen = game.company_by_id('PB')
+      bayern = game.corporation_by_id('BY')
+      l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
       expect do
-        bayern = game.corporation_by_id('BY')
-        l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
         game.process_action(Engine::Action::PlaceToken.new(pfalzbahnen, city: l6, tokener: bayern)).maybe_raise!
       end.to_not raise_error
 
@@ -95,6 +95,36 @@ describe Engine::Game::G1835::Game do
         l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
         game.process_action(Engine::Action::PlaceToken.new(bayern, city: l6)).maybe_raise!
       end.to raise_error(Engine::GameError)
+    end
+  end
+
+  describe 'baden_can_use_Pfalzbahnen_to_lay_home_tile_and_another_corp_can_token_in_L6_in_the_same_OR' do
+    it 'is possible to use both Pfalzbahnen abilities with different corporations in the same operating round' do
+      game = fixture_at_action(169)
+
+      pb = game.company_by_id('PB')
+      ba = game.corporation_by_id('BA')
+      by = game.corporation_by_id('BY')
+
+      expect do
+        l6 = game.hex_by_id('L6')
+
+        # Use the Baden-Pfalzbahnen combo to lay the home tile, home token, lay a tile and then token with Baden
+        game.process_action(Engine::Action::LayTile.new(pb, tile: game.tile_by_id('210-0'), hex: l6, rotation: 0)).maybe_raise!
+        game.process_action(Engine::Action::PlaceToken.new(ba, city: l6.tile.cities[0])).maybe_raise!
+        k7 = game.hex_by_id('K7')
+        game.process_action(Engine::Action::LayTile.new(ba, tile: game.tile_by_id('9-3'), hex: k7, rotation: 0)).maybe_raise!
+        game.process_action(Engine::Action::PlaceToken.new(ba, city: game.hex_by_id('J8').tile.cities[0])).maybe_raise!
+
+        train = game.depot.depot_trains.first
+        game.process_action(Engine::Action::BuyTrain.new(ba, train: train, price: train.price))
+        game.process_action(Engine::Action::Pass.new(ba)).maybe_raise! # skip buying more trains
+        game.process_action(Engine::Action::Pass.new(by)).maybe_raise! # skip track with Bayern
+
+        # Use Pfalzbahnen to token in L6 without connection
+        game.process_action(Engine::Action::PlaceToken.new(pb, city: l6.tile.cities[1], tokener: by)).maybe_raise!
+        expect(pb.closed?).to be true
+      end.to_not raise_error
     end
   end
 end

@@ -337,8 +337,17 @@ module Engine
         def ability_usable?(ability)
           # L6 cannot get tokened using the Pfalzbahnen as long as Baden has not placed its home token
           return false if ability.type == :token && ability.owner == company_by_id('PB') && !corporation_by_id('BA').floated?
+          if @round.respond_to?(:current_operator) && ability.type == :token
+            return token_ability_usable?(ability, @round.current_operator)
+          end
 
           super
+        end
+
+        def token_ability_usable?(ability, corporation)
+          ability.hexes&.any? do |hex_id|
+            hex_by_id(hex_id)&.tile&.cities&.any? { |city| city.tokenable?(corporation, free: true) }
+          end
         end
 
         def payout_companies
