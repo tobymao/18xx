@@ -132,8 +132,10 @@ describe Engine::Game::G1835::Game do
 
       sell_shares(player_4, 'BY')
       buy_shares(player_4, 'SX')
+      pass(player_4)
       sell_shares(player_1, 'BY')
       buy_shares(player_1, 'SX') # Last buy, PD goes to player 2
+      pass(player_1)
       sell_shares(player_2, 'BY')
       pass(player_2)
       # player 3 is skipped
