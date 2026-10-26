@@ -8,6 +8,8 @@ module View
       module SmallItem
         def preferred_render_locations_by_loc
           parts = parts_for_loc
+          edge_location = (layout == :pointy ? PP_EDGE_LOCATIONS : P_EDGE_LOCATIONS)[@loc]
+          return [edge_location] if edge_location
 
           if layout == :pointy
             case @loc
@@ -231,6 +233,24 @@ module View
 
         POINTY_WIDER_ITEM_LOCATIONS = [PP_WIDER_BOTTOM_CORNER,
                                        PP_WIDER_TOP_CORNER].freeze
+
+        P_EDGE_LOCATIONS = {
+          'e0' => { region_weights: Base::TRACK_TO_EDGE_0, x: 0, y: 55 },
+          'e1' => { region_weights: Base::TRACK_TO_EDGE_1, x: -47.63, y: 27.5 },
+          'e2' => { region_weights: Base::TRACK_TO_EDGE_2, x: -47.63, y: -27.5 },
+          'e3' => { region_weights: Base::TRACK_TO_EDGE_3, x: 0, y: -55 },
+          'e4' => { region_weights: Base::TRACK_TO_EDGE_4, x: 47.63, y: -27.5 },
+          'e5' => { region_weights: Base::TRACK_TO_EDGE_5, x: 47.63, y: 27.5 },
+        }.freeze
+
+        PP_EDGE_LOCATIONS = {
+          'e0' => { region_weights: Base::TRACK_TO_EDGE_0, x: -27.5, y: 47.63 },
+          'e1' => { region_weights: Base::TRACK_TO_EDGE_1, x: -55, y: 0 },
+          'e2' => { region_weights: Base::TRACK_TO_EDGE_2, x: -27.5, y: -47.63 },
+          'e3' => { region_weights: Base::TRACK_TO_EDGE_3, x: 27.5, y: -47.63 },
+          'e4' => { region_weights: Base::TRACK_TO_EDGE_4, x: 55, y: 0 },
+          'e5' => { region_weights: Base::TRACK_TO_EDGE_5, x: 27.5, y: 47.63 },
+        }.freeze
       end
     end
   end
