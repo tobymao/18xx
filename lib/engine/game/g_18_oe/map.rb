@@ -354,8 +354,8 @@ module Engine
               N85 O30 O32 O34 O36 O74 O76 O78 O84 O86 P21 P23 P25 P27 P31
               P35 P47 P75 P79 P81 Q22 Q24 Q28 Q32 Q34 Q36 Q44 Q48 Q54 Q58
               Q66 Q76 Q78 Q80 Q82 Q86 R25 R27 R31 R33 R35 R37 R41 R43 R45
-              R63 R77 R79 R81 R83 R85 S24 S26 S28 S30 S32 S36 S56 S58 S64
-              S80 S82 T25 T29 T31 T35 T55 T57 T59 T63 T65 U8 U22 U26 U28 U54
+              R63 R77 R79 R81 R83 R85 S24 S26 S28 S30 S32 S56 S58 S64
+              S80 S82 T25 T29 T31 T55 T57 T59 T63 T65 U8 U22 U26 U28 U54
               U58 U60 V7 V23 V25 V33 V43 V57 V59 V75 W10 W12 W14 W16 W26 W28
               W30 W34 W56 W58 W72 W78 X5 X9 X17 X21 X29 X43 X49 X75 X77 Y2
               Y4 Y16 Y18 Y22 Y24 Y46 Y50 Y72 Y74 Y76 Z5 Z7 Z9 Z11 Z15 Z17
@@ -370,6 +370,8 @@ module Engine
             # FR/PHS intra-hex
             ['N37'] => 'partition=a:2,b:5,type:province',
             ['Q38'] => 'city=revenue:0;partition=a:0,b:3,type:province',
+            ['S36'] => 'border=edge:5,type:province',
+            ['T35'] => 'border=edge:4,type:province',
             ['R39'] => 'upgrade=cost:30,terrain:hill;partition=a:2,b:5,type:province,length:0.5;' \
                        'partition=a:0,b:3,type:province,length:0.5',
             ['S38'] => 'upgrade=cost:45,terrain:hill;partition=a:1,b:4,type:province',
@@ -538,7 +540,8 @@ module Engine
             ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;' \
                        'border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:lake',
             ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;' \
-                       'border=edge:5,type:impassable;upgrade=cost:60,terrain:lake',
+                       'border=edge:2,type:province;border=edge:3,type:province;border=edge:5,type:impassable;' \
+                       'upgrade=cost:60,terrain:lake',
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
             # North Sea — Danish coast
