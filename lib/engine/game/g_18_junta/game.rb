@@ -134,6 +134,31 @@ module Engine
         # Rules summary 10: the home station is placed when the company floats.
         HOME_TOKEN_TIMING = :float
 
+        # Rules summary 1.2: number of private companies kept in play by player count.
+        PRIVATES_IN_PLAY = { 2 => 5, 3 => 6, 4 => 7 }.freeze
+
+        def setup
+          remove_random_corporation!
+          select_random_privates!
+        end
+
+        # Rules summary 1.2: one public company, drawn at random, is out of the game. Its home
+        # reservation is cleared so the city is open to everyone.
+        def remove_random_corporation!
+          corporation = @corporations.min_by { rand }
+          hex = hex_by_id(corporation.coordinates)
+          hex.tile.cities[corporation.city || 0].remove_reservation!(corporation)
+          @corporations.delete(corporation)
+          @log << "Corporation removed from play: #{corporation.name}"
+        end
+
+        # Rules summary 1.2: only a random set of the private companies is used in each game.
+        def select_random_privates!
+          kept = @companies.sort_by { rand }.take(self.class::PRIVATES_IN_PLAY[@players.size])
+          (@companies - kept).each { |company| @companies.delete(company) }
+          @log << "Private companies in play: #{@companies.map(&:sym).join(', ')}"
+        end
+
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
