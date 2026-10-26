@@ -162,6 +162,59 @@ module Engine
           @log << "Private companies in play: #{@companies.map(&:sym).join(', ')}"
         end
 
+        def remove_company(company)
+          company.close!
+          @companies.delete(company)
+        end
+
+        # Rules summary 2.1: the private companies are sold only through the open auction.
+        def new_auction_round
+          Round::Auction.new(self, [G18Junta::Step::PrivateAuction])
+        end
+
+        # Rules summary 2.1: minimum raise between bids; $10 with the optional faster auction.
+        def bid_increment
+          @optional_rules.include?(:bid_increment_10) ? 10 : 5
+        end
+
+        # Rules summary 2.1: after the auction the player with the most cash gets priority; ties are
+        # broken by seating order.
+        def reorder_players(order = nil, log_player_order: false)
+          return super unless @round.is_a?(Engine::Round::Auction)
+
+          richest = @players.max_by(&:cash)
+          tied = @players.select { |p| p.cash == richest.cash } - [richest]
+          @players.rotate!(@players.index(richest))
+
+          msg = "#{richest.name} has priority (most cash after the auction)."
+          unless tied.empty?
+            names = tied.map(&:name)
+            names = names.size == 1 ? names.first : "#{names[0..-2].join(', ')} and #{names.last}"
+            msg += " Tied with #{names}; the tie was broken by seating order."
+          end
+          @log << msg
+        end
+
+        TOP_ROW_RIGHT_SYMBOL = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0↱"
+
+        # Rules summary 3.5: the top-row spaces from $75 to $320 show an arrow, as a reminder that a
+        # move up there goes right instead (see stock_market.rb).
+        def game_market
+          market = self.class::MARKET
+          top_row = market.first.each_with_index.map do |code, col|
+            next code if col == market.first.size - 1 || code.match?(/[a-zA-Z]/)
+
+            { price: code.to_i, info: self.class::TOP_ROW_RIGHT_SYMBOL }
+          end
+          [top_row, *market.drop(1)]
+        end
+
+        def init_stock_market
+          G18Junta::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                    multiple_buy_types: self.class::MULTIPLE_BUY_TYPES,
+                                    sold_out_top_row_movement: self.class::SOLD_OUT_TOP_ROW_MOVEMENT)
+        end
+
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
