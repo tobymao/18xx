@@ -8,6 +8,7 @@ require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
 require_relative 'step/consolidate'
+require_relative 'step/merge_minor'
 require_relative 'step/concession'
 
 module Engine
@@ -1031,6 +1032,8 @@ module Engine
 
         def new_consolidation_round
           Round::G18OE::Consolidation.new(self, [
+            Engine::Step::DiscardTrain,
+            G18OE::Step::MergeMinor,
             G18OE::Step::Consolidate,
           ])
         end
@@ -1103,6 +1106,7 @@ module Engine
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18OE::Step::HomeToken,
+            G18OE::Step::MergeMinor,
             G18OE::Step::BuySellParShares,
           ])
         end

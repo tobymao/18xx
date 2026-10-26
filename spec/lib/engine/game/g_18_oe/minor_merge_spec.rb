@@ -81,4 +81,123 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     act!(round, Engine::Action::Choose.new(player, choice: minor.id))
     expect(round.merge_minor).to eq(minor)
   end
+
+  def to_pool!(corporation, count)
+    game.share_pool.transfer_shares(Engine::ShareBundle.new(corporation.ipo_shares.first(count)), game.share_pool)
+  end
+
+  def merge!(target = major, from: round, merging: minor)
+    act!(from, Engine::Action::Choose.new(from.current_entity, choice: merging.id))
+    act!(from, Engine::Action::Merge.new(merging, corporation: target))
+  end
+
+  def resolve_follow_ups!(from = round)
+    until from.active_step.is_a?(Engine::Game::G18OE::Step::BuySellParShares)
+      act!(from, Engine::Action::Pass.new(from.active_step.current_entity))
+    end
+  end
+
+  def empty_treasury_into_pool!
+    major.treasury_shares.size.times { |index| take_treasury_shares!(game, game.players[index % game.players.size], major, 1) }
+    game.share_pool.transfer_shares(player.shares_of(major).reject(&:president).first.to_bundle, game.share_pool)
+  end
+
+  it 'rejects Choose for a minor the player cannot merge' do
+    major
+    other = start_minor!(game, 'C', game.players.last, 'SP')
+    expect { act!(round, Engine::Action::Choose.new(player, choice: other.id)) }.to raise_error(Engine::GameError)
+  end
+
+  it 'lists the eligible majors once Merge is chosen' do
+    major
+    act!(round, Engine::Action::Choose.new(player, choice: minor.id))
+    expect(round.active_step.mergeable_entities).to eq([major])
+  end
+
+  it 'gives the owner a treasury share and the major the minor cash (§10.5)' do
+    major
+    minor
+    cash_before = major.cash
+    expect { merge! }.to change { player.num_shares_of(major) }.by(1)
+    expect(major.cash).to eq(cash_before + 120)
+  end
+
+  it 'takes the share from the Open Market only when the treasury is empty, and the bank keeps the cash (§10.5)' do
+    major
+    minor
+    empty_treasury_into_pool!
+    expect(step.merge_share(major).owner).to eq(game.share_pool)
+
+    cash_before = major.cash
+    bank_before = game.bank.cash
+    expect { merge! }.to change { game.share_pool.shares_by_corporation[major].size }.by(-1)
+    expect(major.cash).to eq(cash_before)
+    expect(game.bank.cash).to eq(bank_before + 120)
+  end
+
+  it 'prefers the treasury when both have shares (§10.5)' do
+    major
+    to_pool!(major, 1)
+    expect(step.merge_share(major).owner).to eq(major)
+  end
+
+  it 'gives the share even above 60% (§10.2)' do
+    major
+    take_treasury_shares!(game, player, major, 4)
+    merge!
+    expect(player.percent_of(major)).to eq(70)
+  end
+
+  it 'moves the minor trains to the major (§10.5)' do
+    major
+    train = game.depot.upcoming.first
+    game.buy_train(minor, train, :free)
+    merge!
+    expect(train.owner).to eq(major)
+    expect(round.merge_trains).to eq(corporation: major, trains: [train])
+  end
+
+  it 'records the charter and removes the minor from the operating order (§10.5)' do
+    major
+    merge!
+    expect(game.merged_minors[major]).to eq([minor])
+    expect(game.minor_regional_order).not_to include(minor)
+  end
+
+  it 'leaves the acquisition pending for the token step (§10.5)' do
+    major
+    merge!
+    expect(round.pending_acquisition).to eq(minor: minor, corporation: major)
+    expect(round.merged_majors).to eq([major])
+  end
+
+  it 'ends the stock action with the merge (§10)' do
+    major
+    merge!
+    resolve_follow_ups!
+    expect(round.active_step.actions(player)).to eq(['pass'])
+  end
+
+  it 'merges during the Consolidation round (§5.1.5)' do
+    major
+    c = enter_round!(game, game.new_consolidation_round)
+    merge!(from: c)
+    expect(game.merged_minors[major]).to eq([minor])
+  end
+
+  it 'lets a second minor merge into another major but not the same one (§10.5)' do
+    major
+    other_major = start_major!(game, 'GWR', player)
+    second = start_minor!(game, 'C', player, 'SP')
+    merge!
+    resolve_follow_ups!
+    expect(step.merge_targets(player, second)).to eq([other_major])
+  end
+
+  it 'rejects a merge into a major that is not a target' do
+    major
+    other_major = start_major!(game, 'GWR', game.players.last)
+    act!(round, Engine::Action::Choose.new(player, choice: minor.id))
+    expect { act!(round, Engine::Action::Merge.new(minor, corporation: other_major)) }.to raise_error(Engine::GameError)
+  end
 end
