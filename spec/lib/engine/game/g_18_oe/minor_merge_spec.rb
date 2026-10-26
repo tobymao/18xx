@@ -97,6 +97,12 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     end
   end
 
+  def place_minor_token!(hex_id, index = 0)
+    city = game.hex_by_id(hex_id).tile.cities[index]
+    city.place_token(minor, minor.next_token, free: true, check_tokenable: false)
+    city
+  end
+
   def empty_treasury_into_pool!
     major.treasury_shares.size.times { |index| take_treasury_shares!(game, game.players[index % game.players.size], major, 1) }
     game.share_pool.transfer_shares(player.shares_of(major).reject(&:president).first.to_bundle, game.share_pool)
@@ -167,11 +173,95 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     expect(game.minor_regional_order).not_to include(minor)
   end
 
-  it 'leaves the acquisition pending for the token step (§10.5)' do
+  it 'leaves the acquisition pending while the minor has a token to resolve (§10.5)' do
     major
+    place_minor_token!('Q38')
     merge!
     expect(round.pending_acquisition).to eq(minor: minor, corporation: major)
     expect(round.merged_majors).to eq([major])
+  end
+
+  it 'closes the minor once its tokens are resolved (§10.5)' do
+    major
+    merge!
+    resolve_follow_ups!
+    expect(minor).to be_closed
+    expect(game.corporations).not_to include(minor)
+    expect(round.pending_acquisition).to be_nil
+  end
+
+  it 'keeps the merged minor treasury with the major after the minor closes (§10.5)' do
+    major
+    cash_before = major.cash
+    merge!
+    expect(major.cash).to eq(cash_before + 120)
+    expect(minor.cash).to eq(0)
+  end
+
+  it 'replaces a minor token with the major\'s most expensive unplaced token for free (§10.5)' do
+    major
+    city = place_minor_token!('Q38')
+    cash = major.cash
+    merge!
+    expect(round.active_step).to be_a(Engine::Game::G18OE::Step::MergeToken)
+    act!(round, Engine::Action::PlaceToken.new(major, city: city, slot: 0))
+    placed = city.tokens.compact.find { |t| t.corporation == major }
+    expect(placed.price).to eq(80)
+    expect(city.tokens.compact.map(&:corporation)).not_to include(minor)
+    expect(major.cash).to eq(cash + 120)
+    expect(minor).to be_closed
+  end
+
+  it 'removes a declined minor token (§10.5)' do
+    major
+    city = place_minor_token!('Q38')
+    merge!
+    act!(round, Engine::Action::Pass.new(major))
+    expect(city.tokens.compact).to be_empty
+    expect(minor).to be_closed
+  end
+
+  it 'rejects replacing a minor token in another city (§10.5)' do
+    major
+    place_minor_token!('Q38')
+    other = game.hex_by_id('W64').tile.cities.first
+    merge!
+    expect { act!(round, Engine::Action::PlaceToken.new(major, city: other, slot: 0)) }.to raise_error(Engine::GameError)
+  end
+
+  it 'prompts for each minor token in turn (§10.5)' do
+    major
+    first = place_minor_token!('Q38')
+    second = place_minor_token!('W64')
+    merge!
+    act!(round, Engine::Action::PlaceToken.new(major, city: first, slot: 0))
+    expect(round.active_step).to be_a(Engine::Game::G18OE::Step::MergeToken)
+    expect(minor).not_to be_closed
+    act!(round, Engine::Action::Pass.new(major))
+    expect(second.tokens.compact).to be_empty
+    expect(minor).to be_closed
+  end
+
+  it 'auto-declines a token in a hex the major already occupies (§10.5)' do
+    major
+    city = place_minor_token!('AA82', 1)
+    game.hex_by_id('AA82').tile.cities.first.place_token(major, major.unplaced_tokens.first, free: true, check_tokenable: false)
+    merge!
+    expect(round.active_step).not_to be_a(Engine::Game::G18OE::Step::MergeToken)
+    expect(city.tokens.compact).to be_empty
+    expect(minor).to be_closed
+    expect(round.pending_acquisition).to be_nil
+  end
+
+  it 'auto-declines when the major has no unplaced tokens (§10.5)' do
+    major
+    city = place_minor_token!('Q38')
+    spare = game.hexes.flat_map { |hex| hex.tile.cities }.reject { |c| c == city }.select { |c| c.tokens.compact.empty? }
+    major.unplaced_tokens.each { |token| spare.shift.place_token(major, token, free: true, check_tokenable: false) }
+    merge!
+    expect(round.active_step).not_to be_a(Engine::Game::G18OE::Step::MergeToken)
+    expect(city.tokens.compact).to be_empty
+    expect(minor).to be_closed
   end
 
   it 'ends the stock action with the merge (§10)' do

@@ -80,6 +80,7 @@ module Engine
             @round.merged_majors << major
             @round.pending_acquisition = { minor: minor, corporation: major }
             @round.merge_minor = nil
+            @round.steps.find { |step| step.is_a?(MergeToken) }.resolve_forced!
           end
 
           private
