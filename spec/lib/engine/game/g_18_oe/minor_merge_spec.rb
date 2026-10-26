@@ -104,8 +104,11 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
 
   it 'rejects Choose for a minor the player cannot merge' do
     major
+    minor
     other = start_minor!(game, 'C', game.players.last, 'SP')
-    expect { act!(round, Engine::Action::Choose.new(player, choice: other.id)) }.to raise_error(Engine::GameError)
+    expect(step.actions(player)).to include('choose')
+    expect { act!(round, Engine::Action::Choose.new(player, choice: other.id)) }
+      .to raise_error(Engine::GameError, /Cannot merge C/)
   end
 
   it 'lists the eligible majors once Merge is chosen' do
@@ -175,7 +178,18 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     major
     merge!
     resolve_follow_ups!
-    expect(round.active_step.actions(player)).to eq(['pass'])
+    expect(round.current_entity).not_to eq(player)
+  end
+
+  it 'does not force a sale of the merge share above 60% on the next turn (§10.2)' do
+    major
+    take_treasury_shares!(game, player, major, 4)
+    merge!
+    resolve_follow_ups!
+    pass_until!(round, player)
+    expect(player.percent_of(major)).to eq(70)
+    expect(step.must_sell?(player)).to be(false)
+    expect(step.actions(player)).not_to eq(['sell_shares'])
   end
 
   it 'merges during the Consolidation round (§5.1.5)' do

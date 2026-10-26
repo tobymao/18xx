@@ -773,6 +773,10 @@ module Engine
         # unfloated regionals have been closed. This is the correct trigger for
         # "Major Railroad Phase" entry: conversions and secondary-share purchases
         # become available from this point on.
+        def can_hold_above_corp_limit?(_entity)
+          true
+        end
+
         def major_phase?
           return false if @corporations.any? { |corporation| corporation.type == :regional && !corporation.floated? }
 

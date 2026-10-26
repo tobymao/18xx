@@ -30,7 +30,6 @@ module Engine
           def actions(entity)
             return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
-            return ['pass'] if merged?
             return ['sell_shares'] if must_sell?(entity)
             return converting_actions(entity) if @converting
             return converted_actions(entity) if @converted
@@ -43,10 +42,6 @@ module Engine
             actions << 'choose' if can_merge_any?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
-          end
-
-          def merged?
-            @round.current_actions.any? { |action| action.is_a?(Action::Choose) }
           end
 
           def can_merge_any?(player)
