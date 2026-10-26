@@ -540,7 +540,8 @@ module Engine
             ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;' \
                        'border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:lake',
             ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;' \
-                       'border=edge:5,type:impassable;upgrade=cost:60,terrain:lake',
+                       'border=edge:2,type:province;border=edge:3,type:province;border=edge:5,type:impassable;' \
+                       'upgrade=cost:60,terrain:lake',
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
             # North Sea — Danish coast
