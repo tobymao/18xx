@@ -8,6 +8,7 @@ module Engine
       module Round
         class Stock < Engine::Round::Stock
           attr_accessor :turns_since_last_purchase
+
           def pending_tokens
             # Baden might need to choose where to place its home token during the stock round
             @pending_tokens ||= []

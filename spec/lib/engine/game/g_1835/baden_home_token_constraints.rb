@@ -9,7 +9,6 @@ describe Engine::Game::G1835::Game do
 
       expect(game.current_entity).to eq(game.corporation_by_id('BA'))
       expect(game.round.active_step).to be_a(Engine::Step::HomeToken)
-
     end
   end
 
@@ -19,6 +18,18 @@ describe Engine::Game::G1835::Game do
 
       expect(game.current_entity).to eq(game.corporation_by_id('BA'))
       expect(game.round.active_step).to be_a(Engine::Step::HomeToken)
+    end
+
+    it 'allows other corps to token in L6 after Baden has placed its home token' do
+      game = fixture_at_action(281)
+
+      expect(game.current_entity).to eq(game.corporation_by_id('BY'))
+
+      expect do
+        bayern = game.corporation_by_id('BY')
+        l6 = game.hex_by_id('L6').tile.cities[1]
+        game.process_action(Engine::Action::PlaceToken.new(bayern, city: l6)).maybe_raise!
+      end.to_not raise_error
     end
   end
 
@@ -35,7 +46,22 @@ describe Engine::Game::G1835::Game do
         bayern = game.corporation_by_id('BY')
         l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
         game.process_action(Engine::Action::PlaceToken.new(pfalzbahnen, city: l6, tokener: bayern)).maybe_raise!
-      end.to raise_error Engine::GameError
+      end.to raise_error(Engine::GameError)
+    end
+
+    it 'lets corporations token in L6 using the Pfalzbahnen private after Baden has placed its home toke' do
+      game = fixture_at_action(367)
+
+      expect(game.current_entity).to eq(game.corporation_by_id('BY'))
+      expect(game.round.active_step).to be_a(Engine::Step::Token)
+      expect(game.corporation_by_id('BA').floated?).to be true
+
+      expect do
+        pfalzbahnen = game.company_by_id('PB')
+        bayern = game.corporation_by_id('BY')
+        l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
+        game.process_action(Engine::Action::PlaceToken.new(pfalzbahnen, city: l6, tokener: bayern)).maybe_raise!
+      end.to_not raise_error
     end
   end
 
@@ -51,13 +77,7 @@ describe Engine::Game::G1835::Game do
         bayern = game.corporation_by_id('BY')
         l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
         game.process_action(Engine::Action::PlaceToken.new(bayern, city: l6)).maybe_raise!
-      end.to raise_error Engine::GameError
+      end.to raise_error(Engine::GameError)
     end
   end
-
-
-  # Weitere tests:
-  # - Nicht manuell Pöppeln, bevor Baden in Betrieb
-  # - manuell pöppeln geht, sobald Baden in Betrieb
-  # - mit Pfalzbahnen pöppeln geht, sobald Baden in Betrieb
 end

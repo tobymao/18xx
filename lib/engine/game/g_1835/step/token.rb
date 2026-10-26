@@ -43,6 +43,13 @@ module Engine
             token_cost + 20
           end
 
+          def tokener_available_hex(entity, hex)
+            # Baden must be the first to token in its home hex
+            return false if hex.id == 'L6' && !@game.corporation_by_id('BA').floated?
+
+            super
+          end
+
           def bayern_tokens_dresden(hex, token)
             hex.coordinates == 'H20' && token.corporation == @game.corporation_by_id('BY')
           end

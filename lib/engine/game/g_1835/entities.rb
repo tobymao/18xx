@@ -190,7 +190,7 @@ module Engine
                 hexes: ['L6'],
                 when: 'owning_player_track',
                 tiles: %w[210 211 212 213 214 215],
-                count: 1
+                count: 1,
               },
               { type: 'shares', shares: 'BY_3' },
               {

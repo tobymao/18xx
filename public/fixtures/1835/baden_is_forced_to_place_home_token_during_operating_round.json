@@ -3528,13 +3528,332 @@
       "entity": "1",
       "entity_type": "minor",
       "id": 262,
-      "created_at": 1792958103,
+      "created_at": 1793017491,
       "hex": "L6",
-      "tile": "210-0",
-      "rotation": 1
+      "tile": "213-0",
+      "rotation": 3
+    },
+    {
+      "type": "place_token",
+      "entity": "BA",
+      "entity_type": "corporation",
+      "id": 263,
+      "created_at": 1793017495,
+      "city": "213-0-0",
+      "slot": 0,
+      "tokener": "BA"
+    },
+    {
+      "type": "run_routes",
+      "entity": "1",
+      "entity_type": "minor",
+      "id": 264,
+      "created_at": 1793017497,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "H2",
+              "I3"
+            ]
+          ],
+          "hexes": [
+            "H2",
+            "I3"
+          ],
+          "revenue": 60,
+          "revenue_str": "H2-I3",
+          "nodes": [
+            "H2-0",
+            "I3-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "pass",
+      "entity": "1",
+      "entity_type": "minor",
+      "id": 265,
+      "created_at": 1793017497
+    },
+    {
+      "type": "pass",
+      "entity": "2",
+      "entity_type": "minor",
+      "id": 266,
+      "created_at": 1793017498
+    },
+    {
+      "type": "run_routes",
+      "entity": "2",
+      "entity_type": "minor",
+      "id": 267,
+      "created_at": 1793017499,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "E19",
+              "E17",
+              "D16",
+              "D14",
+              "C13",
+              "C11"
+            ]
+          ],
+          "hexes": [
+            "E19",
+            "C11"
+          ],
+          "revenue": 80,
+          "revenue_str": "E19-C11",
+          "nodes": [
+            "E19-0",
+            "C11-4"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "pass",
+      "entity": "2",
+      "entity_type": "minor",
+      "id": 268,
+      "created_at": 1793017499
+    },
+    {
+      "type": "pass",
+      "entity": "3",
+      "entity_type": "minor",
+      "id": 269,
+      "created_at": 1793017500
+    },
+    {
+      "type": "run_routes",
+      "entity": "3",
+      "entity_type": "minor",
+      "id": 270,
+      "created_at": 1793017501,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "F14",
+              "E13",
+              "D12",
+              "D10",
+              "C11"
+            ]
+          ],
+          "hexes": [
+            "F14",
+            "C11"
+          ],
+          "revenue": 70,
+          "revenue_str": "F14-C11",
+          "nodes": [
+            "F14-0",
+            "C11-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "pass",
+      "entity": "3",
+      "entity_type": "minor",
+      "id": 271,
+      "created_at": 1793017501
+    },
+    {
+      "type": "pass",
+      "entity": "4",
+      "entity_type": "minor",
+      "id": 272,
+      "created_at": 1793017502
+    },
+    {
+      "type": "run_routes",
+      "entity": "4",
+      "entity_type": "minor",
+      "id": 273,
+      "created_at": 1793017503,
+      "routes": [
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "G5",
+              "H4"
+            ]
+          ],
+          "hexes": [
+            "G5",
+            "H4"
+          ],
+          "revenue": 40,
+          "revenue_str": "G5-H4",
+          "nodes": [
+            "G5-0",
+            "H4-0"
+          ]
+        },
+        {
+          "train": "2-7",
+          "connections": [
+            [
+              "G5",
+              "F6"
+            ]
+          ],
+          "hexes": [
+            "G5",
+            "F6"
+          ],
+          "revenue": 40,
+          "revenue_str": "G5-F6",
+          "nodes": [
+            "G5-0",
+            "F6-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "pass",
+      "entity": "5",
+      "entity_type": "minor",
+      "id": 274,
+      "created_at": 1793017504
+    },
+    {
+      "type": "run_routes",
+      "entity": "5",
+      "entity_type": "minor",
+      "id": 275,
+      "created_at": 1793017504,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "E19",
+              "E17",
+              "D16",
+              "D14",
+              "C13",
+              "C11"
+            ]
+          ],
+          "hexes": [
+            "E19",
+            "C11"
+          ],
+          "revenue": 80,
+          "revenue_str": "E19-C11",
+          "nodes": [
+            "E19-0",
+            "C11-4"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "pass",
+      "entity": "5",
+      "entity_type": "minor",
+      "id": 276,
+      "created_at": 1793017505
+    },
+    {
+      "type": "pass",
+      "entity": "6",
+      "entity_type": "minor",
+      "id": 277,
+      "created_at": 1793017506
+    },
+    {
+      "type": "run_routes",
+      "entity": "6",
+      "entity_type": "minor",
+      "id": 278,
+      "created_at": 1793017507,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "C11",
+              "B10",
+              "A9",
+              "A11"
+            ]
+          ],
+          "hexes": [
+            "C11",
+            "A11"
+          ],
+          "revenue": 60,
+          "revenue_str": "C11-A11",
+          "nodes": [
+            "C11-2",
+            "A11-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "pass",
+      "entity": "6",
+      "entity_type": "minor",
+      "id": 279,
+      "created_at": 1793017508
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BY",
+      "entity_type": "corporation",
+      "id": 280,
+      "created_at": 1793017511,
+      "hex": "K7",
+      "tile": "9-6",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "BY",
+      "entity_type": "corporation",
+      "id": 281,
+      "created_at": 1793017513
+    },
+    {
+      "type": "place_token",
+      "entity": "BY",
+      "entity_type": "corporation",
+      "id": 282,
+      "created_at": 1793017514,
+      "city": "213-0-1",
+      "slot": 0,
+      "tokener": "BY"
     }
   ],
-  "id": "hs_aoktzfek_1792957574",
+  "id": "hs_ncmtjbzg_1792957574",
   "players": [
     {
       "name": "Player 1",
@@ -3562,7 +3881,7 @@
     "id": 0,
     "name": "You"
   },
-  "created_at": "2026-10-25",
+  "created_at": "2026-10-26",
   "loaded": true,
   "result": {},
   "manually_ended": null,
@@ -3572,5 +3891,5 @@
   "acting": [
     1
   ],
-  "updated_at": 1792958103
+  "updated_at": 1793017514
 }
