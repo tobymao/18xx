@@ -540,8 +540,7 @@ module Engine
             ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;' \
                        'border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:lake',
             ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;' \
-                       'border=edge:2,type:province;border=edge:3,type:province;border=edge:5,type:impassable;' \
-                       'upgrade=cost:60,terrain:lake',
+                       'border=edge:5,type:impassable;upgrade=cost:60,terrain:lake',
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
             # North Sea — Danish coast
@@ -720,10 +719,9 @@ module Engine
           yellow: {
             ['L37'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:river;path=a:0,b:_0;' \
                        'path=a:_0,b:5;icon=image:18_oe/offshore_docks,sticky:1',
-            ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:river;path=a:2,b:4;' \
-                       'border=edge:5,type:province',
+            ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:river;path=a:2,b:4',
             ['I50'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:river;path=a:1,b:_0;' \
-                       'path=a:_0,b:3;border=edge:0,type:province;icon=image:18_oe/offshore_docks,sticky:1',
+                       'path=a:_0,b:3;icon=image:18_oe/offshore_docks,sticky:1',
             ['J25'] => 'city=revenue:30;label=Y;path=a:2,b:_0;path=a:_0,b:4',
             ['J27'] => 'city=revenue:20;upgrade=cost:30,terrain:hill;path=a:1,b:_0;path=a:_0,b:4',
             ['AE72'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
