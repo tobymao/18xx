@@ -136,6 +136,7 @@ module Engine
         LAYOUT = :pointy
 
         SELL_MOVEMENT = :down_block
+        SELL_BUY_ORDER = :sell_buy_sell
 
         HOME_TOKEN_TIMING = :float
 

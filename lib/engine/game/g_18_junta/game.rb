@@ -3,6 +3,9 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'stock_market'
+require_relative 'step/dividend'
+require_relative 'step/private_auction'
 require_relative '../base'
 
 module Engine
@@ -177,7 +180,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Junta::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],

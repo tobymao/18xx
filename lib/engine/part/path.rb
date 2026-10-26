@@ -6,7 +6,7 @@ module Engine
   module Part
     class Path < Base
       attr_reader :a, :b, :city, :edges, :exit_lanes, :junction, :lanes, :nodes, :offboard,
-                  :stops, :terminal, :town, :track, :ignore
+                  :stops, :terminal, :town, :track, :ignore, :color
       attr_accessor :ignore_gauge_walk, :ignore_gauge_compare
 
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
@@ -24,7 +24,7 @@ module Engine
       end
 
       def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil, ignore: nil,
-                          ignore_gauge_walk: nil, ignore_gauge_compare: nil)
+                          ignore_gauge_walk: nil, ignore_gauge_compare: nil, color: nil)
         track ||= :broad
         if lanes
           Array.new(lanes) do |index|
@@ -40,7 +40,8 @@ module Engine
                      track: track,
                      ignore: ignore,
                      ignore_gauge_walk: ignore_gauge_walk,
-                     ignore_gauge_compare: ignore_gauge_compare)
+                     ignore_gauge_compare: ignore_gauge_compare,
+                     color: color)
           end
         else
           Path.new(a, b,
@@ -49,12 +50,13 @@ module Engine
                    track: track,
                    ignore: ignore,
                    ignore_gauge_walk: ignore_gauge_walk,
-                   ignore_gauge_compare: ignore_gauge_compare)
+                   ignore_gauge_compare: ignore_gauge_compare,
+                   color: color)
         end
       end
 
       def initialize(a, b, terminal: nil, lanes: LANES, track: :broad, ignore: nil,
-                     ignore_gauge_walk: nil, ignore_gauge_compare: nil)
+                     ignore_gauge_walk: nil, ignore_gauge_compare: nil, color: nil)
         @a = a
         @b = b
         @terminal = terminal
@@ -67,6 +69,7 @@ module Engine
         @ignore = ignore
         @ignore_gauge_walk = ignore_gauge_walk
         @ignore_gauge_compare = ignore_gauge_compare
+        @color = color
 
         separate_parts
       end
@@ -305,7 +308,8 @@ module Engine
                         track: @track,
                         ignore: @ignore,
                         ignore_gauge_walk: @ignore_gauge_walk,
-                        ignore_gauge_compare: @ignore_gauge_compare)
+                        ignore_gauge_compare: @ignore_gauge_compare,
+                        color: @color)
         path.index = index
         path.tile = @tile
         path
