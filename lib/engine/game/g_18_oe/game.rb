@@ -19,7 +19,7 @@ module Engine
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
-        attr_reader :concessions
+        attr_reader :concessions, :merged_minors
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -683,6 +683,7 @@ module Engine
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
+          @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
@@ -882,9 +883,10 @@ module Engine
           base_cost = tile.upgrades.sum(&:cost)
           return super if base_cost.zero?
 
-          entity_zone = entity_track_rights_zone(entity)
-          zone_match = self.class::ZONE_DISCOUNT_ZONES.include?(entity_zone) &&
-                       self.class::NATIONAL_REGION_HEXES[entity_zone].include?(hex.coordinates)
+          zone_match = track_rights_zones(entity).any? do |zone|
+            self.class::ZONE_DISCOUNT_ZONES.include?(zone) &&
+              self.class::NATIONAL_REGION_HEXES[zone].include?(hex.coordinates)
+          end
 
           return super unless zone_match
 
@@ -899,6 +901,14 @@ module Engine
             @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
           end
           cost
+        end
+
+        def track_rights_zones(entity)
+          corp = owning_corporation(entity)
+          return [] unless corp
+
+          merged_zones = @merged_minors.fetch(corp, []).map { |minor| @minor_floated_regions[minor.id] }
+          ([entity_track_rights_zone(corp)] + merged_zones).compact.uniq
         end
 
         def level8_train_available?
