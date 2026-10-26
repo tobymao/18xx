@@ -49,6 +49,7 @@ module Engine
       @stops = nil
       @subsidy = nil
       @visited_stops = nil
+      @extension_paths = nil
       @check_connected = nil
       @check_distance = nil
     end
@@ -152,7 +153,7 @@ module Engine
             connection_data[0] = segment(chain, right: head[:right])
           else
             connection_data.shift
-            if (chain = select(tail[:right], node)[0])
+            if !connection_data.empty? && (chain = select(tail[:right], node)[0])
               # This node can be reached from either the head or the tail of the
               # chain. All head connections have been offered, switch to the tail.
               connection_data << segment(chain, left: tail[:right])
@@ -418,6 +419,19 @@ module Engine
 
       @node_signatures = nil
       @connection_data
+    end
+
+    def extension_paths
+      @extension_paths ||= begin
+        extension = @game.extension_stops(self)
+        if extension.empty?
+          []
+        else
+          connection_data
+            .select { |c| c[:chain] && (extension.include?(c[:left]) || extension.include?(c[:right])) }
+            .flat_map { |c| c[:chain][:paths] }
+        end
+      end
     end
 
     private
