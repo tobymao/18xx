@@ -304,7 +304,7 @@ module Engine
           'SC' => %w[A42 A44 A46 A48 A50 A52 A54 A56 B41 B43 B45 B47 B49 B51 B53 B55 B57
                      C42 C44 C46 C48 C50 C52 C54 C56 C58 D41 D43 D45 D47 D49 D51 D53 D55 D57
                      E42 E44 E48 E50 E52 E54 E56 E58 F49 F51 F53 F55
-                     G44 G46 G50 G52 G54 G56 H43 H45 H47 H51 H53 H55 I44 I46 I48 I50 I52],
+                     G44 G46 G50 G52 G54 G56 H43 H45 H47 H51 H53 H55 I44 I46 I48 I50 I52 J49],
           # France / Belgium
           'FR' => %w[N31 N33 N35 N37 O24 O28 O30 O32 O34 O36 O38
                      P19 P21 P23 P25 P27 P29 P31 P33 P35 P37
@@ -316,7 +316,7 @@ module Engine
                      W22 W24 W26 W28 W30 W32 W34 W36 W38
                      X25 X27 X29 X33 X35 X37 Y28 Z41 AF25],
           # Prussia / Holland / Switzerland
-          'PHS' => %w[I64 J45 J47 J49 J63 J65 K40 K42 K44 K46 K48 K50 K54 K56 K58 K60 K62 K64
+          'PHS' => %w[I64 J45 J47 J63 J65 K40 K42 K44 K46 K48 K50 K54 K56 K58 K60 K62 K64
                       L37 L39 L41 L43 L45 L47 L49 L51 L53 L55 L57 L59 L61
                       M34 M36 M38 M40 M42 M44 M46 M48 M50 M52 M54 M56 M58
                       N37 N39 N41 N43 N45 N47 N49 N51 N53 N55 N57
