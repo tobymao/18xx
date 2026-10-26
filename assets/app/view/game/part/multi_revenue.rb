@@ -24,6 +24,7 @@ module View
             text = '—' if styled && revenue.to_i.zero?
 
             {
+              phase: phase,
               text: text,
               width: text.size * 16,
               color: phase == :diesel ? :gray : phase,
@@ -50,12 +51,14 @@ module View
           t_y = -((@rows - 1) * HEIGHT * 0.5)
 
           children = computed_revenues.flat_map do |rev|
-            style = @phase_styles && @phase_styles[index]
+            style = @phase_styles&.find { |s| s[:phase] == rev[:phase] }
             colors = style && style[:colors].map { |c| c.start_with?('#') ? c : color_for(c) }
             fill = if colors
                      colors[0]
+                   elsif rev[:color].start_with?('#')
+                     rev[:color]
                    else
-                     (rev[:color].start_with?('#') ? rev[:color] : color_for(rev[:color]))
+                     color_for(rev[:color]) || '#ffffff' # fallback for unstyled boxes
                    end
             font_color = contrast_on(fill)
             width = rev[:width]

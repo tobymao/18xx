@@ -6,7 +6,7 @@ module Engine
   module Part
     class RevenueCenter < Node
       attr_accessor :groups, :revenue
-      attr_reader :hide, :revenue_to_render, :visit_cost, :route, :loc, :rows
+      attr_reader :hide, :revenue_to_render, :visit_cost, :route, :loc, :rows, :phase_styles
 
       PHASES = %i[yellow green brown gray diesel].freeze
 
@@ -21,20 +21,26 @@ module Engine
       end
 
       # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90"
+      # also possible to use something like  "I/II_30+yellow+green|III_40+brown|V_50+gray"
       def parse_revenue(revenue, format = nil)
+        @phase_styles = nil
         @revenue =
           if revenue.include?('|')
             rev = {}
             render = {}
+            styles = []
             revenue.split('|').each do |entry|
-              keys, _, value = entry.rpartition('_') # split on the LAST underscore
+              keys, _, value_and_colors = entry.rpartition('_')  # split on the LAST underscore
+              value, *colors = value_and_colors.split('+')
               value = value.to_i
+              colors = colors.map { |c| c.start_with?('#') ? c : c.to_sym }
               phases = keys.split('/')
               phases.each { |p| rev[p.to_sym] = value }
               render[phases.first.to_sym] = format ? format % value : value
+              styles << { phase: phases.first.to_sym, label: keys, colors: colors } unless colors.empty?
             end
             @revenue_to_render = render
-
+            @phase_styles = styles.empty? ? nil : styles
             rev
           else
             @revenue_to_render =
