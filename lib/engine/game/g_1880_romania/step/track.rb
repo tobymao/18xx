@@ -11,7 +11,8 @@ module Engine
           include G1880Romania::Tracker
 
           def tile_lay_abilities_should_block?(entity)
-            return true if !@game.can_build_track?(entity) &&
+            return true if @game.malaxa &&
+                           !@game.can_build_track?(entity) &&
                            entity.owner == @game.malaxa.owner
 
             super
