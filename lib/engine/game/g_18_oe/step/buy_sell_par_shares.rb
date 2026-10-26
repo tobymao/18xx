@@ -236,7 +236,7 @@ module Engine
 
           def visible_corporations
             minors, others = @game.sorted_corporations.partition { |corporation| corporation.type == :minor }
-            others + minors.reject(&:closed?)
+            others + minors
           end
 
           def process_sell_shares(action)

@@ -27,6 +27,10 @@ module Engine
             'Decline Minor Trains'
           end
 
+          def pass_description
+            'Keep Trains'
+          end
+
           def process_discard_train(action)
             train = action.train
             raise GameError, "#{train.name} did not come from the merged minor" unless declinable_trains.include?(train)

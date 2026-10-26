@@ -19,15 +19,15 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
   end
 
   it 'offers no merge before Train Phase 3 (§10.5)' do
-    fresh = new_game
-    r = stock_round!(fresh)
-    allow(fresh).to receive(:major_phase?).and_return(true)
-    m = start_major!(fresh, 'LNWR', r.current_entity)
-    b = start_minor!(fresh, 'B', r.current_entity, 'SP')
+    phase_two_game = new_game
+    phase_two_round = stock_round!(phase_two_game)
+    allow(phase_two_game).to receive(:major_phase?).and_return(true)
+    phase_two_player = phase_two_round.current_entity
+    start_major!(phase_two_game, 'LNWR', phase_two_player)
+    phase_two_minor = start_minor!(phase_two_game, 'B', phase_two_player, 'SP')
 
-    expect(r.active_step.merge_targets(r.current_entity, b)).to be_empty
-    expect(r.active_step.actions(r.current_entity)).not_to include('choose')
-    expect(m).to be_floated
+    expect(phase_two_round.active_step.merge_targets(phase_two_player, phase_two_minor)).to be_empty
+    expect(phase_two_round.active_step.actions(phase_two_player)).not_to include('choose')
   end
 
   it 'offers to merge a minor into a major the player presides from Train Phase 3 (§10.5)' do

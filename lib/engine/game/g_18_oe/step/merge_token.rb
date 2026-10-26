@@ -15,6 +15,10 @@ module Engine
             !!pending_acquisition && placed_tokens.any?
           end
 
+          def pass_description
+            'Decline Token'
+          end
+
           def pending_token
             placed_tokens.first
           end
@@ -24,7 +28,6 @@ module Engine
             raise GameError, "Cannot place a token on #{action.city.hex.name}" unless available_city?(entity, action.city)
 
             new_token = pending_corporation.unplaced_tokens.max_by(&:price)
-            raise GameError, "#{pending_corporation.name} has no token to place" unless new_token
 
             pending_token.remove!
             action.city.exchange_token(new_token)
