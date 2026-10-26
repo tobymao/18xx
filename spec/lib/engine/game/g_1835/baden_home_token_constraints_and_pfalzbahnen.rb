@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Engine::Game::G1835::Game do
   describe 'baden_is_forced_to_place_home_token_during_stock_round' do
     it 'with L6 already green forces Baden to place home token during stock round' do
-      game = fixture_at_action(365)
+      game = fixture_at_action(207)
 
       expect(game.current_entity).to eq(game.corporation_by_id('BA'))
       expect(game.round.active_step).to be_a(Engine::Step::HomeToken)
