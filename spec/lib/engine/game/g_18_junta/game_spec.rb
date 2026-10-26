@@ -142,6 +142,102 @@ module Engine
               .to eq(share_direction: %i[right up], share_times: [1, 1])
           end
         end
+
+        describe 'upgrade license (rules summary 4.2)' do
+          let(:corporation) { game.corporations.first }
+
+          def start_operating_round
+            game.instance_variable_set(:@or_round_number, game.instance_variable_get(:@or_round_number) + 1)
+            game.expire_stale_upgrade_licenses!
+          end
+
+          it 'is only valid in the next Operating Round' do
+            game.grant_upgrade_license!(corporation)
+            expect(game.upgrade_license_granted?(corporation)).to be(true)
+            expect(game.upgrade_license?(corporation)).to be(false)
+
+            start_operating_round
+            expect(game.upgrade_license?(corporation)).to be(true)
+
+            start_operating_round
+            expect(game.upgrade_license_granted?(corporation)).to be(false)
+          end
+
+          it 'is returned once used' do
+            game.grant_upgrade_license!(corporation)
+            start_operating_round
+
+            expect(game.consume_upgrade_license!(corporation)).to be(true)
+            expect(game.consume_upgrade_license!(corporation)).to be(false)
+          end
+
+          it 'expires when unused' do
+            game.grant_upgrade_license!(corporation)
+            start_operating_round
+
+            game.expire_upgrade_license_if_unused!(corporation)
+            expect(game.upgrade_license_granted?(corporation)).to be(false)
+            expect(game.log.map(&:message)).to include(a_string_including('Upgrade License, which has expired'))
+          end
+        end
+
+        describe 'buying from other companies (rules summary 2.2 and 4.3)' do
+          let(:president) { game.players[0] }
+          let(:other) { game.players[1] }
+          let(:buyer) { game.corporations[0] }
+          let(:sibling) { game.corporations[1] }
+          let(:rival) { game.corporations[2] }
+
+          before do
+            buyer.owner = president
+            sibling.owner = president
+            rival.owner = other
+          end
+
+          it 'only offers trains of companies with the same president' do
+            own_train = game.depot.upcoming[0]
+            rival_train = game.depot.upcoming[1]
+            own_train.owner = sibling
+            rival_train.owner = rival
+            allow(game.depot).to receive(:other_trains).and_return([own_train, rival_train])
+
+            step = G18Junta::Step::BuyTrain.new(game, game.round).tap(&:setup)
+            expect(step.other_trains(buyer)).to eq([own_train])
+          end
+
+          it "only offers private companies owned by the company's president" do
+            own, others = game.companies.reject { |c| game.abilities(c, :no_buy) }.first(2)
+            own.owner = president
+            others.owner = other
+
+            expect(game.purchasable_companies(buyer)).to include(own)
+            expect(game.purchasable_companies(buyer)).not_to include(others)
+          end
+        end
+
+        describe 'farms (rules summary 7.1)' do
+          def stop(label)
+            instance_double(Engine::Part::City, tile: instance_double(Engine::Tile, label: label))
+          end
+
+          it 'recognizes farm tiles by their blank label' do
+            expect(game.farm_stop?(stop(' '))).to be(true)
+            expect(game.farm_stop?(stop(nil))).to be(false)
+          end
+
+          it 'rejects a route that starts or ends at a farm' do
+            route = instance_double(Engine::Route, visited_stops: [stop(' '), stop(nil)])
+            expect { game.check_other(route) }.to raise_error(GameError, /farm cannot be the start or the end/)
+          end
+        end
+
+        describe 'Laguna (rules summary 7.3)' do
+          it 'upgrades the yellow Laguna tile straight to gray' do
+            yellow = game.tiles.find { |t| t.name == 'J16' }
+            gray = game.tiles.find { |t| t.name == 'J17' }
+            expect(game.upgrades_to_correct_color?(yellow, gray)).to be(true)
+          end
+        end
       end
     end
   end
