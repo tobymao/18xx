@@ -2,12 +2,22 @@
 
 require_relative '../../../step/buy_sell_par_shares'
 require_relative '../../../action/convert'
+require_relative '../../../action/choose'
+require_relative 'minor_merger'
 
 module Engine
   module Game
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
+          include MinorMerger
+
+          PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose]
+
+          def round_state
+            super.merge(merge_minor: nil, merged_majors: [])
+          end
+
           def setup
             super
 
@@ -29,8 +39,29 @@ module Engine
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'choose' if can_merge_any?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
+          end
+
+          def can_merge_any?(player)
+            @game.corporations.any? { |corporation| corporation.type == :minor && can_merge?(player, corporation) }
+          end
+
+          def can_merge?(player, minor)
+            @round.current_actions.empty? && !merge_targets(player, minor).empty?
+          end
+
+          def choice_available?(_entity)
+            false
+          end
+
+          def process_choose(action)
+            minor = @game.corporation_by_id(action.choice)
+            raise GameError, "Cannot merge #{action.choice}" if !minor || !can_merge?(action.entity, minor)
+
+            @round.merge_minor = minor
+            track_action(action, minor)
           end
 
           def corporation_actions(corporation)
@@ -82,7 +113,7 @@ module Engine
 
           def can_sell?(entity, bundle)
             return false unless bundle
-            return false if bundle.corporation.type == :regional
+            return false if %i[regional minor].include?(bundle.corporation.type)
             return false if bundle.corporation == @converted
 
             super
@@ -204,7 +235,8 @@ module Engine
           end
 
           def visible_corporations
-            @game.sorted_corporations.reject { |c| (c.type == :minor && c.ipoed) }
+            minors, others = @game.sorted_corporations.partition { |corporation| corporation.type == :minor }
+            others + minors.reject(&:closed?)
           end
 
           def process_sell_shares(action)
