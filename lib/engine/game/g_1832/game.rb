@@ -156,7 +156,6 @@ module Engine
           @miami_has_been_run = false
           @p4_invested_in = nil
           @final_merger_triggered = false
-          @vice_president_certs = {}
 
           coal_company.max_price = coal_company.value
 
@@ -525,7 +524,6 @@ module Engine
         end
 
         def merger_convert_presidencies_to_vp_certs(corp1, corp2, system)
-          vp_certs = []
           [corp1, corp2].each do |corp|
             holder = corp.share_holders.keys.find { |h| h.player? && h.shares_of(corp).any?(&:president) }
             next unless holder
@@ -541,8 +539,7 @@ module Engine
             system.share_holders[holder] += share.percent
             holder.shares_by_corporation[system] << share
 
-            vp_certs << share
-            (@vice_president_certs[system] ||= []) << share
+            system.vice_president_certs << share
             @log << "#{holder.name} receives VP certificate (10%) in #{system.name}"
           end
         end
@@ -556,7 +553,7 @@ module Engine
               next if holder == corp
 
               holder.shares_of(corp).dup.each do |share|
-                next if vp_certs.include?(share)
+                next if system.vice_president_certs.include?(share)
                 next unless sys_idx < system_reg.size
 
                 share.transfer(@bank)
@@ -580,7 +577,7 @@ module Engine
           pct_needed = system_pres.percent
           to_surrender = []
 
-          vp_certs.select { |v| v.owner == president }.each do |vp|
+          system.vice_president_certs.select { |v| v.owner == president }.each do |vp|
             break unless pct_needed.positive?
 
             to_surrender << vp
@@ -598,7 +595,10 @@ module Engine
             end
           end
 
-          to_surrender.each { |s| s.transfer(@bank) }
+          to_surrender.each do |s|
+            system.vice_president_certs.delete(s)
+            s.transfer(@bank)
+          end
           system_pres.transfer(president)
 
           @log << "#{president.name} becomes president of #{system.name}"
@@ -624,9 +624,9 @@ module Engine
           to_corp.coal_token = true
         end
 
-        def transfer_tokens(_from_corp, to_corp, takeover = false)
+        def transfer_tokens(from_corp, to_corp, takeover = false)
           to_corp_cities = to_corp.tokens.select(&:city).each_with_object({}) { |t, h| h[t.city] = true }
-          corp.tokens.select(&:city).each do |token|
+          from_corp.tokens.select(&:city).each do |token|
             city = token.city
             if to_corp_cities.key?(city)
               token.remove!
