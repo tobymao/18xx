@@ -11,12 +11,12 @@ module Engine
           include Parrer
 
           def actions(entity)
-            actions = super
-            banater = @game.banater if @game.banater
-            # prevents P1. Banater's owner from being skipped in SR for no available actions when they could still use it
-            return actions if !actions.empty? || banater.owner != entity || banater.closed?
+            actions = super.dup
+            return actions unless @game.banater
 
-            %w[pass]
+            actions << 'pass' if banater.owner == entity && !banater.closed? && !actions.include?('pass')
+
+            actions
           end
         end
       end
