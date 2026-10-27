@@ -44,10 +44,10 @@ module Engine
                       'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
             ['M2'] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_60;'\
                       'path=a:1,b:_0,terminal:1;'\
-                      'icon=image:frost_1831/L,sticky:1;',
+                      'icon=image:frost_1831/E,sticky:1;',
             ['O14'] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_60;'\
                       'path=a:2,b:_0,terminal:1;'\
-                      'icon=image:frost_1831/L,sticky:1;',
+                      'icon=image:frost_1831/E,sticky:1;',
           },
           blue: {
             # === Pre-printed blue tiles (not upgradeable) ===
@@ -244,11 +244,11 @@ module Engine
             # body
             [
               {
-                text: 'NL → L (East)',
+                text: 'NL → E (East)',
                 props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
               {
-                text: 'NL-L',
+                text: 'NL-E',
                 props: {
                   style: {
                     textAlign: 'center',
