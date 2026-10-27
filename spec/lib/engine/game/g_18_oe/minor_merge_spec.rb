@@ -341,7 +341,7 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     expect(round.active_step).not_to be_a(Engine::Game::G18OE::Step::MergeDiscardTrain)
   end
 
-  it 'only offers the trains that came from the minor (§10.5)' do
+  it 'offers the major\'s own trains as well as the minor\'s (§10.5)' do
     major
     own = game.depot.upcoming.first
     game.buy_train(major, own, :free)
@@ -349,15 +349,65 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     game.buy_train(minor, taken, :free)
     merge!
     pass_tokens!
-    expect(round.active_step.trains(major)).to eq([taken])
+    expect(round.active_step.trains(major)).to contain_exactly(own, taken)
+  end
+
+  it 'lets the major discard one of its own trains and keep the minor\'s (§10.5)' do
+    major
+    own = game.depot.upcoming.first
+    game.buy_train(major, own, :free)
+    taken = game.depot.upcoming.first
+    game.buy_train(minor, taken, :free)
+    merge!
+    pass_tokens!
+    act!(round, Engine::Action::DiscardTrain.new(major, train: own))
+    expect(game.depot.discarded).to include(own)
+    expect(taken.owner).to eq(major)
+    expect(round.active_step).to be_a(Engine::Game::G18OE::Step::MergeDiscardTrain)
+    act!(round, Engine::Action::Pass.new(major))
+    expect(round.current_entity).not_to eq(player)
+  end
+
+  it 'lets the major decline both trains from a minor that had two (§10.5)' do
+    major
+    first = game.depot.upcoming.first
+    game.buy_train(minor, first, :free)
+    second = game.depot.upcoming.first
+    game.buy_train(minor, second, :free)
+    merge!
+    pass_tokens!
+    act!(round, Engine::Action::DiscardTrain.new(major, train: first))
+    act!(round, Engine::Action::DiscardTrain.new(major, train: second))
+    expect(game.depot.discarded).to include(first, second)
+    expect(round.merge_trains).to be_nil
+    expect(round.current_entity).not_to eq(player)
+  end
+
+  it 'stops offering discards once every minor train is declined (§10.5)' do
+    major
+    own = game.depot.upcoming.first
+    game.buy_train(major, own, :free)
+    taken = game.depot.upcoming.first
+    game.buy_train(minor, taken, :free)
+    merge!
+    pass_tokens!
+    act!(round, Engine::Action::DiscardTrain.new(major, train: taken))
+    expect(major.trains).to eq([own])
+    expect(round.active_step).not_to be_a(Engine::Game::G18OE::Step::MergeDiscardTrain)
   end
 
   it 'forces a discard over the train limit (§10.5)' do
     major
-    4.times { game.buy_train(major, game.depot.upcoming.first, :free) }
-    game.buy_train(minor, game.depot.upcoming.first, :free)
+    own = game.depot.upcoming.first
+    game.buy_train(major, own, :free)
+    3.times { game.buy_train(major, game.depot.upcoming.first, :free) }
+    taken = game.depot.upcoming.first
+    game.buy_train(minor, taken, :free)
     merge!
     pass_tokens!
     expect(round.active_step).to be_a(Engine::Step::DiscardTrain)
+    act!(round, Engine::Action::DiscardTrain.new(major, train: own))
+    expect(game.depot.discarded).to include(own)
+    expect(taken.owner).to eq(major)
   end
 end

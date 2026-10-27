@@ -24,7 +24,7 @@ module Engine
           end
 
           def description
-            'Decline Minor Trains'
+            'Discard Trains'
           end
 
           def pass_description
@@ -33,10 +33,16 @@ module Engine
 
           def process_discard_train(action)
             train = action.train
-            raise GameError, "#{train.name} did not come from the merged minor" unless declinable_trains.include?(train)
+            corporation = action.entity
+            raise GameError, "#{train.name} is not owned by #{corporation.name}" unless corporation.trains.include?(train)
 
+            from_minor = @round.merge_trains[:trains].include?(train)
             @game.depot.reclaim_train(train)
-            @log << "#{action.entity.name} declines #{train.name} from the merged minor"
+            @log << if from_minor
+                      "#{corporation.name} declines #{train.name} from the merged minor"
+                    else
+                      "#{corporation.name} discards #{train.name}"
+                    end
             @round.merge_trains = nil if declinable_trains.empty?
           end
 
@@ -50,7 +56,7 @@ module Engine
           end
 
           def trains(corporation)
-            corporation == @round.merge_trains&.dig(:corporation) ? declinable_trains : []
+            corporation == @round.merge_trains&.dig(:corporation) ? corporation.trains.dup : []
           end
 
           private
