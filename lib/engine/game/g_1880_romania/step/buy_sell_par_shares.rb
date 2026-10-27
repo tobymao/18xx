@@ -11,8 +11,12 @@ module Engine
           include Parrer
 
           def actions(entity)
+            return [] unless entity == current_entity
+
             actions = super.dup
-            return actions unless @game.banater
+            banater = @game.banater
+            return actions unless banater
+            return actions if actions.include?('sell_shares') && must_sell?(entity)
 
             actions << 'pass' if banater.owner == entity && !banater.closed? && !actions.include?('pass')
 
