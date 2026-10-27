@@ -7,6 +7,12 @@ module Engine
     module G18OE
       module Step
         class Token < Engine::Step::Token
+          def actions(entity)
+            return ACTIONS if entity == current_entity && !@round.tokened && @game.abilities(entity, :token)
+
+            super
+          end
+
           def available_hex(entity, hex)
             return nil unless @game.city_in_track_rights?(entity, hex)
 
