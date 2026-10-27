@@ -1152,6 +1152,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18OE::Step::Track,
+            Engine::Step::SpecialToken,
             G18OE::Step::Token,
             Engine::Step::Route,
             G18OE::Step::Dividend,
@@ -1159,6 +1160,72 @@ module Engine
             # Convert step to do national conversions at 4/6/8?
             G18OE::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        def token_owner(entity)
+          return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
+
+          super
+        end
+
+        def sea_zone(hex_id)
+          @sea_zone_by_hex ||= self.class::SEA_ZONES.each_with_object({}) do |(zone, data), by_hex|
+            data[:hexes].each { |id| by_hex[id] = zone }
+          end
+          @sea_zone_by_hex[hex_id]
+        end
+
+        def sea(zone)
+          self.class::SEA_ZONES[zone][:sea]
+        end
+
+        def port_sea_zone(hex_id, exit)
+          return sea_zone(self.class::PORTS[hex_id][:offshore][:hex]) if exit == :offshore
+
+          neighbor = hex_by_id(hex_id).all_neighbors[exit]
+          neighbor && sea_zone(neighbor.id)
+        end
+
+        def sea_zone_neighbors
+          @sea_zone_neighbors ||= begin
+            neighbors = self.class::SEA_ZONES.keys.to_h { |zone| [zone, []] }
+            self.class::SEA_ZONES.each do |zone, data|
+              data[:hexes].each do |id|
+                hex_by_id(id).all_neighbors.each_value do |neighbor|
+                  other = sea_zone(neighbor.id)
+                  neighbors[zone] << other if other && other != zone
+                end
+              end
+            end
+            self.class::CHANNEL_PASSAGES.each do |a, b|
+              neighbors[a] << b
+              neighbors[b] << a
+            end
+            neighbors.transform_values(&:uniq)
+          end
+        end
+
+        def sea_zone_distance(from_zone, to_zone)
+          @sea_zone_distances ||= {}
+          @sea_zone_distances[from_zone] ||= begin
+            distance = { from_zone => 1 }
+            queue = [from_zone]
+            until queue.empty?
+              zone = queue.shift
+              sea_zone_neighbors[zone].each do |other|
+                next if distance.key?(other)
+
+                distance[other] = distance[zone] + 1
+                queue << other
+              end
+            end
+            distance
+          end
+          @sea_zone_distances[from_zone][to_zone]
+        end
+
+        def port_distance(from_port, to_port)
+          sea_zone_distance(port_sea_zone(*from_port), port_sea_zone(*to_port))
         end
 
         private
