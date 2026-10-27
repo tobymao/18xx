@@ -746,14 +746,14 @@ module Engine
             ['B41'] => 'city=revenue:yellow_30|green_60|brown_80|gray_120,slots:2;' \
                        'path=a:1,b:_0;path=a:_0,b:3;path=a:_0,b:4',
             ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60;path=a:1,b:_0;' \
-                       'path=a:0,b:_0;', # Arkhangelsk — no path defined
+                       'path=a:0,b:_0', # Arkhangelsk
             # Moskva
             ['F87'] => 'city=revenue:yellow_30|green_50|brown_80|gray_100,slots:3;' \
                        'path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:5',
             ['N1'] => 'offboard=revenue:green_60|brown_100|gray_160;path=a:5,b:_0', # New York
             # Kharkov
-            ['N87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;' \
-                       'city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2',
+            ['N87'] => 'city=revenue:yellow_30|green_40|brown_60|gray_80,slots:2;' \
+                       'path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2;label=K',
             # Sevastopol
             ['T87'] => 'city=revenue:yellow_30|green_40|brown_60|gray_80,slots:2;' \
                        'path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_0;border=edge:5,type:province',
