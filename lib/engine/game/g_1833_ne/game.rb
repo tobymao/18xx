@@ -35,6 +35,8 @@ module Engine
         MUST_BUY_TRAIN = :always
         TILE_COST = 20
 
+        SHERBROOKE_HEX = 'F5'
+
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         GAME_END_CHECK = {
           bankrupt: :immediate,
@@ -182,6 +184,16 @@ module Engine
 
           @last_action = nil
           @lowell_merchants_company_activated = false
+
+          fix_boston_reservation_order!
+        end
+
+        def fix_boston_reservation_order!
+          city = hex_by_id('G22').tile.cities.first
+          bw = corporation_by_id('BW')
+          bp = corporation_by_id('B&P')
+
+          city.reservations.replace([bw, bp]) unless city.reservations.first == bw
         end
 
         def ipo_name(_entity = nil)

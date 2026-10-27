@@ -27,7 +27,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Sh',
+            'code' => 'city=revenue:20,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Sh',
           },
 
           # green:
@@ -51,7 +51,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Sh',
+            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Sh',
           },
           'N22' =>
           {
