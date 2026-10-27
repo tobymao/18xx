@@ -336,12 +336,20 @@ module Engine
 
         def ability_usable?(ability)
           # L6 cannot get tokened using the Pfalzbahnen as long as Baden has not placed its home token
-          return false if ability.type == :token && ability.owner == company_by_id('PB') && !corporation_by_id('BA').floated?
+          return false if pfalzbahnen_token_ability?(ability) && !pfalzbahnen_usable_to_token?
           if @round.respond_to?(:current_operator) && ability.type == :token
             return token_ability_usable?(ability, @round.current_operator)
           end
 
           super
+        end
+
+        def pfalzbahnen_token_ability?(ability)
+          ability.type == :token && ability.owner == company_by_id('PB')
+        end
+
+        def pfalzbahnen_usable_to_token?
+          corporation_by_id('BA').floated? && hex_by_id('L6').tile.color == :green
         end
 
         def token_ability_usable?(ability, corporation)

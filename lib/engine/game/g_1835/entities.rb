@@ -198,6 +198,7 @@ module Engine
                 when: 'owning_player_token',
                 hexes: ['L6'],
                 teleport_price: 0,
+                price: 0,
                 count: 1,
                 extra_action: true,
                 from_owner: true,

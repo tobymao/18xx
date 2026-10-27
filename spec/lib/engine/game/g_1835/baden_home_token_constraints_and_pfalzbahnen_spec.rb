@@ -49,7 +49,7 @@ describe Engine::Game::G1835::Game do
       end.to raise_error(Engine::GameError)
     end
 
-    it 'lets corporations token in L6 using the Pfalzbahnen private after Baden has placed its home token' do
+    it 'lets corporations token in L6 using the Pfalzbahnen private after Baden has placed its home token (unconnected)' do
       game = fixture_at_action(367)
 
       expect(game.current_entity).to eq(game.corporation_by_id('BY'))
@@ -59,6 +59,27 @@ describe Engine::Game::G1835::Game do
       pfalzbahnen = game.company_by_id('PB')
       bayern = game.corporation_by_id('BY')
       l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
+      expect do
+        game.process_action(Engine::Action::PlaceToken.new(pfalzbahnen, city: l6, tokener: bayern)).maybe_raise!
+      end.to_not raise_error
+
+      expect(pfalzbahnen.closed?).to be true
+    end
+
+    it 'lets corporations token in L6 using the Pfalzbahnen private after Baden has placed its home token (connected)' do
+      game = fixture_at_action(366)
+
+      expect(game.current_entity).to eq(game.corporation_by_id('BY'))
+      expect(game.round.active_step).to be_a(Engine::Step::Track)
+      expect(game.corporation_by_id('BA').floated?).to be true
+
+      pfalzbahnen = game.company_by_id('PB')
+      bayern = game.corporation_by_id('BY')
+      l6 = game.hex_by_id('L6').tile.cities.first # Baden home station
+
+      # connect to L6
+      k7 = game.hex_by_id('K7')
+      game.process_action(Engine::Action::LayTile.new(bayern, tile: game.tile_by_id('9-6'), hex: k7, rotation: 0)).maybe_raise!
       expect do
         game.process_action(Engine::Action::PlaceToken.new(pfalzbahnen, city: l6, tokener: bayern)).maybe_raise!
       end.to_not raise_error
@@ -125,6 +146,29 @@ describe Engine::Game::G1835::Game do
         game.process_action(Engine::Action::PlaceToken.new(pb, city: l6.tile.cities[1], tokener: by)).maybe_raise!
         expect(pb.closed?).to be true
       end.to_not raise_error
+    end
+
+    it 'does not let corporations token in L6 using the Pfalzbahnen private before L6 has a green tile' do
+      game = fixture_at_action(169)
+
+      ba = game.corporation_by_id('BA')
+      by = game.corporation_by_id('BY')
+
+      # skip Baden turn except mandatory train buy, so L6 remains with the preprinted yellow tile
+      game.process_action(Engine::Action::Pass.new(ba)).maybe_raise! # skip track with Baden
+      game.process_action(Engine::Action::Pass.new(ba)).maybe_raise! # skip troken with Baden
+
+      train = game.depot.depot_trains.first
+      game.process_action(Engine::Action::BuyTrain.new(ba, train: train, price: train.price))
+      game.process_action(Engine::Action::Pass.new(ba)).maybe_raise! # skip buying more trains
+      game.process_action(Engine::Action::Pass.new(by)).maybe_raise! # skip track with Bayern
+
+      # Make sure we cannot token on the preprinted yellow tile even after Baden has placed its home token there
+      expect do
+        pfalzbahnen = game.company_by_id('PB')
+        l6 = game.hex_by_id('L6').tile.cities[1]
+        game.process_action(Engine::Action::PlaceToken.new(pfalzbahnen, city: l6, tokener: by)).maybe_raise!
+      end.to raise_error(Engine::GameError)
     end
   end
 end

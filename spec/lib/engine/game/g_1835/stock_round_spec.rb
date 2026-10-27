@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require_relative 'spec_helper_1835'
 
 describe Engine::Game::G1835::Game do
   let(:game) { Engine::Game::G1835::Game.new(players) }

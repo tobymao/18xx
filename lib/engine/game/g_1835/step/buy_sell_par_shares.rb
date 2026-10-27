@@ -5,6 +5,15 @@ module Engine
     module G1835
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
+          def round_state
+            # Baden might need to choose where to place its home token during the stock round
+            super.merge(
+              {
+                pending_tokens: [],
+              }
+            )
+          end
+
           def process_buy_shares(action)
             if action.bundle.owner.player?
               nationalize(action.entity, action.bundle)
