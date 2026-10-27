@@ -918,6 +918,24 @@ module Engine
           ([entity_track_rights_zone(corp)] + merged_zones).compact.uniq
         end
 
+        def merge_targets(player, minor)
+          return [] unless @phase.available?('3')
+          return [] if minor.type != :minor || !minor.floated? || minor.owner != player
+
+          @corporations.select do |corporation|
+            corporation.type == :major &&
+              corporation.floated? &&
+              corporation.president?(player) &&
+              !@round.merged_majors.include?(corporation) &&
+              merge_share(corporation)
+          end
+        end
+
+        def merge_share(major)
+          major.treasury_shares.find { |share| !share.president } ||
+            @share_pool.shares_by_corporation[major].first
+        end
+
         def level8_train_available?
           @level_8_available || false
         end

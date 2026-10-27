@@ -3,14 +3,12 @@
 require_relative '../../../step/base'
 require_relative '../../../action/merge'
 require_relative '../../g_18_eu/step/minor_exchange'
-require_relative 'minor_merger'
 
 module Engine
   module Game
     module G18OE
       module Step
         class MergeMinor < Engine::Step::Base
-          include MinorMerger
           include G18EU::MinorExchange
 
           def round_state
@@ -44,7 +42,7 @@ module Engine
           end
 
           def mergeable_entities
-            merge_targets(mergeable_entity.owner, mergeable_entity)
+            @game.merge_targets(mergeable_entity.owner, mergeable_entity)
           end
 
           def mergeable_type(minor)
@@ -70,7 +68,7 @@ module Engine
             raise GameError, "#{action.entity.name} is not the merging minor" unless action.entity == minor
             raise GameError, "#{minor.name} cannot merge into #{major&.name}" unless mergeable_entities.include?(major)
 
-            from_treasury = merge_share(major).owner == major
+            from_treasury = @game.merge_share(major).owner == major
             @log << "#{minor.name} merges into #{major.name}"
             exchange_share(minor, major, from_treasury ? major : @game.share_pool)
             transfer_treasury(minor, from_treasury ? major : @game.bank)

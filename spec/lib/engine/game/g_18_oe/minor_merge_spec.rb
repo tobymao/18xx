@@ -26,13 +26,13 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     start_major!(phase_two_game, 'LNWR', phase_two_player)
     phase_two_minor = start_minor!(phase_two_game, 'B', phase_two_player, 'SP')
 
-    expect(phase_two_round.active_step.merge_targets(phase_two_player, phase_two_minor)).to be_empty
+    expect(phase_two_game.merge_targets(phase_two_player, phase_two_minor)).to be_empty
     expect(phase_two_round.active_step.actions(phase_two_player)).not_to include('choose')
   end
 
   it 'offers to merge a minor into a major the player presides from Train Phase 3 (§10.5)' do
     major
-    expect(step.merge_targets(player, minor)).to eq([major])
+    expect(game.merge_targets(player, minor)).to eq([major])
     expect(step.actions(player)).to include('choose')
   end
 
@@ -46,18 +46,18 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
 
   it 'offers no merge into a major presided by another player' do
     start_major!(game, 'LNWR', game.players.last)
-    expect(step.merge_targets(player, minor)).to be_empty
+    expect(game.merge_targets(player, minor)).to be_empty
   end
 
   it 'offers no merge when the major has no share in its treasury or the Open Market (§10.5)' do
     take_treasury_shares!(game, player, major, major.treasury_shares.size)
-    expect(step.merge_targets(player, minor)).to be_empty
+    expect(game.merge_targets(player, minor)).to be_empty
   end
 
   it 'allows one minor per major per SR (§10.5)' do
     major
     round.merged_majors << major
-    expect(step.merge_targets(player, minor)).to be_empty
+    expect(game.merge_targets(player, minor)).to be_empty
   end
 
   it 'offers no merge after another stock action this turn (§10)' do
@@ -140,7 +140,7 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     major
     minor
     empty_treasury_into_pool!
-    expect(step.merge_share(major).owner).to eq(game.share_pool)
+    expect(game.merge_share(major).owner).to eq(game.share_pool)
 
     cash_before = major.cash
     bank_before = game.bank.cash
@@ -152,7 +152,7 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
   it 'prefers the treasury when both have shares (§10.5)' do
     major
     to_pool!(major, 1)
-    expect(step.merge_share(major).owner).to eq(major)
+    expect(game.merge_share(major).owner).to eq(major)
   end
 
   it 'gives the share even above 60% (§10.2)' do
@@ -300,7 +300,7 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     second = start_minor!(game, 'C', player, 'SP')
     merge!
     resolve_follow_ups!
-    expect(step.merge_targets(player, second)).to eq([other_major])
+    expect(game.merge_targets(player, second)).to eq([other_major])
   end
 
   it 'rejects a merge into a major that is not a target' do

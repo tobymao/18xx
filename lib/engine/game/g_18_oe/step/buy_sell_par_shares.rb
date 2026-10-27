@@ -3,15 +3,12 @@
 require_relative '../../../step/buy_sell_par_shares'
 require_relative '../../../action/convert'
 require_relative '../../../action/choose'
-require_relative 'minor_merger'
 
 module Engine
   module Game
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          include MinorMerger
-
           PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose]
 
           def round_state
@@ -49,7 +46,7 @@ module Engine
           end
 
           def can_merge?(player, minor)
-            @round.current_actions.empty? && !merge_targets(player, minor).empty?
+            @round.current_actions.empty? && !@game.merge_targets(player, minor).empty?
           end
 
           def choice_available?(_entity)
