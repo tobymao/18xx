@@ -8,6 +8,9 @@ require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
 require_relative 'step/consolidate'
+require_relative 'step/merge_discard_train'
+require_relative 'step/merge_minor'
+require_relative 'step/merge_token'
 require_relative 'step/concession'
 
 module Engine
@@ -19,7 +22,7 @@ module Engine
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
-        attr_reader :concessions
+        attr_reader :concessions, :merged_minors
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -683,6 +686,7 @@ module Engine
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
+          @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
@@ -776,6 +780,10 @@ module Engine
 
           total_minors = corporations.count { |c| c.type == :minor }
           @minor_floated_regions.size >= total_minors
+        end
+
+        def can_hold_above_corp_limit?(_entity)
+          true
         end
 
         def fulfilled_train_obligation?(entity)
@@ -882,9 +890,10 @@ module Engine
           base_cost = tile.upgrades.sum(&:cost)
           return super if base_cost.zero?
 
-          entity_zone = entity_track_rights_zone(entity)
-          zone_match = self.class::ZONE_DISCOUNT_ZONES.include?(entity_zone) &&
-                       self.class::NATIONAL_REGION_HEXES[entity_zone].include?(hex.coordinates)
+          zone_match = track_rights_zones(entity).any? do |zone|
+            self.class::ZONE_DISCOUNT_ZONES.include?(zone) &&
+              self.class::NATIONAL_REGION_HEXES[zone].include?(hex.coordinates)
+          end
 
           return super unless zone_match
 
@@ -899,6 +908,32 @@ module Engine
             @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
           end
           cost
+        end
+
+        def track_rights_zones(entity)
+          corp = owning_corporation(entity)
+          return [] unless corp
+
+          merged_zones = @merged_minors.fetch(corp, []).map { |minor| @minor_floated_regions[minor.id] }
+          ([entity_track_rights_zone(corp)] + merged_zones).compact.uniq
+        end
+
+        def merge_targets(player, minor)
+          return [] unless @phase.available?('3')
+          return [] if minor.type != :minor || !minor.floated? || minor.owner != player
+
+          @corporations.select do |corporation|
+            corporation.type == :major &&
+              corporation.floated? &&
+              corporation.president?(player) &&
+              !@round.merged_majors.include?(corporation) &&
+              merge_share(corporation)
+          end
+        end
+
+        def merge_share(major)
+          major.treasury_shares.find { |share| !share.president } ||
+            @share_pool.shares_by_corporation[major].first
         end
 
         def level8_train_available?
@@ -1021,6 +1056,10 @@ module Engine
 
         def new_consolidation_round
           Round::G18OE::Consolidation.new(self, [
+            Engine::Step::DiscardTrain,
+            G18OE::Step::MergeToken,
+            G18OE::Step::MergeDiscardTrain,
+            G18OE::Step::MergeMinor,
             G18OE::Step::Consolidate,
           ])
         end
@@ -1093,6 +1132,9 @@ module Engine
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18OE::Step::HomeToken,
+            G18OE::Step::MergeToken,
+            G18OE::Step::MergeDiscardTrain,
+            G18OE::Step::MergeMinor,
             G18OE::Step::BuySellParShares,
           ])
         end
