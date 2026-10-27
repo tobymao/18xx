@@ -10,6 +10,7 @@ module View
           parts = parts_for_loc
           edge_location = (layout == :pointy ? PP_EDGE_LOCATIONS : P_EDGE_LOCATIONS)[@loc]
           return [edge_location] if edge_location
+          return [LOWER_CENTER_LOCATION] if @loc == 'lower_center'
 
           if layout == :pointy
             case @loc
@@ -233,6 +234,8 @@ module View
 
         POINTY_WIDER_ITEM_LOCATIONS = [PP_WIDER_BOTTOM_CORNER,
                                        PP_WIDER_TOP_CORNER].freeze
+
+        LOWER_CENTER_LOCATION = { region_weights: Base::LOWER_CENTER, x: 0, y: 28 }.freeze
 
         P_EDGE_LOCATIONS = {
           'e0' => { region_weights: Base::TRACK_TO_EDGE_0, x: 0, y: 55 },

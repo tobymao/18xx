@@ -128,6 +128,21 @@ describe 'G18OE lay track (§11.1)' do
     expect(cost('W22', 'CHN')).to eq(96)
   end
 
+  it 'gives a major the zone discount of a merged minor (§10.5, §11.1.4)' do
+    major = start_major!(game, 'LNWR', player)
+    minor = game.corporation_by_id(minor_in('B', 'SP'))
+    game.merged_minors[major] << minor
+
+    expect(cost('X23', 'LNWR')).to eq(96)
+  end
+
+  it 'does not stack a merged minor\'s zone with the same home zone (§11.1.5)' do
+    major = start_major!(game, 'CHN', player)
+    game.merged_minors[major] << game.corporation_by_id(minor_in('B', 'SP'))
+
+    expect(cost('X23', 'CHN')).to eq(96)
+  end
+
   it 'raises the discount to 50% for F on mountains and hills (§11.1.5, §15.6)' do
     f = minor_in('F', 'SP')
 

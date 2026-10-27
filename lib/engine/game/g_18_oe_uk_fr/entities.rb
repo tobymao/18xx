@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../g_18_oe/entities'
+
 module Engine
   module Game
     module G18OEUKFR
@@ -31,6 +33,7 @@ module Engine
             sym: 'WCF',
             value: 60,
             revenue: 15,
+            abilities: G18OE::Entities::COMPANIES.find { |company| company[:sym] == 'WCF' }[:abilities],
             auction_row: 4,
           },
           {

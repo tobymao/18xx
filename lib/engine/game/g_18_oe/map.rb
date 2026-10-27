@@ -540,8 +540,7 @@ module Engine
             ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;' \
                        'border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:lake',
             ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;' \
-                       'border=edge:2,type:province;border=edge:3,type:province;border=edge:5,type:impassable;' \
-                       'upgrade=cost:60,terrain:lake',
+                       'border=edge:5,type:impassable;upgrade=cost:60,terrain:lake',
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
             # North Sea — Danish coast
@@ -720,10 +719,9 @@ module Engine
           yellow: {
             ['L37'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:river;path=a:0,b:_0;' \
                        'path=a:_0,b:5;icon=image:18_oe/offshore_docks,sticky:1',
-            ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:river;path=a:2,b:4;' \
-                       'border=edge:5,type:province',
+            ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:river;path=a:2,b:4',
             ['I50'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:river;path=a:1,b:_0;' \
-                       'path=a:_0,b:3;border=edge:0,type:province;icon=image:18_oe/offshore_docks,sticky:1',
+                       'path=a:_0,b:3;icon=image:18_oe/offshore_docks,sticky:1',
             ['J25'] => 'city=revenue:30;label=Y;path=a:2,b:_0;path=a:_0,b:4',
             ['J27'] => 'city=revenue:20;upgrade=cost:30,terrain:hill;path=a:1,b:_0;path=a:_0,b:4',
             ['AE72'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
@@ -781,7 +779,7 @@ module Engine
             B61 C0 C2 C4 C6 C8 C10 C12 C14 C16 C22
             C24 C26 C28 C30 C32 C34 C40 C60 D1
             D3 D5 D7 D9 D11 D13 D15 D17 D23 D27 D29 D31
-            D33 D39 D63 D65 E0 E2 E4 E6 E8 E10 E12 E14
+            D33 D39 D63 E0 E2 E4 E6 E8 E10 E12 E14
             E16 E22 E32 E34 E64 F1 F3 F5 F7
             F9 F11 F13 F15 F17 F31 F33 F39 F41 F45 F47
             F57 F65 G0 G2 G4 G6 G8 G10 G12 G14
@@ -800,10 +798,10 @@ module Engine
             W82 W84 W86 W88 X3 X31 X51 X53 X81
             X83 X85 X87 Y0 Y30 Y32 Y52 Y54
             Y82 Y84 Y86 Y88 Z31 Z33 Z35 Z37 Z43 Z53
-            Z55 Z57 Z59 Z85 Z87 AA0 AA24 AA30 AA32 AA34
+            Z55 Z57 Z59 Z85 Z87 AA24 AA30 AA32 AA34
             AA36 AA38 AA56 AA58 AA88 AB29 AB31 AB33 AB35
-            AB37 AB43 AB45 AB47 AB75 AB79 AC0
-            AC2 AC22 AC30 AC32 AC34 AC36 AC42 AC44 AC46 AC48
+            AB37 AB43 AB45 AB47 AC0
+            AC22 AC30 AC32 AC34 AC36 AC42 AC44 AC46 AC48
             AC50 AC52 AC72 AC74 AD21 AD23 AD29 AD31
             AD33 AD35 AD43 AD45 AD47 AD49 AD51 AD53 AD57 AD73
             AE0 AE2 AE4 AE14 AE16 AE18 AE20 AE22 AE28 AE30
@@ -817,8 +815,14 @@ module Engine
             AH47 AH49 AH51 AH53 AH55 AH57 AH63 AH65 AH67 AH71 AH73
             AH79 AH81 AH83
             ] => '',
+            ['D65'] => 'icon=image:18_oe/channel_passage_210,sticky:1,loc:3.5',
+            ['AA0'] => 'icon=image:18_oe/channel_passage_150,sticky:1,loc:4.5',
+            ['AC2'] => 'icon=image:18_oe/channel_passage_330,sticky:1,loc:2.5',
+            ['AB75'] => 'icon=image:18_oe/channel_passage_180,sticky:1,loc:e4',
+            ['AB79'] => 'icon=image:18_oe/channel_passage_0,sticky:1,loc:e1',
             # Ferry routes (pre-printed track through sea hexes)
-            ['N29'] => 'path=a:4,b:2,color:#0047AB;icon=image:18_oe/ferry_0,sticky:1,loc:e3',
+            ['N29'] => 'path=a:4,b:2,color:#0047AB;icon=image:18_oe/ferry_0,sticky:1,loc:e3;' \
+                       'icon=image:18_oe/channel_passage_210,sticky:1,loc:3.5',
             ['G22'] => 'path=a:0,b:4,color:#0047AB;border=edge:2,type:province;icon=image:18_oe/ferry_0,sticky:1,loc:e5',
             ['I22'] => 'path=a:1,b:5,color:#0047AB;path=a:1,b:4,color:#0047AB;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:1.5;icon=image:18_oe/public_port,sticky:1,loc:5.5;' \
@@ -850,21 +854,25 @@ module Engine
             ['AH69'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:2.5',
             ['AF71'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/private_port,sticky:1,loc:3.5',
             ['AC70'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
-            ['AB81'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/public_port,sticky:1,loc:2.5',
-            ['Z83'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/public_port,sticky:1,loc:0.5',
+            ['AB81'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/public_port,sticky:1,loc:2.5;' \
+                        'icon=image:18_oe/channel_passage_240,sticky:1,loc:3.5',
+            ['Z83'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/public_port,sticky:1,loc:0.5;' \
+                       'icon=image:18_oe/channel_passage_60,sticky:1,loc:5.5',
             ['T83'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;offboard=revenue:0,hide:1;path=a:3,b:_1;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:0.5;icon=image:18_oe/public_port,sticky:1,loc:3.5',
             ['J61'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;offboard=revenue:0,hide:1;path=a:0,b:_1;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:3.5;icon=image:18_oe/public_port,sticky:1,loc:0.5',
             ['K52'] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;icon=image:18_oe/private_port,sticky:1,loc:5.5',
             ['J51'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;offboard=revenue:0,hide:1;path=a:3,b:_1;' \
-                       'icon=image:18_oe/public_port,sticky:1,loc:1.5;icon=image:18_oe/private_port,sticky:1,loc:3.5',
+                       'icon=image:18_oe/public_port,sticky:1,loc:1.5;icon=image:18_oe/private_port,sticky:1,loc:3.5;' \
+                       'icon=image:18_oe/channel_passage_300,sticky:1,loc:2.5',
             ['G48'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;offboard=revenue:0,hide:1;path=a:1,b:_1;' \
                        'offboard=revenue:0,hide:1;path=a:3,b:_2;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:0.5;icon=image:18_oe/public_port,sticky:1,loc:1.5;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:3.5',
             ['B59'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/public_port,sticky:1,loc:0.5',
-            ['C68'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
+            ['C68'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5;' \
+                       'icon=image:18_oe/channel_passage_30,sticky:1,loc:0.5',
             ['F67'] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;icon=image:18_oe/private_port,sticky:1,loc:5.5',
             ['J21'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
             ['I30'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:2.5',
@@ -888,29 +896,31 @@ module Engine
             ['H23'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/public_port,sticky:1,loc:1.5',
             ['T85'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/private_port,sticky:1,loc:3.5',
             ['AH85'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['AB73'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
+            ['AB73'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                         'icon=image:18_oe/public_port,sticky:1,loc:0.5',
             ['W4'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/private_port,sticky:1,loc:3.5',
             ['O2'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/public_port,sticky:1,loc:2.5',
-            ['T21'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
+            ['T21'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:0.5',
-            ['X1'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
+            ['X1'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                       'icon=image:18_oe/private_port,sticky:1,loc:1.5',
             ['I62'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
-            ['E46'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
+            ['E46'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:4.5',
-            ['H49'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
-                       'icon=image:18_oe/public_port,sticky:1,loc:1.5',
-            ['J43'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
+            ['H49'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+                       'icon=image:18_oe/public_port,sticky:1,loc:1.5;' \
+                       'icon=image:18_oe/channel_passage_120,sticky:1,loc:4.5',
+            ['J43'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['C70'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
+            ['C70'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:0.5',
             ['E30'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:1.5',
             ['Z39'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:4.5',
-            ['L21'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
+            ['L21'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:1.5',
-            ['M32'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/offshore_terminal,sticky:1;' \
-                       'icon=image:18_oe/public_port,sticky:1,loc:3.5',
+            ['M32'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+                       'icon=image:18_oe/public_port,sticky:1,loc:3.5;' \
+                       'icon=image:18_oe/channel_passage_30,sticky:1,loc:0.5',
             ['AD41'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
             ['Z29'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/private_port,sticky:1,loc:1.5',
             ['Y34'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;offboard=revenue:0,hide:1;path=a:3,b:_1;' \
@@ -930,7 +940,8 @@ module Engine
             ['Y80'] => 'path=a:5,b:2,color:#0047AB;icon=image:18_oe/ferry_1,sticky:1,loc:e4',
             ['X79'] => 'town=revenue:20,style:dot;path=a:5,b:_0,color:#0047AB;path=a:1,b:_0,color:#0047AB;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['G30'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0,color:#0047AB;icon=image:18_oe/offshore_terminal,sticky:1;' \
+            ['G30'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0,color:#0047AB;' \
+                       'icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:4.5',
             ['G32'] => 'path=a:1,b:4,color:#0047AB',
             ['G34'] => 'path=a:1,b:3,color:#0047AB',
@@ -1027,7 +1038,7 @@ module Engine
             ['D61'] => 'path=a:1,b:3,color:#0047AB;border=edge:0,type:province;icon=image:18_oe/ferry_1,sticky:1,loc:e2',
             ['E18'] => 'border=edge:4,type:province',
             ['E20'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;border=edge:0,type:province;border=edge:1,type:province;' \
-                       'border=edge:2,type:province;icon=image:18_oe/offshore_terminal,sticky:1;' \
+                       'border=edge:2,type:province;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:0.5',
             ['E36'] => 'path=a:0,b:3,color:#0047AB;' \
                        'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
@@ -1063,7 +1074,8 @@ module Engine
             ['K34'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;' \
                        'border=edge:5,type:province',
             ['K36'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;border=edge:0,type:province;' \
-                       'icon=image:18_oe/offshore_terminal,sticky:1;icon=image:18_oe/public_port,sticky:1,loc:1.5',
+                       'icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+                       'icon=image:18_oe/public_port,sticky:1,loc:1.5',
             ['K4'] => 'border=edge:0,type:province;border=edge:1,type:province',
             ['L3'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['L33'] => 'border=edge:2,type:province;border=edge:3,type:province',
@@ -1125,108 +1137,171 @@ module Engine
         }.freeze
 
         SEA_ZONES = {
-          'Celtic Sea' => %w[
-            A2 A4 A6 A8 A10 A12 A14 A16 A18 B1 B3 B5
-            B7 B9 B11 B13 B15 B17 B19 C2 C4 C6 C8 C10
-            C12 C14 C16 C18 D1 D3 D5 D7 D9 D11 D13 D15
-            D17 D19 E2 E4 E6 E8 E10 E12 E14 E16 E18 F1
-            F3 F5 F7 F9 F11 F13 F15 F17 F19 G2 G4 G6
-            G8 G10 G12 G14 G22 H1 H3 H5 H7 H9 H11 H13
-            H23 I2 I4 I6 I8 I10 I12 I22 I24 J1 J3 J5
-            J7 J9 J11 J21 K4 K6 K8 K10 K12 K14 K16 K18
-            K20 L5 L7 L9 L11 L13 L15 L17 L19 L21 M6 M8
-            M10 M12 M14 M16 M18 M20 N5 N7 N9 N11 N13 N15
-            N17 O6 O8 O10 O12 O14 O16
-          ].freeze,
-          'North Atlantic Ocean' => %w[
-            K2 L1 L3 M2 M4 N1 N3 O2 O4 P1 P3 Q2 Q4
-          ].freeze,
-          'North Atlantic (Silver Coast)' => %w[
-            R1 R3 S2 S4 T1 T3 T5 U2 U4 V1 V3 W2
-            W4 X1 X3
-          ].freeze,
-          'Bay of Biscay' => %w[
-            P5 P7 P9 P11 P13 P15 P17 Q6 Q8 Q10 Q12 Q14
-            Q16 Q18 R5 R7 R9 R11 R13 R15 R17 R19 R21 S6
-            S8 S10 S12 S14 S16 S18 S20 S22 T7 T9 T11 T13
-            T15 T17 T19 T21 U14 U16 U18 U20
-          ].freeze,
-          'English Channel' => %w[
-            L33 L35 M32 N19 N21 N23 N25 N27 N29 O18 O20 O22
-            O26
-          ].freeze,
-          'North Sea' => %w[
-            A20 A22 A24 A26 A28 A30 A32 A34 A36 B21 B23 B25
-            B27 B29 B31 B33 B35 C20 C22 C24 C26 C28 C30 C32
-            C34 C36 D21 D23 D27 D29 D31 D33 D35 E20 E22 E30
-            E32 E34 E36 F21 F31 F33 F35 G30 G32 G34 G36 H31
-            H33 H35 I30 I32 I34 J31 J33 K32
-          ].freeze,
-          'Skagerrak' => %w[
-            A38 A40 B37 B39 B43 C38 C40 D37 D39 E38 E40 E46 F37 F39
-            F41 F43 F45 F47 G38 G40 G42 G48 H49
-          ].freeze,
-          'German Bight' => %w[
-            H37 H39 H41 I36 I38 I40 I42 J35 J37 J39 J41 J43
-            K34 K36 K38
-          ].freeze,
-          'Baltic Sea' => %w[
-            E60 F57 F59 G58 G60 G62 H57 H59 H61 I54 I56 I58 I60
-            I62 J51 J53 J55 J57 J59 J61 K52
-          ].freeze,
-          'Gulf of Finland' => %w[
-            A58 A60 A62 B59 B61 C60 C62 C68 C70 D59 D61 D63
-            D65 E62 E64 F61 F63 F65 F67
-          ].freeze,
-          'Strait of Gibraltar' => %w[
-            AC2 AC4 AD1 AD3 AE2 AE4 AE6 AE8 AE10 AF1 AF3 AF7 AF9
-            AG2 AG4 AG6 AG8 AG10 AH1 AH3 AH5 AH7 AH9
-          ].freeze,
-          'Balearic Sea' => %w[
-            AA24 AA26 AB21 AB23 AB25 AC22 AC24 AD19 AD21 AD23 AD25 AE12
-            AE14 AE16 AE18 AE20 AE22 AE24 AF13 AF15 AF17 AF19 AF21 AF23
-            AG12 AG14 AG16 AG18 AG20 AG22 AG24 AH11 AH13 AH15 AH17 AH19
-            AH21 AH23 AH25 AF25
-          ].freeze,
-          'Sea of Sardinia' => %w[
-            X31 X39 Y30 Y32 Y34 Y36 Y38 Y40 Z29 Z31 Z33 Z35
-            Z37 Z39 AA28 AA30 AA32 AA34 AA36 AA38 AA40 AB29 AB31 AB33
-            AB35 AB37 AC26 AC28 AC30 AC32 AC34 AC36 AD27 AD29 AD31
-            AD33 AD35 AD37 AE26 AE28 AE30 AE32 AE34 AE36 AF27 AF29 AF31
-            AF33 AF35 AG26 AG28 AG30 AG32 AG34 AG36 AG38 AH27 AH29 AH31
-            AH33 AH35 AH37 AH39
-            X41
-          ].freeze,
-          'Tyrrhenian Sea' => %w[
-            Y42 Z43 AA42 AA44 AA46 AB43 AB45 AB47 AB49 AC42 AC44
-            AC46 AC48 AC50 AC52 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57
-            AD59 AE38 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56 AE58 AF37
-            AF39 AF41 AF43 AF45 AF47 AF55 AF57 AF59 AG42 AG44 AG46 AG48
-            AG40 AG54 AG56 AG58 AH41 AH43 AH45 AH47 AH49 AH51 AH53 AH55 AH57
-            AH59
-          ].freeze,
-          'Adriatic Sea' => %w[
-            V49 W50 W52 X51 X53 Y52 Y54 Z53 Z55 Z57 Z59 AA56
-            AA58 AA60 AB59 AB61 AC60 AC62 AD61 AD63
-          ].freeze,
-          'Aegean Sea' => %w[
-            AB73 AB75 AB79 AB81 AC70 AC72 AC74 AD73 AD75 AD77 AE60 AE62 AE64
-            AE66 AE74 AE76 AE78 AF61 AF63 AF65 AF71 AF73 AF75 AF77 AG60 AG62
-            AG64 AG66 AG72 AG74 AG76 AH61 AH63 AH65 AH67 AH69 AH71 AH73
-            AH75
-          ].freeze,
-          'Levantine Sea' => %w[
-            AF79 AG78 AG80 AG82 AG84 AG88 AH77 AH79 AH81 AH83 AH85
-          ].freeze,
-          'Black Sea' => %w[
-            V81 V83 V85 V87 W80 W82 W84 W86 X79 X81 X83 X85
-            X87 Y80 Y82 Y84 Y86 Z81 Z83 Z85 Z87
-            U88
-          ].freeze,
-          'Karkinitsky Bay' => %w[
-            T83 T85 T87 U82 U84 U86
-          ].freeze,
+          'Celtic Sea' => {
+            sea: :north_sea,
+            hexes: %w[
+              A2 A4 A6 A8 A10 A12 A14 A16 A18 B1 B3 B5
+              B7 B9 B11 B13 B15 B17 B19 C2 C4 C6 C8 C10
+              C12 C14 C16 C18 D1 D3 D5 D7 D9 D11 D13 D15
+              D17 D19 E2 E4 E6 E8 E10 E12 E14 E16 E18 F1
+              F3 F5 F7 F9 F11 F13 F15 F17 F19 G2 G4 G6
+              G8 G10 G12 G14 G22 H1 H3 H5 H7 H9 H11 H13
+              H23 I2 I4 I6 I8 I10 I12 I22 I24 J1 J3 J5
+              J7 J9 J11 J21 K4 K6 K8 K10 K12 K14 K16 K18
+              K20 L5 L7 L9 L11 L13 L15 L17 L19 L21 M6 M8
+              M10 M12 M14 M16 M18 M20 N5 N7 N9 N11 N13 N15
+              N17 O6 O8 O10 O12 O14 O16
+            ].freeze,
+          },
+          'North Atlantic Ocean' => {
+            sea: :north_sea,
+            hexes: %w[
+              K2 L1 L3 M2 M4 N1 N3 O2 O4 P1 P3 Q2 Q4
+            ].freeze,
+          },
+          'North Atlantic (Silver Coast)' => {
+            sea: :north_sea,
+            hexes: %w[
+              R1 R3 S2 S4 T1 T3 T5 U2 U4 V1 V3 W2
+              W4 X1 X3
+            ].freeze,
+          },
+          'Bay of Biscay' => {
+            sea: :north_sea,
+            hexes: %w[
+              P5 P7 P9 P11 P13 P15 P17 Q6 Q8 Q10 Q12 Q14
+              Q16 Q18 R5 R7 R9 R11 R13 R15 R17 R19 R21 S6
+              S8 S10 S12 S14 S16 S18 S20 S22 T7 T9 T11 T13
+              T15 T17 T19 T21 U14 U16 U18 U20
+            ].freeze,
+          },
+          'English Channel' => {
+            sea: :north_sea,
+            hexes: %w[
+              L33 L35 M32 N19 N21 N23 N25 N27 N29 O18 O20 O22
+              O26
+            ].freeze,
+          },
+          'North Sea' => {
+            sea: :north_sea,
+            hexes: %w[
+              A20 A22 A24 A26 A28 A30 A32 A34 A36 B21 B23 B25
+              B27 B29 B31 B33 B35 C20 C22 C24 C26 C28 C30 C32
+              C34 C36 D21 D23 D27 D29 D31 D33 D35 E20 E22 E30
+              E32 E34 E36 F21 F31 F33 F35 G30 G32 G34 G36 H31
+              H33 H35 I30 I32 I34 J31 J33 K32
+            ].freeze,
+          },
+          'Skagerrak' => {
+            sea: :north_sea,
+            hexes: %w[
+              A38 A40 B37 B39 C38 C40 D37 D39 E38 E40 E46 F37 F39
+              F41 F43 F45 F47 G38 G40 G42 G48 H49
+            ].freeze,
+          },
+          'German Bight' => {
+            sea: :north_sea,
+            hexes: %w[
+              H37 H39 H41 I36 I38 I40 I42 J35 J37 J39 J41 J43
+              K34 K36 K38
+            ].freeze,
+          },
+          'Baltic Sea' => {
+            sea: :north_sea,
+            hexes: %w[
+              E60 F57 F59 G58 G60 G62 H57 H59 H61 I54 I56 I58 I60
+              I62 J51 J53 J55 J57 J59 J61 K52
+            ].freeze,
+          },
+          'Gulf of Finland' => {
+            sea: :north_sea,
+            hexes: %w[
+              A58 A60 A62 B59 B61 C60 C62 C68 C70 D59 D61 D63
+              D65 E62 E64 F61 F63 F65 F67
+            ].freeze,
+          },
+          'Strait of Gibraltar' => {
+            sea: :mediterranean,
+            hexes: %w[
+              AC2 AC4 AD1 AD3 AE2 AE4 AE6 AE8 AE10 AF1 AF3 AF7 AF9
+              AG2 AG4 AG6 AG8 AG10 AH1 AH3 AH5 AH7 AH9
+            ].freeze,
+          },
+          'Balearic Sea' => {
+            sea: :mediterranean,
+            hexes: %w[
+              AA24 AA26 AB21 AB23 AB25 AC22 AC24 AD19 AD21 AD23 AD25 AE12
+              AE14 AE16 AE18 AE20 AE22 AE24 AF13 AF15 AF17 AF19 AF21 AF23
+              AG12 AG14 AG16 AG18 AG20 AG22 AG24 AH11 AH13 AH15 AH17 AH19
+              AH21 AH23 AH25 AF25
+            ].freeze,
+          },
+          'Sea of Sardinia' => {
+            sea: :mediterranean,
+            hexes: %w[
+              X31 X39 Y30 Y32 Y34 Y36 Y38 Y40 Z29 Z31 Z33 Z35
+              Z37 Z39 AA28 AA30 AA32 AA34 AA36 AA38 AA40 AB29 AB31 AB33
+              AB35 AB37 AC26 AC28 AC30 AC32 AC34 AC36 AD27 AD29 AD31
+              AD33 AD35 AD37 AE26 AE28 AE30 AE32 AE34 AE36 AF27 AF29 AF31
+              AF33 AF35 AG26 AG28 AG30 AG32 AG34 AG36 AG38 AH27 AH29 AH31
+              AH33 AH35 AH37 AH39
+              X41
+            ].freeze,
+          },
+          'Tyrrhenian Sea' => {
+            sea: :mediterranean,
+            hexes: %w[
+              Y42 Z43 AA42 AA44 AA46 AB43 AB45 AB47 AB49 AC42 AC44
+              AC46 AC48 AC50 AC52 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57
+              AD59 AE38 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56 AE58 AF37
+              AF39 AF41 AF43 AF45 AF47 AF55 AF57 AF59 AG42 AG44 AG46 AG48
+              AG40 AG54 AG56 AG58 AH41 AH43 AH45 AH47 AH49 AH51 AH53 AH55 AH57
+              AH59
+            ].freeze,
+          },
+          'Adriatic Sea' => {
+            sea: :mediterranean,
+            hexes: %w[
+              V49 W50 W52 X51 X53 Y52 Y54 Z53 Z55 Z57 Z59 AA56
+              AA58 AA60 AB59 AB61 AC60 AC62 AD61 AD63
+            ].freeze,
+          },
+          'Aegean Sea' => {
+            sea: :mediterranean,
+            hexes: %w[
+              AB73 AB75 AB79 AB81 AC70 AC72 AC74 AD73 AD75 AD77 AE60 AE62 AE64
+              AE66 AE74 AE76 AE78 AF61 AF63 AF65 AF71 AF73 AF75 AF77 AG60 AG62
+              AG64 AG66 AG72 AG74 AG76 AH61 AH63 AH65 AH67 AH69 AH71 AH73
+              AH75
+            ].freeze,
+          },
+          'Levantine Sea' => {
+            sea: :mediterranean,
+            hexes: %w[
+              AF79 AG78 AG80 AG82 AG84 AG88 AH77 AH79 AH81 AH83 AH85
+            ].freeze,
+          },
+          'Black Sea' => {
+            sea: :mediterranean,
+            hexes: %w[
+              V81 V83 V85 V87 W80 W82 W84 W86 X79 X81 X83 X85
+              X87 Y80 Y82 Y84 Y86 Z81 Z83 Z85 Z87
+              U88
+            ].freeze,
+          },
+          'Karkinitsky Bay' => {
+            sea: :mediterranean,
+            hexes: %w[
+              T83 T85 T87 U82 U84 U86
+            ].freeze,
+          },
         }.freeze
+
+        CHANNEL_PASSAGES = [
+          ['Skagerrak', 'Baltic Sea'],
+          ['Black Sea', 'Aegean Sea'],
+          ['North Atlantic (Silver Coast)', 'Strait of Gibraltar'],
+        ].freeze
 
         PORTS = {
           'AD1' => { 4 => { port: :public } },

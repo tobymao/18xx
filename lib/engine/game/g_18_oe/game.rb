@@ -8,6 +8,9 @@ require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
 require_relative 'step/consolidate'
+require_relative 'step/merge_discard_train'
+require_relative 'step/merge_minor'
+require_relative 'step/merge_token'
 require_relative 'step/concession'
 
 module Engine
@@ -19,7 +22,7 @@ module Engine
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
-        attr_reader :concessions
+        attr_reader :concessions, :merged_minors
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -304,7 +307,7 @@ module Engine
           'SC' => %w[A42 A44 A46 A48 A50 A52 A54 A56 B41 B43 B45 B47 B49 B51 B53 B55 B57
                      C42 C44 C46 C48 C50 C52 C54 C56 C58 D41 D43 D45 D47 D49 D51 D53 D55 D57
                      E42 E44 E48 E50 E52 E54 E56 E58 F49 F51 F53 F55
-                     G44 G46 G50 G52 G54 G56 H43 H45 H47 H51 H53 H55 I44 I46 I48 I50 I52],
+                     G44 G46 G50 G52 G54 G56 H43 H45 H47 H51 H53 H55 I44 I46 I48 I50 I52 J49],
           # France / Belgium
           'FR' => %w[N31 N33 N35 N37 O24 O28 O30 O32 O34 O36 O38
                      P19 P21 P23 P25 P27 P29 P31 P33 P35 P37
@@ -316,7 +319,7 @@ module Engine
                      W22 W24 W26 W28 W30 W32 W34 W36 W38
                      X25 X27 X29 X33 X35 X37 Y28 Z41 AF25],
           # Prussia / Holland / Switzerland
-          'PHS' => %w[I64 J45 J47 J49 J63 J65 K40 K42 K44 K46 K48 K50 K54 K56 K58 K60 K62 K64
+          'PHS' => %w[I64 J45 J47 J63 J65 K40 K42 K44 K46 K48 K50 K54 K56 K58 K60 K62 K64
                       L37 L39 L41 L43 L45 L47 L49 L51 L53 L55 L57 L59 L61
                       M34 M36 M38 M40 M42 M44 M46 M48 M50 M52 M54 M56 M58
                       N37 N39 N41 N43 N45 N47 N49 N51 N53 N55 N57
@@ -683,6 +686,7 @@ module Engine
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
+          @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
@@ -776,6 +780,10 @@ module Engine
 
           total_minors = corporations.count { |c| c.type == :minor }
           @minor_floated_regions.size >= total_minors
+        end
+
+        def can_hold_above_corp_limit?(_entity)
+          true
         end
 
         def fulfilled_train_obligation?(entity)
@@ -882,9 +890,10 @@ module Engine
           base_cost = tile.upgrades.sum(&:cost)
           return super if base_cost.zero?
 
-          entity_zone = entity_track_rights_zone(entity)
-          zone_match = self.class::ZONE_DISCOUNT_ZONES.include?(entity_zone) &&
-                       self.class::NATIONAL_REGION_HEXES[entity_zone].include?(hex.coordinates)
+          zone_match = track_rights_zones(entity).any? do |zone|
+            self.class::ZONE_DISCOUNT_ZONES.include?(zone) &&
+              self.class::NATIONAL_REGION_HEXES[zone].include?(hex.coordinates)
+          end
 
           return super unless zone_match
 
@@ -899,6 +908,32 @@ module Engine
             @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
           end
           cost
+        end
+
+        def track_rights_zones(entity)
+          corp = owning_corporation(entity)
+          return [] unless corp
+
+          merged_zones = @merged_minors.fetch(corp, []).map { |minor| @minor_floated_regions[minor.id] }
+          ([entity_track_rights_zone(corp)] + merged_zones).compact.uniq
+        end
+
+        def merge_targets(player, minor)
+          return [] unless @phase.available?('3')
+          return [] if minor.type != :minor || !minor.floated? || minor.owner != player
+
+          @corporations.select do |corporation|
+            corporation.type == :major &&
+              corporation.floated? &&
+              corporation.president?(player) &&
+              !@round.merged_majors.include?(corporation) &&
+              merge_share(corporation)
+          end
+        end
+
+        def merge_share(major)
+          major.treasury_shares.find { |share| !share.president } ||
+            @share_pool.shares_by_corporation[major].first
         end
 
         def level8_train_available?
@@ -1021,6 +1056,10 @@ module Engine
 
         def new_consolidation_round
           Round::G18OE::Consolidation.new(self, [
+            Engine::Step::DiscardTrain,
+            G18OE::Step::MergeToken,
+            G18OE::Step::MergeDiscardTrain,
+            G18OE::Step::MergeMinor,
             G18OE::Step::Consolidate,
           ])
         end
@@ -1093,6 +1132,9 @@ module Engine
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18OE::Step::HomeToken,
+            G18OE::Step::MergeToken,
+            G18OE::Step::MergeDiscardTrain,
+            G18OE::Step::MergeMinor,
             G18OE::Step::BuySellParShares,
           ])
         end
@@ -1110,6 +1152,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18OE::Step::Track,
+            Engine::Step::SpecialToken,
             G18OE::Step::Token,
             Engine::Step::Route,
             G18OE::Step::Dividend,
@@ -1117,6 +1160,72 @@ module Engine
             # Convert step to do national conversions at 4/6/8?
             G18OE::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        def token_owner(entity)
+          return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
+
+          super
+        end
+
+        def sea_zone(hex_id)
+          @sea_zone_by_hex ||= self.class::SEA_ZONES.each_with_object({}) do |(zone, data), by_hex|
+            data[:hexes].each { |id| by_hex[id] = zone }
+          end
+          @sea_zone_by_hex[hex_id]
+        end
+
+        def sea(zone)
+          self.class::SEA_ZONES[zone][:sea]
+        end
+
+        def port_sea_zone(hex_id, exit)
+          return sea_zone(self.class::PORTS[hex_id][:offshore][:hex]) if exit == :offshore
+
+          neighbor = hex_by_id(hex_id).all_neighbors[exit]
+          neighbor && sea_zone(neighbor.id)
+        end
+
+        def sea_zone_neighbors
+          @sea_zone_neighbors ||= begin
+            neighbors = self.class::SEA_ZONES.keys.to_h { |zone| [zone, []] }
+            self.class::SEA_ZONES.each do |zone, data|
+              data[:hexes].each do |id|
+                hex_by_id(id).all_neighbors.each_value do |neighbor|
+                  other = sea_zone(neighbor.id)
+                  neighbors[zone] << other if other && other != zone
+                end
+              end
+            end
+            self.class::CHANNEL_PASSAGES.each do |a, b|
+              neighbors[a] << b
+              neighbors[b] << a
+            end
+            neighbors.transform_values(&:uniq)
+          end
+        end
+
+        def sea_zone_distance(from_zone, to_zone)
+          @sea_zone_distances ||= {}
+          @sea_zone_distances[from_zone] ||= begin
+            distance = { from_zone => 1 }
+            queue = [from_zone]
+            until queue.empty?
+              zone = queue.shift
+              sea_zone_neighbors[zone].each do |other|
+                next if distance.key?(other)
+
+                distance[other] = distance[zone] + 1
+                queue << other
+              end
+            end
+            distance
+          end
+          @sea_zone_distances[from_zone][to_zone]
+        end
+
+        def port_distance(from_port, to_port)
+          sea_zone_distance(port_sea_zone(*from_port), port_sea_zone(*to_port))
         end
 
         private

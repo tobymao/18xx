@@ -87,11 +87,29 @@ module Engine
             sym: 'WCF',
             value: 60,
             revenue: 15,
-            desc: 'No markers or tokens. At the start of Train Phase 5, the owner may immediately place one '\
-                  'station token from any controlled RR on the White Cliffs Ferry token position next to Lille. '\
-                  'The RR pays treasury cash for the token but need not be connected to Lille. '\
-                  'If the owner waits, the token may instead be placed during that RR\'s Place Token step (consuming it). '\
-                  'The Ferry position functions as an open token slot in Lille until used. See §11.2.2.',
+            desc: 'From Train Phase 5, during the Place Token step of a RR they control, the owner may place one of that '\
+                  'RR\'s station tokens in an extra token position in Lille, paid from the RR\'s treasury '\
+                  '(Wien Südbahnhof may pay for it) and with no connection to Lille needed. This uses the RR\'s '\
+                  'Place Token step and closes the private. Until then the ferry through Lille stays open to every RR '\
+                  'even when Lille is full; afterwards only RRs with a token in Lille (or the Central Circle '\
+                  'token) may take the ferry to London or pass through Lille from London. If a national\'s '\
+                  'formation removes the token, Lille is open to every RR for good. See §11.2.2 and §14.7.',
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'player',
+                when: 'owning_player_token',
+                after_phase: '4',
+                hexes: ['N31'],
+                extra_slot: true,
+                from_owner: true,
+                connected: false,
+                count: 1,
+                closed_when_used_up: true,
+                special_only: true,
+                discount: 0,
+              },
+            ],
             auction_row: 3,
           },
           # -----------------------------------------------------------------------
