@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'player'
 require_relative 'stock_market'
 require_relative 'step/dividend'
 require_relative 'step/private_auction'
@@ -17,6 +18,8 @@ module Engine
         include_meta(G18Junta::Meta)
         include Entities
         include Map
+
+        PLAYER_CLASS = G18Junta::Player
 
         CURRENCY_FORMAT_STR = '$%s'
 
@@ -165,7 +168,6 @@ module Engine
           @or_round_number = 0
           @upgrade_licenses = {}
           @corruption_bag = CORRUPTION_BAG_INITIAL.flat_map { |color, count| [color] * count }.sort_by { rand }
-          @corruption_tokens = Hash.new { |h, k| h[k] = { white: 0, black: 0 } }
 
           remove_random_corporation!
           select_random_privates!
@@ -363,17 +365,13 @@ module Engine
         def draw_corruption_token!(player, reason)
           source = @corruption_bag.empty? ? ' (the bag is empty, so it comes from the stock)' : ''
           color = @corruption_bag.pop || :black
-          @corruption_tokens[player][color] += 1
+          player.corruption_tokens[color] += 1
           @log << "#{player.name} draws a #{color} corruption token for #{reason}#{source}"
           color
         end
 
-        def corruption_tokens(player)
-          @corruption_tokens[player]
-        end
-
         def total_corruption_tokens
-          @corruption_tokens.values.sum { |tokens| tokens[:white] + tokens[:black] }
+          @players.sum { |player| player.corruption_tokens.values.sum }
         end
 
         # Rules summary 9.2: the coup outcome picks the column; before the coup, the political track does
@@ -400,7 +398,7 @@ module Engine
                   "#{format_currency(rate)} per black token (#{corruption_penalty_regime.to_s.capitalize})"
 
           @players.each do |player|
-            black = corruption_tokens(player)[:black]
+            black = player.corruption_tokens[:black]
             next unless black.positive?
 
             amount = rate * black
@@ -412,12 +410,12 @@ module Engine
         # Rules summary 9.3: ties go to the player with fewer black tokens, then fewer white tokens.
         def result
           result_players
-            .sort_by { |p| [-player_value(p), corruption_tokens(p)[:black], corruption_tokens(p)[:white]] }
+            .sort_by { |p| [-player_value(p), p.corruption_tokens[:black], p.corruption_tokens[:white]] }
             .to_h { |p| [p.id, player_value(p)] }
         end
 
         def player_card_rows(player)
-          tokens = corruption_tokens(player)
+          tokens = player.corruption_tokens
           ['Corruption:', "#{tokens[:white]} white, #{tokens[:black]} black"]
         end
 
@@ -425,7 +423,7 @@ module Engine
         def timeline
           bag = @corruption_bag.tally
           held = @players.map do |player|
-            tokens = corruption_tokens(player)
+            tokens = player.corruption_tokens
             "#{player.name}: #{tokens[:white]} white, #{tokens[:black]} black"
           end
           table = self.class::CORRUPTION_PENALTY_TABLE.map do |row|

@@ -266,7 +266,7 @@ module Engine
           it 'gives the drawn token to the player' do
             color = game.draw_corruption_token!(player, 'a test')
 
-            expect(game.corruption_tokens(player)[color]).to eq(1)
+            expect(player.corruption_tokens[color]).to eq(1)
             expect(bag.values.sum).to eq(34)
           end
 
@@ -295,7 +295,7 @@ module Engine
           it 'makes the president draw a corruption token' do
             step.use_license_or_draw_corruption!(corporation)
 
-            tokens = game.corruption_tokens(president)
+            tokens = president.corruption_tokens
             expect(tokens[:white] + tokens[:black]).to eq(1)
           end
 
@@ -305,7 +305,7 @@ module Engine
 
             step.use_license_or_draw_corruption!(corporation)
 
-            expect(game.corruption_tokens(president)).to eq(white: 0, black: 0)
+            expect(president.corruption_tokens).to eq(white: 0, black: 0)
             expect(game.upgrade_license_granted?(corporation)).to be(false)
           end
         end
@@ -315,7 +315,7 @@ module Engine
           let(:b) { game.players[1] }
 
           def hold(player, white, black)
-            game.corruption_tokens(player).merge!(white: white, black: black)
+            player.corruption_tokens.merge!(white: white, black: black)
           end
 
           it 'uses the rate for the total tokens held' do
