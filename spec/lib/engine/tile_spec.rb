@@ -318,6 +318,18 @@ module Engine
         expect(Tile.for('3').double_towns).to be_empty
         expect(Tile.for('3').towns.first.double_town?).to be(false)
       end
+
+      it 'renders its own revenue' do
+        expect(tile.renders_own_revenue?).to be(true)
+      end
+
+      it 'leaves the revenue of a plain town to the tile view' do
+        expect(Tile.for('3').renders_own_revenue?).to be(false)
+      end
+
+      it 'leaves the revenue of a city to the tile view' do
+        expect(Tile.for('57').renders_own_revenue?).to be(false)
+      end
     end
   end
 end

@@ -85,6 +85,10 @@ module Engine
         false
       end
 
+      def renders_own_revenue?
+        false
+      end
+
       def halt?
         false
       end

@@ -19,6 +19,10 @@ module Engine
       def double_town?
         true
       end
+
+      def renders_own_revenue?
+        true
+      end
     end
   end
 end

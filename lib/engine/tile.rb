@@ -582,6 +582,10 @@ module Engine
       false
     end
 
+    def renders_own_revenue?
+      @parts.any?(&:renders_own_revenue?)
+    end
+
     def revenue_to_render
       @revenue_to_render ||= @revenue_stops.map(&:revenue_to_render)
     end
