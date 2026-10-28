@@ -6,31 +6,23 @@ module Engine
   module Game
     module G18Junta
       module Step
-        # Rules summary 4.1 and 4.2: the normal Track step, plus the Upgrade License. A license held for
-        # this Operating Round is used by an upgrade, and expires at the end of the Track step if unused.
+        # Rules summary 4.2: the normal Track step, plus the Upgrade License. A license held for this
+        # Operating Round is used by an upgrade, and expires at the end of the Track step if unused.
         class Track < Engine::Step::Track
-          def process_lay_tile(action)
-            # The Laguna tile upgrades straight from yellow to gray (7.3), so the tile color is checked
-            # against the phase here as well.
-            color = action.tile.color
-            unless @game.phase.tiles.include?(color)
-              raise GameError, "#{color.to_s.capitalize} tiles are not available in phase #{@game.phase.name}"
-            end
-
+          def lay_tile_action(action, entity: nil, spender: nil)
+            upgrades_before = @round.num_upgraded_track
             super
+            return unless @round.num_upgraded_track > upgrades_before
 
-            entity = action.entity
-            @log << "#{entity.name} uses its Upgrade License" if @round.upgraded_track && @game.consume_upgrade_license!(entity)
-            @game.expire_upgrade_license_if_unused!(entity) unless can_lay_tile?(entity)
+            corporation = action.entity
+            return unless @game.upgrade_license?(corporation)
+
+            @game.consume_upgrade_license!(corporation)
+            @log << "#{corporation.name} uses its Upgrade License"
           end
 
-          def process_pass(action)
-            super
-
-            @game.expire_upgrade_license_if_unused!(action.entity)
-          end
-
-          def skip!
+          # Every way out of the step (laying the last tile, passing or being skipped) ends here.
+          def pass!
             entity = current_entity
             super
             @game.expire_upgrade_license_if_unused!(entity) if entity&.corporation?

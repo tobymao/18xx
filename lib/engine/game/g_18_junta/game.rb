@@ -5,7 +5,6 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'stock_market'
 require_relative 'step/buy_company'
-require_relative 'step/buy_train'
 require_relative 'step/dividend'
 require_relative 'step/private_auction'
 require_relative 'step/track'
@@ -137,6 +136,7 @@ module Engine
 
         EBUY_PRES_SWAP = false
         EBUY_FROM_OTHERS = :value
+        # Rules summary 4.3: trains can only be bought from companies with the same president.
         ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
         # Rules summary 10: the home station is placed when the company floats.
         HOME_TOKEN_TIMING = :float
@@ -246,7 +246,7 @@ module Engine
             Engine::Step::Route,
             G18Junta::Step::Dividend,
             Engine::Step::DiscardTrain,
-            G18Junta::Step::BuyTrain,
+            Engine::Step::BuyTrain,
             [G18Junta::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -314,9 +314,10 @@ module Engine
           route.hexes.map { |hex| farm_hexes.include?(hex) ? 'Ⓕ' : hex.name }.join('+')
         end
 
-        # Rules summary 7.3: the yellow Laguna tile (J16) upgrades straight to its gray tile (J17).
+        # Rules summary 7.3: the yellow Laguna tile (J16) upgrades straight to its gray tile (J17), once
+        # gray tiles are available.
         def upgrades_to_correct_color?(from, to, selected_company: nil)
-          return true if from.name == 'J16' && to.name == 'J17'
+          return @phase.tiles.include?(to.color) if from.name == 'J16' && to.name == 'J17'
 
           super
         end

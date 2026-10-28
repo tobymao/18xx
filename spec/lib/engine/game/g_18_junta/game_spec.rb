@@ -171,6 +171,16 @@ module Engine
             expect(game.consume_upgrade_license!(corporation)).to be(false)
           end
 
+          it 'expires when the Track step ends without using it' do
+            game.grant_upgrade_license!(corporation)
+            start_operating_round
+            step = G18Junta::Step::Track.new(game, game.round)
+            allow(step).to receive(:current_entity).and_return(corporation)
+
+            step.pass!
+            expect(game.upgrade_license_granted?(corporation)).to be(false)
+          end
+
           it 'expires when unused' do
             game.grant_upgrade_license!(corporation)
             start_operating_round
@@ -195,14 +205,11 @@ module Engine
           end
 
           it 'only offers trains of companies with the same president' do
-            own_train = game.depot.upcoming[0]
-            rival_train = game.depot.upcoming[1]
+            own_train, rival_train = game.depot.upcoming.first(2)
             own_train.owner = sibling
             rival_train.owner = rival
-            allow(game.depot).to receive(:other_trains).and_return([own_train, rival_train])
 
-            step = G18Junta::Step::BuyTrain.new(game, game.round).tap(&:setup)
-            expect(step.other_trains(buyer)).to eq([own_train])
+            expect(game.depot.other_trains(buyer)).to eq([own_train])
           end
 
           it "only offers private companies owned by the company's president" do
@@ -232,9 +239,15 @@ module Engine
         end
 
         describe 'Laguna (rules summary 7.3)' do
-          it 'upgrades the yellow Laguna tile straight to gray' do
-            yellow = game.tiles.find { |t| t.name == 'J16' }
-            gray = game.tiles.find { |t| t.name == 'J17' }
+          let(:yellow) { game.tiles.find { |t| t.name == 'J16' } }
+          let(:gray) { game.tiles.find { |t| t.name == 'J17' } }
+
+          it 'cannot skip to gray before gray tiles are available' do
+            expect(game.upgrades_to_correct_color?(yellow, gray)).to be(false)
+          end
+
+          it 'upgrades the yellow Laguna tile straight to gray once gray tiles are available' do
+            allow(game.phase).to receive(:tiles).and_return(%i[yellow green brown gray])
             expect(game.upgrades_to_correct_color?(yellow, gray)).to be(true)
           end
         end
