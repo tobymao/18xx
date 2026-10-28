@@ -8,11 +8,7 @@ module Engine
     class DoubleTown < Base
       DEFAULT_REVENUE_LOCS = [1.5, 4.5].freeze
 
-      class Stop < Town
-        def type
-          'town'
-        end
-
+      class Town < Part::Town
         def walk(skip_paths: nil, visited_paths: {}, **opts, &block)
           arrived_by = visited_paths.keys.last
           if arrived_by&.nodes&.include?(self) && arrived_by.edges.any?
@@ -26,7 +22,7 @@ module Engine
       attr_reader :towns, :axis, :revenue_locs
 
       def initialize(revenue, axis: nil, revenue_loc: nil, **town_opts)
-        @towns = Array.new(2) { Stop.new(revenue, loc: 'center', **town_opts, style: 'hidden') }
+        @towns = Array.new(2) { Town.new(revenue, loc: 'center', **town_opts, style: 'hidden') }
         @axis = axis&.to_f || 0.0
         @revenue_locs = revenue_loc ? revenue_loc.split('|').map(&:to_f) : DEFAULT_REVENUE_LOCS.dup
       end
