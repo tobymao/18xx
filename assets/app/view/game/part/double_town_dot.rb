@@ -2,7 +2,6 @@
 
 require 'view/game/hit_box'
 require 'view/game/part/base'
-require 'view/game/part/double_town_touch'
 require 'view/game/part/single_revenue'
 require 'view/game/runnable'
 
@@ -54,11 +53,15 @@ module View
           end
         end
 
-        def render_dots
+        def dot_positions
           x, y = direction(@double_town.axis, DOT_OFFSET)
+          [[-x, -y], [x, y]]
+        end
+
+        def render_dots
           radius = 10 * (0.8 + (@width.to_i / 40))
 
-          [[-x, -y], [x, y]].map do |cx, cy|
+          dot_positions.map do |cx, cy|
             h(:circle, attrs: {
                 cx: cx.round(2),
                 cy: cy.round(2),
@@ -67,6 +70,13 @@ module View
                 stroke: 'white',
                 'stroke-width': 4,
               })
+          end
+        end
+
+        def render_hit_boxes
+          towns.zip(dot_positions).map do |town, (cx, cy)|
+            h(HitBox, click: -> { touch_node(town) }, transform: "translate(#{cx.round(2)} #{cy.round(2)})",
+                      r: DOT_OFFSET)
           end
         end
 
@@ -82,18 +92,10 @@ module View
           end.compact
         end
 
-        def touch_towns
-          current_actions = @game.active_step.current_actions
-          return if !current_actions.include?('run_routes') || !@selected_route
-
-          DoubleTownTouch.touch_towns(@selected_route, towns)
-          store(:selected_route, @selected_route)
-        end
-
         def render_part
           children = render_pill + render_dots
           children.concat(render_revenues) if @show_revenue
-          children << h(HitBox, click: -> { touch_towns }, transform: translate)
+          children.concat(render_hit_boxes)
           h(:g, { key: "#{towns.first.id}-d" }, children)
         end
       end
