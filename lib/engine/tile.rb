@@ -17,8 +17,8 @@ module Engine
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
                   :name, :opposite, :reservations, :upgrades, :color, :future_label, :future_paths, :halts, :patronage
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
-                :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden,
-                :hidden_blockers, :code
+                :offboards, :blockers, :city_towns, :double_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes,
+                :hidden, :hidden_blockers, :code
     attr_writer :revenue_to_render
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
@@ -83,6 +83,10 @@ module Engine
       Tile.new(name, code: code, color: color, parts: decode(code), **opts)
     end
 
+    def self.replace_double_town(part, town)
+      part.double_town? ? town : part
+    end
+
     def self.part(type, params, cache)
       case type
       when 'path'
@@ -104,12 +108,18 @@ module Engine
           end
         end
 
-        Part::Path.make_lanes(params['a'], params['b'], terminal: params['terminal'],
-                                                        lanes: params['lanes'], a_lane: params['a_lane'],
-                                                        b_lane: params['b_lane'],
-                                                        track: params['track'],
-                                                        ignore: params['ignore'],
-                                                        color: params['color'])
+        ends = [params['a'], params['b']]
+        double_town = ends.find(&:double_town?)
+        variants = double_town ? double_town.towns.map { |town| ends.map { |e| replace_double_town(e, town) } } : [ends]
+
+        variants.map do |a, b|
+          Part::Path.make_lanes(a, b, terminal: params['terminal'],
+                                      lanes: params['lanes'], a_lane: params['a_lane'],
+                                      b_lane: params['b_lane'],
+                                      track: params['track'],
+                                      ignore: params['ignore'],
+                                      color: params['color'])
+        end
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
@@ -150,6 +160,18 @@ module Engine
                               to_city: params['to_city'])
         cache << town
         town
+      when 'double_town'
+        double_town = Part::DoubleTown.new(params['revenue'],
+                                           axis: params['axis'],
+                                           revenue_loc: params['revenue_loc'],
+                                           groups: params['groups'],
+                                           hide: params['hide'],
+                                           visit_cost: params['visit_cost'],
+                                           route: params['route'],
+                                           format: params['format'])
+        cache << double_town
+        towns = double_town.towns
+        [double_town, *towns, Part::Path.new(*towns)]
       when 'halt'
         halt = Part::Halt.new(params['symbol'],
                               revenue: params['revenue'],
@@ -219,6 +241,7 @@ module Engine
       @stubs = []
       @partitions = []
       @towns = []
+      @double_towns = []
       @city_towns = []
       @all_stop = []
       @upgrades = []
@@ -662,6 +685,8 @@ module Engine
           else
             @paths << part
           end
+        elsif part.double_town?
+          @double_towns << part
         elsif part.town?
           @towns << part
           @city_towns << part

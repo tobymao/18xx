@@ -81,6 +81,10 @@ module Engine
         false
       end
 
+      def double_town?
+        false
+      end
+
       def halt?
         false
       end

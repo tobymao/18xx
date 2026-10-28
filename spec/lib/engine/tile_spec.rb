@@ -270,5 +270,49 @@ module Engine
         end
       end
     end
+
+    describe 'double_town' do
+      let(:code) { 'double_town=revenue:10,axis:2,revenue_loc:2|5;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0' }
+      let(:tile) { Tile.from_code('dt', 'green', code) }
+      let(:double_town) { tile.double_towns.first }
+
+      it 'adds two ordinary towns joined by an internal path' do
+        expect(tile.double_towns.size).to eq(1)
+        expect(double_town.double_town?).to be(true)
+        expect(double_town.towns).to eq(tile.towns)
+        expect(tile.towns.size).to eq(2)
+        expect(tile.towns).to all(be_a(Part::Town))
+        expect(tile.towns.map(&:max_revenue)).to eq([10, 10])
+        internal = tile.paths.select { |p| p.exits.empty? }
+        expect(internal.size).to eq(1)
+        expect(internal.first.nodes).to match_array(tile.towns)
+      end
+
+      it 'joins every exit to both towns' do
+        [0, 1, 3, 4].each do |edge|
+          expect(tile.paths.select { |p| p.exits == [edge] }.flat_map(&:nodes)).to match_array(tile.towns)
+        end
+      end
+
+      it 'keeps the pill and revenue positions' do
+        expect(double_town.axis).to eq(2.0)
+        expect(double_town.revenue_locs).to eq([2.0, 5.0])
+      end
+
+      it 'defaults the pill to loc 0 and the revenues to the side corners' do
+        blank = Tile.from_code('dt', 'white', 'double_town=revenue:0').double_towns.first
+        expect(blank.axis).to eq(0.0)
+        expect(blank.revenue_locs).to eq([1.5, 4.5])
+      end
+
+      it 'centres both towns' do
+        expect(tile.towns.map { |t| tile.preferred_city_town_edges[t] }).to eq([nil, nil])
+      end
+
+      it 'leaves plain towns alone' do
+        expect(Tile.for('3').double_towns).to be_empty
+        expect(Tile.for('3').towns.first.double_town?).to be(false)
+      end
+    end
   end
 end

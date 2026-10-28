@@ -59,6 +59,14 @@ game config/code:
 - **city**
     - **slots** - integer - how many tokens can fit in this city (default: `1`)
 - **town**
+- **double_town** - a container (not a node) that adds two `town` nodes at the tile
+  centre, joined to each other by an internal path with no edges. Every `path` that
+  names the double town by index is created once for each of its towns.
+    - **revenue** - revenue of each of the two towns
+    - **axis** - `loc` units, default `0` - direction of the long axis of the pill
+    - **revenue_loc** - two `loc` units separated by `|`, default `1.5|4.5` - where
+      the revenue of each town is drawn
+    - accepts the `groups`, `hide`, `visit_cost`, `route` and `format` options of **town**
 - **offboard** - this revenue center is not actually rendered, but changes how
   the track to it is rendered; track to offboards are pointed
 - **path**
@@ -147,6 +155,10 @@ the **path**. The only time **a\_lane** or **b\_lane** need to be given is if th
 connected in an unusual way (for instance going from a double-track edge to a single-track edge).
 
 #### Examples
+
+* 18OE double town tile (green, exits 0, 1, 3 and 4)
+
+`double_town=revenue:10,axis:2,revenue_loc:2|5;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0`
 
 * tile #1
 
