@@ -122,10 +122,12 @@ describe 'G18OE double town tiles (§11.1)' do
         expect(game.graph.connected_hexes(corp).keys).to include(j77, game.hex_by_id('K78'))
       end
 
-      it 'walks every twin path and the internal path' do
+      it 'walks the entry twin paths, the internal path and one exit path' do
         paths = game.graph.connected_paths(corp).keys.select { |path| path.hex == j77 }
-        expect(paths).to include(*j77.tile.paths)
+        by_exit = paths.group_by { |path| path.edges.map(&:num) }
+
         expect(j77.tile.paths.size).to eq(5)
+        expect(by_exit.transform_values(&:size)).to eq([2] => 2, [] => 1, [5] => 1)
       end
 
       it 'reaches the far city on a walk through both towns' do
@@ -137,6 +139,36 @@ describe 'G18OE double town tiles (§11.1)' do
         far = records.select { |record| record[:nodes].include?(east) }
         expect(far).not_to be_empty
         expect(far.any? { |record| record[:visited].include?(a) && record[:visited].include?(b) }).to be(true)
+      end
+
+      it 'every walk from the city to the far city passes both towns' do
+        records = []
+        west.walk(corporation: corp) do |path, _vp, visited|
+          records << visited.keys if path.nodes.include?(east)
+        end
+
+        expect(records).not_to be_empty
+        expect(records).to all(include(a, b))
+      end
+
+      it 'a walk entering a town from an exit continues only over the internal path' do
+        leaves_early = []
+        west.walk(corporation: corp) do |path, _vp, visited|
+          town = path.nodes.find { |node| [a, b].include?(node) && visited[node] }
+          next if !town || path.edges.empty?
+
+          other = town == a ? b : a
+          leaves_early << path unless visited[other]
+        end
+
+        expect(leaves_early).to be_empty
+      end
+
+      it 'a walk starting at a town can leave by an exit' do
+        reached = []
+        a.walk(corporation: corp) { |path, _vp, _visited| reached.concat(path.nodes) }
+
+        expect(reached).to include(east)
       end
 
       it 'reaches each town from the other over the internal path' do
@@ -399,6 +431,18 @@ describe 'G18OE double town tiles (§11.1)' do
         [2, 3, 1, 5].each { |edge| lay_neighbour!(edge) }
         west.place_token(corp, corp.next_token, check_tokenable: false)
         game.graph.clear
+      end
+
+      it 'passes both towns on every walk from I76 to a neighbouring city' do
+        records = Hash.new { |hash, city| hash[city] = [] }
+        west.walk(corporation: corp) do |path, _vp, visited|
+          others.each { |city| records[city] << visited.keys if path.nodes.include?(city) }
+        end
+
+        others.each do |city|
+          expect(records[city]).not_to be_empty
+          expect(records[city]).to all(include(a, b))
+        end
       end
 
       it 'reaches every neighbouring city through both towns of OE22' do
