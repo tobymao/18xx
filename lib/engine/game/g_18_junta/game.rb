@@ -5,6 +5,7 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'stock_market'
 require_relative 'step/dividend'
+require_relative 'step/paramilitary_choice'
 require_relative 'step/private_auction'
 require_relative 'step/track'
 require_relative 'step/upgrade_license'
@@ -148,6 +149,14 @@ module Engine
         CORRUPTION_BAG_INITIAL = { white: 28, black: 7 }.freeze
         CORRUPTION_BAG_REFILL = { '2' => 3, '3' => 3, '4' => 3 }.freeze
 
+        # Rules summary 6.1: the marker runs from Military 5 (-5) through Neutral (0) to Civilian 5 (5);
+        # from space 3 on one side, a move toward the other side is 2 spaces.
+        POLITICAL_TRACK_LIMIT = 5
+        RADICAL_THRESHOLD = 3
+
+        # Rules summary 6.2: hexes with a paramilitary token.
+        PARAMILITARY_HEXES = %w[B14 C11 E7 F4 G13 I3 I9 K11 L8].freeze
+
         # Rules summary 9.2: $ per black token at game end, by total tokens held (row) and regime (column).
         CORRUPTION_PENALTY_TABLE = [
           { max: 15, dictatorship: 12, democracy: 20 },
@@ -169,6 +178,7 @@ module Engine
 
           remove_random_corporation!
           select_random_privates!
+          setup_political_track!
         end
 
         # Rules summary 1.2: one public company, drawn at random, is out of the game. Its home
@@ -259,6 +269,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
+            G18Junta::Step::ParamilitaryChoice,
             G18Junta::Step::Track,
             G18Junta::Step::UpgradeLicense,
             Engine::Step::Token,
@@ -311,7 +322,12 @@ module Engine
         end
 
         def status_array(corporation)
-          ['Upgrade License acquired'] if upgrade_license_granted?(corporation)
+          alignment = @corporation_alignment[corporation]
+          status = []
+          status << "Civilian tokens: #{alignment[:civilian]}" if alignment[:civilian].positive?
+          status << "Military tokens: #{alignment[:military]}" if alignment[:military].positive?
+          status << 'Upgrade License acquired' if upgrade_license_granted?(corporation)
+          status unless status.empty?
         end
 
         # Rules summary 7.1: a farm does not count as a stop for train distance (its tiles have
@@ -376,10 +392,10 @@ module Engine
           @corruption_tokens.values.sum { |tokens| tokens[:white] + tokens[:black] }
         end
 
-        # Rules summary 9.2: the coup outcome picks the column; before the coup, the political track does
-        # (Military: Dictatorship, otherwise Democracy). Both come in later PRs, so Democracy for now.
+        # Rules summary 9.2: before the coup (next PR), the political track picks the column: Military
+        # uses Dictatorship; Civilian or Neutral uses Democracy.
         def corruption_penalty_regime
-          :democracy
+          @political_track.negative? ? :dictatorship : :democracy
         end
 
         def corruption_penalty_rate
@@ -434,10 +450,95 @@ module Engine
           end
 
           [
+            "Political Track: #{political_track_label}",
             "Corruption bag: #{bag[:white] || 0} white, #{bag[:black] || 0} black",
             *held,
             "End-game penalty per black token by total tokens held (Dictatorship / Democracy): #{table.join(' | ')}",
           ]
+        end
+
+        # Rules summary 1.3: four different companies start with one alignment token each, two Civilian
+        # and two Military, drawn at random among the companies in play.
+        def setup_political_track!
+          @political_track = 0
+          @corporation_alignment = Hash.new { |h, k| h[k] = { civilian: 0, military: 0 } }
+          @paramilitary_hexes_remaining = self.class::PARAMILITARY_HEXES.dup
+          @pending_paramilitary = nil
+
+          military, civilian = @corporations.sort_by { rand }.first(4).each_slice(2).to_a
+          military.each { |c| @corporation_alignment[c][:military] += 1 }
+          civilian.each { |c| @corporation_alignment[c][:civilian] += 1 }
+          @log << "Starting alignment tokens: Military for #{military.map(&:name).join(' and ')}, "\
+                  "Civilian for #{civilian.map(&:name).join(' and ')}"
+        end
+
+        attr_reader :political_track
+
+        def corporation_alignment(corporation)
+          @corporation_alignment[corporation]
+        end
+
+        # Rules summary 1.3: when a company with a starting alignment token floats, the marker moves
+        # toward that token's side.
+        def float_corporation(corporation)
+          super
+          alignment = @corporation_alignment[corporation]
+          move_political_track!(:civilian) if alignment[:civilian].positive?
+          move_political_track!(:military) if alignment[:military].positive?
+        end
+
+        # Rules summary 6.1: one space, or two from space 3 or more on the opposite side; Neutral is
+        # skipped and the marker never goes beyond either end.
+        def move_political_track!(side)
+          direction = side == :civilian ? 1 : -1
+          far_on_other_side = -direction * @political_track >= self.class::RADICAL_THRESHOLD
+          position = @political_track + (direction * (far_on_other_side ? 2 : 1))
+          position += direction if position.zero?
+          limit = self.class::POLITICAL_TRACK_LIMIT
+          @political_track = position.clamp(-limit, limit)
+          @log << "The political marker moves to #{political_track_label}"
+        end
+
+        def political_track_label
+          return 'Neutral' if @political_track.zero?
+
+          "#{@political_track.positive? ? 'Civilian' : 'Military'} #{@political_track.abs}"
+        end
+
+        def paramilitary_hex_unclaimed?(hex)
+          @paramilitary_hexes_remaining.include?(hex.id)
+        end
+
+        # Rules summary 6.2: the first tile laid in a paramilitary hex hands its token to the company,
+        # whose president then chooses a side (ParamilitaryChoice step).
+        def claim_paramilitary_hex!(hex, corporation)
+          @paramilitary_hexes_remaining.delete(hex.id)
+          @pending_paramilitary = { corporation: corporation, hex: hex }
+        end
+
+        def pending_paramilitary_choice_for?(entity)
+          @pending_paramilitary&.dig(:corporation) == entity
+        end
+
+        def pending_paramilitary_hex
+          @pending_paramilitary&.dig(:hex)
+        end
+
+        # Rules summary 6.2: the token counts as one of the company's alignment tokens, the marker moves
+        # toward the chosen side, and the president draws a corruption token, plus a second one if the
+        # first is white.
+        def resolve_paramilitary_choice!(corporation, choice)
+          raise GameError, "Invalid choice: #{choice}" unless %w[civilian military].include?(choice)
+
+          side = choice.to_sym
+          hex = pending_paramilitary_hex
+          @pending_paramilitary = nil
+          @corporation_alignment[corporation][side] += 1
+          @log << "#{corporation.name} supports the #{side.to_s.capitalize} side at #{hex.name}"
+          move_political_track!(side)
+
+          reason = 'supporting a side in a paramilitary hex'
+          draw_corruption_token!(corporation.owner, reason) if draw_corruption_token!(corporation.owner, reason) == :white
         end
       end
     end

@@ -341,6 +341,95 @@ module Engine
             expect(game.result.keys).to eq([game.players[2].id, b.id, a.id]) # c holds no tokens
           end
         end
+
+        describe 'political track (rules summary 1.3 and 6.1)' do
+          def place_marker(position)
+            game.instance_variable_set(:@political_track, position)
+          end
+
+          it 'gives starting tokens to four different companies, two on each side' do
+            alignments = game.corporations.map { |c| game.corporation_alignment(c) }
+            expect(alignments.sum { |a| a[:military] }).to eq(2)
+            expect(alignments.sum { |a| a[:civilian] }).to eq(2)
+            expect(alignments.count { |a| (a[:military] + a[:civilian]).positive? }).to eq(4)
+          end
+
+          it 'moves the marker toward the starting token when the company floats' do
+            corporation = game.corporations.find { |c| game.corporation_alignment(c)[:military].positive? }
+            game.par_corporation(corporation, game.stock_market.par_prices.first)
+            game.float_corporation(corporation)
+            expect(game.political_track).to eq(-1)
+          end
+
+          it 'skips Neutral' do
+            place_marker(-1)
+            game.move_political_track!(:civilian)
+            expect(game.political_track).to eq(1)
+          end
+
+          it 'moves two spaces from space 3 toward the other side' do
+            place_marker(-3)
+            game.move_political_track!(:civilian)
+            expect(game.political_track).to eq(-1)
+          end
+
+          it 'never goes beyond either end' do
+            place_marker(5)
+            game.move_political_track!(:civilian)
+            expect(game.political_track).to eq(5)
+          end
+
+          it 'picks the Dictatorship column of the corruption table on the Military side' do
+            place_marker(-2)
+            expect(game.corruption_penalty_regime).to eq(:dictatorship)
+            place_marker(0)
+            expect(game.corruption_penalty_regime).to eq(:democracy)
+          end
+        end
+
+        describe 'paramilitary hexes (rules summary 6.2)' do
+          let(:corporation) { game.corporations.first }
+          let(:president) { game.players.first }
+          let(:hex) { game.hex_by_id('C11') }
+
+          before do
+            corporation.owner = president
+            game.claim_paramilitary_hex!(hex, corporation)
+          end
+
+          def bag(*colors)
+            game.instance_variable_set(:@corruption_bag, colors)
+          end
+
+          it 'asks the president to choose a side, once per hex' do
+            expect(game.paramilitary_hex_unclaimed?(hex)).to be(false)
+            expect(game.pending_paramilitary_choice_for?(corporation)).to be(true)
+            step = G18Junta::Step::ParamilitaryChoice.new(game, game.round)
+            allow(step).to receive(:current_entity).and_return(corporation)
+            expect(step.actions(corporation)).to eq(%w[choose])
+          end
+
+          it 'adds the token to the company and moves the marker' do
+            bag(:black)
+            game.resolve_paramilitary_choice!(corporation, 'military')
+
+            expect(game.corporation_alignment(corporation)[:military]).to be >= 1
+            expect(game.political_track).to eq(-1)
+            expect(game.pending_paramilitary_choice_for?(corporation)).to be(false)
+          end
+
+          it 'draws one corruption token when it is black' do
+            bag(:white, :black)
+            game.resolve_paramilitary_choice!(corporation, 'civilian')
+            expect(game.corruption_tokens(president)).to eq(white: 0, black: 1)
+          end
+
+          it 'draws a second corruption token when the first is white' do
+            bag(:black, :white)
+            game.resolve_paramilitary_choice!(corporation, 'civilian')
+            expect(game.corruption_tokens(president)).to eq(white: 1, black: 1)
+          end
+        end
       end
     end
   end
