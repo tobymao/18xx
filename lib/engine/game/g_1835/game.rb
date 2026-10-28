@@ -217,9 +217,9 @@ module Engine
             Engine::Step::Bankrupt,
             G1835::Step::MinorExchange,
             Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
             Engine::Step::SpecialTrack,
             Engine::Step::Track,
-            Engine::Step::HomeToken,
             Engine::Step::SpecialToken,
             G1835::Step::Token,
             Engine::Step::Route,
@@ -230,6 +230,7 @@ module Engine
 
         def stock_round
           G1835::Round::Stock.new(self, [
+            Engine::Step::HomeToken,
             G1835::Step::MinorExchange,
             G1835::Step::BuySellParShares,
           ])
@@ -331,6 +332,30 @@ module Engine
           return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
 
           super
+        end
+
+        def ability_usable?(ability)
+          # L6 cannot get tokened using the Pfalzbahnen as long as Baden has not placed its home token
+          return false if pfalzbahnen_token_ability?(ability) && !pfalzbahnen_usable_to_token?
+          if @round.respond_to?(:current_operator) && ability.type == :token
+            return token_ability_usable?(ability, @round.current_operator)
+          end
+
+          super
+        end
+
+        def pfalzbahnen_token_ability?(ability)
+          ability.type == :token && ability.owner == company_by_id('PB')
+        end
+
+        def pfalzbahnen_usable_to_token?
+          corporation_by_id('BA').floated? && hex_by_id('L6').tile.color == :green
+        end
+
+        def token_ability_usable?(ability, corporation)
+          ability.hexes&.any? do |hex_id|
+            hex_by_id(hex_id)&.tile&.cities&.any? { |city| city.tokenable?(corporation, free: true) }
+          end
         end
 
         def payout_companies
