@@ -122,8 +122,9 @@ module View
           pass0 = []
           pass1 = []
           pass2 = []
+          double_town_nodes = @tile.double_towns.flat_map(&:towns)
           sorted.each do |path, index|
-            next if !path.stub? && path.exits.empty?
+            next if !path.stub? && path.exits.empty? && (path.nodes - double_town_nodes).empty?
 
             props = {
               color: (!index && !path.stub? && path.color) || value_for_index(index, :color, path.track),

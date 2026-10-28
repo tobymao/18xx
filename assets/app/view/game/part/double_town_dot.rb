@@ -2,6 +2,7 @@
 
 require 'view/game/hit_box'
 require 'view/game/part/base'
+require 'view/game/part/double_town_touch'
 require 'view/game/part/single_revenue'
 require 'view/game/runnable'
 
@@ -81,10 +82,18 @@ module View
           end.compact
         end
 
+        def touch_towns
+          current_actions = @game.active_step.current_actions
+          return if !current_actions.include?('run_routes') || !@selected_route
+
+          DoubleTownTouch.touch_towns(@selected_route, towns)
+          store(:selected_route, @selected_route)
+        end
+
         def render_part
           children = render_pill + render_dots
           children.concat(render_revenues) if @show_revenue
-          children << h(HitBox, click: -> { towns.each { |town| touch_node(town) } }, transform: translate)
+          children << h(HitBox, click: -> { touch_towns }, transform: translate)
           h(:g, { key: "#{towns.first.id}-d" }, children)
         end
       end
