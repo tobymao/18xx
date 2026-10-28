@@ -164,11 +164,16 @@ describe 'G18OE double town tiles (§11.1)' do
         expect(leaves_early).to be_empty
       end
 
-      it 'a walk starting at a town can leave by an exit' do
-        reached = []
-        a.walk(corporation: corp) { |path, _vp, _visited| reached.concat(path.nodes) }
+      it 'a walk starting at either town passes the other town before leaving' do
+        [[a, b], [b, a]].each do |start, other|
+          visited_at_exit = []
+          start.walk(corporation: corp) do |path, _vp, visited|
+            visited_at_exit << visited.keys if path.nodes.include?(east) || path.nodes.include?(west)
+          end
 
-        expect(reached).to include(east)
+          expect(visited_at_exit).not_to be_empty
+          expect(visited_at_exit).to all(include(other))
+        end
       end
 
       it 'reaches each town from the other over the internal path' do

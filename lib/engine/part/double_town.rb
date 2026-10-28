@@ -10,8 +10,8 @@ module Engine
 
       class Town < Part::Town
         def walk(skip_paths: nil, visited_paths: {}, **opts, &block)
-          arrived_by = visited_paths.keys.last
-          if arrived_by && !arrived_by.edges.empty?
+          from_other_town = visited_paths.keys.last&.edges&.empty?
+          unless from_other_town
             exit_paths = paths.reject { |path| path.edges.empty? }.to_h { |path| [path, true] }
             skip_paths = (skip_paths || {}).merge(exit_paths)
           end
