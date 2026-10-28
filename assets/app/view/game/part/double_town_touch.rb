@@ -44,15 +44,24 @@ module View
 
         def remove_both(route, towns, nodes)
           if towns.include?(nodes[0]) && towns.include?(nodes[1])
+            survivor = nodes[2]
             route.touch_node(nodes[1])
-            route.touch_node(nodes[2]) if nodes[2]
+            route.touch_node(survivor) if survivor
           elsif towns.include?(nodes[-1]) && towns.include?(nodes[-2])
+            survivor = nodes[-3]
             2.times { route.touch_node(route.connection_data.last[:right]) }
           else
             return
           end
 
-          route.touch_node(route.last_node) if towns.include?(route.last_node)
+          reset_anchor(route, survivor)
+        end
+
+        def reset_anchor(route, survivor)
+          return unless route.connection_data.empty?
+
+          route.touch_node(route.last_node) if route.last_node && route.last_node != survivor
+          route.touch_node(survivor) if survivor && route.last_node != survivor
         end
       end
     end

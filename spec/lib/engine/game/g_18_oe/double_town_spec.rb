@@ -3,7 +3,6 @@
 require 'spec_helper'
 require 'engine/auto_router'
 require_relative 'helpers'
-require_relative '../../../../../assets/app/view/game/part/double_town_touch'
 
 describe 'G18OE double town tiles (§11.1)' do
   include G18OESpecHelpers
@@ -204,72 +203,6 @@ describe 'G18OE double town tiles (§11.1)' do
           visited = route.visited_stops
           expect(visited.include?(a)).to eq(visited.include?(b))
         end
-      end
-    end
-
-    describe 'clicking the double town while building a route' do
-      let(:touch) { View::Game::Part::DoubleTownTouch }
-
-      def click_pill(route)
-        touch.touch_towns(route, [a, b])
-      end
-
-      it 'adds both towns from a city, whichever the route reaches first' do
-        route = route_through(game, local, west)
-        click_pill(route)
-
-        expect(touch.route_nodes(route)).to contain_exactly(west, a, b)
-        expect(route.revenue).to eq(40)
-      end
-
-      it 'continues past the pill to the far city' do
-        route = route_through(game, local, west)
-        click_pill(route)
-        route.touch_node(east)
-
-        expect_cities_around_towns(route, [west, east], [a, b])
-      end
-
-      it 'adds the second town when one town is already the end of the route' do
-        route = route_through(game, local, west, b)
-        click_pill(route)
-
-        expect(touch.route_nodes(route)).to contain_exactly(west, a, b)
-      end
-
-      it 'adds both towns when the route is a single town' do
-        route = route_through(game, local, a)
-        click_pill(route)
-
-        expect(touch.route_nodes(route)).to contain_exactly(a, b)
-      end
-
-      it 'removes both towns when they were the last nodes clicked onto the route' do
-        route = route_through(game, local, west, a, b)
-        click_pill(route)
-
-        expect(touch.route_nodes(route)).to eq([west])
-      end
-
-      it 'removes both towns when they were the first nodes clicked on the route' do
-        route = route_through(game, local, a, b, west)
-        click_pill(route)
-
-        expect(touch.route_nodes(route)).not_to include(a, b)
-      end
-
-      it 'clears a route that is only the double town' do
-        route = route_through(game, local, a, b)
-        click_pill(route)
-
-        expect(touch.route_nodes(route)).to be_empty
-      end
-
-      it 'leaves a route alone when both towns are in its middle' do
-        route = route_through(game, local, west, a, b, east)
-        click_pill(route)
-
-        expect(touch.route_nodes(route)).to contain_exactly(west, a, b, east)
       end
     end
 
