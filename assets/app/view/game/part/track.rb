@@ -123,6 +123,8 @@ module View
           pass1 = []
           pass2 = []
           sorted.each do |path, index|
+            next if !path.stub? && path.exits.empty?
+
             props = {
               color: (!index && !path.stub? && path.color) || value_for_index(index, :color, path.track),
               width: width_for_index(path, index, path_indexes),

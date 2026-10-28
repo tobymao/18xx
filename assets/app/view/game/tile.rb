@@ -44,6 +44,8 @@ module View
 
       # if false, then the revenue is rendered by Part::Cities or Part::Towns
       def should_render_revenue?
+        return false if @tile.double_towns.any?
+
         revenue = @tile.revenue_to_render
 
         # special case: city with multi-revenue - no choice but to draw separate revenue
