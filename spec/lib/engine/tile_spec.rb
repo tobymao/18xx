@@ -305,6 +305,11 @@ module Engine
         expect(blank.revenue_locs).to eq([1.5, 4.5])
       end
 
+      it 'hides both towns because the double town draws them' do
+        expect(tile.towns.map(&:hidden?)).to eq([true, true])
+        expect(tile.towns.map(&:rect?)).to eq([false, false])
+      end
+
       it 'centres both towns' do
         expect(tile.towns.map { |t| tile.preferred_city_town_edges[t] }).to eq([nil, nil])
       end

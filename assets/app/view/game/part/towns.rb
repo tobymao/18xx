@@ -17,10 +17,8 @@ module View
         needs :show_revenue
 
         def render
-          double_town_nodes = @tile.double_towns.flat_map(&:towns)
-
           rendered = @tile.towns.each_with_object([]) do |town, parts|
-            next if town.hidden? || double_town_nodes.include?(town)
+            next if town.hidden?
 
             parts <<
               if town.rect?
