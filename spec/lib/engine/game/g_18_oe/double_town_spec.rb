@@ -130,14 +130,27 @@ describe 'G18OE double town tiles (§11.1)' do
 
       it 'reaches the far city on a walk through both towns' do
         records = []
-        hops = []
         west.walk(corporation: corp) do |path, _vp, visited|
-          records << visited.keys
-          hops << path.nodes if path.nodes.include?(a) && path.nodes.include?(b)
+          records << { nodes: path.nodes, visited: visited.keys }
         end
 
-        expect(records.any? { |nodes| nodes.include?(east) && nodes.include?(a) && nodes.include?(b) }).to be(true)
-        expect(hops).not_to be_empty
+        far = records.select { |record| record[:nodes].include?(east) }
+        expect(far).not_to be_empty
+        expect(far.any? { |record| record[:visited].include?(a) && record[:visited].include?(b) }).to be(true)
+      end
+
+      it 'reaches each town from the other over the internal path' do
+        arrivals = []
+        [a, b].each do |start|
+          start.walk(corporation: corp) do |path, _vp, visited|
+            next if path.nodes.sort_by(&:object_id) != [a, b].sort_by(&:object_id)
+
+            from = path.nodes.find { |node| visited[node] }
+            arrivals << [from, (path.nodes - [from]).first]
+          end
+        end
+
+        expect(arrivals).to include([a, b], [b, a])
       end
     end
 
@@ -191,15 +204,6 @@ describe 'G18OE double town tiles (§11.1)' do
           expect(visited.include?(a)).to eq(visited.include?(b))
         end
       end
-
-      it 'treats the twin paths on an exit as one track' do
-        paths = j77.tile.paths.select { |path| path.edges.map(&:num) == [2] }
-        first = instance_double(Engine::Route, paths: [paths[0]])
-        second = instance_double(Engine::Route, paths: [paths[1]])
-
-        expect(paths.size).to eq(2)
-        expect { game.check_overlap([first, second]) }.to raise_error(Engine::GameError, /cannot reuse track/)
-      end
     end
 
     describe 'revenue' do
@@ -237,23 +241,42 @@ describe 'G18OE double town tiles (§11.1)' do
 
   context 'with a brown double town on every exit' do
     let(:corp) { game.corporation_by_id('A') }
+    let(:j77) { game.hex_by_id('J77') }
     let(:oe22) { lay_tile!(game, 'J77', 'OE22', 0) }
     let(:a) { oe22.towns[0] }
     let(:b) { oe22.towns[1] }
     let(:local) { buy_train!(game, corp, '2+2') }
+    let(:neighbours) { { 0 => 'K76', 1 => 'J75', 2 => 'I76', 3 => 'I78', 4 => 'J79', 5 => 'K78' } }
 
-    def leg(game, train, edge_in, first, second, edge_out)
-      enter = oe22.paths.find { |path| path.edges.map(&:num) == [edge_in] && path.nodes.include?(first) }
-      middle = oe22.paths.find { |path| path.edges.empty? }
-      leave = oe22.paths.find { |path| path.edges.map(&:num) == [edge_out] && path.nodes.include?(second) }
-      chain = { nodes: [first, second], paths: [enter, middle, leave] }
-      Engine::Route.new(game, game.phase, train, routes: [], connection_data: [{ left: first, right: second, chain: chain }])
+    def edge_path(edge, town)
+      path = oe22.paths.find { |p| p.edges.map(&:num) == [edge] && p.nodes.include?(town) }
+      expect(path).not_to be_nil, "no path from exit #{edge} to a town"
+      path
     end
 
-    def single(game, train, edge_in, only)
-      enter = oe22.paths.find { |path| path.edges.map(&:num) == [edge_in] && path.nodes.include?(only) }
-      chain = { nodes: [only, only], paths: [enter] }
-      Engine::Route.new(game, game.phase, train, routes: [], connection_data: [{ left: only, right: only, chain: chain }])
+    def internal_path
+      path = oe22.paths.find { |p| p.edges.empty? }
+      expect(path).not_to be_nil
+      path
+    end
+
+    def through(edge_in, first, second, edge_out)
+      paths = [edge_path(edge_in, first), internal_path, edge_path(edge_out, second)]
+      expect(paths.each_cons(2).all? { |x, y| (x.nodes & y.nodes).any? }).to be(true)
+      chain = { nodes: [first, second], paths: paths }
+      Engine::Route.new(game, game.phase, local, routes: [],
+                                                 connection_data: [{ left: first, right: second, chain: chain }])
+    end
+
+    def past_one(edge_in, town, edge_out)
+      paths = [edge_path(edge_in, town), edge_path(edge_out, town)]
+      chain = { nodes: [town, town], paths: paths }
+      Engine::Route.new(game, game.phase, local, routes: [],
+                                                 connection_data: [{ left: town, right: town, chain: chain }])
+    end
+
+    def lay_neighbour!(edge)
+      lay_tile!(game, neighbours[edge], '57', (edge + 3) % 6)
     end
 
     it 'passes through both towns between any two exits of OE22' do
@@ -263,10 +286,73 @@ describe 'G18OE double town tiles (§11.1)' do
       expect(pairs.size).to eq(30)
       pairs.each do |e, f|
         [[a, b], [b, a]].each do |first, second|
-          expect { leg(game, local, e, first, second, f).check_double_towns! }.not_to raise_error
+          expect { through(e, first, second, f).check_double_towns! }.not_to raise_error
         end
-        expect { single(game, local, e, a).check_double_towns! }.to raise_error(Engine::GameError, /both towns/)
-        expect { single(game, local, e, b).check_double_towns! }.to raise_error(Engine::GameError, /both towns/)
+        [a, b].each do |town|
+          expect { past_one(e, town, f).check_double_towns! }.to raise_error(Engine::GameError, /both towns/)
+        end
+      end
+    end
+
+    [3, 1, 0].each do |other|
+      context "between exits 2 and #{other} on real track" do
+        let(:west) { game.hex_by_id('I76').tile.cities.first }
+        let(:far) { game.hex_by_id(neighbours[other]).tile.cities.first }
+
+        before do
+          oe22
+          lay_neighbour!(2)
+          lay_neighbour!(other)
+          west.place_token(corp, corp.next_token, check_tokenable: false)
+          game.graph.clear
+        end
+
+        it 'scores a route through both towns in either order' do
+          [[a, b], [b, a]].each do |first, second|
+            route = route_through(game, local, west, first, second, far)
+
+            expect(route.visited_stops.size).to eq(4)
+            expect(route.revenue).to eq(20 + 20 + 20 + 20)
+          end
+        end
+
+        it 'rejects a route that passes only one town' do
+          [a, b].each do |town|
+            route = route_through(game, local, west, town, far)
+
+            expect { route.revenue }.to raise_error(Engine::GameError, /both towns/)
+          end
+        end
+      end
+    end
+
+    context 'with two routes crossing the same exit' do
+      let(:west) { game.hex_by_id('I76').tile.cities.first }
+      let(:east) { game.hex_by_id('K78').tile.cities.first }
+      let(:south) { game.hex_by_id('I78').tile.cities.first }
+
+      before do
+        oe22
+        [2, 3, 5].each { |edge| lay_neighbour!(edge) }
+        other = game.corporation_by_id('C')
+        west.place_token(corp, corp.next_token, check_tokenable: false)
+        east.place_token(other, other.next_token, check_tokenable: false)
+        game.graph.clear
+      end
+
+      it 'treats the twin paths on an exit as one track' do
+        other = game.corporation_by_id('C')
+        first = Engine::Route.new(game, game.phase, local, routes: [])
+        second = Engine::Route.new(game, game.phase, buy_train!(game, other, '2+2'), routes: [])
+        [south, a, b, west].each { |node| first.touch_node(node) }
+        [east, a, b, south].each { |node| second.touch_node(node) }
+        [first, second].each { |route| route.routes = [first, second] }
+        on_exit3 = ->(route) { route.paths.select { |path| path.hex == j77 && path.edges.map(&:num) == [3] } }
+
+        expect(on_exit3.call(first).size).to eq(1)
+        expect(on_exit3.call(second).size).to eq(1)
+        expect(on_exit3.call(first)).not_to eq(on_exit3.call(second))
+        expect { second.revenue }.to raise_error(Engine::GameError, /Route cannot reuse track on J77/)
       end
     end
   end
