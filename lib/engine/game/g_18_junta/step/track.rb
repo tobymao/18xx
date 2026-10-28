@@ -25,7 +25,7 @@ module Engine
           def pass!
             entity = current_entity
             super
-            @game.expire_upgrade_license_if_unused!(entity) if entity&.corporation?
+            @game.expire_upgrade_license_if_unused!(entity)
           end
         end
       end

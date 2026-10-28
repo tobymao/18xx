@@ -4,7 +4,6 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'stock_market'
-require_relative 'step/buy_company'
 require_relative 'step/dividend'
 require_relative 'step/private_auction'
 require_relative 'step/track'
@@ -239,7 +238,7 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            G18Junta::Step::BuyCompany,
+            Engine::Step::BuyCompany,
             G18Junta::Step::Track,
             G18Junta::Step::UpgradeLicense,
             Engine::Step::Token,
@@ -247,11 +246,12 @@ module Engine
             G18Junta::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [G18Junta::Step::BuyCompany, { blocks: true }],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
-        # Rules summary 2.2: a company may only buy private companies owned by its president.
+        # Rules summary 2.2: unlike 1830, where a company may buy a private from any player, here the
+        # private's owner must be the company's president.
         def purchasable_companies(entity = nil)
           companies = super
           return companies unless entity&.corporation?
