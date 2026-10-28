@@ -251,6 +251,96 @@ module Engine
             expect(game.upgrades_to_correct_color?(yellow, gray)).to be(true)
           end
         end
+
+        describe 'corruption bag (rules summary 1.4 and 5.1)' do
+          let(:player) { game.players.first }
+
+          def bag
+            game.instance_variable_get(:@corruption_bag).tally
+          end
+
+          it 'starts with 28 white and 7 black tokens' do
+            expect(bag).to eq(white: 28, black: 7)
+          end
+
+          it 'gives the drawn token to the player' do
+            color = game.draw_corruption_token!(player, 'a test')
+
+            expect(game.corruption_tokens(player)[color]).to eq(1)
+            expect(bag.values.sum).to eq(34)
+          end
+
+          it 'gives a black token from the stock when the bag is empty' do
+            game.instance_variable_set(:@corruption_bag, [])
+
+            expect(game.draw_corruption_token!(player, 'a test')).to eq(:black)
+            expect(game.log.map(&:message).last).to include('from the stock')
+          end
+
+          it 'adds three black tokens when the last 2-train is bought' do
+            corporation = game.corporations.first
+            game.depot.upcoming.select { |t| t.name == '2' }.each { |t| game.buy_train(corporation, t, :free) }
+
+            expect(bag).to eq(white: 28, black: 10)
+          end
+        end
+
+        describe 'upgrade without a license (rules summary 4.1 and 4.2)' do
+          let(:corporation) { game.corporations.first }
+          let(:president) { game.players.first }
+          let(:step) { G18Junta::Step::Track.new(game, game.round) }
+
+          before { corporation.owner = president }
+
+          it 'makes the president draw a corruption token' do
+            step.use_license_or_draw_corruption!(corporation)
+
+            tokens = game.corruption_tokens(president)
+            expect(tokens[:white] + tokens[:black]).to eq(1)
+          end
+
+          it 'draws nothing when the company holds a license' do
+            game.grant_upgrade_license!(corporation)
+            game.instance_variable_set(:@or_round_number, 1)
+
+            step.use_license_or_draw_corruption!(corporation)
+
+            expect(game.corruption_tokens(president)).to eq(white: 0, black: 0)
+            expect(game.upgrade_license_granted?(corporation)).to be(false)
+          end
+        end
+
+        describe 'corruption penalty (rules summary 9.2 and 9.3)' do
+          let(:a) { game.players[0] }
+          let(:b) { game.players[1] }
+
+          def hold(player, white, black)
+            game.corruption_tokens(player).merge!(white: white, black: black)
+          end
+
+          it 'uses the rate for the total tokens held' do
+            hold(a, 5, 3)
+            hold(b, 7, 5)
+            expect(game.total_corruption_tokens).to eq(20)
+            expect(game.corruption_penalty_rate).to eq(25)
+          end
+
+          it 'charges every black token, even below zero cash' do
+            hold(a, 0, 3)
+            a.spend(a.cash - 10, game.bank)
+
+            game.pay_corruption_penalty!
+            expect(a.cash).to eq(10 - (3 * 20))
+          end
+
+          it 'breaks ties by fewer black tokens, then fewer white tokens' do
+            allow(game).to receive(:player_value).and_return(100)
+            hold(a, 0, 2)
+            hold(b, 3, 1)
+
+            expect(game.result.keys).to eq([game.players[2].id, b.id, a.id]) # c holds no tokens
+          end
+        end
       end
     end
   end

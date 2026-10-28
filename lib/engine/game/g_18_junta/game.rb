@@ -143,9 +143,29 @@ module Engine
         # Rules summary 1.2: number of private companies kept in play by player count.
         PRIVATES_IN_PLAY = { 2 => 5, 3 => 6, 4 => 7 }.freeze
 
+        # Rules summary 1.4: the corruption bag starts with 28 white and 7 black tokens, and three black
+        # tokens are added when the last 2-, 3- and 4-train is bought.
+        CORRUPTION_BAG_INITIAL = { white: 28, black: 7 }.freeze
+        CORRUPTION_BAG_REFILL = { '2' => 3, '3' => 3, '4' => 3 }.freeze
+
+        # Rules summary 9.2: $ per black token at game end, by total tokens held (row) and regime (column).
+        CORRUPTION_PENALTY_TABLE = [
+          { max: 15, dictatorship: 12, democracy: 20 },
+          { max: 20, dictatorship: 16, democracy: 25 },
+          { max: 25, dictatorship: 20, democracy: 30 },
+          { max: 30, dictatorship: 24, democracy: 35 },
+          { max: 35, dictatorship: 28, democracy: 40 },
+          { max: 40, dictatorship: 32, democracy: 45 },
+          { max: 45, dictatorship: 36, democracy: 50 },
+          { max: 50, dictatorship: 40, democracy: 55 },
+          { max: Float::INFINITY, dictatorship: 44, democracy: 60 },
+        ].freeze
+
         def setup
           @or_round_number = 0
           @upgrade_licenses = {}
+          @corruption_bag = CORRUPTION_BAG_INITIAL.flat_map { |color, count| [color] * count }.sort_by { rand }
+          @corruption_tokens = Hash.new { |h, k| h[k] = { white: 0, black: 0 } }
 
           remove_random_corporation!
           select_random_privates!
@@ -320,6 +340,104 @@ module Engine
           return @phase.tiles.include?(to.color) if from.name == 'J16' && to.name == 'J17'
 
           super
+        end
+
+        # Rules summary 1.4: when the last 2-, 3- or 4-train is bought from the bank, black tokens are
+        # added to the corruption bag.
+        def buy_train(operator, train, price = nil)
+          last_of_type = @depot.upcoming.include?(train) && @depot.upcoming.count { |t| t.name == train.name } == 1
+          super
+          refill_corruption_bag!(train.name) if last_of_type
+        end
+
+        def refill_corruption_bag!(train_name)
+          count = self.class::CORRUPTION_BAG_REFILL[train_name]
+          return unless count
+
+          @corruption_bag.concat(%i[black] * count).sort_by! { rand }
+          @log << "Last #{train_name}-train bought: #{count} black tokens are added to the corruption bag"
+        end
+
+        # Rules summary 5.1: a player draws a corruption token from the bag. If the bag is empty, the
+        # token is black, from the unlimited stock.
+        def draw_corruption_token!(player, reason)
+          source = @corruption_bag.empty? ? ' (the bag is empty, so it comes from the stock)' : ''
+          color = @corruption_bag.pop || :black
+          @corruption_tokens[player][color] += 1
+          @log << "#{player.name} draws a #{color} corruption token for #{reason}#{source}"
+          color
+        end
+
+        def corruption_tokens(player)
+          @corruption_tokens[player]
+        end
+
+        def total_corruption_tokens
+          @corruption_tokens.values.sum { |tokens| tokens[:white] + tokens[:black] }
+        end
+
+        # Rules summary 9.2: the coup outcome picks the column; before the coup, the political track does
+        # (Military: Dictatorship, otherwise Democracy). Both come in later PRs, so Democracy for now.
+        def corruption_penalty_regime
+          :democracy
+        end
+
+        def corruption_penalty_rate
+          row = self.class::CORRUPTION_PENALTY_TABLE.find { |r| total_corruption_tokens <= r[:max] }
+          row[corruption_penalty_regime]
+        end
+
+        def end_game!(game_end_reason)
+          pay_corruption_penalty! unless @finished
+          super
+        end
+
+        # Rules summary 9.2: each player pays the rate for every black token held. A player without
+        # enough cash pays what they can and the rest comes off their final wealth (negative cash).
+        def pay_corruption_penalty!
+          rate = corruption_penalty_rate
+          @log << "Corruption penalty: #{total_corruption_tokens} tokens held in total, "\
+                  "#{format_currency(rate)} per black token (#{corruption_penalty_regime.to_s.capitalize})"
+
+          @players.each do |player|
+            black = corruption_tokens(player)[:black]
+            next unless black.positive?
+
+            amount = rate * black
+            player.spend(amount, @bank, check_cash: false, check_positive: false)
+            @log << "#{player.name} pays #{format_currency(amount)} for #{black} black tokens"
+          end
+        end
+
+        # Rules summary 9.3: ties go to the player with fewer black tokens, then fewer white tokens.
+        def result
+          result_players
+            .sort_by { |p| [-player_value(p), corruption_tokens(p)[:black], corruption_tokens(p)[:white]] }
+            .to_h { |p| [p.id, player_value(p)] }
+        end
+
+        def player_card_rows(player)
+          tokens = corruption_tokens(player)
+          ['Corruption:', "#{tokens[:white]} white, #{tokens[:black]} black"]
+        end
+
+        # Info page: what is left in the bag, the tokens each player holds and the end-game table.
+        def timeline
+          bag = @corruption_bag.tally
+          held = @players.map do |player|
+            tokens = corruption_tokens(player)
+            "#{player.name}: #{tokens[:white]} white, #{tokens[:black]} black"
+          end
+          table = self.class::CORRUPTION_PENALTY_TABLE.map do |row|
+            limit = row[:max] == Float::INFINITY ? 'more' : "up to #{row[:max]}"
+            "#{limit}: #{format_currency(row[:dictatorship])} / #{format_currency(row[:democracy])}"
+          end
+
+          [
+            "Corruption bag: #{bag[:white] || 0} white, #{bag[:black] || 0} black",
+            *held,
+            "End-game penalty per black token by total tokens held (Dictatorship / Democracy): #{table.join(' | ')}",
+          ]
         end
       end
     end
