@@ -45,7 +45,7 @@ describe 'G18OE floating minors (§9.1)' do
     player = round.current_entity
     give_company!(player, game.company_by_id('A'))
 
-    expect(round.active_step.actions(player)).to eq(['par'])
+    expect(round.active_step.actions(player)).to eq(%w[par choose])
   end
 
   it 'closes the minor company and gives its owner the whole charter' do
