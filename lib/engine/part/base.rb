@@ -85,7 +85,7 @@ module Engine
         false
       end
 
-      def renders_own_revenue?
+      def overrides_tile_revenue?
         false
       end
 

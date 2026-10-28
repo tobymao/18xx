@@ -582,8 +582,8 @@ module Engine
       false
     end
 
-    def renders_own_revenue?
-      @parts.any?(&:renders_own_revenue?)
+    def revenue_overridden?
+      @parts.any?(&:overrides_tile_revenue?)
     end
 
     def revenue_to_render

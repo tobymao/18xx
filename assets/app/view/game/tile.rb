@@ -44,7 +44,7 @@ module View
 
       # if false, then the revenue is rendered by Part::Cities or Part::Towns
       def should_render_revenue?
-        return false if @tile.renders_own_revenue?
+        return false if @tile.revenue_overridden?
 
         revenue = @tile.revenue_to_render
 

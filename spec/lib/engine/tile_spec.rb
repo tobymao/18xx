@@ -319,16 +319,16 @@ module Engine
         expect(Tile.for('3').towns.first.double_town?).to be(false)
       end
 
-      it 'renders its own revenue' do
-        expect(tile.renders_own_revenue?).to be(true)
+      it 'lets the double town override the tile-wide revenue' do
+        expect(tile.revenue_overridden?).to be(true)
       end
 
       it 'leaves the revenue of a plain town to the tile view' do
-        expect(Tile.for('3').renders_own_revenue?).to be(false)
+        expect(Tile.for('3').revenue_overridden?).to be(false)
       end
 
       it 'leaves the revenue of a city to the tile view' do
-        expect(Tile.for('57').renders_own_revenue?).to be(false)
+        expect(Tile.for('57').revenue_overridden?).to be(false)
       end
     end
   end

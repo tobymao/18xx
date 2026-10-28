@@ -20,7 +20,7 @@ module Engine
         true
       end
 
-      def renders_own_revenue?
+      def overrides_tile_revenue?
         true
       end
     end
