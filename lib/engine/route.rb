@@ -277,7 +277,7 @@ module Engine
     def check_double_towns!
       connection_data.each_cons(2) do |before, after|
         town = before[:right]
-        next if !town.town? || after[:left] != town
+        next unless town.town?
 
         double_town = town.tile.double_towns.find { |dt| dt.towns.include?(town) }
         next unless double_town

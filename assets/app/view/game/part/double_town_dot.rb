@@ -106,23 +106,25 @@ module View
         end
 
         def touch_towns(route)
-          nodes = route_nodes(route)
-          on_route = towns.select { |town| nodes.include?(town) }
+          on_route = towns.select { |town| route_nodes(route).include?(town) }
 
           if on_route.size == 2
-            remove_end_towns(route, nodes)
+            remove_end_towns(route)
           else
             (towns - on_route).each { |town| route.touch_node(town) }
           end
         end
 
-        def remove_end_towns(route, nodes)
-          end_town = towns.find { |town| [nodes.first, nodes.last].include?(town) }
-          return unless end_town
-
-          [end_town, (towns - [end_town]).first, end_town].each do |town|
-            route.touch_node(town) if route_nodes(route).include?(town)
+        def remove_end_towns(route)
+          while (town = towns.find { |t| route_ends(route).include?(t) })
+            route.touch_node(town)
           end
+        end
+
+        def route_ends(route)
+          return [route.last_node].compact if route.connection_data.empty?
+
+          [route.head[:left], route.tail[:right]]
         end
 
         def route_nodes(route)

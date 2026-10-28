@@ -83,10 +83,6 @@ module Engine
       Tile.new(name, code: code, color: color, parts: decode(code), **opts)
     end
 
-    def self.replace_double_town(part, town)
-      part.double_town? ? town : part
-    end
-
     def self.part(type, params, cache)
       case type
       when 'path'
@@ -110,7 +106,8 @@ module Engine
 
         ends = [params['a'], params['b']]
         double_town = ends.find(&:double_town?)
-        variants = double_town ? double_town.towns.map { |town| ends.map { |e| replace_double_town(e, town) } } : [ends]
+        variants = [ends]
+        variants = double_town.towns.map { |town| ends.map { |e| e == double_town ? town : e } } if double_town
 
         variants.map do |a, b|
           Part::Path.make_lanes(a, b, terminal: params['terminal'],
