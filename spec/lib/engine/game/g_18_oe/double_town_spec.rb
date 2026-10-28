@@ -214,6 +214,23 @@ describe 'G18OE double town tiles (§11.1)' do
       end
     end
 
+    describe 'removing the stops of a one-segment route' do
+      it 'drops the far end of a route that has a single segment' do
+        route = route_through(game, local, west, a)
+
+        expect { route.touch_node(a) }.not_to raise_error
+        expect(route.connection_data).to be_empty
+      end
+
+      it 'drops both towns from the end of a route' do
+        route = route_through(game, local, west, a, b)
+
+        expect { [b, a].each { |town| route.touch_node(town) } }.not_to raise_error
+        expect(route.connection_data).to be_empty
+        expect(route.last_node).to eq(west)
+      end
+    end
+
     describe 'revenue' do
       let(:t1) { lay_tile!(game, 'H29', '4', 0).towns.first }
       let(:t2) { lay_tile!(game, 'J17', '4', 0).towns.first }
@@ -244,6 +261,35 @@ describe 'G18OE double town tiles (§11.1)' do
 
         expect(route.revenue).to eq(20 + 20 + 10)
       end
+    end
+  end
+
+  context 'with a double town between a city and a single town' do
+    let(:corp) { game.corporation_by_id('A') }
+    let(:city) { game.hex_by_id('X45').tile.cities.first }
+    let(:far_town) { game.hex_by_id('V47').tile.towns.first }
+    let(:double_town) { game.hex_by_id('W46').tile.towns }
+
+    before do
+      lay_tile!(game, 'W46', 'OE1', 0)
+      lay_tile!(game, 'X45', '621', 0)
+      lay_tile!(game, 'V47', '4', 0)
+      city.place_token(corp, corp.next_token, check_tokenable: false)
+      game.graph.clear
+    end
+
+    it 'reaches a town beyond the double town through both towns' do
+      expect(game.graph.connected_nodes(corp).keys).to include(*double_town, far_town)
+
+      walks = []
+      city.walk(corporation: corp) do |path, _vp, visited|
+        walks << { nodes: path.nodes, visited: visited.keys }
+      end
+
+      through_both = walks.select do |walk|
+        walk[:nodes].include?(far_town) && double_town.all? { |town| walk[:visited].include?(town) }
+      end
+      expect(through_both).not_to be_empty
     end
   end
 
@@ -340,6 +386,34 @@ describe 'G18OE double town tiles (§11.1)' do
 
             expect { route.revenue }.to raise_error(Engine::GameError, /both towns/)
           end
+        end
+      end
+    end
+
+    context 'with cities on several neighbours' do
+      let(:west) { game.hex_by_id('I76').tile.cities.first }
+      let(:others) { [3, 1, 5].map { |edge| game.hex_by_id(neighbours[edge]).tile.cities.first } }
+
+      before do
+        oe22
+        [2, 3, 1, 5].each { |edge| lay_neighbour!(edge) }
+        west.place_token(corp, corp.next_token, check_tokenable: false)
+        game.graph.clear
+      end
+
+      it 'reaches every neighbouring city through both towns of OE22' do
+        expect(game.graph.connected_nodes(corp).keys).to include(a, b, *others)
+
+        walks = []
+        west.walk(corporation: corp) do |path, _vp, visited|
+          walks << { nodes: path.nodes, visited: visited.keys }
+        end
+
+        others.each do |city|
+          through_both = walks.select do |walk|
+            walk[:nodes].include?(city) && walk[:visited].include?(a) && walk[:visited].include?(b)
+          end
+          expect(through_both).not_to be_empty, "no walk from I76 to #{city.hex.id} through both towns"
         end
       end
     end

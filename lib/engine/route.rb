@@ -152,7 +152,7 @@ module Engine
             connection_data[0] = segment(chain, right: head[:right])
           else
             connection_data.shift
-            if (chain = select(tail[:right], node)[0])
+            if tail && (chain = select(tail[:right], node)[0])
               # This node can be reached from either the head or the tail of the
               # chain. All head connections have been offered, switch to the tail.
               connection_data << segment(chain, left: tail[:right])

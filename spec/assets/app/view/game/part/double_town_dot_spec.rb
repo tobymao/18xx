@@ -74,7 +74,17 @@ module View
           expect(click_pill).to contain_exactly(a, b)
         end
 
-        it 'removes both towns when they are at the route end' do
+        it 'removes both towns when they end the route' do
+          [west, a, b].each { |node| route.touch_node(node) }
+          expect(click_pill).to eq([west])
+        end
+
+        it 'removes both towns when they end a route built from the other side' do
+          [east, b, a].each { |node| route.touch_node(node) }
+          expect(click_pill).to eq([east])
+        end
+
+        it 'removes both towns when they start the route' do
           [a, b, east].each { |node| route.touch_node(node) }
           expect(click_pill).to be_empty
         end
