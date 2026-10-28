@@ -73,11 +73,8 @@ module View
           end
         end
 
-        def render_hit_boxes
-          towns.zip(dot_positions).map do |town, (cx, cy)|
-            h(HitBox, click: -> { touch_node(town) }, transform: "translate(#{cx.round(2)} #{cy.round(2)})",
-                      r: DOT_OFFSET)
-          end
+        def render_hit_box
+          h(HitBox, click: -> { touch_both_towns }, transform: translate, r: DOT_OFFSET + PILL_HALF_WIDTH)
         end
 
         def render_revenues
@@ -95,8 +92,43 @@ module View
         def render_part
           children = render_pill + render_dots
           children.concat(render_revenues) if @show_revenue
-          children.concat(render_hit_boxes)
+          children << render_hit_box
           h(:g, { key: "#{towns.first.id}-d" }, children)
+        end
+
+        private
+
+        def touch_both_towns
+          return if !@game.active_step.current_actions.include?('run_routes') || !@selected_route
+
+          touch_towns(@selected_route)
+          store(:selected_route, @selected_route)
+        end
+
+        def touch_towns(route)
+          nodes = route_nodes(route)
+          on_route = towns.select { |town| nodes.include?(town) }
+
+          if on_route.size == 2
+            remove_end_towns(route, nodes)
+          else
+            (towns - on_route).each { |town| route.touch_node(town) }
+          end
+        end
+
+        def remove_end_towns(route, nodes)
+          end_town = towns.find { |town| [nodes.first, nodes.last].include?(town) }
+          return unless end_town
+
+          [end_town, (towns - [end_town]).first, end_town].each do |town|
+            route.touch_node(town) if route_nodes(route).include?(town)
+          end
+        end
+
+        def route_nodes(route)
+          return [route.last_node].compact if route.connection_data.empty?
+
+          [route.head[:left]] + route.connection_data.map { |connection| connection[:right] }
         end
       end
     end
