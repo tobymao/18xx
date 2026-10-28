@@ -274,6 +274,20 @@ module Engine
       end
     end
 
+    def check_double_towns!
+      visited = visited_stops
+      visited.each do |stop|
+        next unless stop.town?
+
+        stop.tile.double_towns.each do |double_town|
+          next unless double_town.towns.include?(stop)
+          next if double_town.towns.all? { |town| visited.include?(town) }
+
+          raise GameError, "Route must visit both towns of the double town on #{stop.hex.name}"
+        end
+      end
+    end
+
     def check_overlap!
       @game.check_overlap(@routes)
     end
@@ -338,6 +352,7 @@ module Engine
           check_other!
           check_route_combination! unless suppress_check_route_combination
           check_cycles!
+          check_double_towns!
           check_distance!(visited)
           check_overlap!
           check_connected!
