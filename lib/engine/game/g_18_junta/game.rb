@@ -6,6 +6,8 @@ require_relative 'meta'
 require_relative 'stock_market'
 require_relative 'step/dividend'
 require_relative 'step/private_auction'
+require_relative 'step/track'
+require_relative 'step/upgrade_license'
 require_relative '../base'
 
 module Engine
@@ -133,6 +135,7 @@ module Engine
 
         EBUY_PRES_SWAP = false
         EBUY_FROM_OTHERS = :value
+        # Rules summary 4.3: trains can only be bought from companies with the same president.
         ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
         # Rules summary 10: the home station is placed when the company floats.
         HOME_TOKEN_TIMING = :float
@@ -141,6 +144,9 @@ module Engine
         PRIVATES_IN_PLAY = { 2 => 5, 3 => 6, 4 => 7 }.freeze
 
         def setup
+          @or_round_number = 0
+          @upgrade_licenses = {}
+
           remove_random_corporation!
           select_random_privates!
         end
@@ -225,12 +231,16 @@ module Engine
         end
 
         def operating_round(round_num)
+          @or_round_number += 1
+          expire_stale_upgrade_licenses!
+
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
-            Engine::Step::Track,
+            G18Junta::Step::Track,
+            G18Junta::Step::UpgradeLicense,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Junta::Step::Dividend,
@@ -238,6 +248,78 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        # Rules summary 2.2: unlike 1830, where a company may buy a private from any player, here the
+        # private's owner must be the company's president.
+        def purchasable_companies(entity = nil)
+          companies = super
+          return companies unless entity&.corporation?
+
+          companies.select { |company| company.owner == entity.owner }
+        end
+
+        # Rules summary 4.2: the license is granted for the company's next Operating Round only.
+        def upgrade_license_granted?(corporation)
+          @upgrade_licenses.key?(corporation)
+        end
+
+        def upgrade_license?(corporation)
+          @upgrade_licenses[corporation] == @or_round_number
+        end
+
+        def grant_upgrade_license!(corporation)
+          @upgrade_licenses[corporation] = @or_round_number + 1
+        end
+
+        def consume_upgrade_license!(corporation)
+          return false unless upgrade_license?(corporation)
+
+          @upgrade_licenses.delete(corporation)
+          true
+        end
+
+        def expire_upgrade_license_if_unused!(corporation)
+          return unless upgrade_license?(corporation)
+
+          @upgrade_licenses.delete(corporation)
+          @log << "#{corporation.name} did not use its Upgrade License, which has expired"
+        end
+
+        def expire_stale_upgrade_licenses!
+          @upgrade_licenses.reject! { |_corporation, valid_on_round| valid_on_round < @or_round_number }
+        end
+
+        def status_array(corporation)
+          ['Upgrade License acquired'] if upgrade_license_granted?(corporation)
+        end
+
+        # Rules summary 7.1: a farm does not count as a stop for train distance (its tiles have
+        # visit_cost 0) and may not be the start or end of a route.
+        def check_other(route)
+          stops = route.visited_stops
+          return if stops.empty?
+
+          raise GameError, 'A farm cannot be the start or the end of a route' if farm_stop?(stops.first) || farm_stop?(stops.last)
+        end
+
+        # Farm tiles are the ones whose label is a single space (the label ties farm tiles to farm hexes).
+        def farm_stop?(stop)
+          stop.tile.label.to_s == ' '
+        end
+
+        # Farms are shown as a single symbol in the route text.
+        def revenue_str(route)
+          farm_hexes = route.visited_stops.select { |stop| farm_stop?(stop) }.map(&:hex)
+          route.hexes.map { |hex| farm_hexes.include?(hex) ? 'Ⓕ' : hex.name }.join('+')
+        end
+
+        # Rules summary 7.3: the yellow Laguna tile (J16) upgrades straight to its gray tile (J17), once
+        # gray tiles are available.
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
+          return @phase.tiles.include?(to.color) if from.name == 'J16' && to.name == 'J17'
+
+          super
         end
       end
     end
