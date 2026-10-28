@@ -275,16 +275,17 @@ module Engine
     end
 
     def check_double_towns!
-      visited = visited_stops
-      visited.each do |stop|
-        next unless stop.town?
+      connection_data.each_cons(2) do |before, after|
+        town = before[:right]
+        next if !town.town? || after[:left] != town
 
-        stop.tile.double_towns.each do |double_town|
-          next unless double_town.towns.include?(stop)
-          next if double_town.towns.all? { |town| visited.include?(town) }
+        double_town = town.tile.double_towns.find { |dt| dt.towns.include?(town) }
+        next unless double_town
 
-          raise GameError, "Route must visit both towns of the double town on #{stop.hex.name}"
-        end
+        partner = (double_town.towns - [town]).first
+        next if [before[:left], after[:right]].include?(partner)
+
+        raise GameError, "Route must pass through both towns of the double town on #{town.hex.name}"
       end
     end
 

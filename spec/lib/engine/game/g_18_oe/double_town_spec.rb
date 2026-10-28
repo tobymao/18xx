@@ -181,10 +181,16 @@ describe 'G18OE double town tiles (§11.1)' do
         expect { route.revenue }.to raise_error(Engine::GameError, /both towns/)
       end
 
-      it 'rejects a route that ends at one town of the double town' do
+      it 'accepts a route that ends at one town of the double town' do
         route = route_through(game, local, west, a)
 
-        expect { route.revenue }.to raise_error(Engine::GameError, /both towns/)
+        expect(route.revenue).to eq(20 + 10)
+      end
+
+      it 'accepts a route that starts at one town of the double town' do
+        route = route_through(game, local, a, west)
+
+        expect(route.revenue).to eq(20 + 10)
       end
 
       it 'accepts a route that ends at the double town after both towns' do
@@ -193,7 +199,7 @@ describe 'G18OE double town tiles (§11.1)' do
         expect(route.revenue).to eq(40)
       end
 
-      it 'auto-router candidates always take both towns' do
+      it 'auto-router candidates that pass through the double town take both towns' do
         routes = Engine::AutoRouter.new(game).path([local], corp).first[local]
         full = routes.select { |route| [west, a, b, east].all? { |node| route.visited_stops.include?(node) } }
 
@@ -201,6 +207,8 @@ describe 'G18OE double town tiles (§11.1)' do
         expect(full.map { |route| route.visited_stops.size }.uniq).to eq([4])
         routes.each do |route|
           visited = route.visited_stops
+          next if visited.first == a || visited.first == b || visited.last == a || visited.last == b
+
           expect(visited.include?(a)).to eq(visited.include?(b))
         end
       end
@@ -261,18 +269,28 @@ describe 'G18OE double town tiles (§11.1)' do
     end
 
     def through(edge_in, first, second, edge_out)
-      paths = [edge_path(edge_in, first), internal_path, edge_path(edge_out, second)]
-      expect(paths.each_cons(2).all? { |x, y| (x.nodes & y.nodes).any? }).to be(true)
-      chain = { nodes: [first, second], paths: paths }
-      Engine::Route.new(game, game.phase, local, routes: [],
-                                                 connection_data: [{ left: first, right: second, chain: chain }])
+      before = edge_path(edge_in, first)
+      middle = internal_path
+      after = edge_path(edge_out, second)
+      expect([before, middle, after].each_cons(2).all? { |x, y| (x.nodes & y.nodes).any? }).to be(true)
+      outer = Object.new
+      connection_data = [
+        { left: outer, right: first, chain: { nodes: [outer, first], paths: [before] } },
+        { left: first, right: second, chain: { nodes: [first, second], paths: [middle] } },
+        { left: second, right: outer, chain: { nodes: [second, outer], paths: [after] } },
+      ]
+      Engine::Route.new(game, game.phase, local, routes: [], connection_data: connection_data)
     end
 
     def past_one(edge_in, town, edge_out)
-      paths = [edge_path(edge_in, town), edge_path(edge_out, town)]
-      chain = { nodes: [town, town], paths: paths }
-      Engine::Route.new(game, game.phase, local, routes: [],
-                                                 connection_data: [{ left: town, right: town, chain: chain }])
+      before = edge_path(edge_in, town)
+      after = edge_path(edge_out, town)
+      outer = Object.new
+      connection_data = [
+        { left: outer, right: town, chain: { nodes: [outer, town], paths: [before] } },
+        { left: town, right: outer, chain: { nodes: [town, outer], paths: [after] } },
+      ]
+      Engine::Route.new(game, game.phase, local, routes: [], connection_data: connection_data)
     end
 
     def lay_neighbour!(edge)
