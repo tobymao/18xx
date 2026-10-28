@@ -35,6 +35,8 @@ module Engine
         MUST_BUY_TRAIN = :always
         TILE_COST = 20
 
+        SHERBROOKE_HEX = 'F5'
+
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         GAME_END_CHECK = {
           bankrupt: :immediate,
