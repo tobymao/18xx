@@ -421,13 +421,13 @@ module Engine
           it 'draws one corruption token when it is black' do
             bag(:white, :black)
             game.resolve_paramilitary_choice!(corporation, 'civilian')
-            expect(game.corruption_tokens(president)).to eq(white: 0, black: 1)
+            expect(president.corruption_tokens).to eq(white: 0, black: 1)
           end
 
           it 'draws a second corruption token when the first is white' do
             bag(:black, :white)
             game.resolve_paramilitary_choice!(corporation, 'civilian')
-            expect(game.corruption_tokens(president)).to eq(white: 1, black: 1)
+            expect(president.corruption_tokens).to eq(white: 1, black: 1)
           end
         end
       end
