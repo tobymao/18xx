@@ -115,7 +115,7 @@ module Engine
         @game.phase.buying_train!(entity, train, source)
 
         entity.spend(financed_cash, financer) if financed_cash
-        pass! if current_entity == entity && !can_buy_train?(entity) && pass_if_cannot_buy_train?(entity)
+        pass! if !can_buy_train?(entity) && pass_if_cannot_buy_train?(entity)
       end
 
       def pass_if_cannot_buy_train?(_entity)

@@ -38,12 +38,6 @@ module Engine
 
             trains_to_buy.uniq
           end
-
-          def process_buy_train(action)
-            check_spend(action)
-            buy_train_action(action)
-            pass! if current_entity == action.entity && !can_buy_train?(action.entity) && pass_if_cannot_buy_train?(action.entity)
-          end
         end
       end
     end
