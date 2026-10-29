@@ -75,6 +75,18 @@ module Engine
             entity = action.entity
             city = action.city
             token = action.token
+            hex = city.hex
+
+            # Reject bases outside the legal set (prevents duplicate base in same city)
+            unless @game.loading
+              unless @game.available_faction_cities(entity).include?(hex.id)
+                if hex.tile.cities.any? { |c| c.tokens.any? { |t| t&.corporation == entity } }
+                  raise GameError, "#{entity.name} already has a base in #{hex.id}"
+                end
+
+                raise GameError, "#{entity.name} cannot place a base on #{hex.id}"
+              end
+            end
 
             cubes = @game.faction_influence(entity.id)
             cost = GFrost1831::Step::Token::BASE_INFLUENCE_COST
