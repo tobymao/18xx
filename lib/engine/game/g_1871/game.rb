@@ -356,9 +356,9 @@ module Engine
         end
 
         def same_acting_player?(owner_a, owner_b)
-          a = acting_for_player(owner_a)
-          b = acting_for_player(owner_b)
-          a && b && a == b
+          return false if !owner_a || !owner_b
+
+          super || acting_for_player(owner_a) == acting_for_player(owner_b)
         end
 
         # Returns the player that should be the current peir owner

@@ -490,7 +490,7 @@ module View
                 ))
               end
 
-              if other_owner(other) == corp_owner(@corporation)
+              if same_effective_owner?(@corporation, other)
                 if !@corporation.loans.empty? &&
                    !@game.interest_paid?(@corporation) &&
                    !@game.can_pay_interest?(@corporation, -price)
@@ -576,9 +576,7 @@ module View
       end
 
       def same_effective_owner?(corporation, other_corp)
-        player_a = corp_owner(corporation)
-        player_b = other_owner(other_corp)
-        player_a == player_b || @game.same_acting_player?(player_a, player_b)
+        @game.same_acting_player?(corp_owner(corporation), other_owner(other_corp))
       end
 
       # need to abstract due to corporations owning minors owning trains

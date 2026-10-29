@@ -787,8 +787,10 @@ module Engine
         player
       end
 
-      def same_acting_player?(_owner_a, _owner_b)
-        false
+      def same_acting_player?(owner_a, owner_b)
+        return false if !owner_a || !owner_b
+
+        owner_a == owner_b
       end
 
       def player_log(entity, msg)
