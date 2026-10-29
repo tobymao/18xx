@@ -6,6 +6,7 @@ require_relative 'spec_helper_1835'
 describe Engine::Game::G1835::Game do
   let(:game) { Engine::Game::G1835::Game.new(players) }
   let(:by) { game.corporation_by_id('BY') }
+  let(:sx) { game.corporation_by_id('SX') }
   let(:m1) { game.minor_by_id('1') }
   let(:m2) { game.minor_by_id('2') }
   let(:m3) { game.minor_by_id('3') }
@@ -13,6 +14,7 @@ describe Engine::Game::G1835::Game do
   let(:m5) { game.minor_by_id('5') }
   let(:m6) { game.minor_by_id('6') }
   let(:nf) { game.company_by_id('NF') }
+  let(:obb) { game.company_by_id('OBB') }
   let(:player_1) { game.players.find { |player| player.id == 'a' } }
   let(:player_2) { game.players.find { |player| player.id == 'b' } }
   let(:player_3) { game.players.find { |player| player.id == 'c' } }
@@ -20,19 +22,20 @@ describe Engine::Game::G1835::Game do
   def sell_start_packet
     buy(player_1, 'NF')
     buy(player_2, 'LD')
-    buy(player_3, '2')
-    buy(player_1, '1')
-    buy(player_2, '4')
-    buy(player_3, 'BB')
+    buy(player_3, '1')
+    pass(player_1)
+    buy(player_2, '2')
+    buy(player_3, '4')
     buy(player_1, 'BY_D')
+    buy(player_2, '3')
+    buy(player_3, 'BB')
+    buy(player_1, 'OBB')
     buy(player_2, 'HB')
-    buy(player_3, '3')
+    buy(player_3, '5')
     buy(player_1, 'PB')
-    buy(player_2, '6')
-    buy(player_3, 'OBB')
-    buy(player_1, '5')
-    buy_shares(player_3, 'SX')
-    # The Bayern director (player 1) ends up with the NF and PB privates
+    # player 2 is out of money
+    buy(player_3, '6')
+    # The Bayern director (player 1) ends up with the NF, OBB, and PB privates
   end
 
   def skip_operation_for_minors
@@ -48,6 +51,110 @@ describe Engine::Game::G1835::Game do
 
   def hex(id)
     game.hex_by_id(id)
+  end
+
+  def buy_single_train(corp)
+    train = game.depot.depot_trains.first
+    game.process_action(Engine::Action::BuyTrain.new(corp, train: train, price: train.price))
+    pass(corp) # skip buying more trains
+  end
+
+  describe 'Ostbayern' do
+    let(:players) { %w[a b c] }
+    it 'is possible to lay one tile extra unconnected for free and OBB stays open' do
+      sell_start_packet
+      skip_operation_for_minors
+
+      bayern_cash = by.cash
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('202-0'), hex: hex('O15'), rotation: 0)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('9-0'), hex: hex('O13'), rotation: 2)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(obb, tile: tile('3-0'), hex: hex('M15'), rotation: 2)).maybe_raise!
+
+      expect(by.cash).to be bayern_cash
+      expect(obb.closed?).to be false
+    end
+
+    it 'is possible to lay two tiles extra unconnected for free and OBB closes' do
+      sell_start_packet
+      skip_operation_for_minors
+
+      bayern_cash = by.cash
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('202-0'), hex: hex('O15'), rotation: 0)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('8-0'), hex: hex('N14'), rotation: 3)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(obb, tile: tile('3-0'), hex: hex('M15'), rotation: 2)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(obb, tile: tile('8-1'), hex: hex('M17'), rotation: 2)).maybe_raise!
+
+      expect(by.cash).to be bayern_cash
+      expect(obb.closed?).to be true
+    end
+
+    it 'is possible to lay one tile connected and OBB for free stays open' do
+      sell_start_packet
+      skip_operation_for_minors
+
+      bayern_cash = by.cash
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('202-0'), hex: hex('O15'), rotation: 0)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('8-0'), hex: hex('O13'), rotation: 3)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(obb, tile: tile('58-0'), hex: hex('M15'), rotation: 4)).maybe_raise!
+
+      expect(by.cash).to be bayern_cash
+      expect(obb.closed?).to be false
+    end
+
+    it 'is possible to lay two tiles connected and OBB for free stays closed' do
+      sell_start_packet
+      skip_operation_for_minors
+
+      bayern_cash = by.cash
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('202-0'), hex: hex('O15'), rotation: 0)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('8-0'), hex: hex('O13'), rotation: 3)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(obb, tile: tile('58-0'), hex: hex('M15'), rotation: 4)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(obb, tile: tile('7-0'), hex: hex('M17'), rotation: 1)).maybe_raise!
+
+      expect(by.cash).to be bayern_cash
+      expect(obb.closed?).to be true
+    end
+
+    it 'is possible to use OBB with two different corps' do
+      sell_start_packet
+      skip_operation_for_minors
+
+      pass(by) # pass track
+      pass(by) # pass token
+
+      buy_single_train(by)
+
+      # let player 1 take over SX so that they have OBB and the BY and SX director
+      sell_shares(player_1, 'BY', 30)
+      buy_shares(player_1, 'SX')
+      pass(player_1)
+      expect(game.current_entity).to eq(player_3)
+      pass(player_3)
+      buy_shares(player_1, 'SX')
+      pass(player_1)
+      pass(player_2)
+      pass(player_3)
+      buy_shares(player_1, 'SX')
+      pass(player_1)
+
+      # end the stock round
+      pass(player_2)
+      pass(player_3)
+      pass(player_1)
+
+      skip_operation_for_minors
+
+      # SX uses OBB first
+      game.process_action(Engine::Action::LayTile.new(obb, tile: tile('4-0'), hex: hex('M15'), rotation: 0)).maybe_raise!
+      pass(sx) # skip more track
+      pass(sx) # skip token
+      buy_single_train(sx)
+
+      # BY uses OBB second
+      game.process_action(Engine::Action::LayTile.new(obb, tile: tile('7-0'), hex: hex('M17'), rotation: 0)).maybe_raise!
+
+      expect(obb.closed?).to be true
+    end
   end
 
   describe 'privates' do

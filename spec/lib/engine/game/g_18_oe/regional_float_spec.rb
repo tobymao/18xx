@@ -120,4 +120,95 @@ describe 'G18OE regionals (§8.2, §9.2)' do
 
     expect(step.can_convert?(lnwr, president)).to be(true)
   end
+
+  describe 'removing an unfloated regional (§8.2)' do
+    let!(:player) { round.current_entity }
+
+    def remove!(id)
+      act!(round, Engine::Action::Choose.new(round.current_entity, choice: "remove_#{id}"))
+    end
+
+    def regional(id)
+      game.corporation_by_id(id)
+    end
+
+    it 'offers the remove action on an unfloated regional' do
+      expect(step.actions(player)).to include('choose')
+      expect(step.can_remove_corporation?(player, regional('PLM'))).to be(true)
+    end
+
+    it 'does not offer removal of a floated or parred regional or a minor' do
+      start_regional!(game, 'LNWR', player)
+      gwr = regional('GWR')
+      game.par_corporation(gwr, cell(game, 60, :par))
+      gwr.ipoed = true
+
+      expect(game.parred_regional?(gwr)).to be(true)
+      expect(step.can_remove_corporation?(player, regional('LNWR'))).to be(false)
+      expect(step.can_remove_corporation?(player, gwr)).to be(false)
+      expect(step.can_remove_corporation?(player, regional('A'))).to be(false)
+    end
+
+    it 'does not offer removal after another action this turn' do
+      round.current_actions << Engine::Action::Par.new(player, corporation: regional('LNWR'), share_price: cell(game, 60, :par))
+
+      expect(step.can_remove_corporation?(player, regional('PLM'))).to be(false)
+    end
+
+    it 'removes the regional and its home tokens from the game' do
+      plm = regional('PLM')
+      remove!('PLM')
+
+      expect(plm.closed?).to be(true)
+      expect(game.corporations).not_to include(plm)
+      expect(game.hex_by_id('U34').tile.cities.first.reservations).to be_empty
+    end
+
+    it "opens the removed regional's home city to minors" do
+      minor = regional('A')
+      expect(game.home_token_locations(minor).map(&:id)).not_to include('U34')
+
+      remove!('PLM')
+
+      expect(game.home_token_locations(minor).map(&:id)).to include('U34')
+    end
+
+    it 'allows only one removal per track rights zone' do
+      remove!('PLM')
+
+      expect(step.can_remove_corporation?(round.current_entity, regional('MIDI'))).to be(false)
+      expect { remove!('MIDI') }.to raise_error(Engine::GameError, /Cannot remove MIDI/)
+      expect(step.can_remove_corporation?(round.current_entity, regional('BHB'))).to be(true)
+    end
+
+    it 'stops once six regionals are removed' do
+      %w[LNWR PLM BHB SB SFAI CHN].each { |id| game.remove_regional!(regional(id)) }
+
+      expect(step.can_remove_corporation?(player, regional('MSP'))).to be(false)
+      expect(step.can_remove_corporation?(player, regional('DSJ'))).to be(false)
+      expect(step.actions(player)).not_to include('choose')
+    end
+
+    it 'does not offer removal once 18 regionals are in play' do
+      float_regionals!(game, 17, except: ['LNWR'])
+      par!('LNWR')
+      fresh = round_step(enter_round!(game, game.stock_round), Engine::Game::G18OE::Step::BuySellParShares)
+
+      expect(fresh.actions(fresh.current_entity)).not_to include('choose')
+    end
+
+    it 'spends the turn without passing' do
+      remove!('PLM')
+
+      expect(round.current_entity).not_to eq(player)
+      expect(player.passed?).to be_falsey
+    end
+
+    it 'lets a player holding an unfloated minor remove a regional' do
+      give_company!(player, game.companies.find { |c| game.company_becomes_minor?(c) })
+
+      expect(step.actions(player)).to include('choose')
+      expect(step.actions(player)).not_to include('pass')
+    end
+  end
 end

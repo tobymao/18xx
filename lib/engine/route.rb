@@ -152,7 +152,7 @@ module Engine
             connection_data[0] = segment(chain, right: head[:right])
           else
             connection_data.shift
-            if (chain = select(tail[:right], node)[0])
+            if tail && (chain = select(tail[:right], node)[0])
               # This node can be reached from either the head or the tail of the
               # chain. All head connections have been offered, switch to the tail.
               connection_data << segment(chain, left: tail[:right])
@@ -274,6 +274,21 @@ module Engine
       end
     end
 
+    def check_double_towns!
+      connection_data.each_cons(2) do |before, after|
+        town = before[:right]
+        next unless town.town?
+
+        double_town = town.tile.double_towns.find { |dt| dt.towns.include?(town) }
+        next unless double_town
+
+        partner = (double_town.towns - [town]).first
+        next if [before[:left], after[:right]].include?(partner)
+
+        raise GameError, "Route must pass through both towns of the double town on #{town.hex.name}"
+      end
+    end
+
     def check_overlap!
       @game.check_overlap(@routes)
     end
@@ -338,6 +353,7 @@ module Engine
           check_other!
           check_route_combination! unless suppress_check_route_combination
           check_cycles!
+          check_double_towns!
           check_distance!(visited)
           check_overlap!
           check_connected!
