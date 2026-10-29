@@ -98,7 +98,9 @@ module Engine
 
             max_share_price = [bid / 2, MAX_MINOR_PAR].min
             share_price = get_all_par_prices(corporation).find { |par| par.price <= max_share_price }
-            process_par(Action::Par.new(entity, corporation: corporation, share_price: share_price))
+            action = Action::Par.new(entity, corporation: corporation, share_price: share_price)
+            action.id = @game.current_action_id
+            process_par(action)
 
             @log << "#{corporation.name} receives #{@game.format_currency(bid)} in its Treasury"
             additional_cash = bid - (share_price.price * 2)
