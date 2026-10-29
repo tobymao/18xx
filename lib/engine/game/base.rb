@@ -1865,6 +1865,7 @@ module Engine
         #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
         # - TODO: account for games that allow double dits to upgrade to one town
         return false if from.towns.size != to.towns.size
+        return false if from.double_towns.size != to.double_towns.size
         return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
         return false if from.cities.size > 1 && to.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
 

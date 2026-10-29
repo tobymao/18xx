@@ -46,19 +46,19 @@ module Engine
             {
               'count' => 4,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:3',
+              'code' => 'double_town=revenue:10,axis:0,revenue_loc:1.5|4.5;path=a:0,b:_0;path=a:3,b:_0',
             },
           'OE2' =>
             {
               'count' => 6,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:2',
+              'code' => 'double_town=revenue:10,axis:0.5,revenue_loc:1|3;path=a:0,b:_0;path=a:4,b:_0',
             },
           'OE3' =>
             {
               'count' => 2,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:1',
+              'code' => 'double_town=revenue:10,axis:1,revenue_loc:1|4;path=a:0,b:_0;path=a:5,b:_0',
             },
           'OE4' =>
             {
@@ -90,9 +90,24 @@ module Engine
               'color' => 'yellow',
               'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:5,b:_1;label=S',
             },
-          # 'OE9' => 3, green, double town
-          # 'OE10' => 3, green, double town
-          # 'OE11' => 3, green, double town
+          'OE9' =>
+            {
+              'count' => 3,
+              'color' => 'green',
+              'code' => 'double_town=revenue:10,axis:2,revenue_loc:2|5;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            },
+          'OE10' =>
+            {
+              'count' => 3,
+              'color' => 'green',
+              'code' => 'double_town=revenue:10,axis:1.5,revenue_loc:1|5;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            },
+          'OE11' =>
+            {
+              'count' => 3,
+              'color' => 'green',
+              'code' => 'double_town=revenue:10,axis:0,revenue_loc:4|5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+            },
           'OE12' =>
             {
               'count' => 3,
@@ -138,9 +153,27 @@ module Engine
               'color' => 'green',
               'code' => 'city=revenue:50;city=revenue:50,slots:2;path=a:0,b:_0;path=a:_0,b:2;path=a:5,b:_1;path=a:_1,b:3;label=S',
             },
-          # 'OE20' => 3, brown, two towns
-          # 'OE21' => 2, brown, two towns
-          # 'OE22' => 6, brown, two towns
+          'OE20' =>
+            {
+              'count' => 3,
+              'color' => 'brown',
+              'code' => 'double_town=revenue:20,axis:0,revenue_loc:3.5|5.5;' \
+                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+            },
+          'OE21' =>
+            {
+              'count' => 2,
+              'color' => 'brown',
+              'code' => 'double_town=revenue:20,axis:2,revenue_loc:0.5|3.5;' \
+                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            },
+          'OE22' =>
+            {
+              'count' => 6,
+              'color' => 'brown',
+              'code' => 'double_town=revenue:20,axis:0,revenue_loc:1.5|4.5;' \
+                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            },
           'OE23' =>
             {
               'count' => 12,
@@ -856,8 +889,8 @@ module Engine
             # Double towns
             %w[J29 M26 W32
                N41 Q46 U64 W46 AF53
-               J77 P77 AC6 C58 U6] => 'town=revenue:0;town=revenue:0',
-            ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:hill;' \
+               J77 P77 AC6 C58 U6] => 'double_town=revenue:0',
+            ['T37'] => 'double_town=revenue:0;upgrade=cost:45,terrain:hill;' \
                        'partition=a:3,b:0,type:province,length:0.5;partition=a:5,b:2,type:province,length:0.5;' \
                        'border=edge:1,type:province;border=edge:2,type:province',
             # Cities — no label, no terrain
@@ -917,7 +950,7 @@ module Engine
             ['D81'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
             ['I52'] => 'city=revenue:0',
             ['J63'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
-            ['L39'] => 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:water',
+            ['L39'] => 'double_town=revenue:0;upgrade=cost:30,terrain:water',
             ['M36'] => 'city=revenue:0;upgrade=cost:30,terrain:water;border=edge:0,type:province',
             ['M38'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
             ['M72'] => 'town=revenue:0;upgrade=cost:30,terrain:water',

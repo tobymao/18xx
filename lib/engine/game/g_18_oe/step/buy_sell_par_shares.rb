@@ -36,7 +36,7 @@ module Engine
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'choose' if can_merge_any?(entity)
+            actions << 'choose' if can_merge_any?(entity) || can_remove_any_corporation?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
           end
@@ -49,16 +49,36 @@ module Engine
             @round.current_actions.empty? && !@game.merge_targets(player, minor).empty?
           end
 
+          def can_remove_any_corporation?(player)
+            @game.corporations.any? { |corporation| can_remove_corporation?(player, corporation) }
+          end
+
+          def can_remove_corporation?(_player, corporation)
+            @round.current_actions.empty? && @game.removable_regional?(corporation)
+          end
+
           def choice_available?(_entity)
             false
           end
 
           def process_choose(action)
+            return remove_regional(action) if action.choice.start_with?('remove_')
+
             minor = @game.corporation_by_id(action.choice)
             raise GameError, "Cannot merge #{action.choice}" if !minor || !can_merge?(action.entity, minor)
 
             @round.merge_minor = minor
             track_action(action, minor)
+          end
+
+          def remove_regional(action)
+            id = action.choice.delete_prefix('remove_')
+            regional = @game.corporation_by_id(id)
+            raise GameError, "Cannot remove #{id}" if !regional || !can_remove_corporation?(action.entity, regional)
+
+            @log << "#{action.entity.name} removes #{regional.name} from the game"
+            @game.remove_regional!(regional)
+            track_action(action, regional)
           end
 
           def corporation_actions(corporation)
