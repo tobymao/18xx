@@ -12,6 +12,7 @@ require_relative 'step/merge_discard_train'
 require_relative 'step/merge_minor'
 require_relative 'step/merge_token'
 require_relative 'step/concession'
+require_relative 'step/reserve_share'
 
 module Engine
   module Game
@@ -415,6 +416,7 @@ module Engine
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
+          @reserved_shares = []
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -722,6 +724,7 @@ module Engine
               remove_major_par_markers!
               super
             when Engine::Round::Stock
+              @reserved_shares = []
               remove_major_par_markers!
               round = super
               @operating_rounds = final_operating_rounds if @turn == @final_turn
@@ -769,6 +772,33 @@ module Engine
 
         def parred_regional?(corporation)
           corporation.type == :regional && corporation.ipoed && !corporation.floated?
+        end
+
+        def reserved_shares?
+          @players.size > 2
+        end
+
+        def reserved_share(corporation)
+          return unless corporation.type == :regional
+
+          @reserved_shares.find { |share| share.corporation == corporation && share.owner == corporation.ipo_owner }
+        end
+
+        def can_reserve_regional?(player, corporation)
+          reserved_shares? &&
+            @turn == 1 &&
+            corporation.type == :regional &&
+            corporation.president?(player) &&
+            @reserved_shares.none? { |share| share.corporation.owner == player } &&
+            corporation.ipo_shares.count { |share| !share.president } == 2
+        end
+
+        def reserve_share!(corporation)
+          @reserved_shares << corporation.ipo_shares.reject(&:president).last
+        end
+
+        def status_str(corporation)
+          "Share reserved by #{corporation.owner.name}" if reserved_share(corporation)
         end
 
         def float_corporation(corporation)
@@ -872,6 +902,7 @@ module Engine
             G18OE::Step::MergeToken,
             G18OE::Step::MergeDiscardTrain,
             G18OE::Step::MergeMinor,
+            G18OE::Step::ReserveShare,
             G18OE::Step::BuySellParShares,
           ])
         end

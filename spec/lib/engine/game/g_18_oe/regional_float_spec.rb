@@ -24,7 +24,13 @@ describe 'G18OE regionals (§8.2, §9.2)' do
   end
 
   it 'funds the treasury with twice par less the home token cost' do
-    expect([par!('LNWR').cash, par!('PLM').cash, par!('SFAI', 90).cash]).to eq([80, 100, 170])
+    cash = [par!('LNWR').cash]
+    act!(round, Engine::Action::Pass.new(round.current_entity))
+    cash << par!('PLM').cash
+    act!(round, Engine::Action::Pass.new(round.current_entity))
+    cash << par!('SFAI', 90).cash
+
+    expect(cash).to eq([80, 100, 170])
   end
 
   it 'places the home token and charges it once' do
@@ -62,6 +68,7 @@ describe 'G18OE regionals (§8.2, §9.2)' do
 
   it 'puts the 25% shares on sale once the Major RR Phase begins' do
     par!('LNWR')
+    act!(round, Engine::Action::Pass.new(round.current_entity))
     buyer = fund!(game, round.current_entity)
     allow(game).to receive(:major_phase?).and_return(true)
 
@@ -125,11 +132,27 @@ describe 'G18OE regionals (§8.2, §9.2)' do
     let!(:player) { round.current_entity }
 
     def remove!(id)
-      act!(round, Engine::Action::Choose.new(round.current_entity, choice: "remove_#{id}"))
+      act!(round, Engine::Action::Choose.new(round.current_entity, choice: 'remove', target: regional(id)))
     end
 
     def regional(id)
       game.corporation_by_id(id)
+    end
+
+    it 'offers removal as a choice on the regional' do
+      expect(step.choice_available?(regional('PLM'))).to be(true)
+      expect(step.entity_choices(regional('PLM'))).to eq('remove' => 'Remove from game')
+      expect(step.choice_available?(player)).to be(false)
+    end
+
+    it 'keeps the target on the saved action' do
+      action = Engine::Action::Choose.new(player, choice: 'remove', target: regional('PLM'))
+      loaded = Engine::Action::Base.action_from_h(action.to_h, game)
+
+      expect(loaded.target).to eq(regional('PLM'))
+      bare = Engine::Action::Choose.new(player, choice: 'x').to_h
+      expect(bare).not_to have_key('target')
+      expect(bare).not_to have_key('target_type')
     end
 
     it 'offers the remove action on an unfloated regional' do
@@ -194,7 +217,7 @@ describe 'G18OE regionals (§8.2, §9.2)' do
       par!('LNWR')
       fresh = round_step(enter_round!(game, game.stock_round), Engine::Game::G18OE::Step::BuySellParShares)
 
-      expect(fresh.actions(fresh.current_entity)).not_to include('choose')
+      expect(fresh.can_remove_any_corporation?(fresh.current_entity)).to be(false)
     end
 
     it 'spends the turn without passing' do

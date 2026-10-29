@@ -36,7 +36,7 @@ module Engine
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'choose' if can_merge_any?(entity) || can_remove_any_corporation?(entity)
+            actions << 'choose' if can_merge_any?(entity) || can_remove_any_corporation?(entity) || can_reserve_any?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
           end
@@ -57,12 +57,39 @@ module Engine
             @round.current_actions.empty? && @game.removable_regional?(corporation)
           end
 
-          def choice_available?(_entity)
-            false
+          def can_reserve_any?(player)
+            @game.corporations.any? { |corporation| can_reserve?(player, corporation) }
+          end
+
+          def can_reserve?(player, corporation)
+            @game.can_reserve_regional?(player, corporation)
+          end
+
+          def pass_description
+            return super if @round.current_actions.empty?
+            return super unless (actions(current_entity) - %w[choose pass]).empty?
+
+            'Pass (Reserve Share)'
+          end
+
+          def choice_available?(entity)
+            entity.corporation? && !entity_choices(entity).empty?
+          end
+
+          def choice_name
+            nil
+          end
+
+          def entity_choices(corporation)
+            choices = {}
+            choices['remove'] = 'Remove from game' if can_remove_corporation?(current_entity, corporation)
+            choices['reserve'] = 'Reserve share' if can_reserve?(current_entity, corporation)
+            choices
           end
 
           def process_choose(action)
-            return remove_regional(action) if action.choice.start_with?('remove_')
+            return remove_regional(action) if action.target && action.choice == 'remove'
+            return reserve_regional(action) if action.target && action.choice == 'reserve'
 
             minor = @game.corporation_by_id(action.choice)
             raise GameError, "Cannot merge #{action.choice}" if !minor || !can_merge?(action.entity, minor)
@@ -72,13 +99,40 @@ module Engine
           end
 
           def remove_regional(action)
-            id = action.choice.delete_prefix('remove_')
-            regional = @game.corporation_by_id(id)
-            raise GameError, "Cannot remove #{id}" if !regional || !can_remove_corporation?(action.entity, regional)
+            regional = action.target
+            raise GameError, "Cannot remove #{regional.id}" unless can_remove_corporation?(action.entity, regional)
 
             @log << "#{action.entity.name} removes #{regional.name} from the game"
             @game.remove_regional!(regional)
             track_action(action, regional)
+          end
+
+          def reserve_regional(action)
+            regional = action.target
+            player = action.entity
+            raise GameError, "Cannot reserve #{regional.name}" unless can_reserve?(player, regional)
+
+            @log << "#{player.name} reserves a share of #{regional.name}"
+            @game.reserve_share!(regional)
+          end
+
+          def reservation_prompt?(action)
+            return false unless @game.reserved_shares?
+            return false if @game.turn != 1 || @converting || @round.pending_share_buy
+
+            bundle = action.bundle
+            corporation = bundle.corporation
+            return false if corporation.type != :regional || bundle.presidents_share
+            return false if bundle.owner != corporation.ipo_owner || corporation.owner == action.entity
+
+            @game.can_reserve_regional?(corporation.owner, corporation)
+          end
+
+          def process_buy_shares(action)
+            return super unless reservation_prompt?(action)
+
+            check_legal_buy(action.entity, action.bundle, swap: action.swap)
+            @round.pending_share_buy = action
           end
 
           def corporation_actions(corporation)
@@ -97,6 +151,7 @@ module Engine
 
           def can_buy?(entity, bundle)
             return false if treasury_share_off_sale?(bundle)
+            return false if reserved_for_another?(entity, bundle)
 
             # During conversion lock-in: only the new major's IPO is available.
             return false if @converted && bundle.corporation != @converted
@@ -355,6 +410,13 @@ module Engine
 
           def bought_corporation
             @round.current_actions.find { |x| x.is_a?(Action::BuyShares) }&.bundle&.corporation
+          end
+
+          def reserved_for_another?(entity, bundle)
+            return false unless bundle
+
+            corporation = bundle.corporation
+            bundle.shares.include?(@game.reserved_share(corporation)) && entity != corporation.owner
           end
 
           def treasury_share_off_sale?(bundle)
