@@ -122,17 +122,11 @@ module View
           pass0 = []
           pass1 = []
           pass2 = []
-
-          @extension_paths = @routes.map(&:extension_paths)
-
           sorted.each do |path, index|
-            dash = value_for_index(index, :dash, path.track)
-            dash = EXTENSION_DASH if index && @extension_paths[index].include?(path)
-
             props = {
               color: value_for_index(index, :color, path.track),
               width: width_for_index(path, index, path_indexes),
-              dash: dash,
+              dash: value_for_index(index, :dash, path.track, path),
             }
 
             border_props = BORDER_PROPS[path.track]
@@ -172,13 +166,14 @@ module View
           indexes.empty? ? [nil] : indexes
         end
 
-        EXTENSION_DASH = '12 6'
+        def value_for_index(index, prop, track, path = nil)
+          if prop == :dash && index && path
+            override = @routes[index].path_dash(path)
+            return override if override
+          end
 
-        def value_for_index(index, prop, track)
           return TRACK[track][prop] if index && track == :narrow && prop == :dash
           return TRACK[track][prop] if track == :thin && prop == :dash
-
-          return EXTENSION_DASH if index && prop == :dash && @extension_paths[index]&.include?(@current_path)
 
           index ? route_prop(index, prop) : TRACK[track][prop]
         end

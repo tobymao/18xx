@@ -258,6 +258,10 @@ module Engine
           @extension_graph ||= G1833NE::Graph.new(self)
         end
 
+        def autorouter_graph(_entity)
+          extension_graph
+        end
+
         def clear_graph_for_entity(entity)
           super
           @extension_graph&.clear
@@ -373,23 +377,38 @@ module Engine
           shared = a.nodes & b.nodes
           return false unless shared.any? { |node| blocked_for?(node, corporation) }
 
-          extension = route.extension_paths
+          extension = extension_track(route)
           extension.include?(a) || extension.include?(b)
+        end
+
+        def route_path_dashes(route)
+          extension_track(route).to_h { |p| [p, '12 6'] }
         end
 
         def main_range(route, stops = route.visited_stops, train = route.train)
           main = train.distance.reject { |h| h['extension'] }
           [stops, stops.reverse].filter_map do |ordered|
-            blocked_idx = ordered.each_index.find { |i| i.positive? && blocked_for?(ordered[i], route.corporation) }
-            candidates = blocked_idx ? ordered.first(blocked_idx + 1) : ordered
-            longest = (1..candidates.size).select { |n| within_main_range?(main, candidates.first(n), train) }.max || 0
-            range = candidates.first(longest)
+            longest = (1..ordered.size).select do |n|
+              prefix = ordered.first(n)
+              within_main_range?(main, prefix, train) &&
+                prefix[1..-2].none? { |s| s.city? && blocked_for?(s, route.corporation) }
+            end.max || 0
+            range = ordered.first(longest)
             range if range.any? { |s| s.tokened_by?(route.corporation) }
           end.max_by(&:size) || []
         end
 
         def extension_stops(route)
           route.visited_stops - main_range(route, route.visited_stops)
+        end
+
+        def extension_track(route)
+          extension = extension_stops(route)
+          return [] if extension.empty?
+
+          route.connection_data
+            .select { |c| c[:chain] && (extension.include?(c[:left]) || extension.include?(c[:right])) }
+            .flat_map { |c| c[:chain][:paths] }
         end
 
         def connection_bonus_tier
@@ -549,7 +568,7 @@ module Engine
             values: { i_ii: 0, iii_iv: 50, v: 80 },
           },
         ].map(&:freeze).freeze
-        
+
         def revenue_for(route, stops)
           stops.sum { |stop| stop.route_revenue(route.phase, route.train) } +
             direct_connection_bonus(route, stops) +

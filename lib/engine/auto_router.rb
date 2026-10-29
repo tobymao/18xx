@@ -49,7 +49,11 @@ module Engine
 
       connections = {}
 
-      graph = @game.graph_for_entity(corporation)
+      graph = if @game.respond_to?(:autorouter_graph)
+                @game.autorouter_graph(corporation)
+              else
+                @game.graph_for_entity(corporation)
+              end
       nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = trains
           .map { |train| node.route_revenue(@game.phase, train) }

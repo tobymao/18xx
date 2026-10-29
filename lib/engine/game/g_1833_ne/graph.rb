@@ -9,6 +9,10 @@ module Engine
         def wall?(node)
           @roots[node] || false
         end
+
+        def no_blocking?
+          true
+        end
       end
     end
   end

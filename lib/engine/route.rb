@@ -49,7 +49,7 @@ module Engine
       @stops = nil
       @subsidy = nil
       @visited_stops = nil
-      @extension_paths = nil
+      @path_dashes = nil
       @check_connected = nil
       @check_distance = nil
     end
@@ -239,6 +239,11 @@ module Engine
       @visited_stops ||= @game.visited_stops(self)
     end
 
+    def path_dash(path)
+      @path_dashes ||= @game.respond_to?(:route_path_dashes) ? @game.route_path_dashes(self) : {}
+      @path_dashes[path]
+    end
+
     def stops
       @stops ||= @game.compute_stops(self)
     end
@@ -419,19 +424,6 @@ module Engine
 
       @node_signatures = nil
       @connection_data
-    end
-
-    def extension_paths
-      @extension_paths ||= begin
-        extension = @game.extension_stops(self)
-        if extension.empty?
-          []
-        else
-          connection_data
-            .select { |c| c[:chain] && (extension.include?(c[:left]) || extension.include?(c[:right])) }
-            .flat_map { |c| c[:chain][:paths] }
-        end
-      end
     end
 
     private
