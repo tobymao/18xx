@@ -27,7 +27,7 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     phase_two_minor = start_minor!(phase_two_game, 'B', phase_two_player, 'SP')
 
     expect(phase_two_game.merge_targets(phase_two_player, phase_two_minor)).to be_empty
-    expect(phase_two_round.active_step.actions(phase_two_player)).not_to include('choose')
+    expect(phase_two_round.active_step.can_merge_any?(phase_two_player)).to be(false)
   end
 
   it 'offers to merge a minor into a major the player presides from Train Phase 3 (§10.5)' do

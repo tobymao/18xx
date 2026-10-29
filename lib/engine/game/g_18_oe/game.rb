@@ -411,6 +411,7 @@ module Engine
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
+          @removed_regional_zones = []
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
@@ -752,6 +753,18 @@ module Engine
 
         def regionals_in_play
           @corporations.count { |corporation| corporation.type == :regional && corporation.ipoed }
+        end
+
+        def removable_regional?(corporation)
+          return false if corporation.type != :regional || corporation.ipoed
+          return false unless @corporations.count { |c| c.type == :regional } > self.class::MAX_FLOATED_REGIONALS
+
+          !@removed_regional_zones.include?(self.class::CORPORATIONS_TRACK_RIGHTS[corporation.id])
+        end
+
+        def remove_regional!(corporation)
+          @removed_regional_zones << self.class::CORPORATIONS_TRACK_RIGHTS[corporation.id]
+          close_corporation(corporation)
         end
 
         def parred_regional?(corporation)

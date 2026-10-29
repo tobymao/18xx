@@ -46,6 +46,7 @@ module View
           children.concat(render_convert)
           children.concat(render_short)
         end
+        children.concat(render_remove_corporation)
         children.concat(render_exchanges)
 
         children << h(SellShares, player: @current_entity, corporation: @corporation) if @corporation.ipoed
@@ -336,6 +337,18 @@ module View
         end
 
         [h(:button, { on: { click: merge } }, 'Merge')]
+      end
+
+      def render_remove_corporation
+        return [] unless @step.current_actions.include?('choose')
+        return [] unless @step.respond_to?(:can_remove_corporation?)
+        return [] unless @step.can_remove_corporation?(@current_entity, @corporation)
+
+        remove = lambda do
+          process_action(Engine::Action::Choose.new(@current_entity, choice: "remove_#{@corporation.id}"))
+        end
+
+        [h(:button, { on: { click: remove } }, 'Remove from game')]
       end
 
       def render_convert
