@@ -157,7 +157,7 @@ describe Engine::Game::G1835::Game do
     end
   end
 
-  describe 'privates' do
+  describe 'Nürnberg-Fürth' do
     let(:players) { %w[a b c] }
     it 'should let corporation place extra token in Nürnberg without connection' do
       sell_start_packet
@@ -168,9 +168,7 @@ describe Engine::Game::G1835::Game do
       game.process_action(Engine::Action::LayTile.new(by, tile: tile('9-0'), hex: hex('O13'), rotation: 2)).maybe_raise!
       pass(by) # skip laying track using Pfalzbahnen
       pass(by) # skip tokening using Nürnberg-Fürth
-      train = game.depot.depot_trains.first
-      game.process_action(Engine::Action::BuyTrain.new(by, train: train, price: train.price))
-      pass(by) # skip buying more trains
+      buy_single_train(by)
 
       # Do nothing during the stock round
       pass(player_1) # no valid actions for player 2
@@ -185,6 +183,47 @@ describe Engine::Game::G1835::Game do
       bayern_cash = by.cash
       bayern_num_unused_tokens = by.tokens.count { |t| !t.used }
       # Place token in Nürnberg/Fürth without connection
+      game.process_action(Engine::Action::PlaceToken.new(nf, city: hex('L14').tile.cities.first, tokener: by)).maybe_raise!
+      # Ensure placing the token was free
+      expect(by.cash).to be bayern_cash
+
+      expect(nf.owner).to eq(nil)
+      expect(nf.closed?).to be true
+
+      # Make sure we can place another token, but this one costs money: Augsburg is 2 hexes away, so 2 * 20 = 40
+      game.process_action(Engine::Action::PlaceToken.new(by, city: game.hex_by_id('N12').tile.cities.first)).maybe_raise!
+      expect(by.cash).to be bayern_cash - 40
+
+      # Make sure NF used one of BY's tokens
+      expect(by.tokens.count { |t| !t.used }).to be bayern_num_unused_tokens - 2
+    end
+
+    it 'should let corporation place extra token in Nürnberg with connection' do
+      sell_start_packet
+      skip_operation_for_minors
+
+      # Start building towards Augsburg
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('202-0'), hex: hex('O15'), rotation: 0)).maybe_raise!
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('9-0'), hex: hex('O13'), rotation: 2)).maybe_raise!
+      pass(by) # skip laying track using Pfalzbahnen
+      pass(by) # skip tokening using Nürnberg-Fürth
+      buy_single_train(by)
+
+      # Do nothing during the stock round
+      pass(player_1) # no valid actions for player 2
+      pass(player_3)
+
+      skip_operation_for_minors
+
+      # Lay tile on Augsburg
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('6-0'), hex: hex('N12'), rotation: 3)).maybe_raise!
+      # Connect to Nürnberg
+      game.process_action(Engine::Action::LayTile.new(by, tile: tile('9-1'), hex: hex('M13'), rotation: 3)).maybe_raise!
+      pass(by) # skip rest of track laying
+
+      bayern_cash = by.cash
+      bayern_num_unused_tokens = by.tokens.count { |t| !t.used }
+      # Place token in Nürnberg/Fürth with connection
       game.process_action(Engine::Action::PlaceToken.new(nf, city: hex('L14').tile.cities.first, tokener: by)).maybe_raise!
       # Ensure placing the token was free
       expect(by.cash).to be bayern_cash
