@@ -127,7 +127,7 @@ end
 
 def run_romania_banater_migration(mode = 'dry', game_ids = nil, status: %w[active finished])
   dry_run = mode != 'write'
-  where = { title: '1880', status: status }
+  where = { title: ['1880', '1880 Romania'], status: status }
   where[:id] = game_ids.map(&:to_i) if game_ids && !game_ids.empty?
 
   DB[:games].order(:id).where(**where).select(:id).paged_each(rows_per_fetch: 1) do |row|
