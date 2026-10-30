@@ -157,6 +157,9 @@ module Engine
         POLITICAL_TRACK_LIMIT = 5
         RADICAL_THRESHOLD = 3
 
+        # Rules summary 6.5: under Dictatorship, each Military-aligned company receives $80 per token.
+        MILITARY_BONUS_PER_TOKEN = 80
+
         # Rules summary 6.2: hexes with a paramilitary token.
         PARAMILITARY_HEXES = %w[B14 C11 E7 F4 G13 I3 I9 K11 L8].freeze
 
@@ -181,6 +184,9 @@ module Engine
           remove_random_corporation!
           select_random_privates!
           setup_political_track!
+          # Rules summary 1.5: two Calm cards and one Coup Attempt card, shuffled.
+          @political_situation_deck = %i[calm calm coup].sort_by { rand }
+          @coup_outcome = nil
         end
 
         # Rules summary 1.2: one public company, drawn at random, is out of the game. Its home
@@ -364,8 +370,10 @@ module Engine
         # added to the corruption bag.
         def buy_train(operator, train, price = nil)
           last_of_type = @depot.upcoming.include?(train) && @depot.upcoming.count { |t| t.name == train.name } == 1
+          from_depot = @depot.upcoming.include?(train)
           super
           refill_corruption_bag!(train.name) if last_of_type
+          reveal_political_situation_card! if train.name == '5' && from_depot && !coup_resolved?
         end
 
         def refill_corruption_bag!(train_name)
@@ -390,9 +398,13 @@ module Engine
           @players.sum { |player| player.corruption_tokens.values.sum }
         end
 
-        # Rules summary 9.2: before the coup (next PR), the political track picks the column: Military
-        # uses Dictatorship; Civilian or Neutral uses Democracy.
+        # Rules summary 9.2: the coup outcome picks the column; before the coup, the political track does
+        # (Military: Dictatorship; Civilian or Neutral: Democracy).
         def corruption_penalty_regime
+          @coup_outcome || track_regime
+        end
+
+        def track_regime
           @political_track.negative? ? :dictatorship : :democracy
         end
 
@@ -470,7 +482,7 @@ module Engine
                   "Civilian for #{civilian.map(&:name).join(' and ')}"
         end
 
-        attr_reader :political_track
+        attr_reader :political_track, :coup_outcome
 
         def corporation_alignment(corporation)
           @corporation_alignment[corporation]
@@ -488,6 +500,8 @@ module Engine
         # Rules summary 6.1: one space, or two from space 3 or more on the opposite side; Neutral is
         # skipped and the marker never goes beyond either end.
         def move_political_track!(side)
+          return @log << 'The Political Track is locked after the coup: the marker does not move' if coup_resolved?
+
           direction = side == :civilian ? 1 : -1
           far_on_other_side = -direction * @political_track >= self.class::RADICAL_THRESHOLD
           position = @political_track + (direction * (far_on_other_side ? 2 : 1))
@@ -537,6 +551,121 @@ module Engine
 
           reason = 'supporting a side in a paramilitary hex'
           draw_corruption_token!(corporation.owner, reason) if draw_corruption_token!(corporation.owner, reason) == :white
+        end
+
+        def coup_resolved?
+          !@coup_outcome.nil?
+        end
+
+        # Rules summary 1.5: each 5-train bought from the bank reveals the top card of the deck; the
+        # Coup Attempt card resolves the coup at once.
+        def reveal_political_situation_card!
+          card = @political_situation_deck.shift
+          return @log << 'Political Situation card: Calm' if card == :calm
+
+          @log << 'Political Situation card: Coup Attempt'
+          resolve_coup!
+        end
+
+        # Rules summary 6.3: outcome, token cancellation, regime effects, then closures.
+        def resolve_coup!
+          @coup_outcome = track_regime
+          @log << "The coup ends in #{@coup_outcome.to_s.capitalize}"
+
+          @corporation_alignment.each_value do |alignment|
+            pairs = [alignment[:civilian], alignment[:military]].min
+            alignment[:civilian] -= pairs
+            alignment[:military] -= pairs
+          end
+
+          @coup_outcome == :democracy ? apply_democracy! : apply_dictatorship!
+
+          @companies.dup.each { |company| remove_company(company) }
+          @log << 'All Private Companies close without compensation'
+          @paramilitary_hexes_remaining.clear
+          @log << 'The remaining paramilitary tokens are removed from the board'
+        end
+
+        # Rules summary 6.3: the floated company with the worst balance toward the winning side; ties go
+        # to the higher share price, then to the one that operates first (Corporation#<=>).
+        def least_aligned_corporation(winner)
+          loser = winner == :civilian ? :military : :civilian
+          @corporations.select(&:floated?).min_by do |corporation|
+            alignment = @corporation_alignment[corporation]
+            [alignment[winner] - alignment[loser], corporation]
+          end
+        end
+
+        # Rules summary 6.4: 8-trains leave the game (gray tiles come with the D phase), Civilian
+        # companies move right once per Civilian token, and the least aligned company's share price
+        # drops to the lowest value that is at least half of it.
+        def apply_democracy!
+          remove_trains!('8')
+          @phase.phases.reject! { |phase| phase[:name] == '8' } unless @phase.name == '8'
+          @phase.next_on = Array(@phase.upcoming&.dig(:on))
+
+          @corporations.select(&:floated?).each do |corporation|
+            tokens = @corporation_alignment[corporation][:civilian]
+            next unless tokens.positive?
+
+            old_price = corporation.share_price
+            tokens.times { @stock_market.move_right(corporation) }
+            log_share_price(corporation, old_price)
+          end
+
+          return unless (corporation = least_aligned_corporation(:civilian))
+
+          old_price = corporation.share_price
+          @stock_market.move(corporation, half_share_price(old_price.price).coordinates, force: true)
+          @log << "#{corporation.name} is the least aligned company"
+          log_share_price(corporation, old_price)
+        end
+
+        # Rightmost (then highest) space with the lowest value that is at least half of the price.
+        def half_share_price(price)
+          candidates = @stock_market.market.flatten.compact.select { |sp| sp.price * 2 >= price }
+          lowest = candidates.map(&:price).min
+          candidates.select { |sp| sp.price == lowest }.min_by { |sp| [-sp.coordinates[1], sp.coordinates[0]] }
+        end
+
+        # Rules summary 6.5: D-trains leave the game (so gray tiles never come), the border cities get
+        # fixed military values, Military companies receive $80 per Military token, and the president of
+        # the least aligned company receives 10 black corruption tokens from the stock.
+        def apply_dictatorship!
+          remove_trains!('D')
+
+          self.class::DICTATORSHIP_BORDER_TILES.each do |hex_id, code|
+            hex = hex_by_id(hex_id)
+            tile = Tile.from_code(hex_id, :red, code)
+            tile.location_name = hex.tile.location_name
+            update_tile_lists(tile, hex.tile)
+            hex.lay(tile)
+          end
+          clear_graph
+
+          @corporations.select(&:floated?).each do |corporation|
+            tokens = @corporation_alignment[corporation][:military]
+            next unless tokens.positive?
+
+            amount = tokens * self.class::MILITARY_BONUS_PER_TOKEN
+            @bank.spend(amount, corporation)
+            @log << "#{corporation.name} receives #{format_currency(amount)} for #{tokens} Military tokens"
+          end
+
+          return unless (president = least_aligned_corporation(:military)&.owner)
+
+          president.corruption_tokens[:black] += 10
+          @log << "#{president.name}, president of the least aligned company, receives 10 black corruption tokens"
+        end
+
+        # A copy, so Democracy can drop the 8 phase.
+        def game_phases
+          self.class::PHASES.dup
+        end
+
+        def remove_trains!(name)
+          @depot.upcoming.select { |train| train.name == name }.each { |train| @depot.remove_train(train) }
+          @log << "All #{name}-trains are removed from the game"
         end
       end
     end

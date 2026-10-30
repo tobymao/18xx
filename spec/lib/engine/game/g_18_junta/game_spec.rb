@@ -430,6 +430,97 @@ module Engine
             expect(president.corruption_tokens).to eq(white: 1, black: 1)
           end
         end
+
+        describe 'coup (rules summary 1.5 and 6.3 to 6.5)' do
+          let(:civilian_corp) { game.corporations[0] }
+          let(:military_corp) { game.corporations[1] }
+          let(:neutral_corp) { game.corporations[2] }
+          let(:president) { game.players.first }
+
+          def setup_companies(track)
+            game.instance_variable_set(:@political_track, track)
+            alignment = Hash.new { |h, k| h[k] = { civilian: 0, military: 0 } }
+            alignment[civilian_corp] = { civilian: 2, military: 1 }
+            alignment[military_corp] = { civilian: 0, military: 2 }
+            game.instance_variable_set(:@corporation_alignment, alignment)
+            [civilian_corp, military_corp, neutral_corp].each_with_index do |corporation, index|
+              corporation.owner = president
+              price = game.stock_market.market[2][index + 2] # $80, $90, $100
+              game.par_corporation(corporation, price)
+              corporation.share_price = price
+              price.corporations << corporation
+              corporation.floated = true
+            end
+          end
+
+          it 'has two Calm cards and one Coup Attempt card' do
+            expect(game.instance_variable_get(:@political_situation_deck).tally).to eq(calm: 2, coup: 1)
+          end
+
+          it 'only resolves the coup on the Coup Attempt card' do
+            game.instance_variable_set(:@political_situation_deck, %i[calm coup])
+            game.reveal_political_situation_card!
+            expect(game.coup_resolved?).to be(false)
+          end
+
+          it 'drops the share price to the lowest value that is at least half (rules examples)' do
+            expect(game.half_share_price(125).price).to eq(65)
+            expect(game.half_share_price(75).price).to eq(45)
+          end
+
+          context 'when the marker is on the Military side' do
+            before do
+              setup_companies(-2)
+              game.resolve_coup!
+            end
+
+            it 'ends in Dictatorship and locks the track' do
+              expect(game.coup_outcome).to eq(:dictatorship)
+              game.move_political_track!(:civilian)
+              expect(game.political_track).to eq(-2)
+              expect(game.corruption_penalty_regime).to eq(:dictatorship)
+            end
+
+            it 'cancels Civilian and Military tokens one for one' do
+              expect(game.corporation_alignment(civilian_corp)).to eq(civilian: 1, military: 0)
+            end
+
+            it 'removes the D-trains and fixes the border cities' do
+              expect(game.depot.upcoming.map(&:name)).not_to include('D')
+              expect(game.hex_by_id('A13').tile.offboards.first.revenue.values.uniq).to eq([80])
+            end
+
+            it 'pays $80 per Military token and punishes the least aligned president' do
+              expect(military_corp.cash).to eq(2 * 80)
+              expect(president.corruption_tokens[:black]).to eq(10)
+            end
+
+            it 'closes every private company' do
+              expect(game.companies).to be_empty
+            end
+          end
+
+          context 'when the marker is on the Civilian side' do
+            before { setup_companies(2) }
+
+            it 'ends in Democracy and removes the 8-trains and the 8 phase' do
+              game.resolve_coup!
+              expect(game.coup_outcome).to eq(:democracy)
+              expect(game.depot.upcoming.map(&:name)).not_to include('8')
+              expect(game.phase.phases.map { |phase| phase[:name] }).not_to include('8')
+            end
+
+            it 'moves Civilian companies right once per remaining token' do
+              game.resolve_coup!
+              expect(civilian_corp.share_price.coordinates).to eq([2, 3])
+            end
+
+            it 'halves the share price of the least aligned company' do
+              game.resolve_coup!
+              expect(military_corp.share_price.price).to eq(45)
+            end
+          end
+        end
       end
     end
   end
