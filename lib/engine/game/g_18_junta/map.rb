@@ -170,6 +170,14 @@ module Engine
           'E11' => 'Laguna',
         }.freeze
 
+        # Rules summary 6.5: under Dictatorship the border cities become military tiles with fixed values.
+        DICTATORSHIP_BORDER_TILES = {
+          'A13' => 'offboard=revenue:80;path=a:4,b:_0;path=a:5,b:_0',
+          'D4' => 'offboard=revenue:50;path=a:4,b:_0;path=a:5,b:_0',
+          'L12' => 'offboard=revenue:40;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+          'K3' => 'offboard=revenue:50;path=a:1,b:_0;path=a:2,b:_0;border=edge:0,type:impassable,color:black',
+        }.freeze
+
         HEXES = {
           white: {
             %w[C9 D8 D14 H4 J4] => '', # open terrain
