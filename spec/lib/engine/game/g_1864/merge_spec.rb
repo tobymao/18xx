@@ -42,13 +42,13 @@ describe 'G1864 merger value' do
   it 'shows the starting price of the major corporation while merging' do
     merge_at(100, 90, 45)
 
-    expect(merge_step.help).to eq('Merging RO ($100), KB ($90), OK ($45) - the major corporation will start at $70')
+    expect(merge_step.help).to eq('Merging RF&CC ($100), BW&GF ($90), CC&R ($45) - the major corporation will start at $70')
   end
 
   it 'warns while merging when the value is below $50' do
     merge_at(50, 45)
 
-    expect(merge_step.help).to eq('Merging RO ($50), KB ($45) - the average of $47 is below the $50 minimum, '\
+    expect(merge_step.help).to eq('Merging RF&CC ($50), BW&GF ($45) - the average of $47 is below the $50 minimum, '\
                                   'add more companies to continue')
   end
 end
