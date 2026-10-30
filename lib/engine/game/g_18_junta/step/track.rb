@@ -8,11 +8,13 @@ module Engine
       module Step
         # Rules summary 4.1 and 4.2: the normal Track step, plus the Upgrade License. A license held for
         # this Operating Round is used by an upgrade, and expires at the end of the Track step if unused.
-        # An upgrade without a license makes the president draw a corruption token from the bag.
+        # An upgrade without a license makes the president draw a corruption token from the bag, and the
+        # first tile in a paramilitary hex starts the choice of side (6.2).
         class Track < Engine::Step::Track
           def lay_tile_action(action, entity: nil, spender: nil)
             upgrades_before = @round.num_upgraded_track
             super
+            @game.claim_paramilitary_hex!(action.hex, action.entity) if @game.paramilitary_hex_unclaimed?(action.hex)
             return unless @round.num_upgraded_track > upgrades_before
 
             use_license_or_draw_corruption!(action.entity)
