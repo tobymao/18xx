@@ -272,7 +272,7 @@ module Engine
             name: 'FC Central',
             logo: '18_cuba/FC',
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-            tokens: [0],
+            tokens: [0, 0, 0, 0, 0, 0, 0, 0],
             coordinates: 'B7',
             city: 1,
             color: :white,

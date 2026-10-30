@@ -54,6 +54,69 @@ module Engine
             expect(game.crowded_corps).not_to include(game.fc)
           end
         end
+
+        describe 'FC station markers' do
+          let(:ms) { game.corporation_by_id('MS') }
+
+          def act(klass, entity = game.current_entity, **args)
+            game.process_action(klass.new(entity, **args)).maybe_raise!
+          end
+
+          def lay(hex_id, color, exit = nil)
+            until game.current_entity == ms && game.round.active_step.is_a?(G18Cuba::Step::Track)
+              step = game.round.active_step
+              actions = step.actions(game.current_entity)
+              if actions.include?('buy_train') && ms.trains.empty?
+                train = step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
+                act(Action::BuyTrain, train: train, price: train.price)
+              elsif actions.include?('run_routes')
+                act(Action::RunRoutes, routes: [])
+              elsif actions.include?('dividend')
+                act(Action::Dividend, kind: 'withhold')
+              else
+                act(Action::Pass)
+              end
+            end
+            step = game.round.active_step
+            hex = game.hex_by_id(hex_id)
+            tile, rotation = step.potential_tiles(ms, hex).select { |t| t.color == color }
+                                 .flat_map { |t| step.legal_tile_rotations(ms, hex, t).map { |r| [t, r] } }
+                                 .find { |t, r| exit.nil? || t.rotate!(r).exits.include?(exit) }
+            act(Action::LayTile, tile: tile, hex: hex, rotation: rotation)
+          end
+
+          it 'places the first FC marker in Havana city 1 at setup and keeps seven unplaced' do
+            havana = game.hex_by_id('B7').tile.cities
+            expect(havana.last.tokens.compact.map(&:corporation)).to eq([game.fc])
+            expect(havana.first.tokened_by?(game.fc)).to be(false)
+            expect(game.fc.tokens.size).to eq(8)
+            expect(game.fc.tokens.count { |t| !t.used }).to eq(7)
+          end
+
+          it 'places an FC marker on green FC hexes only, not on yellow or outside FC_HEX' do
+            until game.round.is_a?(Round::Stock)
+              step = game.round.active_step
+              company = game.round.is_a?(Round::Auction) && step.companies.first
+              company && step.bids[company].empty? ? act(Action::Bid, company: company, price: 0) : act(Action::Pass)
+            end
+            act(Action::Par, corporation: ms, share_price: game.stock_market.par_prices.first)
+            act(Action::BuyShares, shares: ms.ipo_shares.first, share_price: ms.share_price.price) until ms.floated?
+            game.export_train_to_fc! while game.phase.name == '2'
+
+            lay('B9', :yellow, 4)
+            lay('B11', :yellow, 5)
+            expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7])
+            lay('B11', :green)
+            expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7 B11])
+            expect(game.hex_by_id('B11').tile.icons.map(&:name)).not_to include('FC')
+            expect(game.hex_by_id('B9').tile.icons.map(&:name)).to include('FC')
+            lay('C12', :yellow, 5)
+            lay('D13', :yellow)
+            lay('D13', :green)
+            expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7 B11])
+            expect(game.fc.tokens.count { |t| !t.used }).to eq(6)
+          end
+        end
       end
     end
   end
