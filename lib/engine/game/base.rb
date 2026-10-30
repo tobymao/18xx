@@ -787,6 +787,12 @@ module Engine
         player
       end
 
+      def same_acting_player?(owner_a, owner_b)
+        return false if !owner_a || !owner_b
+
+        owner_a == owner_b
+      end
+
       def player_log(entity, msg)
         @log << "-- #{msg}" if entity.id == @user
       end
