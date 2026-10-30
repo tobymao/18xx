@@ -65,6 +65,7 @@ module Engine
                   'the Private Company keeps paying its revenue to that company. The owner receives no ' \
                   'compensation.',
             color: nil,
+            abilities: [{ type: 'choose_ability', owner_type: 'player', when: 'any', choices: {} }],
           },
           {
             name: '(F) Ingeniería Real',

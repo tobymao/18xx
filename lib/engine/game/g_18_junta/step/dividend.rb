@@ -15,6 +15,14 @@ module Engine
 
             { share_direction: %i[right up], share_times: [1, 1] }
           end
+
+          def process_dividend(action)
+            entity = action.entity
+            revenue = total_revenue
+            @game.pay_private_h_bonus!(entity, revenue) if action.kind == 'payout' && revenue >= entity.share_price.price * 2
+
+            super
+          end
         end
       end
     end

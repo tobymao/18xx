@@ -521,6 +521,84 @@ module Engine
             end
           end
         end
+
+        describe 'private companies A, E, G, H and M (rules summary 11)' do
+          let(:players) { %w[a b c d] }
+          let(:game) { Engine::Game::G18Junta::Game.new(players, id: 8) } # A, E, G, H and M in play
+          let(:owner) { game.players.first }
+          let(:corporation) { game.corporations.first }
+
+          def give(sym, entity)
+            company = game.companies.find { |c| c.sym == sym }
+            company.owner = entity
+            entity.companies << company
+            company
+          end
+
+          before { corporation.owner = owner }
+
+          it 'A: fixes the par price of a company once per game' do
+            give('(A)', owner)
+            price = game.stock_market.par_prices.last
+            expect(game.private_a_owner).to eq(owner)
+
+            game.use_private_a!(corporation, price)
+            expect(game.private_a_usable_this_stock_round?).to be(false)
+            step = G18Junta::Step::BuySellParShares.new(game, game.round)
+            expect(step.get_par_prices(owner, corporation)).to eq([price])
+          end
+
+          it 'E: can be donated only from the first 3-train' do
+            give('(E)', owner)
+            expect(game.private_e_donatable?(corporation)).to be(false)
+
+            allow(game.phase).to receive(:status).and_return(['can_buy_companies'])
+            expect(game.private_e_donatable?(corporation)).to be(true)
+          end
+
+          it 'E: the company gets the private and $150 from the bank, the owner gets nothing' do
+            company = give('(E)', owner)
+            cash = owner.cash
+
+            game.donate_private_e!(corporation)
+            expect(corporation.companies).to include(company)
+            expect(corporation.cash).to eq(150)
+            expect(owner.cash).to eq(cash)
+          end
+
+          it 'G: towns do not count toward the train range' do
+            train = game.depot.upcoming.first # a 2-train
+            city = instance_double(Engine::Part::City, town?: false, visit_cost: 1)
+            town = instance_double(Engine::Part::Town, town?: true, visit_cost: 1)
+            route = instance_double(Engine::Route, corporation: corporation, train: train)
+
+            expect { game.check_distance(route, [city, town, city]) }.to raise_error(GameError)
+            give('(G)', corporation)
+            expect { game.check_distance(route, [city, town, city]) }.not_to raise_error
+          end
+
+          it 'H: adds 10% of a high dividend to the treasury' do
+            game.pay_private_h_bonus!(corporation, 250)
+            expect(corporation.cash).to eq(0)
+
+            give('(H)', corporation)
+            game.pay_private_h_bonus!(corporation, 250)
+            expect(corporation.cash).to eq(25)
+          end
+
+          it 'M: draws a token for $5 per phase number, once per Stock Round' do
+            give('(M)', owner)
+            expect(game.private_m_usable?(owner)).to be(false) # still in the auction
+
+            game.instance_variable_set(:@round, game.stock_round)
+            cash = owner.cash
+            game.use_private_m!(owner)
+
+            expect(owner.cash).to eq(cash + 10) # phase 2
+            expect(owner.corruption_tokens.values.sum).to eq(1)
+            expect { game.use_private_m!(owner) }.to raise_error(GameError)
+          end
+        end
       end
     end
   end
