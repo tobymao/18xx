@@ -79,6 +79,7 @@ module View
           @hide = stops.any?(&:hide)
           @rows = (@tile.offboards&.first&.rows || 1)
           @revenue = @tile.revenue_to_render.first
+          @phase_styles = @tile.offboards.first&.phase_styles
         end
 
         def should_render?
@@ -93,7 +94,9 @@ module View
           transform = "#{rotation_for_layout} #{translate}"
 
           if multi_revenue?
-            h(MultiRevenue, revenues: @revenue, transform: transform, rows: @rows)
+            styles = @phase_styles
+            h(MultiRevenue, revenues: @revenue, transform: transform,
+                            rows: styles ? 1 : @rows, phase_styles: styles)
           else
             h(SingleRevenue, revenue: @revenue, transform: transform)
           end
