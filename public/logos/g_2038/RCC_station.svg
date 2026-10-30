@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g transform="translate(50 50) scale(1.15) translate(-50 -50)">
+    <path d="M50 12 C38 30 25 48 25 65 A25 25 0 1 0 75 65 C75 48 62 30 50 12 Z" fill="#FFDB58" stroke="#000" stroke-width="3"/>
+    <text x="50" y="74" text-anchor="middle" font-weight="700" font-size="20" font-family="Arial" fill="#000">RCC</text>
+  </g>
+</svg>
