@@ -80,7 +80,7 @@ module Engine
                                { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
                     price: 100,
                     rusts_on: '4',
-                    num: 9,
+                    num: 14,
                   },
                   {
                     name: '3',
@@ -88,17 +88,7 @@ module Engine
                                { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
                     price: 200,
                     rusts_on: '3D',
-                    num: 4,
-                  },
-                  # this train is reserved for the NYC
-                  {
-                    name: '3(NYC)',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                    price: 0,
-                    rusts_on: '3D',
-                    num: 1,
-                    reserved: true,
+                    num: 5,
                   },
                   {
                     name: '4',
@@ -172,13 +162,35 @@ module Engine
         def setup
           @scranton_marker_ability = Engine::Ability::Description.new(type: 'description', description: 'Scranton Token')
 
+          @minors.each do |minor|
+            train = @depot.upcoming.first
+            train.reserved = true
+            train.buyable = false
+            buy_train(minor, train, :free)
+          end
+
+          nyc_train = @depot.trains.reverse.find { |train| train.name == '3' }
+          nyc_train.reserved = true
+          nyc_train.buyable = false
+          buy_train(corporation_by_id('NYC'), nyc_train, :free)
+
           # place the home station for all corporations and minors except NYC.
-          @corporations.each do |corporation|
+          (@minors + @corporations).each do |corporation|
             next if corporation.id == 'NYC'
 
             tile = hex_by_id(corporation.coordinates).tile
             tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
           end
+        end
+
+        def minor_for(company)
+          minor_by_id(company.id.delete_prefix('P'))
+        end
+
+        def after_buy_company(player, company, _price)
+          minor = minor_for(company)
+          minor.owner = player
+          minor.float!
         end
 
         def scranton_marker_available?
