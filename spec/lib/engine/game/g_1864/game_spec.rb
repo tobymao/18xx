@@ -42,14 +42,14 @@ describe Engine::Game::G1864::Game do
     end
 
     it 'drops a minor once it is regionalized' do
-      onw = game.corporation_by_id('O&NW')
-      start!(onw)
+      femv = game.corporation_by_id('FE&MV')
+      start!(femv)
 
-      expect(legend_minors).to include('O&NW')
+      expect(legend_minors).to include('FE&MV')
 
-      game.nationalize!(onw)
+      game.nationalize!(femv)
 
-      expect(legend_minors).not_to include('O&NW')
+      expect(legend_minors).not_to include('FE&MV')
       expect(legend_minors.size).to eq(15)
     end
 
@@ -73,27 +73,27 @@ describe Engine::Game::G1864::Game do
     end
 
     it 'has the player starting the auction choose where the minor starts, before any other bid' do
-      onw = game.corporation_by_id('O&NW')
-      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: onw, price: 100))
+      femv = game.corporation_by_id('FE&MV')
+      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: femv, price: 100))
 
       expect(game.active_step).to be_a(Engine::Game::G1867::Step::HomeToken)
       expect(game.round.active_entities).to eq([game.player_by_id('alice')])
       expect(game.round.pending_tokens.first[:hexes].map(&:id)).not_to include('F27')
 
       city = game.hex_by_id('G2').tile.cities.first
-      game.process_action(Engine::Action::PlaceToken.new(onw, city: city, slot: 0))
+      game.process_action(Engine::Action::PlaceToken.new(femv, city: city, slot: 0))
 
       expect(game.exception).to be_nil
-      expect(city.tokened_by?(onw)).to be(true)
+      expect(city.tokened_by?(femv)).to be(true)
     end
 
     it 'fills in the ability card legend Home column once a minor places its home station' do
-      onw = game.corporation_by_id('O&NW')
-      legend_home = -> { game.minor_ability_legend('black')[2..].find { |row| row[0][:text] == 'O&NW' }[1][:text] }
+      femv = game.corporation_by_id('FE&MV')
+      legend_home = -> { game.minor_ability_legend('black')[2..].find { |row| row[0][:text] == 'FE&MV' }[1][:text] }
       expect(legend_home.call).to eq('')
 
-      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: onw, price: 100))
-      game.process_action(Engine::Action::PlaceToken.new(onw, city: game.hex_by_id('G2').tile.cities.first, slot: 0))
+      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: femv, price: 100))
+      game.process_action(Engine::Action::PlaceToken.new(femv, city: game.hex_by_id('G2').tile.cities.first, slot: 0))
 
       expect(game.exception).to be_nil
       expect(legend_home.call).to eq('San Francisco')

@@ -7,7 +7,7 @@ describe Engine::Game::G1864::Entities do
 
   it 'has 16 minors with western railroad symbols' do
     syms = described_class::CORPORATIONS.select { |c| c[:type] == 'minor' }.map { |c| c[:sym] }
-    expect(syms.sort).to eq(%w[BW&GF CC&R CCR CP CSR DPR ICR M&P NM&SP O&C O&NW RF&CC SLS&E SPP U&N UCR].sort)
+    expect(syms.sort).to eq(%w[BW&GF CO&G CP CS DRG FE&MV KP NM&SP O&C OSL RF&CC RGW SCR SFP&P SLS&E UCR].sort)
   end
 
   it 'has 8 majors, none with a fixed home' do

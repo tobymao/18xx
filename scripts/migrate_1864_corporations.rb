@@ -10,27 +10,27 @@ end
 CORP_MAP = {
   'RO' => 'RF&CC',
   'KB' => 'BW&GF',
-  'OK' => 'CC&R',
-  'KK' => 'SPP',
+  'OK' => 'CO&G',
+  'KK' => 'CS',
   'SPW' => 'CP',
-  'MB' => 'M&P',
+  'MB' => 'SFP&P',
   'KR' => 'UCR',
-  'N' => 'O&NW',
-  'Y' => 'ICR',
-  'M-K' => 'DPR',
-  'MNN' => 'U&N',
+  'N' => 'FE&MV',
+  'Y' => 'OSL',
+  'M-K' => 'DRG',
+  'MNN' => 'RGW',
   'MV' => 'NM&SP',
   'V' => 'SLS&E',
-  'TR' => 'CCR',
-  'SV' => 'CSR',
+  'TR' => 'KP',
+  'SV' => 'SCR',
   'E' => 'O&C',
-  'NW' => 'WP',
-  'SW' => 'TP',
+  'NW' => 'CNW',
+  'SW' => 'MP',
   'SE' => 'SP',
   'MVR' => 'NP',
-  'MK' => 'MKT',
+  'MK' => 'RI',
   'GRR' => 'GN',
-  'MKN' => 'DRG',
+  'MKN' => 'CBQ',
   'MKV' => 'ATSF',
 }.freeze
 
@@ -49,6 +49,7 @@ def fix_action(action)
   action['target'] = CORP_MAP[action['target']] if action['target_type'] == 'corporation' && CORP_MAP[action['target']]
   action['shares'] = action['shares'].map { |share| migrate_share(share) } if action['shares']
   action['swap'] = migrate_share(action['swap']) if action['swap']
+  action['corporations_by_round']&.transform_values! { |corps| corps&.map { |corp| CORP_MAP[corp] || corp } }
   (action['auto_actions'] || []).each { |auto_action| fix_action(auto_action) }
 
   action != original
