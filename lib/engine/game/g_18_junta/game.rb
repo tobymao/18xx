@@ -5,9 +5,13 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'player'
 require_relative 'stock_market'
+require_relative 'step/buy_sell_par_shares'
 require_relative 'step/dividend'
+require_relative 'step/fix_par_price'
 require_relative 'step/paramilitary_choice'
 require_relative 'step/private_auction'
+require_relative 'step/private_m_draw'
+require_relative 'step/special_choose'
 require_relative 'step/track'
 require_relative 'step/upgrade_license'
 require_relative '../base'
@@ -160,6 +164,9 @@ module Engine
         # Rules summary 6.5: under Dictatorship, each Military-aligned company receives $80 per token.
         MILITARY_BONUS_PER_TOKEN = 80
 
+        # Rules summary 11 (E): what the bank gives the company Casa Ruiz de Assistencia is donated to.
+        PRIVATE_E_DONATION = 150
+
         # Rules summary 6.2: hexes with a paramilitary token.
         PARAMILITARY_HEXES = %w[B14 C11 E7 F4 G13 I3 I9 K11 L8].freeze
 
@@ -187,6 +194,9 @@ module Engine
           # Rules summary 1.5: two Calm cards and one Coup Attempt card, shuffled.
           @political_situation_deck = %i[calm calm coup].sort_by { rand }
           @coup_outcome = nil
+          @private_a_used = false
+          @fixed_par_prices = {}
+          @private_m_used_turn = nil
         end
 
         # Rules summary 1.2: one public company, drawn at random, is out of the game. Its home
@@ -260,11 +270,14 @@ module Engine
         end
 
         def stock_round
+          # PrivateMDraw is a free action, so it stays first: it never blocks the Private (A) question.
           Round::Stock.new(self, [
+            G18Junta::Step::PrivateMDraw,
+            G18Junta::Step::FixParPrice,
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParShares,
+            G18Junta::Step::BuySellParShares,
           ])
         end
 
@@ -276,6 +289,7 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
+            G18Junta::Step::SpecialChoose,
             Engine::Step::BuyCompany,
             G18Junta::Step::ParamilitaryChoice,
             G18Junta::Step::Track,
@@ -335,6 +349,8 @@ module Engine
           status << "Civilian tokens: #{alignment[:civilian]}" if alignment[:civilian].positive?
           status << "Military tokens: #{alignment[:military]}" if alignment[:military].positive?
           status << 'Upgrade License acquired' if upgrade_license_granted?(corporation)
+          fixed = fixed_par_price_for(corporation)
+          status << "Par price fixed at #{format_currency(fixed.price)}" if fixed && !corporation.ipoed
           status unless status.empty?
         end
 
@@ -353,9 +369,28 @@ module Engine
         end
 
         # Farms are shown as a single symbol in the route text.
+        # Towns that Expresso Resplandor (G) leaves out of the train range are shown in brackets.
         def revenue_str(route)
           farm_hexes = route.visited_stops.select { |stop| farm_stop?(stop) }.map(&:hex)
-          route.hexes.map { |hex| farm_hexes.include?(hex) ? 'Ⓕ' : hex.name }.join('+')
+          free_towns = owns_private?(route.corporation, '(G)') ? route.visited_stops.select(&:town?).map(&:hex) : []
+          route.hexes.map do |hex|
+            next 'Ⓕ' if farm_hexes.include?(hex)
+
+            free_towns.include?(hex) ? "[#{hex.name}]" : hex.name
+          end.join('+')
+        end
+
+        # Rules summary 11 (G): towns do not count toward the range of the owning company's trains.
+        def check_distance(route, visits, train = nil)
+          train ||= route.train
+          return super if !train.distance.is_a?(Numeric) || !owns_private?(route.corporation, '(G)')
+
+          distance = visits.sum { |visit| visit.town? ? 0 : visit.visit_cost }
+          raise RouteTooLong, "#{distance} is too many stops for #{train.distance} train" if distance > train.distance
+        end
+
+        def owns_private?(corporation, sym)
+          corporation&.companies&.any? { |company| company.sym == sym }
         end
 
         # Rules summary 7.3: the yellow Laguna tile (J16) upgrades straight to its gray tile (J17), once
@@ -666,6 +701,88 @@ module Engine
         def remove_trains!(name)
           @depot.upcoming.select { |train| train.name == name }.each { |train| @depot.remove_train(train) }
           @log << "All #{name}-trains are removed from the game"
+        end
+
+        # Rules summary 11 (A): once per game, the owner of Investidores Unidos fixes the par price of a
+        # company that has not been started (FixParPrice step, at the start of each Stock Round).
+        def private_a_usable_this_stock_round?
+          !@private_a_used
+        end
+
+        def private_a_owner
+          owner = @companies.find { |c| c.sym == '(A)' }&.owner
+          owner if owner&.player?
+        end
+
+        def use_private_a!(corporation, share_price)
+          @private_a_used = true
+          @fixed_par_prices[corporation] = share_price
+          @log << "#{corporation.name} has its par price fixed at #{format_currency(share_price.price)} "\
+                  '(Investidores Unidos)'
+        end
+
+        def skip_private_a!(player)
+          @log << "#{player.name} does not use Investidores Unidos in this Stock Round"
+        end
+
+        def fixed_par_price_for(corporation)
+          @fixed_par_prices[corporation]
+        end
+
+        # Rules summary 11 (E): from the first 3-train, Casa Ruiz de Assistencia may be donated to a
+        # company its owner presides over.
+        def private_e_donatable?(corporation)
+          return false unless corporation&.corporation?
+          return false unless @phase.status.include?('can_buy_companies')
+
+          owner = @companies.find { |c| c.sym == '(E)' }&.owner
+          owner&.player? && corporation.owner == owner
+        end
+
+        def donate_private_e!(corporation)
+          company = @companies.find { |c| c.sym == '(E)' }
+          owner = company.owner
+          owner.companies.delete(company)
+          company.owner = corporation
+          corporation.companies << company
+          @bank.spend(self.class::PRIVATE_E_DONATION, corporation)
+          @log << "#{owner.name} donates #{company.name} to #{corporation.name}, which receives "\
+                  "#{format_currency(self.class::PRIVATE_E_DONATION)} from the bank"
+        end
+
+        # Rules summary 11 (M): once per Stock Round, on the owner's turn, draw a corruption token and
+        # receive $5 times the phase number. The D phase has no number, and an empty bag ends the ability.
+        def private_m_payment
+          5 * @phase.name.to_i
+        end
+
+        def private_m_usable?(player)
+          return false unless player&.player?
+          return false unless @round.is_a?(Engine::Round::Stock)
+          return false if @private_m_used_turn == @turn || @phase.name == 'D' || @corruption_bag.empty?
+
+          @companies.find { |c| c.sym == '(M)' }&.owner == player
+        end
+
+        def use_private_m!(player)
+          raise GameError, 'Sociedade Caja Negra cannot be used now' unless private_m_usable?(player)
+
+          @private_m_used_turn = @turn
+          amount = private_m_payment
+          draw_corruption_token!(player, 'using Sociedade Caja Negra')
+          @bank.spend(amount, player)
+          @log << "#{player.name} receives #{format_currency(amount)} from the bank (Sociedade Caja Negra)"
+        end
+
+        # Rules summary 3.5 and 11 (H): on a high dividend, the bank adds 10% of it to the treasury of the
+        # company that owns Gutiérrez y Asociados.
+        def pay_private_h_bonus!(corporation, revenue)
+          return unless owns_private?(corporation, '(H)')
+
+          bonus = (revenue * 0.1).round
+          @bank.spend(bonus, corporation)
+          @log << "#{corporation.name} receives #{format_currency(bonus)} from the bank for a high dividend "\
+                  '(Gutiérrez y Asociados)'
         end
       end
     end
