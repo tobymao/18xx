@@ -403,7 +403,7 @@ describe 'G1864 minor abilities' do
     end
 
     it 'is replaced by a UP station when its holder is regionalized' do
-      holder = game.corporation_by_id('N')
+      holder = game.corporation_by_id('FE&MV')
       company.owner.companies.delete(company)
       company.owner = holder
       holder.companies << company
@@ -733,7 +733,7 @@ describe 'G1864 minor abilities' do
     end
 
     describe 'on a multi-city hex' do
-      let(:corporation) { (game.corporations + game.future_corporations).find { |c| c.id == 'M-K' } }
+      let(:corporation) { (game.corporations + game.future_corporations).find { |c| c.id == 'DRG' } }
       let(:denver) { game.hex_by_id('G20') }
 
       before { move_card_to(corporation) }
@@ -791,7 +791,7 @@ describe 'G1864 minor abilities' do
     end
 
     it 'removes the marker and its extra slot when the holder is regionalized' do
-      minor = game.corporation_by_id('N')
+      minor = game.corporation_by_id('FE&MV')
       move_card_to(minor)
       game.par_corporation(minor, game.stock_market.market.first[5])
       game.share_pool.buy_shares(game.players.first, minor.shares.first.to_bundle, exchange: :free)

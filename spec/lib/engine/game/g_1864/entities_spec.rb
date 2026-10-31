@@ -5,9 +5,9 @@ require 'spec_helper'
 describe Engine::Game::G1864::Entities do
   let(:game) { Engine::Game::G1864::Game.new(%w[alice bob carol], seed: 1) }
 
-  it 'has 16 minors with the 1861 symbols' do
+  it 'has 16 minors with western railroad symbols' do
     syms = described_class::CORPORATIONS.select { |c| c[:type] == 'minor' }.map { |c| c[:sym] }
-    expect(syms.sort).to eq(%w[E KB KK KR M-K MB MNN MV N OK RO SPW SV TR V Y].sort)
+    expect(syms.sort).to eq(%w[BW&GF CO&G CP CS DRG FE&MV KP NM&SP O&C OSL RF&CC RGW SCR SFP&P SLS&E UCR].sort)
   end
 
   it 'has 8 majors, none with a fixed home' do

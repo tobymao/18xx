@@ -42,23 +42,23 @@ describe Engine::Game::G1864::Game do
     end
 
     it 'drops a minor once it is regionalized' do
-      n = game.corporation_by_id('N')
-      start!(n)
+      femv = game.corporation_by_id('FE&MV')
+      start!(femv)
 
-      expect(legend_minors).to include('N')
+      expect(legend_minors).to include('FE&MV')
 
-      game.nationalize!(n)
+      game.nationalize!(femv)
 
-      expect(legend_minors).not_to include('N')
+      expect(legend_minors).not_to include('FE&MV')
       expect(legend_minors.size).to eq(15)
     end
 
     it 'drops a minor once it merges or converts into a major' do
-      ro = game.corporation_by_id('RO')
-      start!(ro)
-      game.close_corporation(ro)
+      rfcc = game.corporation_by_id('RF&CC')
+      start!(rfcc)
+      game.close_corporation(rfcc)
 
-      expect(legend_minors).not_to include('RO')
+      expect(legend_minors).not_to include('RF&CC')
     end
   end
 
@@ -73,27 +73,27 @@ describe Engine::Game::G1864::Game do
     end
 
     it 'has the player starting the auction choose where the minor starts, before any other bid' do
-      n = game.corporation_by_id('N')
-      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: n, price: 100))
+      femv = game.corporation_by_id('FE&MV')
+      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: femv, price: 100))
 
       expect(game.active_step).to be_a(Engine::Game::G1867::Step::HomeToken)
       expect(game.round.active_entities).to eq([game.player_by_id('alice')])
       expect(game.round.pending_tokens.first[:hexes].map(&:id)).not_to include('F27')
 
       city = game.hex_by_id('G2').tile.cities.first
-      game.process_action(Engine::Action::PlaceToken.new(n, city: city, slot: 0))
+      game.process_action(Engine::Action::PlaceToken.new(femv, city: city, slot: 0))
 
       expect(game.exception).to be_nil
-      expect(city.tokened_by?(n)).to be(true)
+      expect(city.tokened_by?(femv)).to be(true)
     end
 
     it 'fills in the ability card legend Home column once a minor places its home station' do
-      n = game.corporation_by_id('N')
-      legend_home = -> { game.minor_ability_legend('black')[2..].find { |row| row[0][:text] == 'N' }[1][:text] }
+      femv = game.corporation_by_id('FE&MV')
+      legend_home = -> { game.minor_ability_legend('black')[2..].find { |row| row[0][:text] == 'FE&MV' }[1][:text] }
       expect(legend_home.call).to eq('')
 
-      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: n, price: 100))
-      game.process_action(Engine::Action::PlaceToken.new(n, city: game.hex_by_id('G2').tile.cities.first, slot: 0))
+      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: femv, price: 100))
+      game.process_action(Engine::Action::PlaceToken.new(femv, city: game.hex_by_id('G2').tile.cities.first, slot: 0))
 
       expect(game.exception).to be_nil
       expect(legend_home.call).to eq('San Francisco')
