@@ -48,6 +48,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
         # bank-break ends current OR; first level-8 purchase ends after one more full OR set
         GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze

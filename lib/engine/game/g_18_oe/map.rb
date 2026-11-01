@@ -915,10 +915,10 @@ module Engine
             ['N35'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water;' \
                        'border=edge:2,type:province;border=edge:3,type:province',
             # Cities — other labels
-            ['K26'] => 'city=revenue:0;label=A',
-            ['Q30'] => 'city=revenue:0;label=P',
+            ['K26'] => 'city=revenue:0;city=revenue:0;city=revenue:0;label=A',
+            ['Q30'] => 'city=revenue:0;city=revenue:0;city=revenue:0;label=P',
             # Cities — terrain
-            ['Y14'] => 'city=revenue:0;label=A;upgrade=cost:45,terrain:hill',
+            ['Y14'] => 'city=revenue:0;city=revenue:0;city=revenue:0;label=A;upgrade=cost:45,terrain:hill',
             ['U32'] => 'city=revenue:0;upgrade=cost:30,terrain:hill',
             ['AD9'] => 'city=revenue:0;upgrade=cost:30,terrain:hill',
             ['D57'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
@@ -933,15 +933,15 @@ module Engine
             ['X33'] => 'city=revenue:20;label=Y;path=a:5,b:_0',
             ['Z27'] => 'city=revenue:20;label=Y;path=a:0,b:_0',
             ['K46'] => 'city=revenue:20;label=Y;icon=image:18_oe/offshore_docks,sticky:1',
-            ['M50'] => 'city=revenue:0;label=B',
+            ['M50'] => 'city=revenue:0;city=revenue:0;city=revenue:0;label=B',
             ['R47'] => 'city=revenue:0;label=Y',
-            ['R55'] => 'city=revenue:0;label=A',
+            ['R55'] => 'city=revenue:0;city=revenue:0;city=revenue:0;label=A',
             ['S60'] => 'city=revenue:0;label=Y',
             ['P53'] => 'city=revenue:0;label=Y',
             ['V41'] => 'city=revenue:0;label=Y',
             ['Z47'] => 'city=revenue:0;label=Y',
             ['AB51'] => 'city=revenue:20;label=N;path=a:1,b:_0',
-            ['C74'] => 'city=revenue:20;label=S;icon=image:18_oe/offshore_docks,sticky:1',
+            ['C74'] => 'city=revenue:20;city=revenue:20;label=S;icon=image:18_oe/offshore_docks,sticky:1',
             ['M62'] => 'city=revenue:0;label=Y',
             ['O80'] => 'city=revenue:0;label=Y',
             # Cities — water terrain
