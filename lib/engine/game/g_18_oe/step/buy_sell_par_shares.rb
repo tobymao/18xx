@@ -3,6 +3,7 @@
 require_relative '../../../step/buy_sell_par_shares'
 require_relative '../../../action/convert'
 require_relative '../../../action/choose'
+require_relative '../../../action/skip'
 
 module Engine
   module Game
@@ -39,6 +40,7 @@ module Engine
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'choose' if choose_available?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
+            actions << 'skip' if (actions.empty? || @game.loading) && needs_skip_action?(entity)
             actions
           end
 
@@ -71,6 +73,28 @@ module Engine
 
             @game.private_company?(company) && company.owner == player && player == current_entity &&
               !@private_action_used && @round.current_actions.empty?
+          end
+
+          def auto_actions(entity)
+            return [Engine::Action::Skip.new(entity)] if skip_only_action?(entity)
+
+            super
+          end
+
+          def skip_only_action?(entity)
+            entity == current_entity && actions(entity) == ['skip']
+          end
+
+          def process_skip(action)
+            log_skip(action.entity)
+            pass!
+          end
+
+          def needs_skip_action?(player)
+            # Fully held majors can only merge a connected minor; skip avoids the graph check while loading.
+            @round.current_actions.empty? &&
+              @game.corporations.any? { |c| c.type == :major && c.president?(player) && !@game.merge_share(c) } &&
+              @game.corporations.any? { |c| c.type == :minor && c.owner == player }
           end
 
           def can_merge_any?(player)

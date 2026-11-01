@@ -674,7 +674,7 @@ module Engine
           ([entity_track_rights_zone(corp)] + merged_zones).compact.uniq
         end
 
-        def merge_targets(player, minor)
+        def merge_candidates(player, minor)
           return [] unless @phase.available?('3')
           return [] if minor.type != :minor || !minor.floated? || minor.owner != player
 
@@ -682,9 +682,23 @@ module Engine
             corporation.type == :major &&
               corporation.floated? &&
               corporation.president?(player) &&
-              !@round.merged_majors.include?(corporation) &&
-              merge_share(corporation)
+              !@round.merged_majors.include?(corporation)
           end
+        end
+
+        def merge_targets(player, minor)
+          merge_candidates(player, minor).select do |corporation|
+            merge_share(corporation) || @loading || merge_connected?(minor, corporation)
+          end
+        end
+
+        def merge_graph
+          @merge_graph ||= Graph.new(self, no_blocking: true)
+        end
+
+        def merge_connected?(minor, major)
+          nodes = merge_graph.connected_nodes(major)
+          minor.placed_tokens.any? { |token| nodes.key?(token.city) }
         end
 
         def merge_share(major)
@@ -851,6 +865,7 @@ module Engine
         end
 
         def new_consolidation_round
+          @merge_graph&.clear
           Round::G18OE::Consolidation.new(self, [
             Engine::Step::DiscardTrain,
             G18OE::Step::MergeToken,
@@ -925,6 +940,7 @@ module Engine
         end
 
         def stock_round
+          @merge_graph&.clear
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18OE::Step::HomeToken,
