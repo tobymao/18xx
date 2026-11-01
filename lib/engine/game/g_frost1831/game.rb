@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'meta'
-require_relative 'map'
 require_relative 'entities'
+require_relative 'map'
+require_relative 'meta'
+require_relative 'step/buy_company'
+require_relative 'step/buy_train'
+require_relative 'step/dividend'
+require_relative 'stock_market'
 require_relative 'tiles'
 require_relative '../base'
 
@@ -27,7 +31,7 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
 
-        EBUY_CAN_SELL_SHARES = false
+        HOME_TOKEN_TIMING = :operate
 
         TILE_LAYS = [
           { lay: true, upgrade: true },
@@ -44,6 +48,8 @@ module Engine
           one_more_full_or_set: 'Finish current OR, then 1 more full set (SR + Voting + ORs)'
         )
 
+        EBUY_CAN_SELL_SHARES = false
+
         EBUY_OWNER_MUST_HELP = false
 
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false
@@ -59,22 +65,24 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[_ _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _],
-          %w[_c!n 70y 80 90 100p 110 120 140 160 190 220 250 300K _B!l],
-          %w[_c!n 60y 70 80 90p 100 110 130 150 180 210 240K],
-          %w[_c!n 50y 60 70 80p 90 100 120 140 170 200K],
-          %w[_c!n 40y 50 60 70p 80 90 110 130 160K],
-          %w[_c!n 30y 40 50 60p 70 80 100 120K],
-          %w[_c!n 20y 30 40 50 60 70 80K],
-          %w[_c!n 10y 20 30 40 50 60K],
-          %w[_c!n _c!n],
-          %w[70r 80r 100r 120r 140r 160r 190r 220r 250r!n],
+          ['', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', ''],
+          %w[c 70y 80 90 100p 110 120 140 160 190 220 250 300W B],
+          %w[c 60y 70 80 90p 100 110 130 150 180 210 240W],
+          %w[c 50y 60 70 80p 90 100 120 140 170 200W],
+          %w[c 40y 50 60 70p 80 90 110 130 160W],
+          %w[c 30y 40 50 60p 70 80 100 120W],
+          %w[c 20y 30 40 50 60 70 80W],
+          %w[c 10y 20 30 40 50 60W],
+          %w[c c],
+          %w[70r 80r 100r 120r 140r 160r 190r 220r 250r],
         ].freeze
+
+        FACTION_ROW = 9
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           close: :orange,
           pays_bonus: :purple,
-          pays_unique_bonus: :blue,
+          pays_bonus_1: :blue,
           repar: :gray,
         ).freeze
 
@@ -82,7 +90,7 @@ module Engine
           par: 'Initial Offering (£60–£100)',
           close: 'Intervention Zone — corporation is eliminated',
           pays_bonus: 'Influence Zone — grants Influence',
-          pays_unique_bonus: 'Influence — first to arrive',
+          pays_bonus_1: 'Influence Zone — grants Influence',
           no_cert_limit: 'Shares do not count towards cert limit, may hold >60%',
           repar: 'Faction Values in Parliament',
         ).freeze
@@ -101,6 +109,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: %w[can_buy_companies parliament_opens],
           },
           {
             name: '4',
@@ -108,6 +117,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: %w[can_buy_companies turmoil],
           },
           {
             name: '5',
@@ -115,6 +125,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: ['blizzard'],
           },
           {
             name: '6',
@@ -122,6 +133,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: ['turmoil'],
           },
           {
             name: 'D',
@@ -129,6 +141,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
+            status: ['turmoil'],
           },
         ].freeze
 
@@ -238,6 +251,76 @@ module Engine
             end
           end
         end
+
+        # Override: when a corporation moves into the Influence Zone (row 0, pays_bonus cells),
+        # it gains 1 Influence Cube and bounces back to the previous position.
+        # The purple row is never a resting place for corporations.
+        def sold_out_stock_movement(corporation)
+          prev = corporation.share_price
+          @stock_market.move_up(corporation)
+          check_influence_zone(corporation, prev)
+        end
+
+        # After any share price change, check if corp landed in influence zone
+        def log_share_price(entity, from, steps = nil, log_steps: false)
+          # Factions never move on the stock market via normal mechanisms
+          return if entity.type == :faction
+
+          to = entity.share_price
+
+          # Check if corp ended up in influence zone (pays_bonus with price 0)
+          # This catches dividend movements (move_right into 0B at end of row)
+          if to && to != from && to.type == :pays_bonus && entity.type != :faction
+            check_influence_zone(entity, from)
+            # After bounce-back, entity is back at `from` — no price change to log
+            return
+          end
+
+          # Check blue cell (pays_bonus_1) — corp arriving there gains Influence (corp stays there)
+          if to && to != from && to.types.include?(:pays_bonus_1) && entity.type != :faction
+            @log << "#{entity.name} reaches #{format_currency(to.price)} — gains 1 Influence"
+            grant_market_influence(entity)
+          end
+
+          # Keep ownership limit in sync when corp enters/exits the no_cert_limit zone
+          update_ownership_limit_for(entity) if to != from
+
+          super
+        end
+
+        # Check if corporation is in the influence zone and bounce back.
+        # Influence zone = any cell with type :pays_bonus (price 0, purple).
+        # This includes all of row 0 and the rightmost cell of row 1.
+        def check_influence_zone(corporation, previous_price)
+          current = corporation.share_price
+          return unless current&.type == :pays_bonus
+          return if corporation.type == :faction
+
+          # Bounce back to previous position
+          current.corporations.delete(corporation)
+          corporation.share_price = previous_price
+          previous_price.corporations << corporation unless previous_price.corporations.include?(corporation)
+
+          @log << "#{corporation.name} reaches Influence Zone (sold out) — gains 1 Influence"
+          @log << "#{corporation.name}'s share price returns to #{format_currency(previous_price.price)}"
+
+          grant_market_influence(corporation)
+        end
+
+        def grant_market_influence(corporation)
+          factions = corporation_factions(corporation)
+          return if factions.empty?
+
+          available = factions.select { |f| within_influence_limit?(corporation, f) }
+          if available.empty?
+            @log << "#{corporation.name} cannot receive influence (both factions at limit — cube discarded)"
+            return
+          end
+
+          queue_influence_choice(corporation, available, reason: 'market influence zone')
+        end
+
+        # === Voting Round ===
 
         def stock_round
           Engine::Round::Stock.new(self, [
