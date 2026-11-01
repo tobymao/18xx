@@ -217,6 +217,16 @@ module Engine
             expect(game.depot.other_trains(buyer)).to eq([own_train])
           end
 
+          it 'defaults to the current entity, as the buy companies view calls it without an argument' do
+            own, others = game.companies.reject { |c| game.abilities(c, :no_buy) }.first(2)
+            own.owner = president
+            others.owner = other
+            allow(game).to receive(:current_entity).and_return(buyer)
+
+            expect(game.purchasable_companies).to eq(game.purchasable_companies(buyer))
+            expect(game.purchasable_companies).not_to include(others)
+          end
+
           it "only offers private companies owned by the company's president" do
             own, others = game.companies.reject { |c| game.abilities(c, :no_buy) }.first(2)
             own.owner = president
@@ -503,6 +513,11 @@ module Engine
             it 'closes every private company' do
               expect(game.companies).to be_empty
             end
+
+            it 'removes the remaining paramilitary tokens and their icons from the board' do
+              icons = game.class::PARAMILITARY_HEXES.flat_map { |id| game.hex_by_id(id).tile.icons.map(&:name) }
+              expect(icons).not_to include('militia')
+            end
           end
 
           context 'when the marker is on the Civilian side' do
@@ -670,7 +685,7 @@ module Engine
             game.draw_corruption_token!(owner, 'a test', corporation: corporation)
             game.draw_corruption_token!(owner, 'a test', corporation: corporation)
 
-            expect(game.log.map(&:message).count { |m| m.include?('Hernandez Abogados') }).to eq(1)
+            expect(game.log.map(&:message).count { |m| m.include?('draws again (Hernandez Abogados)') }).to eq(1)
             expect(owner.corruption_tokens[:black]).to eq(2)
           end
 
@@ -679,6 +694,7 @@ module Engine
             game.use_private_n!(corporation, 'C11')
 
             expect(game.paramilitary_hex_unclaimed?(game.hex_by_id('C11'))).to be(false)
+            expect(game.hex_by_id('C11').tile.icons.map(&:name)).not_to include('militia')
             expect(owner.corruption_tokens[:black]).to eq(2)
           end
 
@@ -724,6 +740,55 @@ module Engine
 
             player.bankrupt = true
             expect(game.player_value(player)).to eq(value - company.value)
+          end
+        end
+
+        describe 'info, cards and log' do
+          it 'shows the political track scale, the corruption bag and the penalty table on the Info page' do
+            lines = game.timeline
+            expect(lines[0]).to end_with(': NEUTRAL')
+            expect(lines[1]).to include("MIL 5 >> | MIL 4 >> | MIL 3 >> | MIL 2 | MIL 1 | \u25B6")
+            expect(lines[1]).to end_with('CIV 2 | << CIV 3 | << CIV 4 | << CIV 5')
+            expect(lines).to include("BAG:  28x\u26AA  7x\u26AB")
+            expect(lines.last).to start_with('<=').and end_with('+: $44/$60')
+          end
+
+          it 'drops Neutral from the scale once the marker has left it' do
+            game.move_political_track!(:military)
+            expect(game.timeline[1]).not_to include('NEUTRAL')
+          end
+
+          it 'shows the marker on the A2 status tile' do
+            tile = game.hex_by_id('A2').tile
+            expect(tile.location_name).to eq('NEUTRAL')
+
+            game.move_political_track!(:military)
+            expect(tile.location_name).to eq("STATUS: \nMIL 1")
+            expect(tile.color).to eq(:green)
+          end
+
+          it 'never upgrades the A2 status tile' do
+            from = game.hex_by_id('A2').tile
+            expect(game.tiles.none? { |tile| game.upgrades_to?(from, tile) }).to be(true)
+          end
+
+          it 'explains the coup in the phase table' do
+            expect(game.phase.phases.find { |ph| ph[:name] == '5' }[:status]).to include('coup_attempt')
+            expect(game.class::STATUS_TEXT).to have_key('coup_attempt')
+          end
+
+          it 'shows corruption tokens on player cards and alignment tokens on company cards' do
+            player = game.players.first
+            corporation = game.corporations.find { |c| game.corporation_alignment(c)[:civilian].positive? }
+            expect(game.player_card_rows(player)).to eq(['Corruption:', "0x\u26AA  0x\u26AB"])
+            expect(game.status_array(corporation)).to include(['Civilian x1', 'civilian_support'])
+          end
+
+          it 'writes the setup draws as one block' do
+            log = game.log.map(&:message)
+            start = log.index { |m| m.include?(' SETUP ') }
+            expect(log[start + 1..start + 3].join).to include('Corporation removed in this game')
+            expect(log[start + 3]).to start_with('Private companies available in this game')
           end
         end
       end
