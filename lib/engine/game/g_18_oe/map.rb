@@ -1152,90 +1152,90 @@ module Engine
             ['AG44'] => 'path=a:4,b:1,color:#0047AB',
             ['AG46'] => 'path=a:4,b:1,color:#0047AB;icon=image:18_oe/ferry_1,sticky:1,loc:e3',
             ['AG48'] => 'path=a:4,b:1,color:#0047AB;path=a:3,b:1,color:#0047AB',
-            ['AB49'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/public_port,sticky:1,loc:4.5',
+            ['AB49'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:4.5',
             # Port stubs — sea-side connectors for port-to-port routes
-            ['AE50'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/private_port,sticky:1,loc:0.5',
-            ['AF47'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:3.5',
-            ['V49'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;offboard=revenue:0,hide:1;path=a:4,b:_1;' \
+            ['AE50'] => 'junction;path=a:0,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:0.5',
+            ['AF47'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/dead_end,sticky:1,loc:3.5',
+            ['V49'] => 'junction;path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:1.5;icon=image:18_oe/private_port,sticky:1,loc:3.5',
-            ['AA60'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/private_port,sticky:1,loc:4.5',
-            ['AH69'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:2.5',
-            ['AF71'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/private_port,sticky:1,loc:3.5',
-            ['AC70'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
-            ['AB81'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/public_port,sticky:1,loc:2.5;' \
+            ['AA60'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:4.5',
+            ['AH69'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/dead_end,sticky:1,loc:2.5',
+            ['AF71'] => 'junction;path=a:3,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:3.5',
+            ['AC70'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:2.5',
+            ['AB81'] => 'junction;path=a:3,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:2.5;' \
                         'icon=image:18_oe/channel_passage_240,sticky:1,loc:3.5',
-            ['Z83'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/public_port,sticky:1,loc:0.5;' \
+            ['Z83'] => 'junction;path=a:0,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:0.5;' \
                        'icon=image:18_oe/channel_passage_60,sticky:1,loc:5.5',
-            ['T83'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;offboard=revenue:0,hide:1;path=a:3,b:_1;' \
+            ['T83'] => 'junction;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:0.5;icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['J61'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;offboard=revenue:0,hide:1;path=a:0,b:_1;' \
+            ['J61'] => 'junction;path=a:4,b:_0,terminal:1;path=a:0,b:_0,terminal:1;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:3.5;icon=image:18_oe/public_port,sticky:1,loc:0.5',
-            ['K52'] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;icon=image:18_oe/private_port,sticky:1,loc:5.5',
-            ['J51'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;offboard=revenue:0,hide:1;path=a:3,b:_1;' \
+            ['K52'] => 'junction;path=a:5,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:5.5',
+            ['J51'] => 'junction;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:1.5;icon=image:18_oe/private_port,sticky:1,loc:3.5;' \
                        'icon=image:18_oe/channel_passage_300,sticky:1,loc:2.5',
-            ['G48'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;offboard=revenue:0,hide:1;path=a:1,b:_1;' \
-                       'offboard=revenue:0,hide:1;path=a:3,b:_2;' \
+            ['G48'] => 'junction;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+                       'path=a:3,b:_0,terminal:1;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:0.5;icon=image:18_oe/public_port,sticky:1,loc:1.5;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:3.5',
-            ['B59'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/public_port,sticky:1,loc:0.5',
-            ['C68'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5;' \
+            ['B59'] => 'junction;path=a:0,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:0.5',
+            ['C68'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:2.5;' \
                        'icon=image:18_oe/channel_passage_30,sticky:1,loc:0.5',
-            ['F67'] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;icon=image:18_oe/private_port,sticky:1,loc:5.5',
-            ['J21'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
-            ['I30'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:2.5',
-            ['K16'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
-            ['U4'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;offboard=revenue:0,hide:1;path=a:5,b:_1;' \
+            ['F67'] => 'junction;path=a:5,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:5.5',
+            ['J21'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:2.5',
+            ['I30'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/dead_end,sticky:1,loc:2.5',
+            ['K16'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:2.5',
+            ['U4'] => 'junction;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;' \
                       'icon=image:18_oe/public_port,sticky:1,loc:3.5;icon=image:18_oe/dead_end,sticky:1,loc:5.5',
-            ['U14'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:1.5',
-            ['U16'] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;icon=image:18_oe/private_port,sticky:1,loc:4.5',
-            ['R21'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/public_port,sticky:1,loc:4.5',
-            ['O20'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/public_port,sticky:1,loc:5.5',
-            ['O26'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;offboard=revenue:0,hide:1;path=a:4,b:_1;' \
+            ['U14'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/dead_end,sticky:1,loc:1.5',
+            ['U16'] => 'junction;path=a:5,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:4.5',
+            ['R21'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:4.5',
+            ['O20'] => 'junction;path=a:0,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:5.5',
+            ['O26'] => 'junction;path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1;' \
                        'icon=image:18_oe/dead_end,sticky:1,loc:1.5;icon=image:18_oe/public_port,sticky:1,loc:4.5',
-            ['F43'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:3.5',
-            ['E40'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/public_port,sticky:1,loc:2.5',
-            ['AD3'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/public_port,sticky:1,loc:1.5',
-            ['AC4'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/public_port,sticky:1,loc:4.5',
-            ['AE8'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;offboard=revenue:0,hide:1;path=a:3,b:_1;' \
+            ['F43'] => 'junction;path=a:3,b:_0,terminal:1;icon=image:18_oe/dead_end,sticky:1,loc:3.5',
+            ['E40'] => 'junction;path=a:3,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:2.5',
+            ['AD3'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:1.5',
+            ['AC4'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:4.5',
+            ['AE8'] => 'junction;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:1.5;icon=image:18_oe/private_port,sticky:1,loc:3.5',
-            ['AD19'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/public_port,sticky:1,loc:1.5',
-            ['AC28'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
-            ['H23'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/public_port,sticky:1,loc:1.5',
-            ['T85'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/private_port,sticky:1,loc:3.5',
-            ['AH85'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['AB73'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['AD19'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:1.5',
+            ['AC28'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:2.5',
+            ['H23'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:1.5',
+            ['T85'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:3.5',
+            ['AH85'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:3.5',
+            ['AB73'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                         'icon=image:18_oe/public_port,sticky:1,loc:0.5',
-            ['W4'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/private_port,sticky:1,loc:3.5',
-            ['O2'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/public_port,sticky:1,loc:2.5',
-            ['T21'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['W4'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:3.5',
+            ['O2'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:2.5',
+            ['T21'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:0.5',
-            ['X1'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['X1'] => 'junction;path=a:3,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                       'icon=image:18_oe/private_port,sticky:1,loc:1.5',
-            ['I62'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
-            ['E46'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['I62'] => 'junction;path=a:3,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:2.5',
+            ['E46'] => 'junction;path=a:0,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:4.5',
-            ['H49'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['H49'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:1.5;' \
                        'icon=image:18_oe/channel_passage_120,sticky:1,loc:4.5',
-            ['J43'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['J43'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['C70'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['C70'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:0.5',
-            ['E30'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:1.5',
-            ['Z39'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/dead_end,sticky:1,loc:4.5',
-            ['L21'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['E30'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/dead_end,sticky:1,loc:1.5',
+            ['Z39'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/dead_end,sticky:1,loc:4.5',
+            ['L21'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:1.5',
-            ['M32'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
+            ['M32'] => 'junction;path=a:4,b:_0,terminal:1;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:3.5;' \
                        'icon=image:18_oe/channel_passage_30,sticky:1,loc:0.5',
-            ['AD41'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;icon=image:18_oe/private_port,sticky:1,loc:2.5',
-            ['Z29'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;icon=image:18_oe/private_port,sticky:1,loc:1.5',
-            ['Y34'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;offboard=revenue:0,hide:1;path=a:3,b:_1;' \
+            ['AD41'] => 'junction;path=a:2,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:2.5',
+            ['Z29'] => 'junction;path=a:1,b:_0,terminal:1;icon=image:18_oe/private_port,sticky:1,loc:1.5',
+            ['Y34'] => 'junction;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:1.5;icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['Y36'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['X39'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0;icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['AF41'] => 'offboard=revenue:0,hide:1;path=a:0,b:_0;icon=image:18_oe/public_port,sticky:1,loc:0.5',
+            ['Y36'] => 'junction;path=a:3,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:3.5',
+            ['X39'] => 'junction;path=a:3,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:3.5',
+            ['AF41'] => 'junction;path=a:0,b:_0,terminal:1;icon=image:18_oe/public_port,sticky:1,loc:0.5',
             ['AB59'] => 'path=a:1,b:4,color:#0047AB;icon=image:18_oe/private_port,sticky:1,loc:1.5',
             ['AB61'] => 'path=a:1,b:5,color:#0047AB',
             ['AC62'] => 'path=a:2,b:5,color:#0047AB',
@@ -1248,7 +1248,7 @@ module Engine
             ['Y80'] => 'path=a:5,b:2,color:#0047AB;icon=image:18_oe/ferry_1,sticky:1,loc:e4',
             ['X79'] => 'town=revenue:20,style:dot;path=a:5,b:_0,color:#0047AB;path=a:1,b:_0,color:#0047AB;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:3.5',
-            ['G30'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0,color:#0047AB;' \
+            ['G30'] => 'junction;path=a:4,b:_0,terminal:1,color:#0047AB;' \
                        'icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:4.5',
             ['G32'] => 'path=a:1,b:4,color:#0047AB',
@@ -1279,7 +1279,7 @@ module Engine
             ['AA28'] => 'border=edge:1,type:province',
             ['AA40'] => 'path=a:3,b:0,color:#0047AB;border=edge:4,type:province;icon=image:18_oe/public_port,sticky:1,loc:0.5;' \
                         'icon=image:18_oe/ferry_0,sticky:1,loc:e4',
-            ['AA42'] => 'path=a:0,b:4,color:#0047AB;offboard=revenue:0,hide:1;path=a:2,b:_0;border=edge:1,type:province;' \
+            ['AA42'] => 'path=a:0,b:4,color:#0047AB;junction;path=a:2,b:_0,terminal:1;border=edge:1,type:province;' \
                         'icon=image:18_oe/dead_end,sticky:1,loc:2.5',
             ['AC24'] => 'border=edge:4,type:province',
             ['AC26'] => 'path=a:3,b:5,color:#0047AB;' \
@@ -1292,7 +1292,7 @@ module Engine
             ['AD63'] => 'path=a:2,b:5,color:#0047AB;border=edge:0,type:province;border=edge:5,type:province;' \
                         'icon=image:18_oe/ferry_1,sticky:1,loc:e1',
             ['AE10'] => 'border=edge:4,type:province',
-            ['AE24'] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;border=edge:4,type:province;' \
+            ['AE24'] => 'junction;path=a:5,b:_0,terminal:1;border=edge:4,type:province;' \
                         'icon=image:18_oe/public_port,sticky:1,loc:5.5',
             ['AE26'] => 'path=a:3,b:0,color:#0047AB;' \
                         'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
@@ -1345,7 +1345,7 @@ module Engine
             ['D59'] => 'path=a:1,b:4,color:#0047AB;border=edge:5,type:province;icon=image:18_oe/public_port,sticky:1,loc:0.5',
             ['D61'] => 'path=a:1,b:3,color:#0047AB;border=edge:0,type:province;icon=image:18_oe/ferry_1,sticky:1,loc:e2',
             ['E18'] => 'border=edge:4,type:province',
-            ['E20'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;border=edge:0,type:province;border=edge:1,type:province;' \
+            ['E20'] => 'junction;path=a:1,b:_0,terminal:1;border=edge:0,type:province;border=edge:1,type:province;' \
                        'border=edge:2,type:province;icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:0.5',
             ['E36'] => 'path=a:0,b:3,color:#0047AB;' \
@@ -1381,13 +1381,13 @@ module Engine
             ['K32'] => 'border=edge:4,type:province;border=edge:5,type:province',
             ['K34'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;' \
                        'border=edge:5,type:province',
-            ['K36'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0;border=edge:0,type:province;' \
+            ['K36'] => 'junction;path=a:2,b:_0,terminal:1;border=edge:0,type:province;' \
                        'icon=image:18_oe/offshore_terminal,sticky:1,loc:lower_center;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:1.5',
             ['K4'] => 'border=edge:0,type:province;border=edge:1,type:province',
             ['L3'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['L33'] => 'border=edge:2,type:province;border=edge:3,type:province',
-            ['L35'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;offboard=revenue:0,hide:1;path=a:5,b:_1;' \
+            ['L35'] => 'junction;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;' \
                        'border=edge:2,type:province;border=edge:3,type:province;icon=image:18_oe/public_port,sticky:1,loc:3.5;' \
                        'icon=image:18_oe/private_port,sticky:1,loc:5.5',
             ['L5'] => 'border=edge:0,type:province;border=edge:1,type:province',
@@ -1404,7 +1404,7 @@ module Engine
             ['O12'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['O14'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['O16'] => 'border=edge:0,type:province;border=edge:4,type:province;border=edge:5,type:province',
-            ['O18'] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;border=edge:0,type:province;border=edge:1,type:province;' \
+            ['O18'] => 'junction;path=a:5,b:_0,terminal:1;border=edge:0,type:province;border=edge:1,type:province;' \
                        'border=edge:2,type:province;icon=image:18_oe/dead_end,sticky:1,loc:4.5',
             ['O4'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             ['O6'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
@@ -1412,7 +1412,7 @@ module Engine
             ['P11'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['P13'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['P15'] => 'border=edge:2,type:province;border=edge:3,type:province',
-            ['P17'] => 'offboard=revenue:0,hide:1;path=a:4,b:_0;border=edge:2,type:province;border=edge:3,type:province;' \
+            ['P17'] => 'junction;path=a:4,b:_0,terminal:1;border=edge:2,type:province;border=edge:3,type:province;' \
                        'icon=image:18_oe/public_port,sticky:1,loc:4.5',
             ['P3'] => 'border=edge:4,type:province',
             ['P5'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;' \
