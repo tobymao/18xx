@@ -16,7 +16,6 @@ SKIP_BETA_PROD = {
 
   # breaking the $15K bank without reaching the final train rank is very rare
   '1861' => [:bank],
-  '1864: Forty-Niner' => [:bank],
   '1867' => [:bank],
 
   # no examples of these game end reasons were found in the live database
