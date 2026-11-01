@@ -27,6 +27,11 @@ module Engine
         end
 
         describe 'private company auction (rules summary 2.1)' do
+          it 'only offers the private companies in play (rules summary 1.2)' do
+            expect(auction_step.companies).to match_array(game.companies)
+            expect(auction_step.companies.size).to eq(6)
+          end
+
           it 'opens at face value and needs a raise of at least $5' do
             company = game.companies.first
             expect(auction_step.min_bid(company)).to eq(company.value)
@@ -524,7 +529,7 @@ module Engine
 
         describe 'private companies A, E, G, H and M (rules summary 11)' do
           let(:players) { %w[a b c d] }
-          let(:game) { Engine::Game::G18Junta::Game.new(players, id: 8) } # A, E, G, H and M in play
+          let(:game) { Engine::Game::G18Junta::Game.new(players, id: 222) } # A, E, G, H and M in play
           let(:owner) { game.players.first }
           let(:corporation) { game.corporations.first }
 
@@ -602,7 +607,7 @@ module Engine
 
         describe 'private companies C, D, F, I, K and N (rules summary 11)' do
           let(:players) { %w[a b c d] }
-          let(:game) { Engine::Game::G18Junta::Game.new(players, id: 77) } # C, D, I, K and N in play
+          let(:game) { Engine::Game::G18Junta::Game.new(players, id: 162) } # C, D, I, K and N in play
           let(:owner) { game.players.first }
           let(:corporation) { game.corporations.first }
 
@@ -678,7 +683,7 @@ module Engine
           end
 
           it 'F: only offers yellow tiles on empty hexes' do
-            game_f = Engine::Game::G18Junta::Game.new(players, id: 8) # F in play
+            game_f = Engine::Game::G18Junta::Game.new(players, id: 1) # F in play
             company = game_f.companies.find { |c| c.sym == '(F)' }
             step = G18Junta::Step::SpecialTrack.new(game_f, game_f.round)
             expect(step.potential_tiles(company, game_f.hex_by_id('G7'))).to be_empty # preprinted green city

@@ -191,8 +191,6 @@ module Engine
           @upgrade_licenses = {}
           @corruption_bag = CORRUPTION_BAG_INITIAL.flat_map { |color, count| [color] * count }.sort_by { rand }
 
-          remove_random_corporation!
-          select_random_privates!
           setup_political_track!
           # Rules summary 1.5: two Calm cards and one Coup Attempt card, shuffled.
           @political_situation_deck = %i[calm calm coup].sort_by { rand }
@@ -202,6 +200,13 @@ module Engine
           @private_m_used_turn = nil
           @private_k_used_or = nil
           @pending_coup_i = nil
+        end
+
+        # Rules summary 1.2: the companies out of the game are drawn before the private auction round
+        # is built, so the auction only offers the privates in play.
+        def setup_preround
+          remove_random_corporation!
+          select_random_privates!
         end
 
         # Rules summary 1.2: one public company, drawn at random, is out of the game. Its home
@@ -214,7 +219,7 @@ module Engine
           end
 
           corporation = @corporations.min_by { rand }
-          hex = hex_by_id(corporation.coordinates)
+          hex = @hexes.find { |h| h.id == corporation.coordinates } # the id cache is built after setup_preround
           hex.tile.cities[corporation.city || 0].remove_reservation!(corporation)
           @corporations.delete(corporation)
           @log << "Corporation removed from play: #{corporation.name}"
@@ -260,7 +265,7 @@ module Engine
         # Rules summary 1.2: only a random set of the private companies is used in each game.
         def select_random_privates!
           kept = @companies.sort_by { rand }.take(self.class::PRIVATES_IN_PLAY[@players.size])
-          (@companies - kept).each { |company| @companies.delete(company) }
+          (@companies - kept).each { |company| remove_company(company) }
           @log << "Private companies in play: #{@companies.map(&:sym).join(', ')}"
         end
 
