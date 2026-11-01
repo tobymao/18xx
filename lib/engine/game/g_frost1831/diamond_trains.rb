@@ -81,9 +81,7 @@ module Engine
             supported_faction_corps = supported_factions.map { |sym| @corporations.find { |c| c.id == sym } }.compact
 
             route.ordered_paths.each_cons(2) do |a, b|
-              unless diamond_connects?(a, b, corporation, supported_faction_corps)
-                raise GameError, 'Route is not connected'
-              end
+              raise GameError, 'Route is not connected' unless diamond_connects?(a, b, corporation, supported_faction_corps)
             end
           else
             super
@@ -94,7 +92,7 @@ module Engine
           return true if path_a.connects_to?(path_b, corporation)
 
           [path_a.a, path_a.b].each do |part|
-            next unless part.respond_to?(:blocks?) && part.city?
+            next if !part.respond_to?(:blocks?) || !part.city?
             next unless path_b.nodes.include?(part)
 
             return true if city_blocked_only_by_factions?(part, corporation, supported_faction_corps)

@@ -22,12 +22,10 @@ module Engine
 
             if revenue.zero?
               { share_direction: :left, share_times: 1 }
+            elsif revenue >= entity.share_price.price
+              { share_direction: :right, share_times: 1 }
             else
-              if revenue >= entity.share_price.price
-                { share_direction: :right, share_times: 1 }
-              else
-                {}
-              end
+              {}
             end
           end
 

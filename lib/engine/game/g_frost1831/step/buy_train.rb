@@ -37,20 +37,17 @@ module Engine
             return %w[choose] if entity&.company? && entity.sym == 'FAV'
 
             # Assign FAV to current corp if parliament is open and corp can request favor
-            if entity == current_entity && entity&.corporation? && entity.type != :faction
-              if @game.parliament_open? &&
-                 @game.can_request_favor?(entity) &&
-                 !entity.companies.include?(@game.favor_company)
-                @game.assign_favor_to_current_operator(entity)
-              end
+            if entity == current_entity && entity&.corporation? && entity.type != :faction &&
+               @game.parliament_open? &&
+               @game.can_request_favor?(entity) &&
+               !entity.companies.include?(@game.favor_company)
+              @game.assign_favor_to_current_operator(entity)
             end
 
             acts = super
 
             # If must buy but engine returned empty (can't afford, no ebuy) → force buy_train action
-            if acts.empty? && entity == current_entity && @game.must_buy_train?(entity)
-              acts = %w[buy_train]
-            end
+            acts = %w[buy_train] if acts.empty? && entity == current_entity && @game.must_buy_train?(entity)
 
             # If corp can't buy trains but CAN upgrade to diamond, keep the step active
             if acts.empty? &&
@@ -65,7 +62,7 @@ module Engine
             if acts.include?('buy_train') &&
                !acts.include?('choose') &&
                @game.can_upgrade_to_diamond?(entity)
-              acts = acts + ['choose']
+              acts += ['choose']
             end
 
             # Never allow pass when must buy train
