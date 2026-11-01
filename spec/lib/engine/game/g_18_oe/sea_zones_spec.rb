@@ -35,7 +35,7 @@ describe 'G18OE sea zones (§11.3.4, §11.3.5)' do
     expect(game.sea_zone('K6')).to eq('Celtic Sea')
   end
 
-  it 'finds the zone of a hidden port offboard in the sea' do
+  it 'finds the zone of a port junction hex in the sea' do
     expect(game.sea_zone('H49')).to eq('Skagerrak')
   end
 
