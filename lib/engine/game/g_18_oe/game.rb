@@ -417,6 +417,7 @@ module Engine
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
           @reserved_shares = []
+          @face_down_privates = []
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -486,7 +487,35 @@ module Engine
         end
 
         def num_certs(entity)
-          super - entity.companies.count { |company| concession?(company) }
+          super - entity.companies.count { |company| concession?(company) || face_down_private?(company) }
+        end
+
+        public :companies_sort
+
+        def private_company?(company)
+          !company_becomes_minor?(company) && !concession?(company)
+        end
+
+        def face_down_private?(company)
+          @face_down_privates.include?(company)
+        end
+
+        def flip_private!(company)
+          @face_down_privates << company
+          company.revenue = 0
+        end
+
+        def company_status_str(company)
+          'Face down' if face_down_private?(company)
+        end
+
+        def player_value(player)
+          super - player.companies.select { |company| face_down_private?(company) }.sum(&:value)
+        end
+
+        def remove_private!(company)
+          @face_down_privates.delete(company)
+          company.close!
         end
 
         def init_stock_market

@@ -22,12 +22,13 @@ module Engine
             @converted = nil
 
             @sold = false
+            @private_action_used = false
           end
 
           def actions(entity)
             return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
-            return ['sell_shares'] if must_sell?(entity)
+            return must_sell_actions(entity) if must_sell?(entity) || must_reduce_privates?(entity)
             return converting_actions(entity) if @converting
             return converted_actions(entity) if @converted
 
@@ -36,13 +37,52 @@ module Engine
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'choose' if can_merge_any?(entity) || can_remove_any_corporation?(entity) || can_reserve_any?(entity)
+            actions << 'choose' if choose_available?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
           end
 
+          def must_sell_actions(entity)
+            actions = []
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'choose' if can_act_on_any_private?(entity)
+            actions
+          end
+
+          def must_reduce_privates?(entity)
+            return false unless over_certificate_limit?(entity)
+
+            entity.companies.any? { |company| can_act_on_private?(entity, company) && !@game.face_down_private?(company) }
+          end
+
+          def choose_available?(entity)
+            return can_act_on_any_private?(entity) unless non_private_choices_allowed?(entity)
+
+            can_merge_any?(entity) || can_remove_any_corporation?(entity) || can_reserve_any?(entity) ||
+              can_act_on_any_private?(entity)
+          end
+
+          def can_act_on_any_private?(player)
+            player.companies.any? { |company| can_act_on_private?(player, company) }
+          end
+
+          def can_act_on_private?(player, company)
+            return false if @game.face_down_private?(company)
+
+            @game.private_company?(company) && company.owner == player && player == current_entity &&
+              !@private_action_used && @round.current_actions.empty?
+          end
+
           def can_merge_any?(player)
             @game.corporations.any? { |corporation| corporation.type == :minor && can_merge?(player, corporation) }
+          end
+
+          def over_certificate_limit?(player)
+            @game.num_certs(player) > @game.cert_limit(player)
+          end
+
+          def non_private_choices_allowed?(player)
+            !over_certificate_limit?(player)
           end
 
           def can_merge?(player, minor)
@@ -73,21 +113,43 @@ module Engine
           end
 
           def choice_available?(entity)
-            entity.corporation? && !entity_choices(entity).empty?
+            (entity.corporation? || entity.company?) && !entity_choices(entity).empty?
+          end
+
+          def choice_companies(player)
+            return [] unless player.player?
+
+            @game.companies_sort(player.companies).select { |company| choice_available?(company) }
           end
 
           def choice_name
             nil
           end
 
-          def entity_choices(corporation)
+          def entity_choices(target)
+            return private_choices(target) if target.company?
+            return {} unless non_private_choices_allowed?(current_entity)
+
+            corporation = target
             choices = {}
             choices['remove'] = 'Remove from game' if can_remove_corporation?(current_entity, corporation)
             choices['reserve'] = 'Reserve share' if can_reserve?(current_entity, corporation)
             choices
           end
 
+          def private_choices(company)
+            return {} unless can_act_on_private?(current_entity, company)
+
+            choices = { 'remove_private' => 'Remove from game' }
+            choices['flip_private'] = 'Flip face down' unless @game.face_down_private?(company)
+            choices
+          end
+
           def process_choose(action)
+            return process_private_choice(action) if action.target&.company?
+            raise GameError, "Cannot choose #{action.choice} while above the certificate limit" unless
+              non_private_choices_allowed?(action.entity)
+
             return remove_regional(action) if action.target && action.choice == 'remove'
             return reserve_regional(action) if action.target && action.choice == 'reserve'
 
@@ -96,6 +158,21 @@ module Engine
 
             @round.merge_minor = minor
             track_action(action, minor)
+          end
+
+          def process_private_choice(action)
+            player = action.entity
+            company = action.target
+            raise GameError, "Cannot #{action.choice} #{company.name}" unless private_choices(company).key?(action.choice)
+
+            if action.choice == 'flip_private'
+              @log << "#{player.name} turns #{company.name} face down"
+              @game.flip_private!(company)
+            else
+              @log << "#{player.name} removes #{company.name} from the game"
+              @game.remove_private!(company)
+            end
+            @private_action_used = true
           end
 
           def remove_regional(action)
