@@ -89,6 +89,7 @@ module View
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_bank_companies) if @bank_first
+          children.concat(render_choice_companies) if @current_actions.include?('choose') && @step.respond_to?(:choice_companies)
           children.concat(render_corporations) unless @hide_corporations
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
@@ -266,6 +267,19 @@ module View
             children << input if input && @selected_corporation == corporation
             h(:div, props, children)
           end.compact
+        end
+
+        def render_choice_companies
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          @step.choice_companies(@current_entity).map do |company|
+            h(:div, props, [h(Company, company: company), h(Choose, entity: company)])
+          end
         end
 
         def render_input(corporation)
