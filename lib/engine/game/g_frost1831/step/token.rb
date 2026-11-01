@@ -34,6 +34,7 @@ module Engine
             if entity.type == :faction
               # Factions can only place in connected cities with available slots
               return nil unless @game.available_faction_cities(entity).include?(hex.id)
+
               return true
             end
 

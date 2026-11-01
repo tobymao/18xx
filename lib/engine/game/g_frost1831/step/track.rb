@@ -48,9 +48,7 @@ module Engine
 
             if entity&.type == :faction
               # Block NL/GJ upgrades
-              if %w[D7 M6].include?(hex.id) && hex.tile.color != :white
-                return nil
-              end
+              return nil if %w[D7 M6].include?(hex.id) && hex.tile.color != :white
 
               # Allow hex if it's a valid token placement city
               return true if can_place_faction_token?(entity) &&
@@ -60,12 +58,10 @@ module Engine
             # Fix stale graph cache: if entity has tokens but graph shows no connected hexes,
             # clear and recompute. This can happen when graph was computed before home token.
             if entity && entity.type != :faction
-              has_tokens = entity.tokens.any? { |t| t.city }
+              has_tokens = entity.tokens.any?(&:city)
               graph = @game.graph_for_entity(entity)
               connected = graph.connected_hexes(entity)
-              if has_tokens && connected.empty?
-                graph.clear
-              end
+              graph.clear if has_tokens && connected.empty?
             end
 
             super
@@ -78,14 +74,12 @@ module Engine
             hex = city.hex
 
             # Reject bases outside the legal set (prevents duplicate base in same city)
-            unless @game.loading
-              unless @game.available_faction_cities(entity).include?(hex.id)
-                if hex.tile.cities.any? { |c| c.tokens.any? { |t| t&.corporation == entity } }
-                  raise GameError, "#{entity.name} already has a base in #{hex.id}"
-                end
-
-                raise GameError, "#{entity.name} cannot place a base on #{hex.id}"
+            if !@game.loading && !@game.available_faction_cities(entity).include?(hex.id)
+              if hex.tile.cities.any? { |c| c.tokens.any? { |t| t&.corporation == entity } }
+                raise GameError, "#{entity.name} already has a base in #{hex.id}"
               end
+
+              raise GameError, "#{entity.name} cannot place a base on #{hex.id}"
             end
 
             cubes = @game.faction_influence(entity.id)
@@ -170,7 +164,6 @@ module Engine
               return
             end
 
-            old_tile = action.hex.tile
             super
             @game.after_lay_tile(action.hex, action.tile, action.entity)
           end
@@ -206,7 +199,7 @@ module Engine
             # Use market position to determine available tokens (same as status_array).
             # Each move_right (favor, base, turmoil) consumes 1 token from the pool.
             # Faction starts at column 0 (£70); current column = tokens consumed.
-            tokens_total = entity.tokens.size - 1  # 8 additional tokens
+            tokens_total = entity.tokens.size - 1 # 8 additional tokens
             tokens_used = entity.share_price&.coordinates&.[](1) || 0
             tokens_available = [tokens_total - tokens_used, 0].max
             return false unless tokens_available.positive?
