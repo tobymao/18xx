@@ -54,6 +54,7 @@ module Engine
                   'or 3-train and pay only the difference in price. The new train must cost more than the ' \
                   'discarded one.',
             color: nil,
+            abilities: [{ type: 'choose_ability', owner_type: 'corporation', when: 'buy_train', count: 1, choices: {} }],
           },
           {
             name: '(E) Casa Ruiz de Assistencia',
@@ -166,6 +167,9 @@ module Engine
                   "token from any hex on the board. When doing so, the company's president takes 2 black " \
                   'corruption tokens directly from the stock.',
             color: nil,
+            abilities: [
+              { type: 'choose_ability', owner_type: 'corporation', when: 'owning_corp_or_turn', count: 1, choices: {} },
+            ],
           },
         ].freeze
 
