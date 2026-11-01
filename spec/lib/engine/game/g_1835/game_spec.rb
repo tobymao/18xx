@@ -394,7 +394,7 @@ describe Engine::Game::G1835::Game do
       game.corporation_available?(corporation) && corporation.ipoed
     end
 
-    it 'is makes cert packages available at the proper time' do
+    it 'makes cert packages available at the proper time' do
       # we test the availability of all cert packages before the first OR by giving everyone a lot of money.
       # By doing this we don't have to bother with 'pass' actions after buying, because as long as a company hasn't operated,
       # its shares cannot be sold, so 'pass' is not an option after buying
@@ -449,37 +449,44 @@ describe Engine::Game::G1835::Game do
       buy_shares(player_2, 'WT')
       expect(game.corporation_available?(game.corporation_by_id('HE'))).to be true
 
-      7.times do
+      6.times do
         buy_shares(player_3, 'HE')
         pass(player_1)
         pass(player_2)
       end
-      buy_shares(player_3, 'PR')
-      buy_shares(player_1, 'PR')
-      buy_shares(player_2, 'PR')
-      buy_shares(player_3, 'PR')
 
-      buy_shares(player_1, 'WT')
+      buy_shares(player_3, 'HE')
+      pass(player_1)
+
+      4.times do
+        buy_shares(player_2, 'PR')
+        pass(player_3)
+        pass(player_1)
+      end
+
+      2.times do
+        buy_shares(player_2, 'WT')
+        pass(player_3)
+        pass(player_1)
+      end
       buy_shares(player_2, 'WT')
-      buy_shares(player_3, 'WT')
+      pass(player_3)
 
       # There are now one BA, one WT, and one HE share left, each has 20%
       %w[BA WT HE].map { |corp_id| game.corporation_by_id(corp_id) }.each { |corp| expect(corp.shares.first.percent).to be 20 }
 
-      # player_1 and player_3 have reached the cert limit
       pass(player_1)
       buy_shares(player_2, 'WT')
       [player_3, player_1].each { |player| pass(player) }
       buy_shares(player_2, 'BA')
-      [player_3, player_1].each { |player| pass(player) }
 
       %w[OL MS].map { |id| game.corporation_by_id(id) }.each { |corp| expect(purchasable?(corp)).to be false }
 
       # let's buy the last share of the package IPO-ing MS and OL and making MS available
-      buy_shares(player_2, 'HE')
+      buy_shares(player_3, 'HE')
       %w[OL MS].map { |id| game.corporation_by_id(id) }.each { |corp| expect(corp.ipoed).to be true }
       expect(game.corporation_available?(game.corporation_by_id('MS'))).to be true
-      [player_3, player_1].each { |player| pass(player) }
+      pass(player_1)
 
       # let's buy the first three MS shares and check if we got 60%
       3.times do
@@ -488,14 +495,6 @@ describe Engine::Game::G1835::Game do
       end
 
       expect(player_2.percent_of(game.corporation_by_id('MS'))).to be 60
-
-      # let's buy the first three OL shares and check if we got 60%
-      3.times do
-        buy_shares(player_2, 'OL')
-        [player_3, player_1].each { |player| pass(player) }
-      end
-
-      expect(player_2.percent_of(game.corporation_by_id('OL'))).to be 60
     end
   end
 
@@ -596,6 +595,25 @@ describe Engine::Game::G1835::Game do
       expect(player_2.percent_of(by)).to be 0
       expect(player_1.cash).to be(player_1_cash_before - nationalization_price)
       expect(player_2.cash).to be(player_2_cash_before + nationalization_price)
+    end
+  end
+
+  describe 'num_certs' do
+    let(:players) { %w[a b c] }
+    it 'should count companies as certs' do
+      expect(game.num_certs(player_1)).to be 0
+      # player 1 has one BY share and the NF private, so two certs
+      buy(player_1, 'NF')
+      expect(game.num_certs(player_1)).to be 2
+    end
+    it 'should count minors as certs' do
+      expect(game.num_certs(player_1)).to be 0
+      buy(player_1, '1')
+      expect(game.num_certs(player_1)).to be 1
+      buy(player_2, 'NF')
+      pass(player_3)
+      buy(player_1, '2')
+      expect(game.num_certs(player_1)).to be 2
     end
   end
 end

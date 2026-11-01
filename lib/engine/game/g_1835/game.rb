@@ -258,6 +258,10 @@ module Engine
           next_block.each { |corp_to_ipo| corp_to_ipo.ipoed = true }
         end
 
+        def num_certs(entity)
+          super + owned_minors(entity).size
+        end
+
         def cert_limit(player = nil)
           return @cert_limit unless player
 
@@ -492,6 +496,19 @@ module Engine
 
         def share_flags(shares)
           'h' * shares.count { |share| share.percent == 5 }
+        end
+
+        def player_card_minors(player)
+          owned_minors(player)
+        end
+
+        # Show minors in spreadsheet
+        def all_corporations
+          @minors + @corporations
+        end
+
+        def owned_minors(entity)
+          @minors.select { |m| m.owner == entity }
         end
       end
     end
