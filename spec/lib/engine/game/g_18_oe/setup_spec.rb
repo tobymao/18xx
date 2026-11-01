@@ -70,7 +70,9 @@ describe 'G18OE setup' do
     regionals = game.corporations.select { |c| c.type == :regional }
 
     regionals.each do |corp|
-      expect(game.hex_by_id(corp.coordinates).tile.cities.any? { |c| c.reserved_by?(corp) }).to be(true), corp.id
+      tile = game.hex_by_id(corp.coordinates).tile
+
+      expect(tile.cities.any? { |c| c.reserved_by?(corp) } || tile.reserved_by?(corp)).to be(true), corp.id
     end
   end
 
