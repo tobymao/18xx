@@ -684,6 +684,43 @@ module Engine
             expect(step.potential_tiles(company, game_f.hex_by_id('G7'))).to be_empty # preprinted green city
           end
         end
+
+        describe '2-player game (rules summary 1.1 and 1.2)' do
+          let(:players) { %w[a b] }
+
+          it 'removes Hijos Muñoz and one more company' do
+            expect(game.corporations.size).to eq(6)
+            expect(game.corporations.map(&:name)).not_to include('H')
+          end
+
+          it 'uses the smaller map, with Campesina at home in F4' do
+            expect(game.hex_by_id('H2')).to be_nil
+            campesina = game.corporations.find { |c| c.name == 'C' }
+            expect(campesina.coordinates).to eq('F4') if campesina
+          end
+
+          it 'has one 2-, one 3- and one 4-train fewer' do
+            counts = game.depot.upcoming.group_by(&:name).transform_values(&:size)
+            expect(counts.values_at('2', '3', '4')).to eq([5, 4, 3])
+          end
+
+          it 'keeps five private companies' do
+            expect(game.companies.size).to eq(5)
+          end
+        end
+
+        describe 'bankruptcy (rules summary 9.1)' do
+          it 'does not count private companies in a bankrupt player\'s score' do
+            player = game.players.first
+            company = game.companies.first
+            company.owner = player
+            player.companies << company
+            value = game.player_value(player)
+
+            player.bankrupt = true
+            expect(game.player_value(player)).to eq(value - company.value)
+          end
+        end
       end
     end
   end

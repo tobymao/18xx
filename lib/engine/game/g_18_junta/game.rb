@@ -2,6 +2,7 @@
 
 require_relative 'entities'
 require_relative 'map'
+require_relative 'map_2p'
 require_relative 'meta'
 require_relative 'player'
 require_relative 'stock_market'
@@ -205,12 +206,55 @@ module Engine
 
         # Rules summary 1.2: one public company, drawn at random, is out of the game. Its home
         # reservation is cleared so the city is open to everyone.
+        # In a 2-player game Hijos Muñoz (H), whose home is not on the smaller map, goes first.
         def remove_random_corporation!
+          if two_player?
+            @corporations.delete(@corporations.find { |c| c.name == 'H' })
+            @log << 'Corporation removed from play: H (not on the 2-player map)'
+          end
+
           corporation = @corporations.min_by { rand }
           hex = hex_by_id(corporation.coordinates)
           hex.tile.cities[corporation.city || 0].remove_reservation!(corporation)
           @corporations.delete(corporation)
           @log << "Corporation removed from play: #{corporation.name}"
+        end
+
+        # Rules summary 1.1: the 2-player game uses the smaller map, with Campesina (C) at home in F4,
+        # and one 2-, one 3- and one 4-train fewer.
+        def optional_hexes
+          two_player? ? Map2P::HEXES_2P : game_hexes
+        end
+
+        def location_name(coord)
+          two_player? ? Map2P::LOCATION_NAMES_2P[coord] : super
+        end
+
+        def game_corporations
+          return super unless two_player?
+
+          super.map { |corporation| corporation[:sym] == 'C' ? corporation.merge(coordinates: 'F4') : corporation }
+        end
+
+        def game_trains
+          return super unless two_player?
+
+          super.map { |train| %w[2 3 4].include?(train[:name]) ? train.merge(num: train[:num] - 1) : train }
+        end
+
+        def paramilitary_hexes
+          two_player? ? Map2P::PARAMILITARY_HEXES_2P : self.class::PARAMILITARY_HEXES
+        end
+
+        def dictatorship_border_tiles
+          two_player? ? Map2P::DICTATORSHIP_BORDER_TILES_2P : self.class::DICTATORSHIP_BORDER_TILES
+        end
+
+        # Rules summary 9.1: private companies do not count in a bankrupt player's final score.
+        def player_value(player)
+          return super unless player.bankrupt
+
+          super - player.companies.sum(&:value)
         end
 
         # Rules summary 1.2: only a random set of the private companies is used in each game.
@@ -513,7 +557,7 @@ module Engine
         def setup_political_track!
           @political_track = 0
           @corporation_alignment = Hash.new { |h, k| h[k] = { civilian: 0, military: 0 } }
-          @paramilitary_hexes_remaining = self.class::PARAMILITARY_HEXES.dup
+          @paramilitary_hexes_remaining = paramilitary_hexes.dup
           @pending_paramilitary = nil
 
           military, civilian = @corporations.sort_by { rand }.first(4).each_slice(2).to_a
@@ -706,7 +750,7 @@ module Engine
         def apply_dictatorship!
           remove_trains!('D')
 
-          self.class::DICTATORSHIP_BORDER_TILES.each do |hex_id, code|
+          dictatorship_border_tiles.each do |hex_id, code|
             hex = hex_by_id(hex_id)
             tile = Tile.from_code(hex_id, :red, code)
             tile.location_name = hex.tile.location_name
