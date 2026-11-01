@@ -10,8 +10,8 @@ module Engine
           def actions(entity)
             actions = super
             # Add pay_debt option if player has debt and can afford it
-            if entity.player? && entity.debt.positive? && entity.cash >= entity.debt
-              actions = actions + ['choose'] unless actions.include?('choose')
+            if entity.player? && entity.debt.positive? && entity.cash >= entity.debt && !actions.include?('choose')
+              actions += ['choose']
             end
             actions
           end
