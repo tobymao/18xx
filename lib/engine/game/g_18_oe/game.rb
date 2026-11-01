@@ -981,6 +981,13 @@ module Engine
           super
         end
 
+        def check_other(route)
+          super
+
+          hexes = route.visited_stops.reject(&:town?).map(&:hex)
+          raise GameError, 'Route visits same city hex twice' if hexes.size != hexes.uniq.size
+        end
+
         def sea_zone(hex_id)
           @sea_zone_by_hex ||= self.class::SEA_ZONES.each_with_object({}) do |(zone, data), by_hex|
             data[:hexes].each { |id| by_hex[id] = zone }
