@@ -13,6 +13,7 @@ module Engine
 
         GAME_DESIGNER = 'Leandro Pires'
         GAME_LOCATION = 'Junta (fictional Central America)'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Junta'
         GAME_RULES_URL = 'https://drive.google.com/file/d/1jOIY8pBolF0xH_4p2UAMrJIrXw9O-pbj/view'
 
         PLAYER_RANGE = [2, 4].freeze
