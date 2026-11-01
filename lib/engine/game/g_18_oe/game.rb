@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'stock_market'
+require_relative 'graph'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
@@ -13,6 +14,7 @@ require_relative 'step/merge_minor'
 require_relative 'step/merge_token'
 require_relative 'step/concession'
 require_relative 'step/reserve_share'
+require_relative 'step/special_token'
 
 module Engine
   module Game
@@ -23,7 +25,7 @@ module Engine
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
-        attr_reader :concessions, :merged_minors
+        attr_reader :concessions, :merged_minors, :wcf_placeholder
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -427,6 +429,12 @@ module Engine
           end
 
           setup_patronage_tiles!
+          setup_wcf_placeholder!
+        end
+
+        def setup_wcf_placeholder!
+          @wcf_placeholder = Engine::Token.new(nil, price: 0, logo: '/logos/18_oe/wcf_reserved.svg', type: :neutral)
+          lille_city.exchange_token(@wcf_placeholder, extra_slot: true)
         end
 
         def setup_patronage_tiles!
@@ -696,7 +704,7 @@ module Engine
         end
 
         def merge_graph
-          @merge_graph ||= Graph.new(self, no_blocking: true)
+          @merge_graph ||= Engine::Graph.new(self, no_blocking: true)
         end
 
         def merge_connected?(minor, major)
@@ -968,7 +976,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18OE::Step::Track,
-            Engine::Step::SpecialToken,
+            G18OE::Step::SpecialToken,
             G18OE::Step::Token,
             Engine::Step::Route,
             G18OE::Step::Dividend,
@@ -982,6 +990,46 @@ module Engine
           return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
 
           super
+        end
+
+        def init_graph
+          G18OE::Graph.new(self)
+        end
+
+        def check_other(route)
+          super
+
+          hexes = route.visited_stops.reject(&:town?).map(&:hex)
+          raise GameError, 'Route visits same city hex twice' if hexes.size != hexes.uniq.size
+        end
+
+        def check_connected(route, corporation)
+          return super unless wcf_restricted?(corporation)
+          return if route.ordered_paths.each_cons(2).all? { |a, b| wcf_pass?(a, b) || a.connects_to?(b, corporation) }
+
+          raise GameError, 'Route is not connected'
+        end
+
+        def wcf_pass?(entering, leaving)
+          [entering, leaving].all? { |path| path.nodes.include?(lille_city) } &&
+            [entering, leaving].any? { |path| wcf_path?(path) }
+        end
+
+        def lille_city
+          hex_by_id('N31').tile.cities.first
+        end
+
+        def wcf_path?(path)
+          path.exits.include?(self.class::PORTS['N31'].keys.first)
+        end
+
+        def wcf_restricted?(corporation)
+          wcf_placeholder && lille_city.blocks?(corporation)
+        end
+
+        def remove_wcf_placeholder!
+          @wcf_placeholder.remove!
+          @wcf_placeholder = nil
         end
 
         def sea_zone(hex_id)
