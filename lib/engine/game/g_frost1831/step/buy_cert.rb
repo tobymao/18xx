@@ -173,9 +173,7 @@ module Engine
             # Player pays 2x par for P6/GJ presidency
             prices = @game.par_prices(corp).select { |p| p.price * 2 <= entity.cash }
             # If player can't afford any par, force minimum (£60) per manual
-            if prices.empty?
-              prices = [@game.par_prices(corp).min_by(&:price)]
-            end
+            prices = [@game.par_prices(corp).min_by(&:price)] if prices.empty?
             prices
           end
 
@@ -282,9 +280,7 @@ module Engine
           end
 
           def can_afford?(entity, company)
-            if company.respond_to?(:sym) && company.sym == 'PGJ'
-              return can_afford_p6?(entity)
-            end
+            return can_afford_p6?(entity) if company.respond_to?(:sym) && company.sym == 'PGJ'
 
             # Corporations (GJ) check par affordability
             return can_afford_p6?(entity) if company.respond_to?(:ipoed) && !company.ipoed
@@ -304,9 +300,7 @@ module Engine
 
           # Check if entity can afford a company at face value only (used in all-pass scenario)
           def can_afford_face_value?(entity, company)
-            if company.sym == 'PGJ'
-              return can_afford_p6?(entity)
-            end
+            return can_afford_p6?(entity) if company.sym == 'PGJ'
 
             entity.cash >= company.value
           end
