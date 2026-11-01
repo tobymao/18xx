@@ -599,6 +599,91 @@ module Engine
             expect { game.use_private_m!(owner) }.to raise_error(GameError)
           end
         end
+
+        describe 'private companies C, D, F, I, K and N (rules summary 11)' do
+          let(:players) { %w[a b c d] }
+          let(:game) { Engine::Game::G18Junta::Game.new(players, id: 77) } # C, D, I, K and N in play
+          let(:owner) { game.players.first }
+          let(:corporation) { game.corporations.first }
+
+          def give(sym, entity)
+            company = game.companies.find { |c| c.sym == sym }
+            company.owner = entity
+            entity.companies << company
+            company
+          end
+
+          before { corporation.owner = owner }
+
+          it 'C: may discard a paramilitary token without moving the marker or drawing' do
+            give('(C)', corporation)
+            game.claim_paramilitary_hex!(game.hex_by_id('C11'), corporation)
+            step = G18Junta::Step::ParamilitaryChoice.new(game, game.round)
+            allow(step).to receive(:current_entity).and_return(corporation)
+            expect(step.choices).to include('discard')
+
+            game.resolve_paramilitary_choice!(corporation, 'discard')
+            expect(game.political_track).to eq(0)
+            expect(owner.corruption_tokens.values.sum).to eq(0)
+          end
+
+          it 'D: discards a 2-train and pays only the difference for the cheapest train in the supply' do
+            company = give('(D)', corporation)
+            old_train, *other_twos = game.depot.upcoming.select { |t| t.name == '2' }
+            game.buy_train(corporation, old_train, :free)
+            other_twos.each { |t| game.buy_train(game.corporations.last, t, :free) } # the new train must cost more
+            game.bank.spend(500, corporation)
+            step = G18Junta::Step::SpecialChoose.new(game, game.round)
+            target = game.private_d_target_train
+            expect(step.choices_ability(company).keys).to eq([old_train.id])
+
+            game.exchange_train_for_private_d!(corporation, old_train)
+            expect(corporation.trains).to eq([target])
+            expect(corporation.cash).to eq(500 - (target.price - old_train.price))
+          end
+
+          it 'I: lets the owning company discard an alignment token before the tokens cancel out' do
+            give('(I)', corporation)
+            price = game.stock_market.par_prices.first
+            game.par_corporation(corporation, price)
+            corporation.share_price = price
+            price.corporations << corporation
+            corporation.floated = true
+            game.corporation_alignment(corporation).merge!(civilian: 1, military: 1)
+            game.resolve_coup!
+            expect(game.pending_coup_i_choice).to eq(corporation)
+
+            game.resolve_private_i_choice!('military')
+            expect(game.pending_coup_i_choice).to be_nil
+            expect(game.corporation_alignment(corporation)).to eq(civilian: 1, military: 0)
+            expect(game.companies).to be_empty
+          end
+
+          it 'K: a black token from the bag goes back and is drawn again, once per Operating Round' do
+            give('(K)', corporation)
+            game.instance_variable_set(:@corruption_bag, %i[black black])
+            game.draw_corruption_token!(owner, 'a test', corporation: corporation)
+            game.draw_corruption_token!(owner, 'a test', corporation: corporation)
+
+            expect(game.log.map(&:message).count { |m| m.include?('Hernandez Abogados') }).to eq(1)
+            expect(owner.corruption_tokens[:black]).to eq(2)
+          end
+
+          it 'N: removes a paramilitary token and gives the president 2 black tokens' do
+            give('(N)', corporation)
+            game.use_private_n!(corporation, 'C11')
+
+            expect(game.paramilitary_hex_unclaimed?(game.hex_by_id('C11'))).to be(false)
+            expect(owner.corruption_tokens[:black]).to eq(2)
+          end
+
+          it 'F: only offers yellow tiles on empty hexes' do
+            game_f = Engine::Game::G18Junta::Game.new(players, id: 8) # F in play
+            company = game_f.companies.find { |c| c.sym == '(F)' }
+            step = G18Junta::Step::SpecialTrack.new(game_f, game_f.round)
+            expect(step.potential_tiles(company, game_f.hex_by_id('G7'))).to be_empty # preprinted green city
+          end
+        end
       end
     end
   end

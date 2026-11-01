@@ -6,12 +6,14 @@ require_relative 'meta'
 require_relative 'player'
 require_relative 'stock_market'
 require_relative 'step/buy_sell_par_shares'
+require_relative 'step/coup_private_i_choice'
 require_relative 'step/dividend'
 require_relative 'step/fix_par_price'
 require_relative 'step/paramilitary_choice'
 require_relative 'step/private_auction'
 require_relative 'step/private_m_draw'
 require_relative 'step/special_choose'
+require_relative 'step/special_track'
 require_relative 'step/track'
 require_relative 'step/upgrade_license'
 require_relative '../base'
@@ -197,6 +199,8 @@ module Engine
           @private_a_used = false
           @fixed_par_prices = {}
           @private_m_used_turn = nil
+          @private_k_used_or = nil
+          @pending_coup_i = nil
         end
 
         # Rules summary 1.2: one public company, drawn at random, is out of the game. Its home
@@ -286,9 +290,10 @@ module Engine
           expire_stale_upgrade_licenses!
 
           Round::Operating.new(self, [
+            G18Junta::Step::CoupPrivateIChoice,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
+            G18Junta::Step::SpecialTrack,
             G18Junta::Step::SpecialChoose,
             Engine::Step::BuyCompany,
             G18Junta::Step::ParamilitaryChoice,
@@ -421,9 +426,10 @@ module Engine
 
         # Rules summary 5.1: a player draws a corruption token from the bag. If the bag is empty, the
         # token is black, from the unlimited stock.
-        def draw_corruption_token!(player, reason)
+        def draw_corruption_token!(player, reason, corporation: nil)
           source = @corruption_bag.empty? ? ' (the bag is empty, so it comes from the stock)' : ''
           color = @corruption_bag.pop || :black
+          color = redraw_with_private_k(player, corporation) if color == :black && source.empty? && corporation
           player.corruption_tokens[color] += 1
           @log << "#{player.name} draws a #{color} corruption token for #{reason}#{source}"
           color
@@ -575,17 +581,25 @@ module Engine
         # toward the chosen side, and the president draws a corruption token, plus a second one if the
         # first is white.
         def resolve_paramilitary_choice!(corporation, choice)
-          raise GameError, "Invalid choice: #{choice}" unless %w[civilian military].include?(choice)
+          raise GameError, "Invalid choice: #{choice}" unless %w[civilian military discard].include?(choice)
 
-          side = choice.to_sym
           hex = pending_paramilitary_hex
           @pending_paramilitary = nil
+          # Rules summary 11 (C): the token is discarded; the marker does not move and nothing is drawn.
+          if choice == 'discard'
+            raise GameError, 'Only the owner of Misioneros Campesinos may discard' unless owns_private?(corporation, '(C)')
+
+            return @log << "#{corporation.name} discards the paramilitary token at #{hex.name} (Misioneros Campesinos)"
+          end
+
+          side = choice.to_sym
           @corporation_alignment[corporation][side] += 1
           @log << "#{corporation.name} supports the #{side.to_s.capitalize} side at #{hex.name}"
           move_political_track!(side)
 
           reason = 'supporting a side in a paramilitary hex'
-          draw_corruption_token!(corporation.owner, reason) if draw_corruption_token!(corporation.owner, reason) == :white
+          first = draw_corruption_token!(corporation.owner, reason, corporation: corporation)
+          draw_corruption_token!(corporation.owner, reason, corporation: corporation) if first == :white
         end
 
         def coup_resolved?
@@ -607,6 +621,29 @@ module Engine
           @coup_outcome = track_regime
           @log << "The coup ends in #{@coup_outcome.to_s.capitalize}"
 
+          # Rules summary 11 (I): the owning company may first discard one of its alignment tokens.
+          i_owner = @corporations.find { |c| owns_private?(c, '(I)') }
+          return @pending_coup_i = i_owner if i_owner && @corporation_alignment[i_owner].values.sum.positive?
+
+          finish_coup!
+        end
+
+        def pending_coup_i_choice
+          @pending_coup_i
+        end
+
+        def resolve_private_i_choice!(choice)
+          corporation = @pending_coup_i
+          side = choice.to_sym
+          if %i[civilian military].include?(side) && @corporation_alignment[corporation][side].positive?
+            @corporation_alignment[corporation][side] -= 1
+            @log << "#{corporation.name} discards 1 #{side.to_s.capitalize} token (Orejuela Abogados)"
+          end
+          @pending_coup_i = nil
+          finish_coup!
+        end
+
+        def finish_coup!
           @corporation_alignment.each_value do |alignment|
             pairs = [alignment[:civilian], alignment[:military]].min
             alignment[:civilian] -= pairs
@@ -783,6 +820,49 @@ module Engine
           @bank.spend(bonus, corporation)
           @log << "#{corporation.name} receives #{format_currency(bonus)} from the bank for a high dividend "\
                   '(Gutiérrez y Asociados)'
+        end
+
+        # Rules summary 5 and 11 (K): once per Operating Round, a black token from the bag drawn because
+        # of the company that owns Hernandez Abogados goes back, and the president draws again.
+        def redraw_with_private_k(player, corporation)
+          return :black if corporation.owner != player || !owns_private?(corporation, '(K)')
+          return :black if @private_k_used_or == @or_round_number
+
+          @private_k_used_or = @or_round_number
+          @corruption_bag = (@corruption_bag + [:black]).sort_by { rand }
+          @log << "#{player.name} returns a black token to the bag and draws again (Hernandez Abogados)"
+          @corruption_bag.pop
+        end
+
+        # Rules summary 11 (D): the new train is the cheapest one in the supply (not one discarded by
+        # another company).
+        def private_d_target_train
+          @depot.upcoming.min_by(&:price)
+        end
+
+        def exchange_train_for_private_d!(corporation, old_train)
+          new_train = private_d_target_train
+          price = new_train.price - old_train.price
+          corporation.trains.delete(old_train)
+          @depot.forget_train(old_train)
+          @log << "#{corporation.name} discards a #{old_train.name}-train, which leaves the game, and buys a "\
+                  "#{new_train.name}-train for #{format_currency(price)} (Ferramenteria Ochoa)"
+          source = new_train.owner
+          buy_train(corporation, new_train, price)
+          @phase.buying_train!(corporation, new_train, source)
+        end
+
+        def remaining_paramilitary_hexes
+          @paramilitary_hexes_remaining
+        end
+
+        # Rules summary 6.2 and 11 (N): the token leaves the board and the president takes 2 black
+        # corruption tokens from the stock.
+        def use_private_n!(corporation, hex_id)
+          @paramilitary_hexes_remaining.delete(hex_id)
+          corporation.owner.corruption_tokens[:black] += 2
+          @log << "#{corporation.name} removes the paramilitary token at #{hex_id} (Emisarios de las Sombras); "\
+                  "#{corporation.owner.name} takes 2 black corruption tokens"
         end
       end
     end

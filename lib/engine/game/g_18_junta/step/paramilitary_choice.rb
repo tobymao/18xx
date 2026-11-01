@@ -34,10 +34,14 @@ module Engine
           end
 
           def choices
-            {
+            choices = {
               'civilian' => 'Support the Civilian side',
               'military' => 'Support the Military side',
             }
+            if @game.owns_private?(current_entity, '(C)')
+              choices['discard'] = 'Discard the token without choosing a side (Misioneros Campesinos)'
+            end
+            choices
           end
 
           def process_choose(action)

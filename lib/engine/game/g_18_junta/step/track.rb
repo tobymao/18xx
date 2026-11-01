@@ -25,7 +25,7 @@ module Engine
               @game.consume_upgrade_license!(corporation)
               @log << "#{corporation.name} uses its Upgrade License"
             else
-              @game.draw_corruption_token!(corporation.owner, 'upgrading without a license')
+              @game.draw_corruption_token!(corporation.owner, 'upgrading without a license', corporation: corporation)
             end
           end
 
