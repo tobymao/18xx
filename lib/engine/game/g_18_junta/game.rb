@@ -549,7 +549,6 @@ module Engine
           ['Corruption:', corruption_counts(tokens[:white], tokens[:black])]
         end
 
-        # Info page: what is left in the bag, the tokens each player holds and the end-game table.
         # Info page: the Political Track scale (Neutral only while the marker is still there), the corruption
         # bag, the tokens held by each player and the end-game penalty table.
         def timeline
@@ -560,13 +559,13 @@ module Engine
           end
 
           [
-            "#{bold_text('POLITICAL TRACK')}: #{track_scale_label(@political_track)}",
+            "POLITICAL TRACK: #{track_scale_label(@political_track)}",
             political_track_scale,
             "\u00A0",
-            "#{bold_text('CORRUPTION')}:",
+            'CORRUPTION:',
             "BAG:  #{corruption_counts(bag[:white] || 0, bag[:black] || 0)}",
             *held,
-            "#{bold_text('End-game Corruption Penalty')} ($ per black token) - Dictatorship / Democracy",
+            'END-GAME CORRUPTION PENALTY ($ per black token) - Dictatorship / Democracy',
             corruption_penalty_table_line,
           ]
         end
@@ -577,7 +576,7 @@ module Engine
             next if position.zero? && !@political_track.zero?
 
             label = track_scale_label(position)
-            label = "\u25B6#{bold_text(label)}\u25C0" if position == @political_track
+            label = "\u25B6#{label}\u25C0" if position == @political_track
             if position <= -self.class::RADICAL_THRESHOLD
               "#{label} >>"
             elsif position >= self.class::RADICAL_THRESHOLD
@@ -596,88 +595,15 @@ module Engine
           low = 1
           self.class::CORRUPTION_PENALTY_TABLE.map do |row|
             range = if row[:max] == Float::INFINITY
-                      "#{bold_text(low.to_s)}+"
+                      "#{low}+"
                     elsif low == 1
-                      "<=#{bold_text(row[:max].to_s)}"
+                      "<=#{row[:max]}"
                     else
-                      "#{bold_text(low.to_s)}\u2013#{bold_text(row[:max].to_s)}"
+                      "#{low}\u2013#{row[:max]}"
                     end
             low = row[:max] + 1
             "#{range}: #{format_currency(row[:dictatorship])}/#{format_currency(row[:democracy])}"
           end.join(' | ')
-        end
-
-        # Mathematical bold letters and digits, used to fake bold in the Info page and
-        # the game log. Both render plain text (no HTML or markdown), and the log's only
-        # native bold is a whole line starting with '--', so bolding part of a line (for
-        # example the current Political Track position) cannot be done any other way.
-        BOLD_CHARS = {
-          'A' => '𝐀',
-          'B' => '𝐁',
-          'C' => '𝐂',
-          'D' => '𝐃',
-          'E' => '𝐄',
-          'F' => '𝐅',
-          'G' => '𝐆',
-          'H' => '𝐇',
-          'I' => '𝐈',
-          'J' => '𝐉',
-          'K' => '𝐊',
-          'L' => '𝐋',
-          'M' => '𝐌',
-          'N' => '𝐍',
-          'O' => '𝐎',
-          'P' => '𝐏',
-          'Q' => '𝐐',
-          'R' => '𝐑',
-          'S' => '𝐒',
-          'T' => '𝐓',
-          'U' => '𝐔',
-          'V' => '𝐕',
-          'W' => '𝐖',
-          'X' => '𝐗',
-          'Y' => '𝐘',
-          'Z' => '𝐙',
-          'a' => '𝐚',
-          'b' => '𝐛',
-          'c' => '𝐜',
-          'd' => '𝐝',
-          'e' => '𝐞',
-          'f' => '𝐟',
-          'g' => '𝐠',
-          'h' => '𝐡',
-          'i' => '𝐢',
-          'j' => '𝐣',
-          'k' => '𝐤',
-          'l' => '𝐥',
-          'm' => '𝐦',
-          'n' => '𝐧',
-          'o' => '𝐨',
-          'p' => '𝐩',
-          'q' => '𝐪',
-          'r' => '𝐫',
-          's' => '𝐬',
-          't' => '𝐭',
-          'u' => '𝐮',
-          'v' => '𝐯',
-          'w' => '𝐰',
-          'x' => '𝐱',
-          'y' => '𝐲',
-          'z' => '𝐳',
-          '0' => '𝟎',
-          '1' => '𝟏',
-          '2' => '𝟐',
-          '3' => '𝟑',
-          '4' => '𝟒',
-          '5' => '𝟓',
-          '6' => '𝟔',
-          '7' => '𝟕',
-          '8' => '𝟖',
-          '9' => '𝟗',
-        }.freeze
-
-        def bold_text(text)
-          text.gsub(/[A-Za-z0-9]/, BOLD_CHARS)
         end
 
         # Rules summary 1.3: four different companies start with one alignment token each, two Civilian
@@ -864,7 +790,7 @@ module Engine
         # Rules summary 6.3: the coup is written to the log as one block.
         def log_coup_report!
           @log << COUP_LOG_RULE
-          @log << "#{'-' * 19}  #{bold_text('COUP ATTEMPT')}  #{'-' * 19}"
+          @log << "#{'-' * 19}  COUP ATTEMPT  #{'-' * 19}"
           @log << COUP_LOG_RULE
           @log << "Coup Attempt Result: #{@coup_outcome.to_s.upcase}"
           { benefited: 'BENEFITED:', punishment: 'PUNISHMENT:', direct: 'DIRECT EFFECTS:', other: 'OTHER EFFECTS:' }
