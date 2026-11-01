@@ -68,10 +68,15 @@ module Engine
             raise GameError, "#{action.entity.name} is not the merging minor" unless action.entity == minor
             raise GameError, "#{minor.name} cannot merge into #{major&.name}" unless mergeable_entities.include?(major)
 
-            from_treasury = @game.merge_share(major).owner == major
-            @log << "#{minor.name} merges into #{major.name}"
-            exchange_share(minor, major, from_treasury ? major : @game.share_pool)
-            transfer_treasury(minor, from_treasury ? major : @game.bank)
+            share = @game.merge_share(major)
+            cash_recipient = share&.owner == major ? major : @game.bank
+            if share
+              @log << "#{minor.name} merges into #{major.name}"
+              exchange_share(minor, major, share.owner)
+            else
+              @log << "#{minor.name} merges into #{major.name} by track connection; #{minor.owner.name} receives no share"
+            end
+            transfer_treasury(minor, cash_recipient)
             @round.merge_trains = { corporation: major, trains: move_trains!(minor, major) }
             @game.merged_minors[major] << minor
             @game.minor_regional_order.delete(minor)

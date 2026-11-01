@@ -49,11 +49,6 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     expect(game.merge_targets(player, minor)).to be_empty
   end
 
-  it 'offers no merge when the major has no share in its treasury or the Open Market (§10.5)' do
-    take_treasury_shares!(game, player, major, major.treasury_shares.size)
-    expect(game.merge_targets(player, minor)).to be_empty
-  end
-
   it 'allows one minor per major per SR (§10.5)' do
     major
     round.merged_majors << major
@@ -409,5 +404,163 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     act!(round, Engine::Action::DiscardTrain.new(major, train: own))
     expect(game.depot.discarded).to include(own)
     expect(taken.owner).to eq(major)
+  end
+
+  describe 'with no share available (§10.5)' do
+    before do
+      take_treasury_shares!(game, player, major, major.treasury_shares.size)
+    end
+
+    def place_major_token!(hex_id, index = 0)
+      city = game.hex_by_id(hex_id).tile.cities[index]
+      city.remove_all_reservations!
+      city.place_token(major, major.next_token, free: true, check_tokenable: false)
+      city
+    end
+
+    def lay_valencia_palma_tiles!(*hex_ids)
+      rotations = { 'AB27' => 1, 'AA20' => 4 }
+      hex_ids.each do |hex_id|
+        tile = game.tiles.find { |t| t.name == '5' && !t.hex }
+        tile.rotate!(rotations[hex_id])
+        game.hex_by_id(hex_id).lay(tile)
+      end
+    end
+
+    it 'has no share to merge for' do
+      expect(game.merge_share(major)).to be_nil
+    end
+
+    it 'is a target when track joins a minor token to a major token (§10.5)' do
+      place_minor_token!('N31')
+      place_major_token!('M28')
+      expect(game.merge_targets(player, minor)).to eq([major])
+    end
+
+    it 'is not a target without a track connection (§10.5)' do
+      place_minor_token!('N31')
+      expect(game.merge_targets(player, minor)).to be_empty
+    end
+
+    it 'ignores other railroads\' tokens on the way (§10.5)' do
+      lay_valencia_palma_tiles!('AB27', 'AA20')
+      other = start_regional!(game, 'GWR', game.players.last)
+      game.hex_by_id('AB27').tile.cities.first.place_token(other, other.next_token, free: true, check_tokenable: false)
+      place_minor_token!('AA20')
+      place_major_token!('Z27')
+      expect(game.merge_targets(player, minor)).to eq([major])
+    end
+
+    it 'does not cross the sea through ports (§10.5)' do
+      expect(game.port_sea_zone('D57', 4)).to eq(game.port_sea_zone('B67', 5))
+      place_minor_token!('D57')
+      place_major_token!('B67')
+      expect(game.merge_targets(player, minor)).to be_empty
+    end
+
+    it 'counts a shared city as connected' do
+      place_minor_token!('T87')
+      place_major_token!('T87')
+      expect(game.merge_targets(player, minor)).to eq([major])
+    end
+
+    it 'does not check the connection while loading (§10.5)' do
+      game.instance_variable_set(:@loading, true)
+      expect(game).not_to receive(:merge_connected?)
+      place_minor_token!('N31')
+      expect(game.merge_targets(player, minor)).to eq([major])
+    end
+
+    def stub_other_options_off!(target = step)
+      %i[can_buy_any? can_ipo_any? can_float_minor? can_sell_any? can_remove_any_corporation? can_reserve_any?].each do |name|
+        allow(target).to receive(name).and_return(false)
+      end
+      allow(target).to receive(:purchasable_companies).and_return([])
+      allow(target).to receive(:buyable_bank_owned_companies).and_return([])
+      allow(target).to receive(:must_sell?).and_return(false)
+    end
+
+    it 'skips a player whose only option is an unconnected no-share merge (§10.5)' do
+      place_minor_token!('N31')
+      stub_other_options_off!
+      expect(step.actions(player)).to eq(['skip'])
+      expect(step.auto_actions(player).map(&:class)).to eq([Engine::Action::Skip])
+      expect(step.auto_actions(player).map(&:entity)).to eq([player])
+      act!(round, step.auto_actions(player).first)
+      expect(game.log.map(&:message)).to include("#{player.name} has no valid actions and passes")
+      expect(player.passed?).to be(true)
+    end
+
+    it 'does not skip when the no-share merge is connected (§10.5)' do
+      place_minor_token!('N31')
+      place_major_token!('M28')
+      stub_other_options_off!
+      expect(step.actions(player)).to eq(%w[choose pass])
+      expect(step.auto_actions(player).to_a.map(&:class)).not_to include(Engine::Action::Skip)
+    end
+
+    it 'accepts a recorded skip while loading without checking the connection (§10.5)' do
+      place_minor_token!('N31')
+      stub_other_options_off!
+      game.instance_variable_set(:@loading, true)
+      expect(game).not_to receive(:merge_connected?)
+      expect(step.actions(player)).to eq(%w[choose pass skip])
+      act!(round, Engine::Action::Skip.new(player))
+      expect(player.passed?).to be(true)
+    end
+
+    it 'skips in the Consolidation round too (§10.6)' do
+      place_minor_token!('N31')
+      start_regional!(game, 'GWR', player)
+      consolidation = enter_round!(game, game.new_consolidation_round)
+      consolidate = consolidation.active_step
+      stub_other_options_off!(consolidate)
+      expect(consolidate.actions(player)).to eq(['skip'])
+      expect(consolidate.auto_actions(player).map(&:class)).to eq([Engine::Action::Skip])
+      act!(consolidation, consolidate.auto_actions(player).first)
+      expect(game.log.map(&:message)).to include("#{player.name} has no valid actions and passes")
+      expect(player.passed?).to be(true)
+    end
+
+    it 'rebuilds the merge graph for the next stock round' do
+      lay_valencia_palma_tiles!('AB27')
+      place_minor_token!('AA20')
+      place_major_token!('Z27')
+      expect(game.merge_targets(player, minor)).to be_empty
+      lay_valencia_palma_tiles!('AA20')
+      stock_round!(game)
+      expect(game.merge_targets(player, minor)).to eq([major])
+    end
+
+    it 'never connects a minor with no tokens' do
+      place_major_token!('M28')
+      expect(game.merge_targets(player, minor)).to be_empty
+    end
+
+    it 'merges with no share and forfeits the minor cash to the bank (§10.5)' do
+      place_minor_token!('N31')
+      place_major_token!('M28')
+      train = game.depot.upcoming.first
+      game.buy_train(minor, train, :free)
+      shares = player.num_shares_of(major)
+      major_cash = major.cash
+      bank_cash = game.bank.cash
+      minor_cash = minor.cash
+      expect { merge! }.not_to raise_error
+      expect(player.num_shares_of(major)).to eq(shares)
+      expect(major.cash).to eq(major_cash)
+      expect(game.bank.cash).to eq(bank_cash + minor_cash)
+      expect(train.owner).to eq(major)
+      expect(game.merged_minors[major]).to eq([minor])
+    end
+
+    it 'closes the minor after a no-share merge (§10.5)' do
+      place_minor_token!('N31')
+      place_major_token!('M28')
+      merge!
+      resolve_follow_ups!
+      expect(minor).to be_closed
+      expect(round.pending_acquisition).to be_nil
+    end
   end
 end
