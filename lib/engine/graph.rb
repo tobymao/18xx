@@ -261,9 +261,9 @@ module Engine
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
-        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
-                  skip_paths: skip_paths, converging_path: false, walk_calls: @walk_calls[corporation],
-                  backtracking: @backtracking, pruner: pruner) do |path, _, _|
+        walk_token(node, visited: visited, corporation: walk_corporation, skip_track: @skip_track,
+                         skip_paths: skip_paths, converging_path: false, walk_calls: @walk_calls[corporation],
+                         backtracking: @backtracking, pruner: pruner) do |path, _, _|
           next if paths[path]
 
           paths[path] = true
@@ -327,6 +327,10 @@ module Engine
         "    Graph computed with #{walk_calls(corporation)[:not_skipped]} "\
           "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
       end
+    end
+
+    def walk_token(node, **opts, &block)
+      node.walk(**opts, &block)
     end
 
     class Pruner

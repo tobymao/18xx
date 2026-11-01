@@ -123,7 +123,7 @@ describe 'G18OE White Cliffs Ferry (§11.2.2, §14.7)' do
         step.place_token(operator, lille, operator.next_token, connected: false)
 
         expect(lille.tokens.map { |t| t&.corporation }).to eq([operator])
-        expect(lille.extra_tokens).to eq([])
+        expect(lille.extra_tokens.map(&:type)).to eq([:neutral])
         expect(wcf).not_to be_closed
       end
 
