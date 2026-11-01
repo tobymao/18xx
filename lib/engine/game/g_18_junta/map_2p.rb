@@ -6,6 +6,9 @@ module Engine
       module Map2P
         # Rules summary 1.1: the 2-player game uses the smaller map on the back of the board.
         HEXES_2P = {
+          orange: {
+            ['A2'] => '',
+          },
           white: {
             %w[D8 D14 E5] => '', # open terrain
             %w[B14 C11 E7 G3 G13 I9 J4 L8] => 'icon=image:18_junta/militia,large:2',
@@ -51,6 +54,7 @@ module Engine
           'I3' => 'San Miguel',
           'L12' => 'Puerto Viejo',
           'E11' => 'Laguna',
+          'A2' => 'NEUTRAL',
         }.freeze
 
         PARAMILITARY_HEXES_2P = %w[B14 C11 E7 G3 G13 I9 J4 K11 L8].freeze

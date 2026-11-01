@@ -168,6 +168,7 @@ module Engine
           'K3' => 'San Miguel',
           'L12' => 'Puerto Viejo',
           'E11' => 'Laguna',
+          'A2' => 'NEUTRAL',
         }.freeze
 
         # Rules summary 6.5: under Dictatorship the border cities become military tiles with fixed values.
@@ -178,7 +179,11 @@ module Engine
           'K3' => 'offboard=revenue:50;path=a:1,b:_0;path=a:2,b:_0;border=edge:0,type:impassable,color:black',
         }.freeze
 
+        # A2 is a status tile that shows the Political Track; it is never upgraded.
         HEXES = {
+          orange: {
+            ['A2'] => '',
+          },
           white: {
             %w[C9 D8 D14 H4 J4] => '', # open terrain
             %w[B14 C11 E7 F4 G13 I3 I9 L8] => 'icon=image:18_junta/militia,large:2',
