@@ -222,6 +222,7 @@ describe Engine::Game::G1835::Game do
 
       expect(game.round).to be_a(Engine::Round::Stock)
       expect(player_1.percent_of(preussen)).to be 10
+      expect(preussen.operated?).to be false
 
       bundle = game.sellable_bundles(player_1, preussen).find { |b| b.percent == 10 }
 
