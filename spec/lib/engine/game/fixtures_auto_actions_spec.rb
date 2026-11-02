@@ -16,6 +16,8 @@ module Engine
     '1889/hs_lhglbbiz_17502.json', # Auto-buy from market
     '1889/hs_jmmljkbw_17502.json', # Auto-buy multiple from IPO
     '1822/hs_lxemeslq_30797.json', # Auto-pass 1822 bid cases
+    '18VA/auto_auction_pass.json', # Auto-pass in 18VA's auction while holding a winning bid
+    '18VA/auto_auction_pass.json', # Auto-pass in 18VA's auction while holding a winning bid
   ].freeze
 
   AUTO_FIXTURES.each do |fixture_name|

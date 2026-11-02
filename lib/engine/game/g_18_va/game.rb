@@ -240,10 +240,23 @@ module Engine
         }.freeze
 
         def new_auction_round
-          Engine::Round::Auction.new(self, [
+          G18VA::Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
             G18VA::Step::WaterfallAuction,
           ])
+        end
+
+        # Auto pass armed during the auction is meant for the auction only;
+        # ProgramSharePass#disable? would otherwise keep it into SR1.
+        def init_round_finished
+          @programmed_actions.each do |entity, programs|
+            programs.reject! do |program|
+              next false if !program.is_a?(Action::ProgramSharePass) || program.indefinite
+
+              player_log(entity, "Programmed action '#{program}' removed due to round change")
+              true
+            end
+          end
         end
 
         def stock_round
