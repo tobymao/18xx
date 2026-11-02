@@ -139,6 +139,13 @@ module Engine
         SELL_BUY_ORDER = :sell_buy_sell
 
         HOME_TOKEN_TIMING = :float
+        STOCK_MARKET_TOKEN_TIMING = :float
+
+        par_price_hash = PAR_PRICES
+          .group_by { |_, price| price }
+          .map { |price, corporations| "#{price} → #{corporations.map(&:first).join(', ')}" }
+          .join('; ')
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: "Par values (#{par_price_hash})")
 
         CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
 
@@ -157,7 +164,7 @@ module Engine
           @preussen_may_float = false
 
           @corporations.select { |corp| major?(corp) }.each do |corp|
-            par_corporation(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
+            corp.par_price = @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] }
           end
 
           corporation_by_id('BY').ipoed = true
