@@ -93,7 +93,7 @@ module Engine
             expect(game.fc.tokens.count { |t| !t.used }).to eq(7)
           end
 
-          it 'places an FC marker on green FC hexes only, not on yellow or outside FC_HEX' do
+          it 'places an FC marker on green FC hexes only, not on yellow or outside FC hexes' do
             until game.round.is_a?(Round::Stock)
               step = game.round.active_step
               company = game.round.is_a?(Round::Auction) && step.companies.first

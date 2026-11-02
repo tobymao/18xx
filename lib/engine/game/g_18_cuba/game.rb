@@ -233,18 +233,12 @@ module Engine
           place_home_token(@fc)
         end
 
-        def fc_hexes
-          self.class::FC_HEX
-        end
-
         def after_lay_tile(hex, tile)
           return unless tile.color == :green
-          return unless fc_hexes.include?(hex.id)
-          return unless (token = @fc.next_token)
-          return unless (city = tile.cities.find { |c| c.tokenable?(@fc, free: true, tokens: token) })
+          return unless tile.icons.any? { |icon| icon.name == @fc.id }
 
           @log << "#{@fc.name} places a token on #{hex.name}"
-          city.place_token(@fc, token, free: true)
+          tile.cities.first.place_token(@fc, @fc.next_token, free: true)
           tile.icons.reject! { |icon| icon.name == @fc.id }
         end
 
