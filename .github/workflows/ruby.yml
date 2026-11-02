@@ -12,22 +12,30 @@ env:
 jobs:
   build_and_test:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Ruby 3.2
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.2
-    - name: Bundler
-      run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
+        # keep in sync with the Dockerfile's ruby image
+        ruby-version: '3.4'
+        bundler-cache: true
     - name: RuboCop
       run: |
         bundle exec rake rubocop
     - name: Opal
       run: |
         bundle exec rake compile_all
+    # parallel_tests balances spec files across workers using the runtimes
+    # recorded by the previous run; restore them so the fixture shards spread
+    # evenly instead of falling back to file size.
+    - name: Restore spec runtimes
+      uses: actions/cache@v4
+      with:
+        path: tmp/parallel_runtime_rspec.log
+        key: spec-runtime-${{ github.run_id }}
+        restore-keys: spec-runtime-
     - name: RSpec
       run: |
         bundle exec rake spec_parallel
