@@ -24,6 +24,8 @@ end
 def sell_shares(player, corporation_id, percent = 10)
   corp = game.corporation_by_id(corporation_id)
   bundle = game.sellable_bundles(player, corp).find { |b| b.percent == percent }
+  raise Engine::GameError, 'No sellable shares found' if bundle.nil? || !bundle.is_a?(Engine::ShareBundle)
+
   game.process_action(
     Engine::Action::SellShares.new(player, shares: bundle.shares)
   ).maybe_raise!

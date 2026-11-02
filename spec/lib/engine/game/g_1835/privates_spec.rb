@@ -127,20 +127,14 @@ describe Engine::Game::G1835::Game do
       # let player 1 take over SX so that they have OBB and the BY and SX director
       sell_shares(player_1, 'BY', 30)
       buy_shares(player_1, 'SX')
-      pass(player_1)
       expect(game.current_entity).to eq(player_3)
       pass(player_3)
       buy_shares(player_1, 'SX')
-      pass(player_1)
-      pass(player_2)
       pass(player_3)
       buy_shares(player_1, 'SX')
-      pass(player_1)
 
       # end the stock round
-      pass(player_2)
       pass(player_3)
-      pass(player_1)
 
       skip_operation_for_minors
 

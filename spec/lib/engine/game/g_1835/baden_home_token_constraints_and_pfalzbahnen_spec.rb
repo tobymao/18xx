@@ -121,7 +121,7 @@ describe Engine::Game::G1835::Game do
 
   describe 'baden_can_use_Pfalzbahnen_to_lay_home_tile_and_another_corp_can_token_in_L6_in_the_same_OR' do
     it 'is possible to use both Pfalzbahnen abilities with different corporations in the same operating round' do
-      game = fixture_at_action(169)
+      game = fixture_at_action(424)
 
       pb = game.company_by_id('PB')
       ba = game.corporation_by_id('BA')
@@ -149,7 +149,7 @@ describe Engine::Game::G1835::Game do
     end
 
     it 'does not let corporations token in L6 using the Pfalzbahnen private before L6 has a green tile' do
-      game = fixture_at_action(169)
+      game = fixture_at_action(424)
 
       ba = game.corporation_by_id('BA')
       by = game.corporation_by_id('BY')
