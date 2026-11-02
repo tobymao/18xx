@@ -434,6 +434,7 @@ module Engine
           @log << "#{prussian.id} forms"
           prussian.floatable = true
           prussian.floated = true
+          float_corporation(prussian)
 
           merge_minor!(berlin_potsdamer_bahn)
         end
