@@ -482,6 +482,10 @@ module Engine
           stock_market.set_par(system, new_sp)
           system.ipoed = true
 
+          # corp1 is the initiator. Capture its president before the presidencies are converted;
+          # the initiating player breaks ties for the system presidency.
+          initiating_player = corp1.owner
+
           # 2. Convert both component president certs into 10% VP certs of the system.
           # Each stays with whoever held the component presidency.
           merger_convert_presidencies_to_vp_certs(corp1, corp2, system)
@@ -490,7 +494,7 @@ module Engine
           merger_convert_regular_shares(corp1, corp2, system)
 
           # 4. President = player holding the largest system share percentage
-          president = merger_find_president(system)
+          president = merger_find_president(system, initiating_player)
 
           # 5. Form the 20% president cert: president surrenders VP certs first, then regular
           # shares, until 20% is covered. Surrendered shares go to the bank.
@@ -565,8 +569,12 @@ module Engine
           end
         end
 
-        def merger_find_president(system)
-          system.owner = @players.max_by { |p| p.percent_of(system) }
+        # The player with the highest percentage wins outright; ties go to the first tied
+        # player clockwise from the initiating player (inclusive).
+        def merger_find_president(system, initiating_player)
+          order = @players.rotate(@players.index(initiating_player))
+          top = order.map { |p| p.percent_of(system) }.max
+          system.owner = order.find { |p| p.percent_of(system) == top }
           @log << "#{system.owner.name} is the system owner with #{system.owner.percent_of(system)}%"
 
           system.owner
