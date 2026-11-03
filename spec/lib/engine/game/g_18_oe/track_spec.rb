@@ -30,7 +30,8 @@ describe 'G18OE lay track (§11.1)' do
   end
 
   it 'budgets tile points by railroad type (§11.1)' do
-    budgets = %i[minor regional major national].to_h { |type| [type, game.tile_point_budget(Struct.new(:type).new(type))] }
+    entity = Struct.new(:type, :abilities)
+    budgets = %i[minor regional major national].to_h { |type| [type, game.tile_point_budget(entity.new(type, []))] }
 
     expect(budgets).to eq(minor: 3, regional: 3, major: 6, national: 9)
   end
