@@ -24,6 +24,10 @@ module Engine
         name: 'Grand Trunk Games',
         url: 'https://www.grandtrunkgames.com/',
       },
+      hans_im_glueck: {
+        name: 'Hans im Glück',
+        url: 'https://www.hans-im-glueck.de/',
+      },
       lonny_games: {
         name: 'Lonny Games',
         url: 'https://www.lonnygames.com/',
