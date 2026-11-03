@@ -137,6 +137,7 @@ module Engine
 
         SELL_MOVEMENT = :down_block
         SELL_BUY_ORDER = :sell_buy_sell
+        SELL_AFTER = :operate
 
         HOME_TOKEN_TIMING = :float
 
@@ -266,6 +267,12 @@ module Engine
           return @cert_limit unless player
 
           @cert_limit + @corporations.count { |corporation| major?(corporation) && player.percent_of(corporation) >= 80 }
+        end
+
+        def check_sale_timing(entity, bundle)
+          return super unless bundle.corporation == prussian
+
+          prussian.floated?
         end
 
         def corporation_available?(corp)
