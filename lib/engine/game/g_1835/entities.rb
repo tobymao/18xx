@@ -287,7 +287,7 @@ module Engine
             type: 'prussian',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
-            tokens: [0, 20], # tokens to exchange for minors are generated on the fly
+            tokens: [0, 20, 20], # tokens to exchange for minors are generated on the fly
             floatable: false,
             max_ownership_percent: 100,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
