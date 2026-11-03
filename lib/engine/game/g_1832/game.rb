@@ -617,6 +617,18 @@ module Engine
           transfer(:trains, from_corp, to_corp)
           transfer(:companies, from_corp, to_corp)
           transfer_coal_token(from_corp, to_corp)
+          transfer_assignments(from_corp, to_corp)
+        end
+
+        # Cotton and port tokens are tracked by assignment on the owning corporation as well as on the
+        # hex; carry the corporation side over so the new owner keeps the revenue bonus.
+        def transfer_assignments(from_corp, to_corp)
+          from_corp.assignments.keys.each do |key|
+            next unless ASSIGNMENT_TOKENS[key]
+
+            to_corp.assign!(key, from_corp.assignments[key])
+            from_corp.remove_assignment!(key)
+          end
         end
 
         def transfer_coal_token(from_corp, to_corp)
