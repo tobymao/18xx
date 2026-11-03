@@ -318,6 +318,7 @@ module Engine
                 or_round_finished
                 or_set_finished
                 return if @finished
+                return end_game!(:bank) if @bank.broken?
 
                 new_stock_round
               end
@@ -380,13 +381,8 @@ module Engine
         end
 
         def or_round_finished
-          # For the moment reset sugar cubes, handling for FC to be implemented later
           reset_cubes_on_train
-          return if @sugar_cubes.values.none?(&:positive?)
-
-          @sugar_cubes.each { |corp, cubes| update_sugar_cube_icons(corp, 0) if cubes.positive? }
-          @sugar_cubes.clear
-          @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
+          pay_fc_for_unshipped_cubes
         end
 
         def or_set_finished

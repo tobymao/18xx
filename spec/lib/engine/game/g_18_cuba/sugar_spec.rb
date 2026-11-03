@@ -81,6 +81,43 @@ module Engine
             expect(game.send(:extended_harbor_revenue, route, in_range)).to eq(0)
           end
         end
+
+        describe '#or_round_finished' do
+          let(:minor_a) { minor }
+          let(:minor_b) { game.corporations.find { |c| c.type == :minor && c != minor_a } }
+
+          it 'pays the FC $10 per unshipped cube and returns the cubes to the supply' do
+            game.sugar_production(minor_a, 80)
+            game.sugar_production(minor_b, 30)
+            fc_cash = game.fc.cash
+            bank_cash = game.bank.cash
+
+            game.or_round_finished
+
+            expect(game.fc.cash).to eq(fc_cash + 30)
+            expect(game.bank.cash).to eq(bank_cash - 30)
+            expect(game.sugar_cubes_for(minor_a)).to eq(0)
+            expect(game.sugar_cubes_for(minor_b)).to eq(0)
+          end
+
+          def act(klass, entity = game.current_entity, **args)
+            game.process_action(klass.new(entity, **args)).maybe_raise!
+          end
+
+          it 'ends the game when the cube payment breaks the bank in the last OR of a set' do
+            until game.round.is_a?(Round::Stock)
+              step = game.round.active_step
+              company = game.round.is_a?(Round::Auction) && step.companies.first
+              company && step.bids[company].empty? ? act(Action::Bid, company: company, price: 0) : act(Action::Pass)
+            end
+            game.sugar_production(minor, 80)
+            game.bank.spend(game.bank.cash - 5, game.players.first)
+            act(Action::Pass) until game.finished || game.turn > 1
+
+            expect(game.finished).to be(true)
+            expect(game.round).to be_a(Round::Operating)
+          end
+        end
       end
     end
   end
