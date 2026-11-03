@@ -206,6 +206,50 @@ module Engine
           end
         end
 
+        describe Engine::Game::G18Cuba::Depot do
+          let(:player) { game.players.first }
+          let(:ju) { game.corporation_by_id('JU') }
+
+          def act(klass, entity = game.current_entity, **args)
+            game.process_action(klass.new(entity, **args)).maybe_raise!
+          end
+
+          def trainless_minor_in_phase_six
+            until game.round.is_a?(Round::Draft)
+              step = game.round.active_step
+              company = step.companies.first
+              next act(Action::Pass) unless step.bids[company].empty?
+
+              price = game.current_entity == player && company.sym == 'C1' ? player.cash - 160 : 0
+              act(Action::Bid, company: company, price: price)
+            end
+            concession = game.company_by_id('M1')
+            until game.round.is_a?(Round::Stock)
+              next act(Action::Pass) if game.current_entity != player || concession.owner
+
+              act(Action::Bid, company: concession, price: concession.value)
+            end
+            act(Action::Par, player, corporation: ju, share_price: game.stock_market.par_prices.find { |p| p.price == 70 })
+            city = game.home_token_locations(ju).flat_map { |h| h.tile.cities }.find { |c| c.tokenable?(ju, free: true) }
+            act(Action::PlaceToken, city: city, slot: city.get_slot(ju), tokener: ju)
+            game.export_train_to_fc! until game.phase.name == '6'
+            act(Action::Pass) until game.round.operating? && game.round.active_step.is_a?(G18Cuba::Step::BuyTrain)
+          end
+
+          it 'prices the 4n at $260 before the 8+, so the president may sell shares to buy it' do
+            trainless_minor_in_phase_six
+            expect([ju.cash, player.cash]).to eq([210, 40])
+            expect(game.depot.min_depot_price).to eq(260)
+
+            bundle = game.bundles_for_corporation(player, ju).find { |b| b.percent == 20 }
+            act(Action::SellShares, player, shares: bundle.shares, share_price: bundle.price_per_share, percent: 20)
+            train = game.depot.depot_trains.find { |t| t.name == '4n' }
+            act(Action::BuyTrain, ju, train: train, price: 260)
+
+            expect(ju.trains.map(&:name)).to eq(['4n'])
+          end
+        end
+
         # ─────────────────────────────────────────────────────────────────────
         # can_buy_train_from_others? — cross-company buys unlock in phase 3 (Rule VII.12)
         # ─────────────────────────────────────────────────────────────────────
