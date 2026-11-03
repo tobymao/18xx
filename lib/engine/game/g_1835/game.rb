@@ -374,7 +374,7 @@ module Engine
         def check_other(route)
           return if phase.name.to_i == 2
 
-          raise GameError, 'Cannot visit Elsass-Lothringen in yellow or brown phase' if intersects_alsace_hexes?(route)
+          raise GameError, 'Cannot visit Elsaß-Lothringen in yellow or brown phase' if intersects_alsace_hexes?(route)
         end
 
         def intersects_alsace_hexes?(route)
