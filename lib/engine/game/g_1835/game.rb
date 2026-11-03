@@ -466,10 +466,10 @@ module Engine
           unless minor.id == '5'
             token = minor.tokens.first
 
-            # make sure the first token (= home token) gets used or other methods might behave unexpectedly later, e.g.
-            # "maybe_place_home_token" called when buying shares
-            new_token = minor.id == '2' ? prussian.tokens.first : Token.new(prussian)
-            prussian.tokens << new_token
+            # make sure the first token (= home token) gets used during formation or other methods might behave
+            # unexpectedly later, e.g. "maybe_place_home_token" called when buying shares
+            new_token = minor == berlin_potsdamer_bahn ? prussian.tokens.first : Token.new(prussian)
+            prussian.tokens << new_token unless minor == berlin_potsdamer_bahn
 
             token.swap!(new_token, check_tokenable: false)
 
