@@ -116,10 +116,10 @@ module View
                   verticalAlign: 'top',
                 },
               }
+              store(:selected_company, company, skip: true)
 
               @step.assignable_corporations(company).each do |corporation|
                 component = View::Game::Corporation.new(@root, corporation: corporation, selected_company: company)
-                store(:selected_company, company, skip: true)
                 left << h(:div, props, [component.render])
               end
             end
