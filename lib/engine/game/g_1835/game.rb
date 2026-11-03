@@ -142,11 +142,10 @@ module Engine
         HOME_TOKEN_TIMING = :float
         STOCK_MARKET_TOKEN_TIMING = :float
 
-        par_price_hash = PAR_PRICES
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: "Par values (#{PAR_PRICES
           .group_by { |_, price| price }
           .map { |price, corporations| "#{price} → #{corporations.map(&:first).join(', ')}" }
-          .join('; ')
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par: "Par values (#{par_price_hash})")
+          .join('; ')})")
 
         CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
 
