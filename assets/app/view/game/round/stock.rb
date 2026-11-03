@@ -12,6 +12,7 @@ require 'view/game/sell_shares'
 require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/bid'
+require 'view/game/buy_value_input'
 require 'view/game/ipo_rows'
 
 module View
@@ -98,8 +99,9 @@ module View
           children << render_show_hand_button unless @game.hand_companies_for_stock_round.empty?
           children.concat(render_hand_companies) if show_sr_hand?
           children << h(Players, game: @game)
-          if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
-            children << h(BuyCompanyFromOtherPlayer, game: @game)
+          if @current_actions.include?('buy_company') && @step.respond_to?(:purchasable_companies)
+            companies = @step.purchasable_companies(@current_entity)
+            children << h(BuyCompanyFromOtherPlayer, game: @game, companies: companies) unless companies.empty?
           end
           children << render_bank
           children << h(StockMarket, game: @game, show_bank: true)
@@ -291,8 +293,18 @@ module View
           inputs << h(BuyTrains, corporation: corporation) if @step.actions(corporation).include?('buy_train')
           inputs << h(ScrapTrains, corporation: corporation) if @step.actions(corporation).include?('scrap_train')
           inputs << h(Choose, entity: corporation) if @current_actions.include?('choose') && @step.choice_available?(corporation)
+          inputs << render_buy_corporation_input(corporation)
           inputs = inputs.compact
           h('div.margined_bottom', { style: { width: '20rem' } }, inputs) if inputs.any?
+        end
+
+        def render_buy_corporation_input(corporation)
+          return unless @current_actions.include?('buy_corporation')
+          return if !@step.respond_to?(:can_buy_corporation?) || !@step.can_buy_corporation?(@current_entity, corporation)
+
+          min_price, max_price = @step.price_range(@current_entity, corporation)
+          h(BuyValueInput, value: min_price, min_value: min_price,
+                           max_value: max_price, size: max_price.to_s.size, selected_entity: corporation)
         end
 
         def render_pre_ipo(corporation)

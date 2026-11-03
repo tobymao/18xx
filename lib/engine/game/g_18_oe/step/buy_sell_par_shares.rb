@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_sell_par_shares'
+require_relative '../../../action/buy_corporation'
 require_relative '../../../action/convert'
 require_relative '../../../action/choose'
 require_relative '../../../action/skip'
@@ -10,7 +11,7 @@ module Engine
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose]
+          PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose, Action::BuyCorporation]
 
           def round_state
             super.merge(merge_minor: nil, merged_majors: [])
@@ -37,11 +38,105 @@ module Engine
             actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
+            actions << 'buy_corporation' if can_buy_any_corporation?(entity)
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'choose' if choose_available?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions << 'skip' if (actions.empty? || @game.loading) && needs_skip_action?(entity)
             actions
+          end
+
+          def purchasable_companies(player)
+            return [] unless can_trade?(player)
+
+            @game.purchasable_companies(player).reject { |company| @game.face_down_private?(company) }
+          end
+
+          def can_trade?(player)
+            @game.turn == 1 && @round.current_actions.empty? &&
+              @game.num_certs(player) < @game.cert_limit(player)
+          end
+
+          def can_buy_any_corporation?(player)
+            return false unless can_trade?(player)
+
+            merged = @game.merged_minors.values.flatten
+            @game.corporations.any? { |corporation| tradable_minor?(player, corporation, merged) }
+          end
+
+          def can_buy_corporation?(player, corporation)
+            can_trade?(player) && tradable_minor?(player, corporation, @game.merged_minors.values.flatten)
+          end
+
+          def price_range(player, _target)
+            [0, player.cash]
+          end
+
+          def validate_trade_price!(price, range)
+            min, max = range
+            return if price.is_a?(Integer) && price >= min && price <= max
+
+            raise GameError, "Price must be a whole amount from #{@game.format_currency(min)} " \
+                             "to #{@game.format_currency(max)}"
+          end
+
+          def process_buy_company(action)
+            company = action.company
+            seller = company.owner
+            player = action.entity
+
+            if seller == @game.bank
+              raise GameError, "Cannot buy #{company.name}" unless buyable_bank_owned_companies(player).include?(company)
+              if action.price != company.value
+                raise GameError, "#{company.name} must be bought for #{@game.format_currency(company.value)}"
+              end
+
+              return super
+            end
+
+            raise GameError, "Cannot buy #{company.name}" unless purchasable_companies(player).include?(company)
+
+            price = action.price
+            validate_trade_price!(price, price_range(player, company))
+
+            company.owner = player
+            seller.companies.delete(company)
+            player.companies << company
+            player.spend(price, seller) if price.positive?
+            track_action(action, company)
+            @log << "#{player.name} buys #{company.name} from #{seller.name} for #{@game.format_currency(price)}"
+            @game.after_buy_company(player, company, price)
+            pass!
+          end
+
+          def process_buy_corporation(action)
+            player = action.entity
+            corporation = action.corporation
+            raise GameError, "Cannot buy #{corporation&.name || 'that corporation'}" unless
+              can_buy_corporation?(player, corporation)
+
+            price = action.price
+            validate_trade_price!(price, price_range(player, corporation))
+
+            seller = corporation.owner
+            @log << "#{player.name} buys #{corporation.name} from #{seller.name} for #{@game.format_currency(price)}"
+            @game.share_pool.transfer_shares(
+              corporation.presidents_share.to_bundle, player,
+              spender: player, receiver: seller, price: price
+            )
+            track_action(action, corporation)
+            pass!
+          end
+
+          def tradable_minor?(player, corporation, merged)
+            return false unless corporation&.corporation?
+            return false if corporation.type != :minor || corporation.closed? || !corporation.floated?
+            return false if merged.include?(corporation)
+
+            seller = corporation.owner
+            return false unless seller&.player?
+
+            seller != player && corporation.presidents_share&.owner == seller
           end
 
           def must_sell_actions(entity)
