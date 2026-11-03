@@ -79,6 +79,7 @@ module Engine
             transfer_treasury(minor, cash_recipient)
             @round.merge_trains = { corporation: major, trains: move_trains!(minor, major) }
             @game.merged_minors[major] << minor
+            transfer_abilities!(minor, major)
             @game.minor_regional_order.delete(minor)
             @round.merged_majors << major
             @round.pending_acquisition = { minor: minor, corporation: major }
@@ -87,6 +88,15 @@ module Engine
           end
 
           private
+
+          def transfer_abilities!(minor, major)
+            return unless major.type == :major
+
+            minor.abilities.dup.each do |ability|
+              minor.remove_ability(ability)
+              major.add_ability(ability)
+            end
+          end
 
           def move_trains!(minor, major)
             return [] if minor.trains.empty?
