@@ -63,10 +63,10 @@ module Engine
             desc: 'One marker and one token. During a controlled RR\'s Place Token step, place the token in any '\
                   'port city at no cost (does not consume a token position). '\
                   'The owning RR may use this city as a private or public port for sea crossings. '\
-                  'Other RRs\' tokens in this city do not block the owning RR and collect no revenue there. '\
+                  'The owning RR\'s trains do not count this city toward their city limit or collect revenue there, '\
+                  'and other RRs\' tokens in the city do not block them. '\
                   'The token city need not be reachable but may not serve as the sole token on a route, '\
-                  'nor be used to place further tokens. '\
-                  'May be exercised at any time during a SR, including while another player is purchasing stock.',
+                  'nor be used to place further tokens.',
             auction_row: 3,
           },
           {
@@ -76,10 +76,10 @@ module Engine
             revenue: 15,
             desc: 'One marker and one token. During a controlled RR\'s Place Token step, place the token in any '\
                   'non-port city at no cost (does not consume a token position). '\
-                  'The owning RR counts this hex as a town when running routes through it; '\
-                  'revenue: £10 (Phase 2), £20 (Phase 3–4), £40 (Phase 5–6), £60 (Phase 7–8). '\
-                  'Other RRs\' tokens in this city do not block the owning RR and collect no revenue there. '\
-                  'May be exercised at any time during a SR, including while another player is purchasing stock.',
+                  'The owning RR\'s trains do not count this city toward their city limit or collect revenue there, '\
+                  'and other RRs\' tokens in the city do not block them. '\
+                  'The token city need not be reachable but may not serve as the sole token on a route, '\
+                  'nor be used to place further tokens.',
             auction_row: 3,
           },
           {
@@ -121,11 +121,11 @@ module Engine
             value: 80,
             revenue: 20,
             desc: 'One token. During a controlled RR\'s Track Lay step, place the token on any rough-terrain hex '\
-                  'with a construction cost of at least £45 (hex may already contain track or one town, '\
-                  'which the token replaces). Turn the private face-down to indicate placement. '\
-                  'Only the owner\'s RRs may use track on hexes bearing this token. '\
-                  'To remove the token, another RR must pay the original terrain cost and expend one tile point '\
-                  '(two for a metropolis); nationals skip the terrain cost but still expend tile points.',
+                  'with a construction cost of at least £45. The hex may contain track or one town, which the token '\
+                  'replaces, but not two towns, a city, a grand city or a metropolis. '\
+                  'Turn the private face-down to indicate placement. Any RR controlled by the private\'s owner may '\
+                  'count the token as a town when running a route through the hex, collecting £10 (Phase 2), '\
+                  '£20 (Phase 3–4), £40 (Phase 5–6) or £60 (Phase 7–8).',
             auction_row: 4,
           },
           {
@@ -138,7 +138,9 @@ module Engine
                   'at no terrain cost (tile points are still spent; the tile may be immediately upgraded). '\
                   'Only the owner\'s RRs may use track on hexes bearing these tokens. '\
                   'Turn the private face-down when the last token is placed; it is removed from the game '\
-                  'when no tokens remain on the map.',
+                  'when no tokens remain on the map. To remove a token, another RR must pay the original terrain '\
+                  'cost and expend one tile point (two for a metropolis), without placing track. '\
+                  'Nationals skip the terrain cost but still expend tile points.',
             auction_row: 4,
           },
           {
@@ -367,6 +369,7 @@ module Engine
             value: 30,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the first stock action in the first stock round.',
             auction_row: 8,
           },
@@ -376,6 +379,7 @@ module Engine
             value: 20,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the second stock action in the first stock round.',
             auction_row: 9,
           },
@@ -385,6 +389,7 @@ module Engine
             value: 20,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the third stock action in the first stock round.',
             auction_row: 9,
           },
@@ -394,6 +399,7 @@ module Engine
             value: 10,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the fourth stock action in the first stock round.',
             auction_row: 10,
           },
@@ -403,6 +409,7 @@ module Engine
             value: 10,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the fifth stock action in the first stock round.',
             auction_row: 10,
           },
@@ -412,6 +419,7 @@ module Engine
             value: 10,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the sixth stock action in the first stock round.',
             auction_row: 10,
           },
@@ -421,6 +429,7 @@ module Engine
             value: 0,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the seventh stock action in the first stock round.',
             auction_row: 11,
           },
@@ -430,6 +439,7 @@ module Engine
             value: 0,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the eighth stock action in the first stock round.',
             auction_row: 11,
           },
@@ -439,6 +449,7 @@ module Engine
             value: 0,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the ninth stock action in the first stock round.',
             auction_row: 11,
           },
@@ -448,6 +459,7 @@ module Engine
             value: 0,
             revenue: 0,
             type: :concession,
+            abilities: [{ type: 'no_buy' }],
             desc: 'Right to take the tenth stock action in the first stock round.',
             auction_row: 11,
           },

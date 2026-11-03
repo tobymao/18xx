@@ -27,6 +27,8 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
 
+        EBUY_CAN_SELL_SHARES = false
+
         TILE_LAYS = [
           { lay: true, upgrade: true },
           { lay: :not_if_upgraded, upgrade: false },

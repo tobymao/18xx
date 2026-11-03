@@ -303,6 +303,10 @@ module Engine
         @game.purchasable_companies(entity)
       end
 
+      def price_range(entity, _target)
+        [1, entity.cash]
+      end
+
       def buyable_bank_owned_companies(entity)
         return [] if !entity.player? || bought?
 

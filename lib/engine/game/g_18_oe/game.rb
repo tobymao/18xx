@@ -430,6 +430,7 @@ module Engine
 
           setup_patronage_tiles!
           setup_wcf_placeholder!
+          @minor_g_ability = corporation_by_id('G')&.abilities&.first
         end
 
         def setup_wcf_placeholder!
@@ -642,7 +643,10 @@ module Engine
         end
 
         def tile_point_budget(entity)
-          self.class::TILE_POINT_BUDGET[entity.type] || 0
+          budget = self.class::TILE_POINT_BUDGET[entity.type] || 0
+          return budget if entity.type == :national
+
+          entity.abilities.include?(@minor_g_ability) ? budget + 2 : budget
         end
 
         def can_buy_train_from_others?

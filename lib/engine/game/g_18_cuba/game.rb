@@ -230,6 +230,16 @@ module Engine
           buy_train(@fc, train, :free)
           # Never bought back (rule VII.16).
           train.buyable = false
+          place_home_token(@fc)
+        end
+
+        def after_lay_tile(hex, tile)
+          return unless tile.color == :green
+          return unless tile.icons.any? { |icon| icon.name == @fc.id }
+
+          @log << "#{@fc.name} places a token on #{hex.name}"
+          tile.cities.first.place_token(@fc, @fc.next_token, free: true)
+          tile.icons.reject! { |icon| icon.name == @fc.id }
         end
 
         def init_graph
