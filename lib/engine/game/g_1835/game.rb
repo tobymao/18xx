@@ -146,6 +146,8 @@ module Engine
         LAY_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
         TWO_LAYS = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
 
+        ALSACE_HEXES = %w[N4 M5].freeze
+
         def setup
           prussian.shares.last(7).each { |s| s.buyable = false }
           prussian.shares.first.buyable = false
@@ -367,6 +369,22 @@ module Engine
           ability.hexes&.any? do |hex_id|
             hex_by_id(hex_id)&.tile&.cities&.any? { |city| city.tokenable?(corporation, free: true) }
           end
+        end
+
+        def check_other(route)
+          check_alsace(route)
+        end
+
+        def check_alsace(route)
+          return if phase.name.to_i == 2
+          return unless intersects_alsace_hexes?(route)
+
+          raise GameError, 'Cannot visit Elsaß-Lothringen in yellow or brown phase'
+        end
+
+        def intersects_alsace_hexes?(route)
+          @alsace_hexes ||= ALSACE_HEXES.map { |coord| hex_by_id(coord) }
+          route.stops.map(&:hex).intersect?(@alsace_hexes)
         end
 
         def payout_companies
