@@ -103,8 +103,10 @@ module Engine
             @parring[:corporation].building_permits = action.choice
 
             @parring[:state] = :par_corporation
-            process_par(Action::Par.new(@parring[:entity], corporation: @parring[:corporation],
-                                                           share_price: @parring[:share_price]))
+            par = Action::Par.new(@parring[:entity], corporation: @parring[:corporation],
+                                                     share_price: @parring[:share_price])
+            par.id = @game.current_action_id
+            process_par(par)
           end
 
           def process_par(action)
