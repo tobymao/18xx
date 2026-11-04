@@ -8,7 +8,10 @@ module Engine
       module Round
         class Operating < Engine::Round::Operating
           def next_entity!
-            @game.pay_fc_for_unshipped_cubes if @entity_index == @entities.size - 1
+            if @entity_index == @entities.size - 1
+              @game.pay_fc_city_revenue
+              @game.pay_fc_for_unshipped_cubes
+            end
             super
           end
         end

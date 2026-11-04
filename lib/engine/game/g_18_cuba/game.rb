@@ -406,6 +406,15 @@ module Engine
           end_game!(:second_eight_plus) if @fc_exported_8plus >= 2
         end
 
+        def pay_fc_city_revenue
+          train = @fc.trains.last
+          cities = @fc.placed_tokens.map(&:city)
+          amount = cities.map { |c| c.route_base_revenue(@phase, train) }.sort.reverse.first(train.distance).sum
+          @bank.spend(amount, @fc)
+          count = [cities.size, train.distance].min
+          @log << "#{@fc.name} receives #{format_currency(amount)} from #{count} cit#{count == 1 ? 'y' : 'ies'}"
+        end
+
         def game_end_check_second_eight_plus?
           @fc_exported_8plus >= 2
         end
