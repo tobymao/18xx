@@ -349,8 +349,6 @@ module Engine
         end
 
         case @game.class::TRACK_RESTRICTION
-        when :permissive # duplicative, but a safeguard in case permissive track gets to this point
-          true
         when :city_permissive
           raise GameError, 'Must be city tile or use new track' if new_tile.cities.none? && !used_new_track
         when :restrictive
