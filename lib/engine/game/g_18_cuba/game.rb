@@ -106,7 +106,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G18Cuba::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -278,7 +278,7 @@ module Engine
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             Engine::Step::HomeToken,
             G18Cuba::Step::BuySellParShares,
           ])
@@ -302,14 +302,14 @@ module Engine
           # After Init -> Auction Commissions -> Draft Concessions -> Stock Round -> Operating Rounds
           @round =
             case @round
-            when Round::Draft
+            when Engine::Round::Draft
               new_stock_round
-            when Round::Stock
+            when Engine::Round::Stock
               close_unopened_minors if @turn == 1
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -318,7 +318,6 @@ module Engine
                 or_round_finished
                 or_set_finished
                 return if @finished
-                return end_game!(:bank) if @bank.broken?
 
                 new_stock_round
               end
@@ -382,7 +381,6 @@ module Engine
 
         def or_round_finished
           reset_cubes_on_train
-          pay_fc_for_unshipped_cubes
         end
 
         def or_set_finished

@@ -215,7 +215,7 @@ module Engine
           end
 
           def trainless_minor_in_phase_six
-            until game.round.is_a?(Round::Draft)
+            until game.round.is_a?(Engine::Round::Draft)
               step = game.round.active_step
               company = step.companies.first
               next act(Action::Pass) unless step.bids[company].empty?
@@ -224,7 +224,7 @@ module Engine
               act(Action::Bid, company: company, price: price)
             end
             concession = game.company_by_id('M1')
-            until game.round.is_a?(Round::Stock)
+            until game.round.is_a?(Engine::Round::Stock)
               next act(Action::Pass) if game.current_entity != player || concession.owner
 
               act(Action::Bid, company: concession, price: concession.value)

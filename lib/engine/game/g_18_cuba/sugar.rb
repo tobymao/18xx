@@ -123,8 +123,6 @@ module Engine
           stop.hex.tile.icons.any? { |icon| icon.name == 'anchor' }
         end
 
-        private
-
         def pay_fc_for_unshipped_cubes
           cubes = @sugar_cubes.values.sum
           return if cubes.zero?
@@ -135,6 +133,8 @@ module Engine
           @sugar_cubes.clear
           @log << "#{@fc.name} receives #{format_currency(amount)} for #{cubes} unshipped sugar cube(s)"
         end
+
+        private
 
         def reset_cubes_on_train
           @cubes_on_train = {}
