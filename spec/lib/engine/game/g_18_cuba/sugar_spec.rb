@@ -81,6 +81,51 @@ module Engine
             expect(game.send(:extended_harbor_revenue, route, in_range)).to eq(0)
           end
         end
+
+        describe '#pay_fc_for_unshipped_cubes' do
+          let(:minor_a) { minor }
+          let(:minor_b) { game.corporations.find { |c| c.type == :minor && c != minor_a } }
+
+          it 'pays the FC $10 per unshipped cube and returns the cubes to the supply' do
+            game.sugar_production(minor_a, 80)
+            game.sugar_production(minor_b, 30)
+            fc_cash = game.fc.cash
+            bank_cash = game.bank.cash
+
+            game.pay_fc_for_unshipped_cubes
+
+            expect(game.fc.cash).to eq(fc_cash + 30)
+            expect(game.bank.cash).to eq(bank_cash - 30)
+            expect(game.sugar_cubes_for(minor_a)).to eq(0)
+            expect(game.sugar_cubes_for(minor_b)).to eq(0)
+          end
+
+          def act(klass, entity = game.current_entity, **args)
+            game.process_action(klass.new(entity, **args)).maybe_raise!
+          end
+
+          it 'ends the game after the set when the cube payment breaks the bank in its last OR' do
+            until game.round.is_a?(Engine::Round::Stock)
+              step = game.round.active_step
+              company = game.round.is_a?(Engine::Round::Auction) && step.companies.first
+              company && step.bids[company].empty? ? act(Action::Bid, company: company, price: 0) : act(Action::Pass)
+            end
+            ms = game.corporation_by_id('MS')
+            act(Action::Par, corporation: ms, share_price: game.stock_market.par_prices.first)
+            act(Action::BuyShares, shares: ms.ipo_shares.first, share_price: ms.share_price.price) until ms.floated?
+            act(Action::Pass) until game.round.is_a?(Engine::Round::Operating)
+            act(Action::Pass) until game.round.active_step.is_a?(G18Cuba::Step::BuyTrain)
+            train = game.round.active_step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
+            act(Action::BuyTrain, train: train, price: train.price)
+
+            game.sugar_production(minor, 80)
+            game.bank.spend(game.bank.cash - 5, game.players.first)
+            act(Action::Pass) until game.finished || !game.round.is_a?(Engine::Round::Operating)
+
+            expect(game.finished).to be(true)
+            expect(game.round).to be_a(Engine::Round::Operating)
+          end
+        end
       end
     end
   end

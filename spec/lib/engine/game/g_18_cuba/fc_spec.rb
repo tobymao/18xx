@@ -94,9 +94,9 @@ module Engine
           end
 
           it 'places an FC marker on green FC hexes only, not on yellow or outside FC hexes' do
-            until game.round.is_a?(Round::Stock)
+            until game.round.is_a?(Engine::Round::Stock)
               step = game.round.active_step
-              company = game.round.is_a?(Round::Auction) && step.companies.first
+              company = game.round.is_a?(Engine::Round::Auction) && step.companies.first
               company && step.bids[company].empty? ? act(Action::Bid, company: company, price: 0) : act(Action::Pass)
             end
             act(Action::Par, corporation: ms, share_price: game.stock_market.par_prices.first)

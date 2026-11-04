@@ -5,6 +5,7 @@ module Engine
     module G18Cuba
       module Sugar
         CUBE_VALUE = 30
+        UNSHIPPED_CUBE_VALUE = 10
 
         ASSIGNMENT_TOKENS = {
           'SUGAR0' => '/icons/18_cuba/sugar-cube.svg',
@@ -120,6 +121,17 @@ module Engine
         # TODO: Isla de Tesoros (20/40) special case
         def harbor?(stop)
           stop.hex.tile.icons.any? { |icon| icon.name == 'anchor' }
+        end
+
+        def pay_fc_for_unshipped_cubes
+          cubes = @sugar_cubes.values.sum
+          return if cubes.zero?
+
+          amount = cubes * UNSHIPPED_CUBE_VALUE
+          @bank.spend(amount, @fc)
+          @sugar_cubes.each_key { |corp| update_sugar_cube_icons(corp, 0) }
+          @sugar_cubes.clear
+          @log << "#{@fc.name} receives #{format_currency(amount)} for #{cubes} unshipped sugar cube(s)"
         end
 
         private
