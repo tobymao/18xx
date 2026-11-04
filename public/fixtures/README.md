@@ -8,7 +8,8 @@ Also see "Running test fixtures" in `DEVELOPMENT.md`.
 ### Automatic tests
 
 Any game added here is automatically added to the tests in
-`spec/lib/engine/game/fixtures_spec.rb`. These tests verify that a game for the
+`spec/support/fixture_specs.rb` (run via the shard files in
+`spec/lib/engine/game/fixtures/`). These tests verify that a game for the
 given title can be completed. Fixtures can be added to test specific action
 flows. The fixture can be renamed to reflect what functionality it is testing,
 or this can be documented in the commit message that adds the fixture.
@@ -49,7 +50,7 @@ for assertions to be made about text that is expected to be found in the DOM.
 
 ### Formatting and Diffing
 
-`fixtures_spec.rb` also enforces certain formatting for each fixture file.
+The fixture tests also enforce certain formatting for each fixture file.
 
 The fixtures in this directory are formatted with `make fixture_format`
 which, among other things, removes all whitespace and compresses each of them to
