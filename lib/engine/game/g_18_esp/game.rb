@@ -741,8 +741,11 @@ module Engine
           return false unless entity&.corporation?
           return true if entity.destination_connected?
 
+          return false unless (destination = hex_by_id(entity.destination))
+          return false if destination.tile.paths.empty?
+
           @no_blocking_graph ||= Graph.new(self, no_blocking: true)
-          @no_blocking_graph.reachable_hexes(entity).include?(hex_by_id(entity.destination))
+          @no_blocking_graph.reachable_hexes(entity).include?(destination)
         end
 
         def new_destination_connection?(entity)
