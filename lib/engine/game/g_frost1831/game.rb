@@ -34,6 +34,23 @@ module Engine
           { lay: :not_if_upgraded, upgrade: false },
         ].freeze
 
+        GAME_END_CHECK = { bank: :full_or, custom: :one_more_full_or_set }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'First D train is purchased'
+        )
+
+        GAME_END_REASONS_TIMING_TEXT = Base::GAME_END_REASONS_TIMING_TEXT.merge(
+          one_more_full_or_set: 'Finish current OR, then 1 more full set (SR + Voting + ORs)'
+        )
+
+        EBUY_OWNER_MUST_HELP = false
+
+        MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false
+
+        # Rusted/discarded trains are removed from the game, not sent to bank pool
+        DISCARDED_TRAINS = :remove
+
         CERT_LIMIT = {
           2 => { 8 => 31, 7 => 27, 6 => 25, 5 => 22 },
           3 => { 8 => 25, 7 => 22, 6 => 20, 5 => 18 },
@@ -129,6 +146,7 @@ module Engine
             price: 180,
             rusts_on: '6',
             num: 5,
+            events: [{ 'type' => 'parliament_opens' }],
           },
           {
             name: '4',
@@ -136,18 +154,21 @@ module Engine
             price: 300,
             rusts_on: 'D',
             num: 4,
+            events: [{ 'type' => 'turmoil' }],
           },
           {
             name: '5',
             distance: 5,
             price: 530,
             num: 3,
+            events: [{ 'type' => 'blizzard' }, { 'type' => 'close_companies' }],
           },
           {
             name: '6',
             distance: 6,
             price: 630,
             num: 2,
+            events: [{ 'type' => 'turmoil' }],
           },
           {
             name: 'D',
@@ -156,8 +177,67 @@ module Engine
             num: 'unlimited',
             available_on: '6',
             discount: { '4' => 300, '5' => 300, '6' => 300, '4◆' => 300, '5◆' => 300, '6◆' => 300 },
+            events: [{ 'type' => 'turmoil' }],
           },
         ].freeze
+
+        TRAIN_NAMES = {
+          '2' => 'Hope',
+          '3' => 'Long John',
+          '4' => 'Ice Breaker',
+          '5' => 'The Queen',
+          '6' => 'Nightmare',
+          'D' => 'Silver Bullet',
+          '2◆' => 'Hope ◆',
+          '3◆' => 'Long John ◆',
+          '4◆' => 'Ice Breaker ◆',
+          '5◆' => 'The Queen ◆',
+          '6◆' => 'Nightmare ◆',
+          'D◆' => 'Silver Bullet ◆',
+        }.freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'parliament_opens' => ['Parliament Opens', 'Factions become available in the next Stock Round'],
+          'turmoil' => ['Turmoil', 'Political turmoil — consequences depend on Parliament state'],
+          'blizzard' => ['Blizzard', 'Yellow tiles on marked hexes are removed; isolated stations are eliminated'],
+        ).freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'parliament_opens' => ['Parliament Opens', 'Factions are available for purchase'],
+          'turmoil' => ['Turmoil', 'Political turmoil triggered'],
+          'blizzard' => ['Blizzard', 'Blizzard event active — marked yellow tiles removed'],
+        ).freeze
+
+        # Track when bank breaks so D train doesn't override it
+        def end_now?(after)
+          @bank_broken_trigger ||= true if after == :full_or && @bank.broken?
+
+          super
+        end
+
+        def game_end_check_custom?
+          @d_train_bought
+        end
+
+        # The game ends when the bank breaks.
+        def game_end_check_values
+          { bank: :full_or }
+        end
+
+        def game_ending_description
+          reason, after = game_end_check
+          return unless after
+
+          if @d_train_bought && @final_turn
+            "Game ends at conclusion of OR #{@final_turn}.#{@phase.operating_rounds}"
+          elsif reason == :bank
+            if @round.is_a?(Engine::Round::Operating)
+              "Game ends at conclusion of OR #{@turn}.#{operating_rounds}"
+            else
+              'Game ends at conclusion of the next full OR set'
+            end
+          end
+        end
 
         def stock_round
           Engine::Round::Stock.new(self, [
