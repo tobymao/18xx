@@ -468,8 +468,9 @@ module Engine
 
             # make sure the first token (= home token) gets used during formation or other methods might behave
             # unexpectedly later, e.g. "maybe_place_home_token" called when buying shares
-            new_token = minor == berlin_potsdamer_bahn ? prussian.tokens.first : Token.new(prussian)
-            prussian.tokens << new_token unless minor == berlin_potsdamer_bahn
+            is_minor_2 = minor == berlin_potsdamer_bahn
+            new_token = is_minor_2 ? prussian.tokens.first : Token.new(prussian)
+            prussian.tokens << new_token unless is_minor_2
 
             token.swap!(new_token, check_tokenable: false)
 
