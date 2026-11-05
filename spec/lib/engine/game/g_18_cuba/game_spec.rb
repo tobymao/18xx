@@ -1,33 +1,18 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require_relative 'helpers'
 
 module Engine
   module Game
     module G18Cuba
       describe Game do
+        include G18CubaSpecHelpers
+
         let(:players) { %w[a b c] }
         let(:game) { Engine::Game::G18Cuba::Game.new(players) }
 
         # ── Helpers ──────────────────────────────────────────────────────────
-
-        # Finds a train by name in the depot (includes upcoming trains).
-        def depot_train(name)
-          game.depot.depot_trains.find { |t| t.name == name } ||
-            game.depot.upcoming.find { |t| t.name == name }
-        end
-
-        # Injects a train directly into a corporation, bypassing cash / buy-step
-        # validation. Tests here exercise state queries, not the purchase path.
-        def give_train(corp, name)
-          train = depot_train(name)
-          return nil unless train
-
-          game.depot.remove_train(train)
-          train.owner = corp
-          corp.trains << train
-          train
-        end
 
         # Advances the phase by calling Phase#next! until the target name is reached.
         # Does NOT trigger train rusting — phase-limit changes are enough for these tests.
@@ -209,10 +194,6 @@ module Engine
         describe Engine::Game::G18Cuba::Depot do
           let(:player) { game.players.first }
           let(:ju) { game.corporation_by_id('JU') }
-
-          def act(klass, entity = game.current_entity, **args)
-            game.process_action(klass.new(entity, **args)).maybe_raise!
-          end
 
           def trainless_minor_in_phase_six
             until game.round.is_a?(Engine::Round::Draft)
