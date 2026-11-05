@@ -408,11 +408,14 @@ module Engine
 
         def pay_fc_city_revenue
           train = @fc.trains.last
-          cities = @fc.placed_tokens.map(&:city)
-          amount = cities.map { |c| c.route_base_revenue(@phase, train) }.sort.reverse.first(train.distance).sum
+          revenues = @fc.placed_tokens
+                        .map { |t| t.city.route_base_revenue(@phase, train) }
+                        .sort.reverse.first(train.distance)
+          amount = revenues.sum
+          return unless amount.positive?
+
           @bank.spend(amount, @fc)
-          count = [cities.size, train.distance].min
-          @log << "#{@fc.name} receives #{format_currency(amount)} from #{count} cit#{count == 1 ? 'y' : 'ies'}"
+          @log << "#{@fc.name} receives #{format_currency(amount)} from #{revenues.size} city(ies)"
         end
 
         def game_end_check_second_eight_plus?
