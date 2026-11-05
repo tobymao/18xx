@@ -116,6 +116,34 @@ module Engine
             expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7 B11])
             expect(game.fc.tokens.count { |t| !t.used }).to eq(6)
           end
+
+          it 'pays the FC its best city revenues up to the reach of its top train' do
+            until game.round.is_a?(Engine::Round::Stock)
+              step = game.round.active_step
+              company = game.round.is_a?(Engine::Round::Auction) && step.companies.first
+              company && step.bids[company].empty? ? act(Action::Bid, company: company, price: 0) : act(Action::Pass)
+            end
+            act(Action::Par, corporation: ms, share_price: game.stock_market.par_prices.first)
+            act(Action::BuyShares, shares: ms.ipo_shares.first, share_price: ms.share_price.price) until ms.floated?
+            game.phase.next!
+
+            lay('B9', :yellow)
+            fc_cash = game.fc.cash
+            lay('B9', :green)
+            expect(game.fc.cash).to eq(fc_cash + 30)
+            expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7 B9])
+
+            fc_cash = game.fc.cash
+            game.pay_fc_city_revenue
+            expect(game.fc.cash).to eq(fc_cash + 30)
+
+            game.export_train_to_fc!
+            fc_cash = game.fc.cash
+            bank_cash = game.bank.cash
+            game.pay_fc_city_revenue
+            expect(game.fc.cash).to eq(fc_cash + 60)
+            expect(game.bank.cash).to eq(bank_cash - 60)
+          end
         end
       end
     end
