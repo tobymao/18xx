@@ -388,6 +388,33 @@ module Engine
           expect(subject.active_entities).to eq([corporation])
         end
       end
+
+      # Guards the early return for permissive track in check_track_restrictions!.
+      # Without it, permissive games fall through to the case's else branch and raise.
+      describe 'track restriction' do
+        let(:upgrade_tile) { game.tile_by_id('12-0') }
+        let(:upgrade_hex) { hex_k8 }
+        let(:upgrade_rotation) { 2 }
+
+        def lay_upgrade!
+          round = goto_new_or!
+          round.next_entity! until round.current_entity == corporation
+          round.process_action(
+            Action::LayTile.new(
+              corporation,
+              tile: upgrade_tile,
+              hex: upgrade_hex,
+              rotation: upgrade_rotation,
+            )
+          )
+        end
+
+        it 'allows the same lay under permissive track' do
+          stub_const("#{game.class}::TRACK_RESTRICTION", :permissive)
+
+          expect { lay_upgrade! }.not_to raise_error
+        end
+      end
     end
 
     context '#18chesapeake' do
