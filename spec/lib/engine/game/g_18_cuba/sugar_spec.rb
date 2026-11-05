@@ -87,14 +87,8 @@ module Engine
           end
 
           it 'ends the game after the set when the cube payment breaks the bank in its last OR' do
-            until game.round.is_a?(Engine::Round::Stock)
-              step = game.round.active_step
-              company = game.round.is_a?(Engine::Round::Auction) && step.companies.first
-              company && step.bids[company].empty? ? act(Action::Bid, company: company, price: 0) : act(Action::Pass)
-            end
             ms = game.corporation_by_id('MS')
-            act(Action::Par, corporation: ms, share_price: game.stock_market.par_prices.first)
-            act(Action::BuyShares, shares: ms.ipo_shares.first, share_price: ms.share_price.price) until ms.floated?
+            float_major!(ms)
             act(Action::Pass) until game.round.is_a?(Engine::Round::Operating)
             act(Action::Pass) until game.round.active_step.is_a?(G18Cuba::Step::BuyTrain)
             train = game.round.active_step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }

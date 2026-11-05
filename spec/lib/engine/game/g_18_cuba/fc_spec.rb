@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require_relative 'helpers'
 
 module Engine
   module Game
     module G18Cuba
       describe Game do
+        include G18CubaSpecHelpers
+
         let(:players) { %w[a b c] }
         let(:game) { Engine::Game::G18Cuba::Game.new(players) }
 
@@ -58,25 +61,23 @@ module Engine
         describe 'FC station markers' do
           let(:ms) { game.corporation_by_id('MS') }
 
-          def act(klass, entity = game.current_entity, **args)
-            game.process_action(klass.new(entity, **args)).maybe_raise!
+          def advance
+            step = game.round.active_step
+            actions = step.actions(game.current_entity)
+            if actions.include?('buy_train') && ms.trains.empty?
+              train = step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
+              act(Action::BuyTrain, train: train, price: train.price)
+            elsif actions.include?('run_routes')
+              act(Action::RunRoutes, routes: [])
+            elsif actions.include?('dividend')
+              act(Action::Dividend, kind: 'withhold')
+            else
+              act(Action::Pass)
+            end
           end
 
           def lay(hex_id, color, exit = nil)
-            until game.current_entity == ms && game.round.active_step.is_a?(G18Cuba::Step::Track)
-              step = game.round.active_step
-              actions = step.actions(game.current_entity)
-              if actions.include?('buy_train') && ms.trains.empty?
-                train = step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
-                act(Action::BuyTrain, train: train, price: train.price)
-              elsif actions.include?('run_routes')
-                act(Action::RunRoutes, routes: [])
-              elsif actions.include?('dividend')
-                act(Action::Dividend, kind: 'withhold')
-              else
-                act(Action::Pass)
-              end
-            end
+            advance until game.current_entity == ms && game.round.active_step.is_a?(G18Cuba::Step::Track)
             step = game.round.active_step
             hex = game.hex_by_id(hex_id)
             tile, rotation = step.potential_tiles(ms, hex).select { |t| t.color == color }
@@ -94,13 +95,7 @@ module Engine
           end
 
           it 'places an FC marker on green FC hexes only, not on yellow or outside FC hexes' do
-            until game.round.is_a?(Engine::Round::Stock)
-              step = game.round.active_step
-              company = game.round.is_a?(Engine::Round::Auction) && step.companies.first
-              company && step.bids[company].empty? ? act(Action::Bid, company: company, price: 0) : act(Action::Pass)
-            end
-            act(Action::Par, corporation: ms, share_price: game.stock_market.par_prices.first)
-            act(Action::BuyShares, shares: ms.ipo_shares.first, share_price: ms.share_price.price) until ms.floated?
+            float_major!(ms)
             game.export_train_to_fc! while game.phase.name == '2'
 
             lay('B9', :yellow, 4)
@@ -118,13 +113,7 @@ module Engine
           end
 
           it 'pays the FC its best city revenues up to the reach of its top train' do
-            until game.round.is_a?(Engine::Round::Stock)
-              step = game.round.active_step
-              company = game.round.is_a?(Engine::Round::Auction) && step.companies.first
-              company && step.bids[company].empty? ? act(Action::Bid, company: company, price: 0) : act(Action::Pass)
-            end
-            act(Action::Par, corporation: ms, share_price: game.stock_market.par_prices.first)
-            act(Action::BuyShares, shares: ms.ipo_shares.first, share_price: ms.share_price.price) until ms.floated?
+            float_major!(ms)
             game.phase.next!
 
             lay('B9', :yellow)
