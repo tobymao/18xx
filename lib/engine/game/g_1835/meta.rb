@@ -14,7 +14,6 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1835'
         GAME_LOCATION = 'Germany'
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/106600/1835-english-rules-rewritten-for-readability'
-        GAME_PUBLISHER = :hans_im_glueck
 
         PLAYER_RANGE = [3, 7].freeze
         OPTIONAL_RULES = [
