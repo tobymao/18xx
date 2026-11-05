@@ -513,8 +513,7 @@ module Engine
           [corp1, corp2].each { |corp| close_corporation(corp) }
 
           system.floated = true
-          clear_token_graph_for_entity(system)
-          @mid_or_formed_systems[system.id] = system
+          clear_graph_for_entity(system)
           @log << "#{system.name} formed at #{format_currency(new_sp.price)}"
         end
 
