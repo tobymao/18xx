@@ -24,6 +24,14 @@ module Engine
             super
           end
 
+          def assignable_corporations_rocket
+            @game.corporations.select { |c| c.owner == @game.rocket.owner }
+          end
+
+          def description
+            @game.forced_exchange_rocket? ? 'Forced Exchange for Electroputere S.A.' : 'Assign REMAR train tender'
+          end
+
           private
 
           def process_assign_remar(action)
