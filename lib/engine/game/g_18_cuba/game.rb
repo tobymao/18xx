@@ -47,6 +47,8 @@ module Engine
 
         STARTING_CASH = { 2 => 950, 3 => 900, 4 => 680, 5 => 650, 6 => 650 }.freeze
 
+        FC_STARTING_PRICE = 50
+
         MARKET = [
           %w[50 55 60 65 70p 75p 80p 85p 90p 95p 100p 105 110 115 120 126 132 138 144
              151 158 165 172 180 188 196 204 213 222 231 240 250 260 275 290 300],
@@ -221,8 +223,8 @@ module Engine
 
         def fc_setup
           @fc = @corporations.find { |c| c.type == :national }
-          # Never parred or floated, so mark as ipoed to keep it out of the unstarted corporations.
           @fc.ipoed = true
+          par_corporation(@fc, @stock_market.market.first.find { |sp| sp.price == FC_STARTING_PRICE })
           # TODO: unbuyable until the FC has a price/dividend/M4 mechanic; re-enable then or it can't sell out (VII.15/VIII.2).
           @fc.shares.each { |s| s.buyable = false }
           @fc_exported_8plus = 0

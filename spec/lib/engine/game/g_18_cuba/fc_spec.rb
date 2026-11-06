@@ -51,6 +51,18 @@ module Engine
           end
         end
 
+        describe 'FC share price' do
+          it 'starts at 50 on the first market space' do
+            expect(game.fc.share_price.price).to eq(50)
+            expect(game.stock_market.market.first.first.corporations).to include(game.fc)
+          end
+
+          it 'stays unfloated and out of the operating order' do
+            expect(game.fc.floated?).to be(false)
+            expect(game.operating_order).not_to include(game.fc)
+          end
+        end
+
         describe '#crowded_corps' do
           it 'never includes the FC (no train limit, never discards)' do
             # the FC holds its preprinted train and its train limit is 0 — flagged without the exemption
