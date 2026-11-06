@@ -414,18 +414,37 @@ module View
               # first cell on left, not on bottom row, has price in cell below
               if first_price && !next_row.empty? && next_row[col_i]
                 align = { left: 0, bottom: 0 }
-                arrow = '⭣'
+                arrow = '↓'
               # last cell on right, not top row
               elsif !row_i.zero? && @game.stock_market.right_ledge?([row_i, col_i])
                 align = { right: 0, top: 0 }
-                arrow = '⭡'
+                arrow = '↑'
               else
                 align = {}
                 arrow = ''
               end
 
-              first_price = false
+              if price.arrow
+                case price.arrow
+                when 'd'
+                  align = { left: 0, bottom: 0 }
+                  arrow = '↓'
+                when 'u'
+                  align = { right: 0, top: 0 }
+                  arrow = '↑'
+                when 'l'
+                  align = { left: 0, bottom: 0 }
+                  arrow = '←'
+                when 'r'
+                  align = { right: 0, bottom: 0 }
+                  arrow = '→'
+                when 'n'
+                  align = {}
+                  arrow = ''
+                end
+              end
 
+              first_price = false
               h(:div, { style: cell_style(@box_style_2d, price.types) },
                 [
                   h('div.xsmall_font', price.price),
