@@ -11,9 +11,9 @@ module Engine
         DEV_STAGE = :prealpha
 
         GAME_DESIGNER = 'Michael Meier-Bachl, Francis Tresham'
-        GAME_INFO_URL = 'https://google.com'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1835'
         GAME_LOCATION = 'Germany'
-        GAME_RULES_URL = 'http://google.com'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/106600/1835-english-rules-rewritten-for-readability'
 
         PLAYER_RANGE = [3, 7].freeze
         OPTIONAL_RULES = [
