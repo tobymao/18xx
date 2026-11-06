@@ -59,22 +59,22 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[_ _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _],
-          %w[_c!n 70y 80 90 100p 110 120 140 160 190 220 250 300K _B!l],
-          %w[_c!n 60y 70 80 90p 100 110 130 150 180 210 240K],
-          %w[_c!n 50y 60 70 80p 90 100 120 140 170 200K],
-          %w[_c!n 40y 50 60 70p 80 90 110 130 160K],
-          %w[_c!n 30y 40 50 60p 70 80 100 120K],
-          %w[_c!n 20y 30 40 50 60 70 80K],
-          %w[_c!n 10y 20 30 40 50 60K],
-          %w[_c!n _c!n],
+          %w[0B!n 70B!d 80B!d 90B!d 100B!d 110B!d 120B!d 140B!d 160B!d 190B!d 220B!d 250B!d 300B!d],
+          %w[0c!n 70y 80 90 100p 110 120 140 160 190 220 250 300W 300B!l],
+          %w[0c!n 60y 70 80 90p 100 110 130 150 180 210 240W],
+          %w[0c!n 50y 60 70 80p 90 100 120 140 170 200W],
+          %w[0c!n 40y 50 60 70p 80 90 110 130 160W],
+          %w[0c!n 30y 40 50 60p 70 80 100 120W],
+          %w[0c!n 20y 30 40 50 60 70 80W],
+          %w[0c!n 10y 20 30 40 50 60W],
+          %w[0c!n 0c!n],
           %w[70r 80r 100r 120r 140r 160r 190r 220r 250r!n],
         ].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           close: :orange,
           pays_bonus: :purple,
-          pays_unique_bonus: :blue,
+          pays_bonus_1: :blue,
           repar: :gray,
         ).freeze
 
@@ -82,7 +82,7 @@ module Engine
           par: 'Initial Offering (£60–£100)',
           close: 'Intervention Zone — corporation is eliminated',
           pays_bonus: 'Influence Zone — grants Influence',
-          pays_unique_bonus: 'Influence — first to arrive',
+          pays_bonus_1: 'Influence — first to arrive',
           no_cert_limit: 'Shares do not count towards cert limit, may hold >60%',
           repar: 'Faction Values in Parliament',
         ).freeze
@@ -237,6 +237,18 @@ module Engine
               'Game ends at conclusion of the next full OR set'
             end
           end
+        end
+
+        def log_share_price(entity, from, steps = nil, log_steps: false)
+          super
+
+          claim_first_to_arrive_cell(entity, entity.share_price) if entity.share_price != from
+        end
+
+        def claim_first_to_arrive_cell(entity, price)
+          return unless price.types.delete(:pays_bonus_1)
+
+          @log << "#{entity.name} is first to reach #{format_currency(price.price)}"
         end
 
         def stock_round
