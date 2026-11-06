@@ -2,7 +2,7 @@
 
 module Engine
   class SharePrice
-    attr_reader :coordinates, :price, :corporations, :can_par, :type, :types, :info, :hide_value, :arrow
+    attr_reader :coordinates, :price, :corporations, :can_par, :type, :types, :info, :arrow
 
     TYPE_MAP = {
       'p' => :par,
@@ -33,7 +33,6 @@ module Engine
       'Z' => :pays_bonus_4,
       'S' => :share_split,
       'f' => :only_president,
-      'K' => :pays_unique_bonus,
     }.freeze
 
     # Types which are info only and shouldn't
@@ -45,9 +44,6 @@ module Engine
 
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
-
-      hide_value = code.start_with?('_')
-      code = code[1..] if hide_value
 
       arrow = nil
       if (arrow_match = /!([dulrn])$/.match(code))
@@ -66,7 +62,6 @@ module Engine
 
       SharePrice.new([row, column],
                      price: price,
-                     hide_value: hide_value,
                      arrow: arrow,
                      info: nil,
                      types: types,
@@ -77,14 +72,12 @@ module Engine
     def initialize(coordinates,
                    price:,
                    info: nil,
-                   hide_value: false,
                    arrow: nil,
                    types: [],
                    unlimited_types: [],
                    multiple_buy_types: [])
       @coordinates = coordinates
       @price = price
-      @hide_value = hide_value
       @arrow = arrow
       @type = types&.first
       @types = types

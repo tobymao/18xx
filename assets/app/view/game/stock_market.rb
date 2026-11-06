@@ -406,13 +406,6 @@ module View
 
           row = row_prices.each_with_index.map do |price, col_i|
             if price
-              # Invisible cell (hide_value + no types + no arrow) renders as empty space.
-              # Cells carrying an arrow override must still fall through to the arrow logic.
-              if price.hide_value && price.types.empty? && !price.arrow
-                first_price = false
-                next h(:div, { style: @space_style_2d }, '')
-              end
-
               corporations = price.corporations
               num = corporations.size
               spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
@@ -431,7 +424,6 @@ module View
                 arrow = ''
               end
 
-              # Arrow override (takes precedence over automatic logic)
               if price.arrow
                 case price.arrow
                 when 'd'
@@ -453,12 +445,9 @@ module View
               end
 
               first_price = false
-
-              price_text = price.hide_value ? '' : price.price
-
               h(:div, { style: cell_style(@box_style_2d, price.types) },
                 [
-                  h('div.xsmall_font', price_text),
+                  h('div.xsmall_font', price.price),
                   h(:div, tokens),
                   h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
                   price.info ? h(:div, { style: PRICE_STYLE_INFO }, price.info) : nil,
