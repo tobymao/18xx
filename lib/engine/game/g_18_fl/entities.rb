@@ -46,12 +46,6 @@ module Engine
                 count: 1,
                 owner_type: 'player',
               },
-              {
-                type: 'assign_corporation',
-                when: 'any',
-                count: 1,
-                owner_type: 'player',
-              },
             ],
             color: nil,
           },
