@@ -75,6 +75,10 @@ module Engine
             raise GameError, "#{action.entity.name} is not the merging minor" unless action.entity == minor
             raise GameError, "#{minor.name} cannot merge into #{major&.name}" unless mergeable_entities.include?(major)
 
+            merge!(minor, major)
+          end
+
+          def merge!(minor, major)
             share = @game.merge_share(major)
             cash_recipient = share&.owner == major ? major : @game.bank
             if share
@@ -86,8 +90,7 @@ module Engine
             end
             transfer_treasury(minor, cash_recipient)
             @round.merge_trains = { corporation: major, trains: move_trains!(minor, major) }
-            @game.merged_minors[major] << minor
-            transfer_abilities!(minor, major)
+            @game.add_minor_charter!(minor, major)
             @game.minor_regional_order.delete(minor)
             @round.merged_majors << major
             @round.pending_acquisition = { minor: minor, corporation: major }
@@ -103,15 +106,6 @@ module Engine
             @log << "#{destination.name} takes #{@game.format_currency(source.cash)} from #{source.name} remaining cash"
 
             source.spend(source.cash, destination)
-          end
-
-          def transfer_abilities!(minor, major)
-            return unless major.type == :major
-
-            minor.abilities.dup.each do |ability|
-              minor.remove_ability(ability)
-              major.add_ability(ability)
-            end
           end
 
           def move_trains!(minor, major)

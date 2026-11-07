@@ -46,6 +46,26 @@ describe 'G18OE consolidation (§5.1.5, §10.6)' do
     expect(round.active_step.actions(own_regional(player))).to include('convert')
   end
 
+  it 'does not let a regional pass for its president' do
+    round = consolidation!([%w[LNWR], %w[PLM], %w[SFAI]])
+    regional = own_regional(round.current_entity)
+
+    expect(round.active_step.actions(regional)).to include('convert')
+    expect(round.active_step.actions(regional)).not_to include('pass')
+  end
+
+  it 'keeps a broke regional president blocking until they convert (§5.1.5)' do
+    allow(game).to receive(:removable_regional?).and_return(false)
+    round = consolidation!([%w[LNWR], %w[PLM], %w[SFAI]])
+    president = round.current_entity
+    game.players.each { |p| p.set_cash(0, game.bank) }
+    round.skip_steps
+
+    expect(president.passed?).to be_falsey
+    expect(round.active_step.actions(own_regional(president))).to include('convert')
+    expect(round.actions_for(own_regional(president))).to include('convert')
+  end
+
   it 'converts a regional into a major' do
     round = consolidation!([%w[LNWR], %w[PLM], %w[SFAI]])
 
@@ -80,5 +100,135 @@ describe 'G18OE consolidation (§5.1.5, §10.6)' do
     expect(game.round).to be_a(Engine::Round::G18OE::Operating)
     expect(game.turn).to eq(turn)
     expect(game.consolidation_complete).to be(true)
+  end
+
+  describe 'a player owning a minor (§5.1.5, §10.6)' do
+    let(:round) { consolidation!([[], [], []]) }
+    let(:owner) { round.current_entity }
+    let(:rival) { game.players[1] }
+    let(:step) { round.active_step }
+    let!(:minor) do
+      round
+      start_minor!(game, 'B', owner, 'SP')
+    end
+
+    before { game.phase.next! }
+
+    def own_major!
+      start_major!(game, 'PLM', owner)
+    end
+
+    def rival_major!
+      start_major!(game, 'LNWR', rival)
+    end
+
+    def offer!(choice)
+      act!(round, Engine::Action::Choose.new(owner, choice: choice, target: minor))
+    end
+
+    it 'blocks pass while the player owns any minor (§5.1.5)' do
+      rival_major!
+      expect(step.actions(owner)).to include('buy_shares')
+      expect(step.actions(owner)).not_to include('pass')
+    end
+
+    it 'lets the player end their turn after acting' do
+      major = rival_major!
+      take_treasury_shares!(game, owner, major, 1)
+      share = owner.shares_of(major).reject(&:president).first
+      act!(round, Engine::Action::SellShares.new(owner, shares: [share], percent: share.percent))
+      expect(round.current_actions).not_to be_empty
+      expect(step.actions(owner)).to include('pass')
+    end
+
+    it 'keeps Offer reachable over the certificate limit with nothing to sell (§5.1.5)' do
+      allow(game).to receive(:cert_limit).and_return(0)
+      expect(step.actions(owner)).to include('choose')
+      expect(step.entity_choices(minor)).to eq('offer_or_abandon' => 'Offer')
+    end
+
+    it 'keeps Merge reachable over the certificate limit (§10.6)' do
+      own_major!
+      allow(game).to receive(:cert_limit).and_return(0)
+      expect(step.can_merge?(owner, minor)).to be(true)
+      act!(round, Engine::Action::Choose.new(owner, choice: minor.id))
+      expect(round.merge_minor).to eq(minor)
+    end
+
+    it 'makes an owner over the certificate limit sell first when they can (§4.1)' do
+      major = rival_major!
+      take_treasury_shares!(game, owner, major, 1)
+      allow(game).to receive(:cert_limit).and_return(0)
+      expect(step.actions(owner)).to include('sell_shares')
+      expect(step.actions(owner)).not_to include('choose')
+    end
+
+    it 'shows Merge and Offer when the owner can merge and a major can be asked (§10.6)' do
+      own_major!
+      rival_major!
+      expect(step.can_merge?(owner, minor)).to be(true)
+      expect(step.entity_choices(minor)).to eq('offer' => 'Offer')
+    end
+
+    it 'shows only Merge when the owner can merge and nobody is left to ask' do
+      own_major!
+      expect(step.can_merge?(owner, minor)).to be(true)
+      expect(step.entity_choices(minor)).to eq({})
+    end
+
+    it 'shows Offer when the owner cannot merge, even with nobody to ask' do
+      expect(step.entity_choices(minor)).to eq('offer_or_abandon' => 'Offer')
+    end
+
+    it 'shows no Offer for an unmergeable minor while the owner presides a regional' do
+      start_regional!(game, 'SB', owner)
+      expect(step.entity_choices(minor)).to eq({})
+    end
+
+    it 'shows no Offer once the owner has acted' do
+      round.current_actions << Engine::Action::Choose.new(owner, choice: 'offer', target: minor)
+      expect(step.entity_choices(minor)).to eq({})
+    end
+
+    context 'with a major that has no treasury share' do
+      before do
+        major = own_major!
+        major.treasury_shares.count { |share| !share.president }.times { take_treasury_shares!(game, owner, major, 1) }
+      end
+
+      it 'treats a connected no-share major as a merge option' do
+        allow(game).to receive(:merge_connected?).and_return(true)
+        expect(step.entity_choices(minor)).to eq({})
+      end
+
+      it 'treats an unconnected no-share major as no merge option' do
+        allow(game).to receive(:merge_connected?).and_return(false)
+        expect(step.entity_choices(minor)).to eq('offer_or_abandon' => 'Offer')
+      end
+
+      it 'abandons from a recorded offer_or_abandon while loading even though merge_targets over-reports' do
+        game.instance_variable_set(:@loading, true)
+        expect(game).not_to receive(:merge_graph)
+        expect(game.merge_targets(owner, minor)).not_to be_empty
+        expect(step.actions(owner)).to include('choose')
+        offer!('offer_or_abandon')
+        expect(game.abandoned_minor?(minor)).to be(true)
+      end
+    end
+
+    it 'rejects a plain Offer when the owner cannot merge' do
+      expect { offer!('offer') }.to raise_error(Engine::GameError, /Cannot offer/)
+    end
+
+    it 'rejects an offer_or_abandon when the owner can merge' do
+      own_major!
+      expect { offer!('offer_or_abandon') }.to raise_error(Engine::GameError, /Cannot offer_or_abandon/)
+    end
+
+    it 'rejects an Offer on a minor owned by another player' do
+      other = start_minor!(game, 'C', rival, 'SP')
+      expect { act!(round, Engine::Action::Choose.new(owner, choice: 'offer_or_abandon', target: other)) }
+        .to raise_error(Engine::GameError, /Cannot offer/)
+    end
   end
 end

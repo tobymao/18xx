@@ -41,7 +41,7 @@ module Engine
             actions << 'buy_corporation' if can_buy_any_corporation?(entity)
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'choose' if choose_available?(entity)
-            actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
+            actions << 'pass' if !can_float_minor?(entity) && (!actions.empty? || can_convert_any?(entity))
             actions << 'skip' if (actions.empty? || @game.loading) && needs_skip_action?(entity)
             actions
           end
