@@ -11,6 +11,7 @@ require_relative 'round/concession'
 require_relative 'step/consolidate'
 require_relative 'step/merge_discard_train'
 require_relative 'step/merge_minor'
+require_relative 'step/merge_offer'
 require_relative 'step/merge_token'
 require_relative 'step/concession'
 require_relative 'step/reserve_share'
@@ -56,6 +57,7 @@ module Engine
         GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
         # Physical game includes 20×£5,000 notes set aside at setup; injected when first level-8 bought
         REMAINDER_CASH = 100_000
+        ABANDONED_MINOR_PRICE = 60
 
         STOCKMARKET_COLORS = {
           par: :blue,
@@ -721,6 +723,59 @@ module Engine
             @share_pool.shares_by_corporation[major].first
         end
 
+        def abandoned_minor_price
+          self.class::ABANDONED_MINOR_PRICE
+        end
+
+        def abandoned_minors
+          @corporations.select { |corporation| abandoned_minor?(corporation) }
+        end
+
+        def abandoned_minor?(corporation)
+          corporation.type == :minor && corporation.floated? && !corporation.owner
+        end
+
+        def corporation_show_shares?(corporation)
+          return false if abandoned_minor?(corporation)
+
+          super
+        end
+
+        def abandon_minor!(minor)
+          @log << "#{minor.name} is abandoned"
+          minor.trains.dup.each { |train| @depot.reclaim_train(train) }
+          minor.placed_tokens.each(&:remove!)
+          minor.spend(minor.cash, @bank) if minor.cash.positive?
+          @share_pool.transfer_shares(minor.presidents_share.to_bundle, minor.ipo_owner, allow_president_change: false)
+          minor.presidents_share.buyable = false
+          minor.owner = nil
+          @minor_regional_order.delete(minor)
+          clear_graph
+        end
+
+        def merge_offer_majors(minor)
+          owner = minor.owner
+          @players.rotate(@players.index(owner) + 1).reject { |player| player == owner }.flat_map do |player|
+            @corporations.select do |corporation|
+              corporation.type == :major &&
+                corporation.floated? &&
+                corporation.president?(player) &&
+                corporation.treasury_shares.any? { |share| !share.president } &&
+                !@round.merged_majors.include?(corporation)
+            end
+          end
+        end
+
+        def add_minor_charter!(minor, major)
+          @merged_minors[major] << minor
+          return unless major.type == :major
+
+          minor.abilities.dup.each do |ability|
+            minor.remove_ability(ability)
+            major.add_ability(ability)
+          end
+        end
+
         def level8_train_available?
           @level_8_available || false
         end
@@ -886,6 +941,7 @@ module Engine
             G18OE::Step::MergeToken,
             G18OE::Step::MergeDiscardTrain,
             G18OE::Step::MergeMinor,
+            G18OE::Step::MergeOffer,
             G18OE::Step::Consolidate,
           ])
         end

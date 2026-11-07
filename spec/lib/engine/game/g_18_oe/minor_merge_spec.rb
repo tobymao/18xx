@@ -472,7 +472,8 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     end
 
     def stub_other_options_off!(target = step)
-      %i[can_buy_any? can_ipo_any? can_float_minor? can_sell_any? can_remove_any_corporation? can_reserve_any?].each do |name|
+      %i[can_buy_any? can_ipo_any? can_float_minor? can_sell_any? can_remove_any_corporation? can_reserve_any?
+         can_convert_any?].each do |name|
         allow(target).to receive(name).and_return(false)
       end
       allow(target).to receive(:purchasable_companies).and_return([])
