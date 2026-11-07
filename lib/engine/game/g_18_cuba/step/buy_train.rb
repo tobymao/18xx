@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_train'
+require_relative 'skip_for_national'
 
 module Engine
   module Game
     module G18Cuba
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          include SkipForNational
+
           def round_state
             # Track which minor corporations have exchanged for narrow gauge trains this OR.
             super.merge(narrow_gauge_exchanged_by: [])

@@ -56,10 +56,24 @@ module Engine
             expect(game.fc.share_price.price).to eq(50)
             expect(game.stock_market.market.first.first.corporations).to include(game.fc)
           end
+        end
 
-          it 'stays unfloated and out of the operating order' do
+        describe 'FC operating turn' do
+          it 'operates last without floating and without asking for an action' do
+            ms = game.corporation_by_id('MS')
+            float_major!(ms)
             expect(game.fc.floated?).to be(false)
-            expect(game.operating_order).not_to include(game.fc)
+            expect(game.operating_order.last).to eq(game.fc)
+
+            act(Action::Pass) until game.round.is_a?(Engine::Round::Operating)
+            act(Action::Pass) until game.round.active_step.is_a?(G18Cuba::Step::BuyTrain)
+            train = game.round.active_step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
+            act(Action::BuyTrain, train: train, price: train.price)
+            act(Action::Pass) while game.round.is_a?(Engine::Round::Operating) && game.current_entity != game.fc
+
+            expect(game.round).to be_a(Engine::Round::Stock)
+            expect(game.fc.operating_history).not_to be_empty
+            expect(game.log.map(&:message)).not_to include(a_string_matching(/\AFC .*skips/))
           end
         end
 
