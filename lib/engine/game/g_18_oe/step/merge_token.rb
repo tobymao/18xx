@@ -1,14 +1,59 @@
 # frozen_string_literal: true
 
-require_relative '../../g_18_eu/step/replace_token'
+require_relative '../../../step/base'
+require_relative '../../../step/tokener'
+require_relative '../../../token'
 
 module Engine
   module Game
     module G18OE
       module Step
-        class MergeToken < G18EU::Step::ReplaceToken
-          def auto_actions(_entity)
-            []
+        class MergeToken < Engine::Step::Base
+          include Engine::Step::Tokener
+          ACTIONS = %w[place_token pass].freeze
+
+          def actions(entity)
+            return [] unless entity == current_entity
+
+            ACTIONS
+          end
+
+          def description
+            'Replace Token'
+          end
+
+          def active_entities
+            return [] unless pending_acquisition
+
+            [pending_corporation]
+          end
+
+          def pending_acquisition
+            @round.pending_acquisition
+          end
+
+          def pending_minor
+            pending_acquisition[:minor]
+          end
+
+          def pending_corporation
+            pending_acquisition[:corporation]
+          end
+
+          def available_cities
+            [pending_token.city]
+          end
+
+          def available_hex(_entity, hex)
+            available_cities.map(&:hex).include?(hex)
+          end
+
+          def available_city?(_entity, city)
+            available_cities.include?(city)
+          end
+
+          def can_replace_token?(entity, token)
+            available_city?(entity, token.city)
           end
 
           def active?

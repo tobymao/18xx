@@ -2,14 +2,14 @@
 
 require_relative '../../../step/base'
 require_relative '../../../action/merge'
-require_relative '../../g_18_eu/step/minor_exchange'
+require_relative '../../../step/share_buying'
 
 module Engine
   module Game
     module G18OE
       module Step
         class MergeMinor < Engine::Step::Base
-          include G18EU::MinorExchange
+          include Engine::Step::ShareBuying
 
           def round_state
             super.merge(merge_trains: nil, pending_acquisition: nil)
@@ -61,6 +61,13 @@ module Engine
             true
           end
 
+          def can_gain?(entity, bundle, exchange: false)
+            return if !bundle || !entity
+            return true if exchange
+
+            super
+          end
+
           def process_merge(action)
             minor = @round.merge_minor
             major = action.corporation
@@ -72,7 +79,8 @@ module Engine
             cash_recipient = share&.owner == major ? major : @game.bank
             if share
               @log << "#{minor.name} merges into #{major.name}"
-              exchange_share(minor, major, share.owner)
+              @log << "#{minor.owner.name} exchanges #{minor.name} for a 10% share of #{major.name}"
+              buy_shares(minor.owner, share.to_bundle, exchange: true)
             else
               @log << "#{minor.name} merges into #{major.name} by track connection; #{minor.owner.name} receives no share"
             end
@@ -88,6 +96,14 @@ module Engine
           end
 
           private
+
+          def transfer_treasury(source, destination)
+            return unless source.cash.positive?
+
+            @log << "#{destination.name} takes #{@game.format_currency(source.cash)} from #{source.name} remaining cash"
+
+            source.spend(source.cash, destination)
+          end
 
           def transfer_abilities!(minor, major)
             return unless major.type == :major
