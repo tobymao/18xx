@@ -655,8 +655,7 @@ module Engine
               to_corp_cities[city] = true
               new_tok = to_corp.next_token
               new_tok ||= Engine::Token.new(to_corp, price: 100).tap { |t| to_corp.tokens << t }
-              token.remove!
-              city.place_token(to_corp, new_tok, check_tokenable: false)
+              token.swap!(new_tok, check_tokenable: false)
             end
           end
         end
