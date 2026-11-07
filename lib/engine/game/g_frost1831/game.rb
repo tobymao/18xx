@@ -32,6 +32,8 @@ module Engine
 
         EBUY_CAN_SELL_SHARES = false
 
+        CONVOY = 'PCO'
+
         TILE_LAYS = [
           { lay: true, upgrade: true },
           { lay: :not_if_upgraded, upgrade: false },
@@ -314,6 +316,7 @@ module Engine
           @faction_influence = Hash.new(0)
           @parliament_open = false
           @regulations = REGULATIONS.transform_values { |name| { name: name, position: NORMAL } }
+          @player_influence = Hash.new(0)
         end
 
         def new_auction_round
@@ -328,6 +331,21 @@ module Engine
               share_pool.buy_shares(player, share, exchange: :free)
             end
           end
+          return unless company.sym == self.class::CONVOY
+
+          @player_influence[player.id] += 1
+          @log << "#{player.name} receives 1 Influence from #{company.name}"
+        end
+
+        def player_influence(player)
+          @player_influence[player.id]
+        end
+
+        def player_card_rows(player)
+          influence = player_influence(player)
+          return unless influence.positive?
+
+          ['Influence', influence.to_s]
         end
 
         def stock_round
