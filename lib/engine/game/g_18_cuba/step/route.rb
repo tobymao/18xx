@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/route'
+require_relative 'skip_for_national'
 
 module Engine
   module Game
@@ -8,6 +9,8 @@ module Engine
       module Step
         # 18Uruguay-style: while routing, a major attaches wagons and loads on-route sugar cubes (rule VII.9/VII.10/VII.11).
         class Route < Engine::Step::Route
+          include SkipForNational
+
           # setup runs per corporation (next_entity!), so reset both hashes between corps within an OR.
           def setup
             super
