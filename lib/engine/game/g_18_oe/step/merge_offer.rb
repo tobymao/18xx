@@ -52,7 +52,7 @@ module Engine
           end
 
           def choices
-            return { 'offer' => asked.name } if asking?
+            return { 'merge_offer' => asked.name } if asking?
 
             @round.merge_offer[:offers].to_h { |major| [major.id, major.name] }
           end
@@ -89,7 +89,7 @@ module Engine
 
           def process_choose(action)
             if asking?
-              raise GameError, 'Cannot make that offer' unless action.choice == 'offer'
+              raise GameError, 'Cannot make that offer' unless action.choice == 'merge_offer'
 
               major = @round.merge_offer[:queue].shift
               @round.merge_offer[:offers] << major

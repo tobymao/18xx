@@ -167,7 +167,7 @@ describe 'G18OE consolidation (§5.1.5, §10.6)' do
       own_major!
       rival_major!
       expect(step.can_merge?(owner, minor)).to be(true)
-      expect(step.entity_choices(minor)).to eq('offer' => 'Offer')
+      expect(step.entity_choices(minor)).to eq('offer_or_merge' => 'Offer')
     end
 
     it 'shows only Merge when the owner can merge and nobody is left to ask' do
@@ -186,7 +186,7 @@ describe 'G18OE consolidation (§5.1.5, §10.6)' do
     end
 
     it 'shows no Offer once the owner has acted' do
-      round.current_actions << Engine::Action::Choose.new(owner, choice: 'offer', target: minor)
+      round.current_actions << Engine::Action::Choose.new(owner, choice: 'offer_or_merge', target: minor)
       expect(step.entity_choices(minor)).to eq({})
     end
 
@@ -217,7 +217,7 @@ describe 'G18OE consolidation (§5.1.5, §10.6)' do
     end
 
     it 'rejects a plain Offer when the owner cannot merge' do
-      expect { offer!('offer') }.to raise_error(Engine::GameError, /Cannot offer/)
+      expect { offer!('offer_or_merge') }.to raise_error(Engine::GameError, /Cannot offer/)
     end
 
     it 'rejects an offer_or_abandon when the owner can merge' do
