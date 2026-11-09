@@ -59,16 +59,18 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[0B!n 70B!d 80B!d 90B!d 100B!d 110B!d 120B!d 140B!d 160B!d 190B!d 220B!d 250B!d 300B!d],
-          %w[0c!n 70y 80 90 100p 110 120 140 160 190 220 250 300W 300B!l],
-          %w[0c!n 60y 70 80 90p 100 110 130 150 180 210 240W],
-          %w[0c!n 50y 60 70 80p 90 100 120 140 170 200W],
-          %w[0c!n 40y 50 60 70p 80 90 110 130 160W],
-          %w[0c!n 30y 40 50 60p 70 80 100 120W],
-          %w[0c!n 20y 30 40 50 60 70 80W],
-          %w[0c!n 10y 20 30 40 50 60W],
-          %w[0c!n 0c!n],
-          %w[70r 80r 100r 120r 140r 160r 190r 220r 250r!n],
+          %w[0B,arrow:none 70B,arrow:down 80B,arrow:down 90B,arrow:down 100B,arrow:down 110B,arrow:down
+             120B,arrow:down 140B,arrow:down 160B,arrow:down 190B,arrow:down 220B,arrow:down 250B,arrow:down
+             300B,arrow:down],
+          %w[0c,arrow:none 70y 80 90 100p 110 120 140 160 190 220 250 300W 300B,arrow:left],
+          %w[0c,arrow:none 60y 70 80 90p 100 110 130 150 180 210 240W],
+          %w[0c,arrow:none 50y 60 70 80p 90 100 120 140 170 200W],
+          %w[0c,arrow:none 40y 50 60 70p 80 90 110 130 160W],
+          %w[0c,arrow:none 30y 40 50 60p 70 80 100 120W],
+          %w[0c,arrow:none 20y 30 40 50 60 70 80W],
+          %w[0c,arrow:none 10y 20 30 40 50 60W],
+          %w[0c,arrow:none 0c,arrow:none],
+          %w[70r 80r 100r 120r 140r 160r 190r 220r 250r,arrow:none],
         ].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
