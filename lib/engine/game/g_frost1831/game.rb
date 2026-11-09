@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'tiles'
+require_relative 'step/buy_cert'
 require_relative '../base'
 
 module Engine
@@ -251,6 +252,20 @@ module Engine
           return unless price.types.delete(:pays_bonus_1)
 
           @log << "#{entity.name} is first to reach #{format_currency(price.price)}"
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            GFrost1831::Step::BuyCert,
+          ])
+        end
+
+        def after_buy_company(player, company, _price)
+          abilities(company, :shares) do |ability|
+            ability.shares.reject(&:president).each do |share|
+              share_pool.buy_shares(player, share, exchange: :free)
+            end
+          end
         end
 
         def stock_round
