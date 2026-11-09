@@ -432,11 +432,11 @@ module Engine
 
           setup_patronage_tiles!
           setup_wcf_placeholder!
-          setup_mail_contract!
+          setup_minor_k!
           @minor_g_ability = corporation_by_id('G')&.abilities&.first
         end
 
-        def setup_mail_contract!
+        def setup_minor_k!
           mail = company_by_id('MAIL')
           return unless mail
 
