@@ -84,7 +84,7 @@ module Engine
           par: 'Initial Offering (£60–£100)',
           close: 'Intervention Zone — corporation is eliminated',
           pays_bonus: 'Influence Zone — grants Influence',
-          pays_bonus_1: 'Influence — first to arrive',
+          pays_bonus_1: 'Influence — first to reach',
           no_cert_limit: 'Shares do not count towards cert limit, may hold >60%',
           repar: 'Faction Values in Parliament',
         ).freeze
