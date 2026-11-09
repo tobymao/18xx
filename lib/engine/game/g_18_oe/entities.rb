@@ -463,6 +463,20 @@ module Engine
             desc: 'Right to take the tenth stock action in the first stock round.',
             auction_row: 11,
           },
+          {
+            name: 'Mail Contract',
+            sym: 'MAIL',
+            value: 0,
+            revenue: 20,
+            desc: 'Held by Minor K and passes with it to the major that absorbs it. Paid to the owning '\
+                  'RR\'s treasury at the start of each OR, not as part of train revenue: £20 (Phase 2), '\
+                  '£40 (Phases 3-4), £50 (Phases 5-6), £60 (Phases 7-8).',
+            abilities: [
+              { type: 'revenue_change', revenue: 40, on_phase: '3' },
+              { type: 'revenue_change', revenue: 50, on_phase: '5' },
+              { type: 'revenue_change', revenue: 60, on_phase: '7' },
+            ],
+          },
         ].freeze
 
         CORPORATIONS = [
@@ -656,15 +670,6 @@ module Engine
             float_percent: 100,
             max_ownership_percent: 100,
             color: '#CD5C5C',
-            abilities: [
-              {
-                type: 'description',
-                description: 'Mail contract: at the start of each OR the bank pays directly to treasury '\
-                             '(not counted as train revenue): £20 (Phase 2), £40 (Phase 3–4), '\
-                             '£50 (Phase 5–6), £60 (Phase 7–8). '\
-                             'Available immediately for track or token placement that OR.',
-              },
-            ],
           },
           {
             name: 'Krasnaya Strela',

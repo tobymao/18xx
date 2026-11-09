@@ -118,7 +118,7 @@ describe 'G18OE setup' do
   end
 
   it 'has the ten privates at their face values and revenues (§14)' do
-    privates = game.companies.reject { |c| game.company_becomes_minor?(c) || game.concession?(c) }
+    privates = game.initial_auction_companies.reject { |c| game.company_becomes_minor?(c) || game.concession?(c) }
                     .to_h { |c| [c.sym, [c.value, c.revenue]] }
 
     expect(privates).to eq('RSC' => [20, 5], 'PeC' => [20, 5], 'WS' => [40, 10], 'BBBT' => [40, 10],
