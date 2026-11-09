@@ -21,25 +21,10 @@ module Engine
           shares_to_swap_to_old_president = shares_for_presidency_swap(president_percent,
                                                                        possible_reorder(president.shares_of(corporation)))
 
-          LOGGER.debug("shares of new president: #{possible_reorder(president.shares_of(corporation)).map do |share|
-                                                     "(#{share.percent}, #{share.president})"
-                                                   end                                                   }")
-          LOGGER.debug("shares of old president: #{previous_president.shares_of(corporation).map do |share|
-                                                     "(#{share.percent}, #{share.president})"
-                                                   end                                                   }")
-          LOGGER.debug("president's share percent: #{president_percent}")
-          LOGGER.debug("swapping president share for #{shares_to_swap_to_old_president.map do |share|
-                                                         "(#{share.percent}, #{share.president})"
-                                                       end } and giving it to #{swap_to.name}")
-
           shares_to_swap_to_old_president.each do |s|
             move_share(s, swap_to)
           end
           move_share(presidents_share, president)
-
-          LOGGER.debug("new president has: #{president.shares_of(corporation).map do |share|
-                                               "(#{share.percent},#{share.president})"
-                                             end } to swap for is #{president_percent}")
 
           return unless previous_president.shares_of(corporation).map(&:percent).any? { |p| p == president_percent }
           return unless president.shares_of(corporation).map(&:percent).count { |p| p == president_percent / 2 } >= 2
