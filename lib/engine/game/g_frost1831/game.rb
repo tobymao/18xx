@@ -80,7 +80,7 @@ module Engine
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           par: 'Initial Offering (£60–£100)',
-          close: 'Intervention Zone — corporation is eliminated',
+          close: 'Intervention Zone — apply consequences',
           pays_bonus: 'Influence Zone — grants Influence',
           pays_unique_bonus: 'Influence — first to arrive',
           no_cert_limit: 'Shares do not count towards cert limit, may hold >60%',
