@@ -428,16 +428,16 @@ module View
                 case price.arrow
                 when 'down'
                   align = { left: 0, bottom: 0 }
-                  arrow = '↓'
+                  arrow = '⭣'
                 when 'up'
                   align = { right: 0, top: 0 }
-                  arrow = '↑'
+                  arrow = '⭡'
                 when 'left'
                   align = { left: 0, bottom: 0 }
-                  arrow = '←'
+                  arrow = '⭠'
                 when 'right'
                   align = { right: 0, bottom: 0 }
-                  arrow = '→'
+                  arrow = '⭢'
                 when 'none'
                   align = {}
                   arrow = ''
