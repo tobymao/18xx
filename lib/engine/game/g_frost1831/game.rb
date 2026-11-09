@@ -7,6 +7,7 @@ require_relative 'entities'
 require_relative 'tiles'
 require_relative 'step/buy_cert'
 require_relative 'step/dividend'
+require_relative 'step/special_track'
 require_relative '../base'
 
 module Engine
@@ -108,6 +109,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: %w[can_buy_companies],
           },
           {
             name: '4',
@@ -115,6 +117,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: %w[can_buy_companies],
           },
           {
             name: '5',
@@ -358,6 +361,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            GFrost1831::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
