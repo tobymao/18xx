@@ -15,6 +15,8 @@ require_relative 'step/merge_offer'
 require_relative 'step/merge_token'
 require_relative 'step/concession'
 require_relative 'step/reserve_share'
+require_relative 'step/orient_express_bonus'
+require_relative 'step/route'
 require_relative 'step/special_token'
 
 module Engine
@@ -408,6 +410,9 @@ module Engine
         }.freeze
 
         MAX_FLOATED_REGIONALS = 18
+        ORIENT_EXPRESS_ORIGINS = %w[Paris London Berlin Madrid Sankt-Peterburg].freeze
+        ORIENT_EXPRESS_DESTINATIONS = %w[Constantinople].freeze
+        ORIENT_EXPRESS_BONUS = { '2' => 30, '3' => 30, '4' => 30, '5' => 60, '6' => 60, '7' => 100, '8' => 100 }.freeze
         CONVERSION_NEW_SHARES = 6
         MAJOR_MAX_OWNERSHIP_PERCENT = 60
         EXTENDED_FINAL_OPERATING_ROUNDS = 3
@@ -420,6 +425,7 @@ module Engine
           @minor_floated_regions = {}
           @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
           @removed_regional_zones = []
+          @orient_express_markers = []
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
@@ -914,6 +920,18 @@ module Engine
           "Share reserved by #{corporation.owner.name}" if reserved_share(corporation)
         end
 
+        def status_array(corporation)
+          [['Orient Express marker']] if orient_express_marker?(corporation)
+        end
+
+        def orient_express_marker?(corporation)
+          @orient_express_markers.include?(corporation)
+        end
+
+        def place_orient_express_marker!(corporation)
+          @orient_express_markers << corporation unless orient_express_marker?(corporation)
+        end
+
         def float_corporation(corporation)
           super
           return unless corporation.type == :regional
@@ -1038,8 +1056,9 @@ module Engine
             G18OE::Step::Track,
             G18OE::Step::SpecialToken,
             G18OE::Step::Token,
-            Engine::Step::Route,
+            G18OE::Step::Route,
             G18OE::Step::Dividend,
+            G18OE::Step::OrientExpressBonus,
             G18OE::Step::BuyTrain,
             # Convert step to do national conversions at 4/6/8?
             G18OE::Step::IssueShares,
@@ -1061,6 +1080,71 @@ module Engine
 
           hexes = route.visited_stops.reject(&:town?).map(&:hex)
           raise GameError, 'Route visits same city hex twice' if hexes.size != hexes.uniq.size
+          return unless combined_train?(route.train)
+
+          raise GameError, 'Combined trains may only run an Orient Express route' unless orient_express_run?(route)
+        end
+
+        def double_head_candidates(corporation)
+          return [] if !corporation.corporation? || corporation.type != :major
+          return [] if corporation.trains.any? { |train| combined_train?(train) }
+
+          corporation.trains.reject { |train| train.operated || !train.rusts_on }
+        end
+
+        def non_permanent_trains?
+          @depot.trains.any? { |train| train.rusts_on && !train.rusted }
+        end
+
+        def combined_train?(train)
+          @round.respond_to?(:combined_trains) && @round.combined_trains.key?(train)
+        end
+
+        def distance(train)
+          [train.distance[1]['pay'], train.distance[0]['pay']]
+        end
+
+        def orient_express_origin_hexes
+          @orient_express_origin_hexes ||=
+            location_hexes(self.class::ORIENT_EXPRESS_ORIGINS).select { |hex| hex.tile.offboards.empty? }
+        end
+
+        def orient_express_destination_hexes
+          @orient_express_destination_hexes ||= location_hexes(self.class::ORIENT_EXPRESS_DESTINATIONS)
+        end
+
+        def orient_express_reachable?(corporation)
+          connected = graph_for_entity(corporation).connected_nodes(corporation).keys.map(&:hex)
+          connected.intersect?(orient_express_origin_hexes) && connected.intersect?(orient_express_destination_hexes)
+        end
+
+        def orient_express_run?(route)
+          return false unless route.corporation&.type == :major
+
+          visited = route.visited_stops.map(&:hex)
+          visited.intersect?(orient_express_destination_hexes) && visited.intersect?(orient_express_origin_hexes)
+        end
+
+        def orient_express_route(routes)
+          routes.find { |route| orient_express_run?(route) }
+        end
+
+        def orient_express_train_revenue(routes)
+          routes.select { |route| orient_express_run?(route) }.map do |route|
+            bonus = orient_express_bonus_route?(route) ? 0 : self.class::ORIENT_EXPRESS_BONUS[route.phase.name]
+            route.revenue + bonus
+          end.max
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += self.class::ORIENT_EXPRESS_BONUS[route.phase.name] if orient_express_bonus_route?(route)
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          orient_express_bonus_route?(route) ? "#{str} + Orient Express" : str
         end
 
         def check_connected(route, corporation)
@@ -1153,6 +1237,14 @@ module Engine
         end
 
         private
+
+        def location_hexes(names)
+          self.class::LOCATION_NAMES.filter_map { |id, name| hex_by_id(id) if names.include?(name) }
+        end
+
+        def orient_express_bonus_route?(route)
+          orient_express_run?(route) && route.equal?(orient_express_route(route.routes.empty? ? [route] : route.routes))
+        end
 
         def entity_track_rights_zone(entity)
           corp = owning_corporation(entity)
