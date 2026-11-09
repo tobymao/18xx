@@ -29,7 +29,8 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
   it 'plays the UK and French regionals, minors C, H, K and M, and four privates' do
     expect(game.corporations.select { |c| c.type == :regional }.map(&:id).sort).to eq(%w[BEL GSWR GWR LNWR MIDI OU PLM])
     expect(game.corporations.select { |c| c.type == :minor }.map(&:id).sort).to eq(%w[C H K M])
-    expect(game.companies.reject { |c| game.company_becomes_minor?(c) }.map(&:sym)).to eq(%w[PeC SHTC CCTC WCF])
+    expect(game.initial_auction_companies.reject { |c| game.company_becomes_minor?(c) }.map(&:sym))
+      .to eq(%w[PeC SHTC CCTC WCF])
   end
 
   it 'floats a minor in the United Kingdom' do
