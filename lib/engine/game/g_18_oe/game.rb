@@ -438,8 +438,6 @@ module Engine
 
         def setup_minor_k!
           mail = company_by_id('MAIL')
-          return unless mail
-
           minor_k = corporation_by_id('K')
           mail.owner = minor_k
           minor_k.companies << mail

@@ -96,6 +96,7 @@ module Engine
               },
             ],
           },
+          G18OE::Entities::COMPANIES.find { |company| company[:sym] == 'MAIL' },
         ].freeze
 
         CORPORATIONS = [
