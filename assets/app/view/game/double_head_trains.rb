@@ -103,6 +103,8 @@ module View
         submit_txt = disabled ? 'Select 2 or more trains' : "Form #{@step.an(cities)} #{cities}+#{towns} train"
 
         submit = lambda do
+          store(:routes, [], skip: true)
+          store(:selected_route, nil, skip: true)
           process_action(Engine::Action::DoubleHeadTrains.new(@game.current_entity, trains: trains))
           cleanup
         end
