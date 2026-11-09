@@ -59,22 +59,24 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[_ _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _B!d _],
-          %w[_c!n 70y 80 90 100p 110 120 140 160 190 220 250 300K _B!l],
-          %w[_c!n 60y 70 80 90p 100 110 130 150 180 210 240K],
-          %w[_c!n 50y 60 70 80p 90 100 120 140 170 200K],
-          %w[_c!n 40y 50 60 70p 80 90 110 130 160K],
-          %w[_c!n 30y 40 50 60p 70 80 100 120K],
-          %w[_c!n 20y 30 40 50 60 70 80K],
-          %w[_c!n 10y 20 30 40 50 60K],
-          %w[_c!n _c!n],
-          %w[70r 80r 100r 120r 140r 160r 190r 220r 250r!n],
+          %w[0B,arrow:none 70B,arrow:down 80B,arrow:down 90B,arrow:down 100B,arrow:down 110B,arrow:down
+             120B,arrow:down 140B,arrow:down 160B,arrow:down 190B,arrow:down 220B,arrow:down 250B,arrow:down
+             300B,arrow:down],
+          %w[0c,arrow:none 70y 80 90 100p 110 120 140 160 190 220 250 300W 300B,arrow:left],
+          %w[0c,arrow:none 60y 70 80 90p 100 110 130 150 180 210 240W],
+          %w[0c,arrow:none 50y 60 70 80p 90 100 120 140 170 200W],
+          %w[0c,arrow:none 40y 50 60 70p 80 90 110 130 160W],
+          %w[0c,arrow:none 30y 40 50 60p 70 80 100 120W],
+          %w[0c,arrow:none 20y 30 40 50 60 70 80W],
+          %w[0c,arrow:none 10y 20 30 40 50 60W],
+          %w[0c,arrow:none 0c,arrow:none],
+          %w[70r 80r 100r 120r 140r 160r 190r 220r 250r,arrow:none],
         ].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           close: :orange,
           pays_bonus: :purple,
-          pays_unique_bonus: :blue,
+          pays_bonus_1: :blue,
           repar: :gray,
         ).freeze
 
@@ -82,7 +84,7 @@ module Engine
           par: 'Initial Offering (£60–£100)',
           close: 'Intervention Zone — apply consequences',
           pays_bonus: 'Influence Zone — grants Influence',
-          pays_unique_bonus: 'Influence — first to arrive',
+          pays_bonus_1: 'Influence — first to reach',
           no_cert_limit: 'Shares do not count towards cert limit, may hold >60%',
           repar: 'Faction Values in Parliament',
         ).freeze
@@ -237,6 +239,18 @@ module Engine
               'Game ends at conclusion of the next full OR set'
             end
           end
+        end
+
+        def log_share_price(entity, from, steps = nil, log_steps: false)
+          super
+
+          claim_first_to_arrive_cell(entity, entity.share_price) if entity.share_price != from
+        end
+
+        def claim_first_to_arrive_cell(entity, price)
+          return unless price.types.delete(:pays_bonus_1)
+
+          @log << "#{entity.name} is first to reach #{format_currency(price.price)}"
         end
 
         def stock_round
