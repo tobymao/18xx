@@ -424,8 +424,27 @@ module View
                 arrow = ''
               end
 
-              first_price = false
+              if price.arrow
+                case price.arrow
+                when 'down'
+                  align = { left: 0, bottom: 0 }
+                  arrow = '⭣'
+                when 'up'
+                  align = { right: 0, top: 0 }
+                  arrow = '⭡'
+                when 'left'
+                  align = { left: 0, bottom: 0 }
+                  arrow = '⭠'
+                when 'right'
+                  align = { right: 0, bottom: 0 }
+                  arrow = '⭢'
+                when 'none'
+                  align = {}
+                  arrow = ''
+                end
+              end
 
+              first_price = false
               h(:div, { style: cell_style(@box_style_2d, price.types) },
                 [
                   h('div.xsmall_font', price.price),

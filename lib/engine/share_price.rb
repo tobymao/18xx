@@ -2,7 +2,7 @@
 
 module Engine
   class SharePrice
-    attr_reader :coordinates, :price, :corporations, :can_par, :type, :types, :info
+    attr_reader :coordinates, :price, :corporations, :can_par, :type, :types, :info, :arrow
 
     TYPE_MAP = {
       'p' => :par,
@@ -45,6 +45,12 @@ module Engine
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
 
+      code, *option_codes = code.split(',')
+      options = option_codes.to_h do |option|
+        key, value = option.split(':')
+        [key.to_sym, value]
+      end
+
       m = code.match(/(\d*)([a-zA-Z]*)/)
       price = m[1].to_i
 
@@ -59,17 +65,20 @@ module Engine
                      info: nil,
                      types: types,
                      unlimited_types: unlimited_types,
-                     multiple_buy_types: multiple_buy_types)
+                     multiple_buy_types: multiple_buy_types,
+                     **options)
     end
 
     def initialize(coordinates,
                    price:,
                    info: nil,
+                   arrow: nil,
                    types: [],
                    unlimited_types: [],
                    multiple_buy_types: [])
       @coordinates = coordinates
       @price = price
+      @arrow = arrow
       @type = types&.first
       @types = types
       @corporations = []
