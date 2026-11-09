@@ -35,6 +35,8 @@ module Engine
       'f' => :only_president,
     }.freeze
 
+    ARROWS = %w[up down left right none].freeze
+
     # Types which are info only and shouldn't
     NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 par_3 par_overlap safe_par convert_range max_price max_price_1 repar
                              type_limited share_split].freeze
@@ -45,10 +47,13 @@ module Engine
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
 
+      code, *options = code.split(',')
       arrow = nil
-      if (arrow_match = /!([dulrn])$/.match(code))
-        arrow = arrow_match[1]
-        code = code[0..-3]
+      options.each do |option|
+        key, value = option.split(':')
+        raise GameError, "Unknown share price option '#{option}' in '#{code}'" if key != 'arrow' || !ARROWS.include?(value)
+
+        arrow = value
       end
 
       m = code.match(/(\d*)([a-zA-Z]*)/)
