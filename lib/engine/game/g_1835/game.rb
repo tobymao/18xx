@@ -12,7 +12,8 @@ module Engine
   module Game
     module G1835
       class Game < Game::Base
-        attr_accessor :pr_can_form, :conversion_choice_during_or
+        attr_accessor :pr_can_form, :conversion_choice_during_or, :swap_choice_player, :swap_location, :swap_other_player,
+                      :swap_corporation
         attr_reader :preussen_may_float
 
         include_meta(G1835::Meta)
@@ -241,6 +242,7 @@ module Engine
           G1835::Round::Stock.new(self, [
             Engine::Step::HomeToken,
             G1835::Step::MinorExchange,
+            G1835::Step::SwapChoice,
             G1835::Step::BuySellParShares,
           ])
         end
