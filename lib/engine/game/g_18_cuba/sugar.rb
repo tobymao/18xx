@@ -122,15 +122,17 @@ module Engine
           stop.hex.tile.icons.any? { |icon| icon.name == 'anchor' }
         end
 
-        def pay_fc_for_unshipped_cubes
+        def unshipped_cubes_revenue
+          @sugar_cubes.values.sum * self.class::UNSHIPPED_CUBE_VALUE
+        end
+
+        def return_unshipped_cubes
           cubes = @sugar_cubes.values.sum
           return if cubes.zero?
 
-          amount = cubes * UNSHIPPED_CUBE_VALUE
-          @bank.spend(amount, @fc)
           @sugar_cubes.each_key { |corp| update_sugar_cube_icons(corp, 0) }
           @sugar_cubes.clear
-          @log << "#{@fc.name} receives #{format_currency(amount)} for #{cubes} unshipped sugar cube(s)"
+          @log << "#{cubes} unshipped sugar cube(s) return to the supply"
         end
 
         private

@@ -108,7 +108,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G18Cuba::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -408,16 +408,15 @@ module Engine
           end_game!(:second_eight_plus) if @fc_exported_8plus >= 2
         end
 
-        def pay_fc_city_revenue
+        def fc_city_revenue
           train = @fc.trains.last
-          revenues = @fc.placed_tokens
-                        .map { |t| t.city.route_base_revenue(@phase, train) }
-                        .sort.reverse.first(train.distance)
-          amount = revenues.sum
-          return unless amount.positive?
+          @fc.placed_tokens
+             .map { |t| t.city.route_base_revenue(@phase, train) }
+             .sort.reverse.first(train.distance).sum
+        end
 
-          @bank.spend(amount, @fc)
-          @log << "#{@fc.name} receives #{format_currency(amount)} from #{revenues.size} city(ies)"
+        def fc_revenue
+          fc_city_revenue + unshipped_cubes_revenue
         end
 
         def game_end_check_second_eight_plus?

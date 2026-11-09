@@ -99,25 +99,22 @@ module Engine
           end
         end
 
-        describe '#pay_fc_for_unshipped_cubes' do
+        describe 'unshipped cubes' do
           let(:minor_a) { minor }
           let(:minor_b) { game.corporations.find { |c| c.type == :minor && c != minor_a } }
 
-          it 'pays the FC $10 per unshipped cube and returns the cubes to the supply' do
+          it 'values the unshipped cubes at $10 each and returns them to the supply' do
             game.sugar_production(minor_a, 80)
             game.sugar_production(minor_b, 30)
-            fc_cash = game.fc.cash
-            bank_cash = game.bank.cash
 
-            game.pay_fc_for_unshipped_cubes
+            expect(game.unshipped_cubes_revenue).to eq(30)
+            game.return_unshipped_cubes
 
-            expect(game.fc.cash).to eq(fc_cash + 30)
-            expect(game.bank.cash).to eq(bank_cash - 30)
             expect(game.sugar_cubes_for(minor_a)).to eq(0)
             expect(game.sugar_cubes_for(minor_b)).to eq(0)
           end
 
-          it 'ends the game after the set when the cube payment breaks the bank in its last OR' do
+          it 'ends the game after the set when the FC revenue breaks the bank in its last OR' do
             ms = game.corporation_by_id('MS')
             float_major!(ms)
             act(Action::Pass) until game.round.is_a?(Engine::Round::Operating)
@@ -127,8 +124,13 @@ module Engine
 
             game.sugar_production(minor, 80)
             game.bank.spend(game.bank.cash - 5, game.players.first)
+            or_key = [game.turn, game.round.round_num]
+            fc_revenue = game.fc_city_revenue + 20
             act(Action::Pass) until game.finished || !game.round.is_a?(Engine::Round::Operating)
 
+            expect(game.fc.operating_history[or_key].revenue).to eq(fc_revenue)
+            expect(game.sugar_cubes_for(minor)).to eq(0)
+            expect(game.bank.broken?).to be(true)
             expect(game.finished).to be(true)
             expect(game.round).to be_a(Engine::Round::Operating)
           end
