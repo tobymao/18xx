@@ -54,7 +54,7 @@ module Engine
 
           def offer_request?(action)
             target = action.target
-            %w[offer offer_or_abandon].include?(action.choice) && target&.corporation? && target.type == :minor
+            %w[offer_or_merge offer_or_abandon].include?(action.choice) && target&.corporation? && target.type == :minor
           end
 
           def offer_allowed?(target, choice)
@@ -65,7 +65,7 @@ module Engine
             return {} unless @round.current_actions.empty?
 
             if can_merge?(player, minor)
-              @game.merge_offer_majors(minor).empty? ? {} : { 'offer' => 'Offer' }
+              @game.merge_offer_majors(minor).empty? ? {} : { 'offer_or_merge' => 'Offer' }
             elsif presides_regional?(player)
               {}
             else

@@ -326,7 +326,7 @@ describe 'G18OE abandoning a minor (§9.5)' do
 
     def offer!
       own_major!
-      act!(round, Engine::Action::Choose.new(player, choice: 'offer', target: minor))
+      act!(round, Engine::Action::Choose.new(player, choice: 'offer_or_merge', target: minor))
     end
 
     def offer_or_abandon!
@@ -334,7 +334,7 @@ describe 'G18OE abandoning a minor (§9.5)' do
     end
 
     def accept!(president)
-      act!(round, Engine::Action::Choose.new(president, choice: 'offer'))
+      act!(round, Engine::Action::Choose.new(president, choice: 'merge_offer'))
     end
 
     def decline_all!
@@ -383,7 +383,7 @@ describe 'G18OE abandoning a minor (§9.5)' do
 
     it 'merges a single offer even when the owner could merge it' do
       own = own_major!
-      act!(round, Engine::Action::Choose.new(player, choice: 'offer', target: minor))
+      act!(round, Engine::Action::Choose.new(player, choice: 'offer_or_merge', target: minor))
       accept!(rival)
       decline_all!
       expect(game.merged_minors[rival_major]).to eq([minor])
