@@ -777,10 +777,21 @@ module Engine
           @merged_minors[major] << minor
           return unless major.type == :major
 
+          pay_minor_a_bonus!(minor, major) if minor.id == 'A'
           minor.abilities.dup.each do |ability|
             minor.remove_ability(ability)
             major.add_ability(ability)
           end
+        end
+
+        def pay_minor_a_bonus!(minor, major)
+          ability = minor.abilities.first
+          return if !ability || ability.used?
+
+          amount = major.share_price.price
+          @bank.spend(amount, major)
+          ability.use!
+          @log << "#{major.name} receives #{format_currency(amount)} from the bank for #{minor.name}"
         end
 
         def level8_train_available?

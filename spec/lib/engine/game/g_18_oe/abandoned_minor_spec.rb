@@ -139,6 +139,38 @@ describe 'G18OE abandoning a minor (§9.5)' do
     end
   end
 
+  describe 'minor A one-time payment (§15.1, §10.5)' do
+    let(:minor) { start_minor!(game, 'A', player, 'SP') }
+    let(:major) { start_major!(game, 'LNWR', player) }
+
+    before do
+      allow(game).to receive(:major_phase?).and_return(true)
+      major.spend(major.cash, game.bank) if major.cash.positive?
+    end
+
+    it 'pays the major the current share value from the bank' do
+      ability = minor.abilities.first
+      bank_before = game.bank.cash
+      game.add_minor_charter!(minor, major)
+      expect(major.cash).to eq(major.share_price.price)
+      expect(game.bank.cash).to eq(bank_before - major.share_price.price)
+      expect(ability).to be_used
+    end
+
+    it 'never pays again once the ability is used' do
+      minor.abilities.first.use!
+      expect { game.add_minor_charter!(minor, major) }.not_to(change { major.cash })
+    end
+
+    it 'pays nothing to a national' do
+      national = start_major!(game, 'PLM', player)
+      national.type = :national
+      cash_before = national.cash
+      game.add_minor_charter!(minor, national)
+      expect(national.cash).to eq(cash_before)
+    end
+  end
+
   describe 'buying an abandoned minor (§11.7)' do
     let(:former_owner) { game.players[1] }
     let(:minor_id) { 'D' }
@@ -170,6 +202,18 @@ describe 'G18OE abandoning a minor (§9.5)' do
     it 'pays £60 to the bank' do
       expect { buy! }.to change { game.bank.cash }.by(60)
       expect(major.cash).to eq(start_cash - 60)
+    end
+
+    context 'with minor A' do
+      let(:minor_id) { 'A' }
+      let(:zone) { 'SP' }
+
+      it 'pays the current share value from the bank besides the £60 price (§15.1)' do
+        bank_before = game.bank.cash
+        buy!
+        expect(major.cash).to eq(start_cash - 60 + major.share_price.price)
+        expect(game.bank.cash).to eq(bank_before + 60 - major.share_price.price)
+      end
     end
 
     it 'gives the major the track rights and closes the minor' do
