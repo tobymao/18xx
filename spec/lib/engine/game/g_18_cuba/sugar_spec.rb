@@ -68,6 +68,37 @@ module Engine
           end
         end
 
+        describe 'Isla de Tesoros harbor' do
+          let(:isla) { game.hex_by_id('E4').tile.offboards.first }
+          let(:harbor) { game.hex_by_id('E12').tile.offboards.first }
+
+          it 'pays 20 through phase 4 and 40 from phase 5' do
+            train = game.depot.depot_trains.find { |t| t.track_type == :broad && !game.wagon?(t) }
+
+            expect(game.phase.name).to eq('2')
+            expect(isla.route_revenue(game.phase, train)).to eq(20)
+            expect(harbor.route_revenue(game.phase, train)).to eq(10)
+
+            game.export_train_to_fc! until game.phase.name == '4'
+            expect(isla.route_revenue(game.phase, train)).to eq(20)
+
+            game.export_train_to_fc! until game.phase.name == '5'
+            expect(isla.route_revenue(game.phase, train)).to eq(40)
+            expect(harbor.route_revenue(game.phase, train)).to eq(10)
+          end
+
+          it 'zeroes the cheaper harbor when a wagon extends a route with harbors at both ends' do
+            wagon_train = give_train(minor, '4')
+            game.instance_variable_set(:@round, double(wagon_for_train: { wagon_train.id => depot_train('1w') }))
+            route = double(train: wagon_train, phase: game.phase)
+            fillers = %w[C4 D13 F21].map { |id| game.hex_by_id(id).tile.cities.first }
+            [[isla, *fillers, harbor], [harbor, *fillers, isla]].each do |stops|
+              expect(stops.sum(&:visit_cost)).to eq(wagon_train.distance + 1)
+              expect(game.send(:extended_harbor_revenue, route, stops)).to eq(10)
+            end
+          end
+        end
+
         describe '#pay_fc_for_unshipped_cubes' do
           let(:minor_a) { minor }
           let(:minor_b) { game.corporations.find { |c| c.type == :minor && c != minor_a } }

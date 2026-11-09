@@ -118,7 +118,6 @@ module Engine
           self.class::SUGAR_CANE_HEXES.include?(hex.id)
         end
 
-        # TODO: Isla de Tesoros (20/40) special case
         def harbor?(stop)
           stop.hex.tile.icons.any? { |icon| icon.name == 'anchor' }
         end
@@ -145,8 +144,6 @@ module Engine
           return 0 unless stops.sum(&:visit_cost) > route.train.distance
 
           # The wagon-extended harbor scores zero (rule VII.10); with two harbors zero the cheaper.
-          # TODO: .min nulls the wrong harbor once harbor values differ (Isla de Tesoros 20/40);
-          # today all harbors are 10, so .min is correct. Belongs in the Isla follow-up PR.
           stops.select { |s| harbor?(s) }.map { |s| s.route_revenue(route.phase, route.train) }.min || 0
         end
 
