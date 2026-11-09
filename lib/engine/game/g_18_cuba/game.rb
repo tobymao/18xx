@@ -104,7 +104,7 @@ module Engine
           # Minors operate before majors per game rules.
           floated = @corporations.select(&:floated?)
           minors, majors = floated.partition { |c| c.type == :minor }
-          minors.sort_by { |c| minor_operating_sort_key(c) } + majors.sort
+          minors.sort_by { |c| minor_operating_sort_key(c) } + majors.sort + [@fc]
         end
 
         def operating_round(round_num)
@@ -113,15 +113,15 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
-            Engine::Step::BuyCompany,
+            G18Cuba::Step::BuyCompany,
             Engine::Step::HomeToken,
             G18Cuba::Step::Track,
-            Engine::Step::Token,
+            G18Cuba::Step::Token,
             G18Cuba::Step::Route,
             G18Cuba::Step::Dividend,
             G18Cuba::Step::DiscardTrain,
             G18Cuba::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G18Cuba::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
