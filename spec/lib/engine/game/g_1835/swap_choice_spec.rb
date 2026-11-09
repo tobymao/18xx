@@ -25,7 +25,7 @@ describe Engine::Game::G1835::Game do
 
       expect(game.current_entity).to eq player_1
       expect(game.round.active_step).to be_a(Engine::Game::G1835::Step::SwapChoice)
-      game.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'Keep one 10% cert')).maybe_raise!
+      game.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'keep_one')).maybe_raise!
       expect(player_1.shares_of(prussian).count { |share| share.percent == 5 }).to be 0
       expect(player_1.percent_of(prussian)).to be 40
       expect(player_3.shares_of(prussian).count { |share| share.percent == 5 }).to be 4
@@ -53,7 +53,7 @@ describe Engine::Game::G1835::Game do
 
       expect(game.current_entity).to eq player_1
       expect(game.round.active_step).to be_a(Engine::Game::G1835::Step::SwapChoice)
-      game.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'Swap for two 5% certs')).maybe_raise!
+      game.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'swap_for_two')).maybe_raise!
       expect(player_1.shares_of(prussian).count { |share| share.percent == 5 }).to be 2
       expect(player_1.percent_of(prussian)).to be 40
       expect(player_3.shares_of(prussian).count { |share| share.percent == 5 }).to be 2
@@ -97,7 +97,7 @@ describe Engine::Game::G1835::Game do
 
       expect(baden.owner).to eq player_2
       expect(game.round.active_step).to be_a(Engine::Game::G1835::Step::SwapChoice)
-      game.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'Keep one 20% cert')).maybe_raise!
+      game.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'keep_one')).maybe_raise!
 
       expect(player_2.percent_of(baden)).to be 40
       expect(player_3.percent_of(baden)).to be 30
@@ -124,7 +124,7 @@ describe Engine::Game::G1835::Game do
 
       expect(baden.owner).to eq player_2
       expect(game.round.active_step).to be_a(Engine::Game::G1835::Step::SwapChoice)
-      game.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'Swap for two 10% certs')).maybe_raise!
+      game.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'swap_for_two')).maybe_raise!
 
       expect(player_2.percent_of(baden)).to be 40
       expect(player_3.percent_of(baden)).to be 30

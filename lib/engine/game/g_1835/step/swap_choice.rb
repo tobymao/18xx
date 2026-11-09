@@ -40,7 +40,10 @@ module Engine
           end
 
           def choices
-            ["Keep one #{denominations[0]}% cert", "Swap for two #{denominations[1]}% certs"]
+            choices = {}
+            choices['keep_one'] = "Keep one #{denominations[0]}% cert"
+            choices['swap_for_two'] = "Swap for two #{denominations[1]}% certs"
+            choices
           end
 
           def choice_name
@@ -51,12 +54,14 @@ module Engine
             choice = action.choice
             entity = action.entity
 
-            if choice.include?('Swap')
+            case choice
+            when 'swap_for_two'
               @log << "#{entity.name} chooses to swap for two #{denominations[1]}% certificates"
               @game.share_pool.swap(@game.swap_location, @game.swap_other_player, @game.swap_corporation, denominations[0])
             else
               @log << "#{entity.name} chooses to keep the #{denominations[0]}% certificate"
             end
+
             @game.swap_choice_player = nil
             @game.swap_location = nil
             @game.swap_other_player = nil
