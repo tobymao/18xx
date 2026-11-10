@@ -11,12 +11,24 @@ module Engine
           include Engine::Step::HalfPay
 
           def actions(entity)
-            return [] if %i[minor national].include?(entity.type)
+            return [] if %i[minor national].include?(entity.type) || @game.repeat_last_revenue?(entity)
+
+            super
+          end
+
+          def total_revenue
+            return @game.last_revenue_info(current_entity).revenue if current_entity && @game.repeat_last_revenue?(current_entity)
 
             super
           end
 
           def skip!
+            if @game.repeat_last_revenue?(current_entity)
+              kind = @game.last_revenue_info(current_entity).dividend_kind
+              @log << "#{current_entity.name} repeats its revenue from OR #{@game.turn}.#{@round.round_num - 1}"
+              return process_dividend(Action::Dividend.new(current_entity, kind: kind))
+            end
+
             case current_entity.type
             when :minor
               kind = total_revenue.zero? ? 'withhold' : 'half'

@@ -8,11 +8,17 @@ module Engine
       module Step
         class Route < Engine::Step::Route
           def actions(entity)
+            return [] if @game.repeat_last_revenue?(entity)
+
             actions = super
             return actions if actions.empty? || @game.double_head_candidates(entity).size < 2
             return actions if !@game.loading && !@game.orient_express_reachable?(entity)
 
             actions + %w[double_head_trains]
+          end
+
+          def log_skip(entity)
+            super unless @game.repeat_last_revenue?(entity)
           end
 
           def help

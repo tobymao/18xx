@@ -34,6 +34,11 @@ module Engine
             desc: 'No concessions; £5,200 starting capital (PB 5.2)',
             players: [3, 4, 5, 6, 7],
           },
+          {
+            sym: :long_endgame,
+            short_name: 'Long Endgame',
+            desc: 'Play the final two ORs as regular ORs',
+          },
         ].freeze
       end
     end

@@ -51,9 +51,9 @@ describe 'G18OE setup' do
     expect(rule[:players]).to eq([3, 4, 5, 6, 7])
   end
 
-  it 'offers Medium Start in the base game but not UK-France' do
-    expect(Engine::Game::G18OE::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq([:medium_start])
-    expect(Engine::Game::G18OEUKFR::Meta::OPTIONAL_RULES).to eq([])
+  it 'offers Medium Start in the base game but not UK-France, and Long Endgame in both' do
+    expect(Engine::Game::G18OE::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq(%i[medium_start long_endgame])
+    expect(Engine::Game::G18OEUKFR::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq([:long_endgame])
   end
 
   it "holds £54,000 between the bank and the players' starting capital (§3.1, §3.3)" do

@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_train'
+require_relative 'skip_abbreviated_round'
 
 module Engine
   module Game
     module G18OE
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          include SkipAbbreviatedRound
+
           def must_buy_train?(entity)
             entity.floated? && entity.trains.empty? && (!@game.fulfilled_train_obligation?(entity) || entity.type == :major)
           end
