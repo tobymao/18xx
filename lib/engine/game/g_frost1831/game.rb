@@ -5,7 +5,9 @@ require_relative 'parliament_movement'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'tiles'
+require_relative 'round/stock'
 require_relative 'step/buy_cert'
+require_relative 'step/dividend'
 require_relative '../base'
 
 module Engine
@@ -291,12 +293,18 @@ module Engine
           end
         end
 
-        def log_share_price(entity, from, steps = nil, log_steps: false)
-          super
+        def share_price_changed(entity, from)
           return if entity.share_price == from
 
           claim_first_to_arrive_cell(entity, entity.share_price)
           update_ownership_limit_for(entity)
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
+          corporation = bundle.corporation
+          from = corporation.share_price
+          super
+          share_price_changed(corporation, from)
         end
 
         def claim_first_to_arrive_cell(entity, price)
@@ -331,7 +339,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          GFrost1831::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::BuySellParShares,
           ])
@@ -344,7 +352,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            GFrost1831::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],

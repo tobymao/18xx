@@ -13,6 +13,12 @@ module Engine
 
             {}
           end
+
+          def change_share_price(entity, payout)
+            from = entity.share_price
+            super
+            @game.share_price_changed(entity, from)
+          end
         end
       end
     end

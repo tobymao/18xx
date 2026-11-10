@@ -51,7 +51,7 @@ module Engine
           def move_right(corporation)
             from = corporation.share_price
             market.move_right(corporation)
-            game.log_share_price(corporation, from)
+            game.share_price_changed(corporation, from)
           end
 
           it 'marks seven cells' do
