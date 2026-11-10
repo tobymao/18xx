@@ -34,15 +34,8 @@ module Engine
           def lay_tile_action(action)
             tile = action.tile
             old_tile = action.hex.tile
-            metropolis = @game.metropolis_tile?(tile)
             points_available = get_tile_lay(action.entity) - @points_used
-            points_cost = if tile.color != :yellow && metropolis
-                            4
-                          elsif (tile.color == :yellow && metropolis) || tile.color != :yellow
-                            2
-                          else
-                            1
-                          end
+            points_cost = @game.tile_point_cost(action.entity, old_tile: old_tile)
             raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && points_cost > points_available
             raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && points_cost > points_available
 
@@ -65,16 +58,11 @@ module Engine
             connected = hex_neighbors(entity, hex)
             return nil unless connected
 
-            points_available = get_tile_lay(entity) - @points_used
-            return nil unless points_available
+            return nil if hex.tile.color == :blue
 
-            metropolis = @game.metropolis_hex?(hex)
-            color = hex.tile.color
-            return nil if color == :blue
-            return nil if color == :white && metropolis && points_available < 2
-            return nil if color == :white && points_available < 1
-            return nil if color != :white && metropolis && points_available < 4
-            return nil if color != :white && points_available < 2
+            points_available = get_tile_lay(entity) - @points_used
+            cost = @game.tile_point_cost(entity, old_tile: hex.tile)
+            return nil if cost > points_available
 
             connected
           end

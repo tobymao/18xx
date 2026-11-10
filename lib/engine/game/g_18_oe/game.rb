@@ -442,6 +442,7 @@ module Engine
           setup_wcf_placeholder!
           setup_minor_k!
           @minor_g_ability = corporation_by_id('G')&.abilities&.first
+          @minor_b_ability = corporation_by_id('B')&.abilities&.first
         end
 
         def setup_minor_k!
@@ -680,6 +681,14 @@ module Engine
           return budget if entity.type == :national
 
           entity.abilities.include?(@minor_g_ability) ? budget + 2 : budget
+        end
+
+        def tile_point_cost(entity, old_tile:)
+          upgrade = old_tile.color != :white
+          return 1 if upgrade && old_tile.cities.empty? && entity.abilities.include?(@minor_b_ability)
+
+          base_cost = upgrade ? 2 : 1
+          metropolis_hex?(old_tile.hex) ? base_cost * 2 : base_cost
         end
 
         def can_buy_train_from_others?
