@@ -404,12 +404,13 @@ module Engine
           @share_pool.sell_shares(bundle)
         end
 
-        def num_certs(entity)
+        def num_certs(entity, price_protecting: false)
           entity.shares.sum do |s|
             next 0 unless s.corporation.counts_for_limit
             next 0 unless s.counts_for_limit
-            # Don't count shares that have been sold and will go to yellow unless protected
-            next 0 if @sell_queue.any? do |bundle, _|
+            # Don't count shares that have been sold and will go to yellow unless protected.
+            # While price protecting, DO count them, since protecting keeps them white.
+            next 0 if !price_protecting && @sell_queue.any? do |bundle, _|
               bundle.corporation == s.corporation &&
                 !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :down)).counts_for_limit
             end
