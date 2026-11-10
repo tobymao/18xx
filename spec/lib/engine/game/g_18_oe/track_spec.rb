@@ -156,4 +156,120 @@ describe 'G18OE lay track (§11.1)' do
     expect([cost('Z23', e), cost('X23', e)]).to eq([15, 96])
     expect(cost('E52', minor_in('E', 'SC'))).to eq(22)
   end
+
+  describe 'Minor B upgrade discount (§15.2, §10.5)' do
+    def major_with_b!
+      major = start_major!(game, 'LNWR', player)
+      game.add_minor_charter!(game.corporation_by_id('B'), major)
+      major
+    end
+
+    def prepared_step(entity, hex_id, tile_name, points_left)
+      game.phase.next!
+      hex = game.hex_by_id(hex_id)
+      hex.lay(game.tiles.find { |t| t.name == tile_name }) if tile_name
+      round = operating!
+      step = round.active_step
+      step.instance_variable_set(:@points_used, game.tile_point_budget(entity) - points_left)
+      [round, step, hex]
+    end
+
+    def upgrade!(round, entity, hex, tile_name)
+      round.active_step.upgradeable_tiles(entity, hex)
+      tile = game.tiles.find { |t| t.name == tile_name }
+      round.process_action(Engine::Action::LayTile.new(entity, tile: tile, hex: hex, rotation: tile.legal_rotations.first))
+    end
+
+    it 'charges B one point for a plain track upgrade' do
+      major = major_with_b!
+      round, step, hex = prepared_step(major, 'J29', '7', 3)
+      upgrade!(round, major, hex, '80')
+
+      expect(step.description).to eq('2 track points')
+    end
+
+    it 'charges B one point for a town upgrade' do
+      major = major_with_b!
+      round, step, hex = prepared_step(major, 'J29', '3', 3)
+      upgrade!(round, major, hex, '143')
+
+      expect(step.description).to eq('2 track points')
+    end
+
+    it 'lets B upgrade plain track with one tile point left' do
+      major = major_with_b!
+      round, step, hex = prepared_step(major, 'J29', '7', 1)
+
+      expect(step.tracker_available_hex(major, hex)).not_to be_nil
+      upgrade!(round, major, hex, '80')
+      expect(game.hex_by_id('J29').tile.name).to eq('80')
+    end
+
+    it 'does not let B upgrade with no tile points left' do
+      major = major_with_b!
+      _round, step, hex = prepared_step(major, 'J29', '7', 0)
+
+      expect(step.tracker_available_hex(major, hex)).to be_nil
+    end
+
+    it 'keeps candidate tile rotations when checking hex availability' do
+      major = major_with_b!
+      round, step, hex = prepared_step(major, 'J29', '7', 3)
+      step.upgradeable_tiles(major, hex)
+      tile = game.tiles.find { |t| t.name == '80' }
+      rotations = tile.legal_rotations
+      expect(rotations.size).to be > 1
+      tile.rotate!(rotations.last)
+
+      round.active_step.available_hex(major, hex)
+
+      expect(tile.rotation).to eq(rotations.last)
+    end
+
+    it 'keeps the two point upgrade cost for a railroad without B' do
+      major = start_major!(game, 'LNWR', player)
+      round, step, hex = prepared_step(major, 'J29', '7', 1)
+
+      expect(step.tracker_available_hex(major, hex)).to be_nil
+      step.instance_variable_set(:@points_used, 3)
+      upgrade!(round, major, hex, '80')
+      expect(step.description).to eq('1 track points')
+    end
+
+    it 'keeps the two point cost for B on a city upgrade' do
+      major = major_with_b!
+      round, step, hex = prepared_step(major, 'J27', nil, 1)
+
+      expect(step.tracker_available_hex(major, hex)).to be_nil
+      step.instance_variable_set(:@points_used, 3)
+      upgrade!(round, major, hex, '205')
+      expect(step.description).to eq('1 track points')
+    end
+
+    it 'keeps the four point cost for B on a metropolis upgrade' do
+      major = major_with_b!
+      _round, step, hex = prepared_step(major, 'R55', nil, 3)
+      hex.lay(game.tiles.find { |t| t.name == 'OE4' })
+
+      expect(step.tracker_available_hex(major, hex)).to be_nil
+    end
+
+    it 'charges B one point for a yellow tile' do
+      major = major_with_b!
+      round, step, = prepared_step(major, 'J29', nil, 6)
+      lay_first_legal!(game, round, 'J29')
+
+      expect(step.description).to eq('5 track points')
+    end
+
+    it 'gives the discount only to the major that received B (§10.5)' do
+      major = major_with_b!
+      other = start_major!(game, 'SB', player)
+      _round, step, hex = prepared_step(major, 'J29', '7', 1)
+
+      expect(step.tracker_available_hex(major, hex)).not_to be_nil
+      step.instance_variable_set(:@points_used, game.tile_point_budget(other) - 1)
+      expect(step.tracker_available_hex(other, hex)).to be_nil
+    end
+  end
 end
