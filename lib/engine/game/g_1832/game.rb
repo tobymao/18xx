@@ -489,7 +489,7 @@ module Engine
           new_sp = merger_determine_merged_share_price(corp1, corp2)
           raise GameError, 'Cannot determine system share price' unless new_sp
 
-          stock_market.set_par(system, new_sp)
+          par_corporation(system, new_sp)
           system.ipoed = true
 
           # corp1 is the initiator. Capture its president before the presidencies are converted;
