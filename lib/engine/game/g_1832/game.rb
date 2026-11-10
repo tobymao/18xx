@@ -154,6 +154,7 @@ module Engine
           @reissued = {}
           @coal_token_counter = 5
           @miami_has_been_run = false
+          @miami_first_run_round = nil
           @p4_invested_in = nil
           @final_merger_triggered = false
 
@@ -358,9 +359,17 @@ module Engine
           found ? revenue : 0
         end
 
-        # Miami first-run rule: worth $0 the first time any corporation runs there prior to phase 5
+        # Miami first-run rule: before phase 5, Miami is worth $0 to every corporation for the whole
+        # operating round in which it is first reached.
         def miami_scores_zero?
-          phase.status.include?('first_miami_run_is_zero') && !@miami_has_been_run
+          return false unless phase.status.include?('first_miami_run_is_zero')
+
+          @miami_first_run_round.nil? || @miami_first_run_round == @round_counter
+        end
+
+        def record_miami_run!
+          @miami_has_been_run = true
+          @miami_first_run_round ||= @round_counter
         end
 
         def miami_revenue(route, stops)
