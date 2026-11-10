@@ -29,10 +29,10 @@ module Engine
           return unless previous_president.shares_of(corporation).map(&:percent).any? { |p| p == president_percent }
           return unless president.shares_of(corporation).map(&:percent).count { |p| p == president_percent / 2 } >= 2
 
-          @game.swap_choice_player = previous_president
-          @game.swap_location = swap_to
-          @game.swap_other_player = president
-          @game.swap_corporation = corporation
+          @game.round.swap_choice_player = previous_president
+          @game.round.swap_location = swap_to
+          @game.round.swap_other_player = president
+          @game.round.swap_corporation = corporation
           @game.log << "Presidency swapped for cert of #{president_percent}% by default.
                         #{swap_to.name} may choose to swap for two shares of #{president_percent / 2}% instead."
         end
