@@ -21,7 +21,7 @@ module Engine
             return if @game.miami_has_been_run
 
             ran_miami = @round.routes.any? do |route|
-              route.stops.any? { |stop| stop.hex.id == @game.class::MIAMI_HEX }
+              route.stops.any? { |stop| stop.hex.id == @game.class::MIAMI_HEX_ID }
             end
 
             @game.miami_has_been_run = true if ran_miami
