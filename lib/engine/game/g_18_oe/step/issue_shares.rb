@@ -49,8 +49,10 @@ module Engine
           end
 
           def pass_description
-            'Skip (Buy/Sell Shares)'
+            can_buy_abandoned_minor?(current_entity) ? 'Skip (Issue Shares/Buy Minor)' : 'Skip (Issue Shares)'
           end
+
+          def log_skip(_entity); end
 
           def process_choose(action)
             entity = action.entity
