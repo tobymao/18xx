@@ -508,6 +508,10 @@ module Engine
           @optional_rules.include?(:medium_start)
         end
 
+        def long_endgame?
+          @optional_rules.include?(:long_endgame)
+        end
+
         def concessions?
           !medium_start? && players.size > 2
         end
@@ -898,6 +902,26 @@ module Engine
 
         def final_operating_rounds
           @final_set_extended ? self.class::EXTENDED_FINAL_OPERATING_ROUNDS : super
+        end
+
+        def abbreviated_operating_round?(round_num = @round.round_num)
+          !long_endgame? && @turn == @final_turn && round_num == @operating_rounds
+        end
+
+        def repeat_last_revenue?(entity)
+          return false unless abbreviated_operating_round?
+          return false unless (info = last_revenue_info(entity))
+
+          ran = info.routes.keys.flat_map { |train| component_trains(train) }
+          ran.map(&:id).sort == entity.trains.map(&:id).sort
+        end
+
+        def last_revenue_info(entity)
+          entity.operating_history[[@turn, @round.round_num - 1]]
+        end
+
+        def component_trains(train)
+          train.sym.include?('_') ? train.sym.split('_').map { |id| train_by_id(id) } : [train]
         end
 
         def place_major_par_marker!(corporation)

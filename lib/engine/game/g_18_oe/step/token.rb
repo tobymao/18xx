@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/token'
+require_relative 'skip_abbreviated_round'
 
 module Engine
   module Game
     module G18OE
       module Step
         class Token < Engine::Step::Token
+          include SkipAbbreviatedRound
+
           def actions(entity)
+            return [] if skip?
             return ACTIONS if entity == current_entity && !@round.tokened && @game.abilities(entity, :token)
 
             super
