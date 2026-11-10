@@ -69,10 +69,16 @@ module Engine
             act(Action::Pass) until game.round.active_step.is_a?(G18Cuba::Step::BuyTrain)
             train = game.round.active_step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
             act(Action::BuyTrain, train: train, price: train.price)
+            or_key = [game.turn, game.round.round_num]
+            fc_revenue = game.fc_revenue
+            bank_cash = game.bank.cash
             act(Action::Pass) while game.round.is_a?(Engine::Round::Operating) && game.current_entity != game.fc
 
             expect(game.round).to be_a(Engine::Round::Stock)
             expect(game.fc.operating_history).not_to be_empty
+            expect(game.fc.operating_history[or_key].revenue).to eq(fc_revenue)
+            expect(game.bank.cash).to eq(bank_cash)
+            expect(game.fc.share_price.price).to eq(55)
             expect(game.log.map(&:message)).not_to include(a_string_matching(/\AFC .*skips/))
           end
         end
@@ -138,26 +144,17 @@ module Engine
             expect(game.fc.tokens.count { |t| !t.used }).to eq(6)
           end
 
-          it 'pays the FC its best city revenues up to the reach of its top train' do
+          it 'sums the FC best city revenues up to the reach of its top train' do
             float_major!(ms)
             game.phase.next!
 
             lay('B9', :yellow)
-            fc_cash = game.fc.cash
             lay('B9', :green)
-            expect(game.fc.cash).to eq(fc_cash + 30)
             expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7 B9])
-
-            fc_cash = game.fc.cash
-            game.pay_fc_city_revenue
-            expect(game.fc.cash).to eq(fc_cash + 30)
+            expect(game.fc_city_revenue).to eq(30)
 
             game.export_train_to_fc!
-            fc_cash = game.fc.cash
-            bank_cash = game.bank.cash
-            game.pay_fc_city_revenue
-            expect(game.fc.cash).to eq(fc_cash + 60)
-            expect(game.bank.cash).to eq(bank_cash - 60)
+            expect(game.fc_city_revenue).to eq(60)
           end
         end
       end
