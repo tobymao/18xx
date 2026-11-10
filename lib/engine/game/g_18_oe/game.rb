@@ -439,7 +439,26 @@ module Engine
 
           setup_patronage_tiles!
           setup_wcf_placeholder!
+          setup_minor_k!
           @minor_g_ability = corporation_by_id('G')&.abilities&.first
+        end
+
+        def setup_minor_k!
+          mail = company_by_id('MAIL')
+          minor_k = corporation_by_id('K')
+          mail.owner = minor_k
+          minor_k.companies << mail
+        end
+
+        def initial_auction_companies
+          @companies.select(&:auction_row)
+        end
+
+        def companies_to_payout(ignore: [])
+          super.reject do |company|
+            owner = company.owner
+            owner.corporation? && (!owner.floated? || abandoned_minor?(owner))
+          end
         end
 
         def setup_wcf_placeholder!
@@ -781,6 +800,11 @@ module Engine
           minor.abilities.dup.each do |ability|
             minor.remove_ability(ability)
             major.add_ability(ability)
+          end
+          minor.companies.dup.each do |company|
+            minor.companies.delete(company)
+            company.owner = major
+            major.companies << company
           end
         end
 
