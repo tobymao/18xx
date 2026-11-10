@@ -35,6 +35,15 @@ module Engine
             super.merge(combined_trains: {}, orient_express_revenue: nil)
           end
 
+          def double_head_trains_title
+            'Combine trains'
+          end
+
+          def double_head_trains_description
+            'Combine two or more non-permanent trains (levels 2, 3 and 4) into one train to make an Orient Express run. '\
+              'A combined train must run an Orient Express route. Use Undo to cancel a combination.'
+          end
+
           def setup
             super
             @round.combined_trains = {}
