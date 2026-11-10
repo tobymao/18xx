@@ -61,10 +61,15 @@ module View
           },
         }
 
-        description = 'Each turn, trains may be added together to run as a single longer train for that turn.'
+        title = @step.respond_to?(:double_head_trains_title) ? @step.double_head_trains_title : 'Double-Head Trains'
+        description = if @step.respond_to?(:double_head_trains_description)
+                        @step.double_head_trains_description
+                      else
+                        'Each turn, trains may be added together to run as a single longer train for that turn.'
+                      end
 
         h(:div, div_props, [
-            h(:h3, 'Double-Head Trains'),
+            h(:h3, title),
             h('div.small_font', description),
             h(:table, table_props, [
                 h(:thead, [
