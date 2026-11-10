@@ -488,9 +488,104 @@ module Engine
           @skip_paths
         end
 
+        def merge_corporations
+          @corporations.select { |c| !system?(c) && c.floated? }
+        end
+
+        # ── Merger helpers ────────────────────────────────────────────
+
+        def available_systems
+          @corporations.select { |c| system?(c) && !c.floated? }
+        end
+
+        def can_form_system?(corp1, corp2)
+          return false if available_systems.empty?
+
+          system_formation_qualifier?(corp1, corp2)
+        end
+
+        def system_formation_qualifier?(corp1, corp2)
+          @players.any? do |p|
+            p.shares_of(corp1).sum(&:percent) + p.shares_of(corp2).sum(&:percent) >= 40
+          end
+        end
+
+        def corps_connected?(corp_a, corp_b)
+          hexes_b = network_hexes(corp_b)
+          return false if hexes_b.empty?
+
+          hexes_a = network_hexes(corp_a)
+          return false if hexes_a.empty?
+
+          hexes_b_lookup = hexes_b.each_with_object({}) { |h, acc| acc[h] = true }
+
+          visited = {}
+          queue = hexes_a
+          until queue.empty?
+            hex = queue.shift
+            next if visited[hex]
+
+            visited[hex] = true
+            return true if hexes_b_lookup.key?(hex)
+
+            hex.neighbors.each do |edge, neighbor|
+              next if visited[neighbor]
+              next unless hex_is_connected(hex, edge, neighbor)
+
+              queue << neighbor
+            end
+          end
+          false
+        end
+
+        def hex_is_connected(hex, edge, neighbor)
+          hex.tile.paths.any? { |p| p.exits.include?(edge) } &&
+            neighbor.tile.paths.any? { |p| p.exits.include?(hex.invert(edge)) }
+        end
+
+        def takeover_cost(target)
+          target_par = target.par_price&.price || target.share_price.price
+          target_mkt = target.share_price.price
+
+          cost = 0
+          target.shares.select { |s| s.owner == target }.each do |s|
+            cost += (s.percent.to_f / 10 * target_par).round
+          end
+
+          @share_pool.shares_of(target).each do |s|
+            cost += (s.percent.to_f / 10 * target_mkt).round
+          end
+
+          @players.each do |player|
+            player.shares_of(target).each do |s|
+              cost += (s.percent.to_f / 10 * target_mkt).round
+            end
+          end
+
+          cost
+        end
+
+        def can_afford_takeover?(buyer, target)
+          president = buyer.owner
+          cost = takeover_cost(target)
+
+          # Compute president's max liquidity directly: avoids sellable_bundles →
+          # active_step recursion that occurs during merger-round blocking? checks.
+          president_liquidity = president.cash + president.shares.sum do |s|
+            next 0 unless (price = s.corporation.share_price&.price)
+
+            (s.percent.to_f / 10.0 * price).floor
+          end
+          buyer.cash + president_liquidity >= cost
+        end
+
         # ── System formation (§11.6) ──────────────────────────────────
 
         def perform_system_formation(corp1, corp2, system)
+          unless system_formation_qualifier?(corp1, corp2)
+            raise GameError, "No player holds 40% of #{corp1.name} and #{corp2.name} combined"
+          end
+
           @log << "#{corp1.name} and #{corp2.name} form #{system.name}"
 
           # 1. Set par & share price (average of two, rounded to nearest, capped at $275 per §11.6.3)
@@ -524,6 +619,7 @@ module Engine
           transfer_all_assets(corp2, system)
 
           # 7. Replace map tokens (remove duplicates, assign remainder to system)
+          system.tokens.clear
           transfer_tokens(corp1, system)
           transfer_tokens(corp2, system)
 
@@ -709,7 +805,12 @@ module Engine
           to_corp.coal_token = true
         end
 
-        def transfer_tokens(from_corp, to_corp, takeover = false)
+        # to_corp inherits every token of from_corp, on the map or in supply, in addition to its own.
+        # Tokens on the map replace from_corp's, using to_corp's supply; a token in a city where to_corp
+        # already has one comes off the map and stays in to_corp's supply.
+        def transfer_tokens(from_corp, to_corp)
+          from_corp.tokens.size.times { to_corp.tokens << Engine::Token.new(to_corp, price: 100) }
+
           to_corp_cities = to_corp.tokens.select(&:city).each_with_object({}) { |t, h| h[t.city] = true }
           from_corp.tokens.select(&:city).each do |token|
             city = token.city
