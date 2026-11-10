@@ -249,6 +249,15 @@ module Engine
           raise GameError, 'Corporation must own coal token to enter West Virginia Coalfields'
         end
 
+        def event_final_merger_chance!
+          @log << '-- Event: Final merger and takeover opportunity --'
+          @final_merger_triggered = true
+        end
+
+        def final_merger_triggered?
+          @final_merger_triggered
+        end
+
         def event_remove_tokens!
           removals = Hash.new { |h, k| h[k] = {} }
 
