@@ -72,6 +72,12 @@ module Engine
             super
           end
 
+          def sellable_bundle?(bundle)
+            return super unless bundle.corporation.type == :national
+
+            @game.share_pool.fit_in_bank?(bundle)
+          end
+
           # Skip aged downgrade variants and over-priced plus variants when locating the cheapest.
           def names_of_cheapest_variants(train)
             buyable = train.variants.reject { |_, v| v[:event_downgrade_variant] || v[:price] > train.price }
