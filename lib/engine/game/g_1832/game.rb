@@ -536,6 +536,53 @@ module Engine
           @log << "#{system.name} formed at #{format_currency(new_sp.price)}"
         end
 
+        # ── Takeover (§11.7) ─────────────────────────────────────────
+
+        def perform_takeover(buyer, target)
+          @log << "#{buyer.name} takes over #{target.name}"
+
+          target_mkt = target.share_price.price
+          total_cost = takeover_cost(target)
+
+          player_payments = Hash.new(0)
+          @players.each do |player|
+            player.shares_of(target).each do |s|
+              player_payments[player] += (s.percent.to_f / 10 * target_mkt).round
+            end
+          end
+
+          if buyer.cash < total_cost
+            needed    = total_cost - buyer.cash
+            president = buyer.owner
+            if president.cash < needed
+              raise GameError, "#{president.name} cannot fund the takeover (needs #{format_currency(needed)})"
+            end
+
+            president.spend(needed, buyer)
+            @log << "#{president.name} contributes #{format_currency(needed)} to fund takeover"
+          end
+
+          player_payments.each do |player, amount|
+            buyer.spend(amount, player) if amount.positive?
+          end
+
+          bank_cost = total_cost - player_payments.values.sum
+          buyer.spend(bank_cost, @bank) if bank_cost.positive?
+
+          @log << "#{buyer.name} pays #{format_currency(total_cost)} to acquire #{target.name}"
+
+          transfer_all_assets(target, buyer)
+
+          transfer_tokens(target, buyer)
+
+          close_corporation(target)
+
+          # §11.7: cert limit moves one column right per shell removed.
+          # close_corporation already applied one step; systems (2 shells) need a second.
+          tighten_cert_limit_by_one if system?(target)
+          clear_graph_for_entity(buyer)
+        end
+
         private
 
         def merger_determine_merged_share_price(corp1, corp2)
@@ -668,15 +715,30 @@ module Engine
             city = token.city
             if to_corp_cities.key?(city)
               token.remove!
-              to_corp.tokens << Engine::Token.new(to_corp, price: 100) unless takeover
-              @log << "Duplicate token in #{city.hex.id} returned to #{to_corp.name}'s charter"
+              @log << "Duplicate token in #{city.hex.id} returned to #{to_corp.name}'s supply"
             else
               to_corp_cities[city] = true
-              new_tok = to_corp.next_token
-              new_tok ||= Engine::Token.new(to_corp, price: 100).tap { |t| to_corp.tokens << t }
-              token.swap!(new_tok, check_tokenable: false)
+              token.swap!(to_corp.next_token, check_tokenable: false)
             end
           end
+        end
+
+        def tighten_cert_limit_by_one
+          player_count = @players.size
+          limit_table = self.class::CERT_LIMIT[player_count]
+          return unless limit_table.is_a?(Hash)
+
+          virtual_size = @corporations.size - 1
+          tighter = limit_table.reject { |k, _| k.to_i < virtual_size }.min_by(&:first)&.last
+          @cert_limit = tighter if tighter
+        end
+
+        # Falls back to the home hex(es) while no tokens are on the map.
+        def network_hexes(corp)
+          placed = corp.placed_tokens.map(&:hex).compact.uniq
+          return placed unless placed.empty?
+
+          Array(corp.coordinates).map { |coord| hex_by_id(coord) }.compact
         end
       end
     end
