@@ -256,6 +256,25 @@ module Engine
           []
         end
 
+        def shares_for_presidency_swap(shares, num_shares)
+          shares_taken = []
+          num_shares_taken = 0
+
+          # make sure we use the big shares first. We will later offer to swap for smaller shares if possible
+          shares.sort_by(&:percent).reverse_each do |share|
+            break if num_shares_taken >= num_shares
+
+            shares_taken << share
+            num_shares_taken += share.num_shares(ceil: false)
+          end
+
+          if num_shares_taken != num_shares
+            raise GameError, "Cannot find exactly #{num_shares} while search for shares to swap. Found #{num_shares_taken}"
+          end
+
+          shares_taken
+        end
+
         def maybe_ipo_next_block(corporation)
           block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corporation) }
           all_in_block_sold = block.all? { |corp| corp.shares.select(&:buyable).empty? }
