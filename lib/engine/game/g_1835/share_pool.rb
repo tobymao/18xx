@@ -15,15 +15,11 @@ module Engine
             @game.round.swap_location = swap_to
             @game.round.swap_other_player = president
             @game.round.swap_corporation = corporation
-            swap_possible = true
+            @game.log << "Presidency swapped for cert of #{president_percent}% by default.
+                          #{swap_to.name} may choose to swap for two shares of #{president_percent / 2}% instead."
           end
 
           super
-
-          return unless swap_possible
-
-          @game.log << "Presidency swapped for cert of #{president_percent}% by default.
-                          #{swap_to.name} may choose to swap for two shares of #{president_percent / 2}% instead."
         end
 
         def swap(from, to, corporation, percent_to_swap_for)
