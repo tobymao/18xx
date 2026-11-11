@@ -5,7 +5,6 @@ require_relative 'parliament_movement'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'tiles'
-require_relative 'round/stock'
 require_relative 'step/buy_cert'
 require_relative 'step/dividend'
 require_relative '../base'
@@ -300,13 +299,6 @@ module Engine
           update_ownership_limit_for(entity)
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          corporation = bundle.corporation
-          from = corporation.share_price
-          super
-          share_price_changed(corporation, from)
-        end
-
         def claim_first_to_arrive_cell(entity, price)
           return unless price.types.delete(:pays_bonus_1)
 
@@ -339,7 +331,7 @@ module Engine
         end
 
         def stock_round
-          GFrost1831::Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::BuySellParShares,
           ])
