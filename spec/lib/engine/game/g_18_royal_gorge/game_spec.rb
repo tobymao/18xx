@@ -186,4 +186,29 @@ describe Engine::Game::G18RoyalGorge::Game do
       expect(game.finished).to eq(true)
     end
   end
+
+  describe 'post_boston' do
+    it 'does not force a corporation without a route to buy a train' do
+      game = fixture_at_action(106)
+      spp = game.corporation_by_id('SPP')
+
+      expect(game.round.current_entity).to eq(spp)
+      expect(game.round.active_step).to be_a(Engine::Game::G18RoyalGorge::Step::BuyTrain)
+      expect(spp.trains).to be_empty
+      expect(game.must_buy_train?(spp)).to be_falsy
+      expect(game.round.active_step.actions(spp)).to include('pass')
+    end
+
+    it 'still forces a corporation with a route to buy a train' do
+      game = fixture_at_action(136)
+      sf = game.corporation_by_id('SF')
+
+      expect(game.round.current_entity).to eq(sf)
+      expect(game.round.active_step).to be_a(Engine::Game::G18RoyalGorge::Step::BuyTrain)
+      expect(sf.trains).to be_empty
+      expect(game.must_buy_train?(sf)).to eq(true)
+      expect(game.round.active_step.actions(sf)).to include('buy_train')
+      expect(game.round.active_step.actions(sf)).not_to include('pass')
+    end
+  end
 end
