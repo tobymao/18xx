@@ -8,6 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
+        DEPENDS_ON = '1860'
         DEV_STAGE = :prealpha
 
         GAME_TITLE = 'Frost 1831'.freeze
