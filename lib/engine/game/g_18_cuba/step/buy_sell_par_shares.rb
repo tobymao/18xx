@@ -136,7 +136,9 @@ module Engine
           end
 
           def can_dump?(entity, bundle)
-            @game.can_dump?(entity, bundle)
+            return true if bundle.corporation.type == :national
+
+            super
           end
 
           def allow_president_change?(corporation)

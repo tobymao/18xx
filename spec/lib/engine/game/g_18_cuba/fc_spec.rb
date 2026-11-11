@@ -143,6 +143,7 @@ module Engine
             expect(holder.cash).to eq(holder_cash + (revenue * holder.percent_of(fc) / 100))
 
             price = fc.share_price
+            expect(game.value_for_dumpable(holder, fc)).to eq(price.price)
             on_turn(holder, Action::SellShares, shares: holder.shares_of(fc), share_price: price.price, percent: 10)
             expect([fc.share_price, fc.owner, game.share_pool.shares_of(fc).map(&:index)]).to eq([price, nil, [0]])
 
