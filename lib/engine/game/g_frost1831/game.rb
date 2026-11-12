@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'parliament_movement'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'tiles'
 require_relative 'step/buy_cert'
+require_relative 'step/dividend'
 require_relative '../base'
 
 module Engine
@@ -211,6 +213,54 @@ module Engine
           'blizzard' => ['Blizzard', 'Blizzard event active — marked yellow tiles removed'],
         ).freeze
 
+        FACTION_NAMES = {
+          'TEC' => 'Technicians',
+          'GUA' => 'Guardians',
+          'EXP' => 'Expansionists',
+          'LOR' => 'Lords',
+        }.freeze
+
+        OPPOSITES = {
+          'TEC' => 'GUA',
+          'GUA' => 'TEC',
+          'EXP' => 'LOR',
+          'LOR' => 'EXP',
+        }.freeze
+
+        GOVERNMENT_START = [3, 4].freeze
+
+        GOVERNMENT_NEUTRAL_LINES = [3, 4].freeze
+
+        GOVERNMENT_QUADRANTS = {
+          [true, true] => 'TEC',
+          [true, false] => 'LOR',
+          [false, true] => 'EXP',
+          [false, false] => 'GUA',
+        }.freeze
+
+        GOVERNMENT_MIDDLE = 4
+
+        FACTION_INFLUENCE_LIMITS = { '2' => 6, '3' => 6, '4' => 6, '5' => 8, '6' => 8, 'D' => 10 }.freeze
+
+        TURMOIL_INFLUENCE_LEVEL = 2
+
+        REGULATIONS = {
+          'R1' => 'Track Laying',
+          'R2' => 'Track Upgrade',
+          'R3' => 'Corporation Limit',
+          'R4' => 'Favor',
+        }.freeze
+
+        LOOSE = 0
+        NORMAL = 1
+        TIGHT = 2
+
+        REGULATION_COST = 20
+
+        R3_OWNERSHIP_LIMITS = [70, 60, 50].freeze
+
+        NO_CERT_LIMIT_OWNERSHIP = 100
+
         # Track when bank breaks so D train doesn't override it
         def end_now?(after)
           @bank_broken_trigger ||= true if after == :full_or && @bank.broken?
@@ -242,16 +292,28 @@ module Engine
           end
         end
 
-        def log_share_price(entity, from, steps = nil, log_steps: false)
-          super
+        def share_price_changed(entity, from)
+          return if entity.share_price == from
 
-          claim_first_to_arrive_cell(entity, entity.share_price) if entity.share_price != from
+          claim_first_to_arrive_cell(entity, entity.share_price)
+          update_ownership_limit_for(entity)
         end
 
         def claim_first_to_arrive_cell(entity, price)
           return unless price.types.delete(:pays_bonus_1)
 
           @log << "#{entity.name} is first to reach #{format_currency(price.price)}"
+        end
+
+        attr_reader :government_marker, :regulations
+
+        def setup
+          super
+
+          @government_marker = GOVERNMENT_START.dup
+          @faction_influence = Hash.new(0)
+          @parliament_open = false
+          @regulations = REGULATIONS.transform_values { |name| { name: name, position: NORMAL } }
         end
 
         def new_auction_round
@@ -282,11 +344,161 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            GFrost1831::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def parliament_open?
+          @parliament_open
+        end
+
+        def event_parliament_opens!
+          @log << "-- Event: New London's Parliament opens! --"
+          @parliament_open = true
+        end
+
+        def faction_display_name(faction_sym)
+          self.class::FACTION_NAMES[faction_sym] || faction_sym
+        end
+
+        def faction_influence(faction_sym)
+          @faction_influence[faction_sym]
+        end
+
+        def faction_influence_limit
+          self.class::FACTION_INFLUENCE_LIMITS[@phase.name]
+        end
+
+        def faction_influence_gain(faction_sym)
+          limit = faction_influence_limit
+          if @faction_influence[faction_sym] >= limit
+            @log << "#{faction_display_name(faction_sym)} has reached the limit of #{limit} "\
+                    'Influence in Parliament (cube discarded)'
+            return false
+          end
+
+          @faction_influence[faction_sym] += 1
+          true
+        end
+
+        def faction_influence_lose(faction_sym)
+          return false unless @faction_influence[faction_sym].positive?
+
+          @faction_influence[faction_sym] -= 1
+          true
+        end
+
+        def government_neutral?
+          row, col = @government_marker
+          self.class::GOVERNMENT_NEUTRAL_LINES.include?(row) && self.class::GOVERNMENT_NEUTRAL_LINES.include?(col)
+        end
+
+        def governing_faction_sym
+          return if government_neutral?
+
+          row, col = @government_marker
+          middle = self.class::GOVERNMENT_MIDDLE
+          self.class::GOVERNMENT_QUADRANTS[[row < middle, col < middle]]
+        end
+
+        def move_government(faction_sym)
+          row, col = @government_marker
+          destination = ParliamentMovement.move(row, col, faction_sym)
+
+          if destination.nil?
+            @log << "Government marker cannot move from (#{row},#{col}) toward #{faction_display_name(faction_sym)}"
+            return
+          end
+
+          if destination == @government_marker
+            @log << "Government marker already at maximum for #{faction_display_name(faction_sym)}"
+            return
+          end
+
+          @government_marker = destination
+          @log << "Government marker moves toward #{faction_display_name(faction_sym)}"
+        end
+
+        def event_turmoil!
+          @log << '-- Event: Turmoil! --'
+
+          governing = governing_faction_sym
+          unless governing
+            @log << 'Government is neutral — no consequences'
+            return
+          end
+
+          opposition = self.class::OPPOSITES[governing]
+          level = ParliamentMovement.polarization_level(*@government_marker)
+          @log << "Government: #{faction_display_name(governing)} (Level #{level})"
+          @log << "Opposition: #{faction_display_name(opposition)}"
+          return if level < self.class::TURMOIL_INFLUENCE_LEVEL
+
+          @log << "#{faction_display_name(governing)} gains 1 Influence in Parliament" if faction_influence_gain(governing)
+          return unless faction_influence_lose(opposition)
+
+          @log << "#{faction_display_name(opposition)} loses 1 Influence in Parliament"
+        end
+
+        def regulation_value(regulation_id)
+          @regulations[regulation_id][:position]
+        end
+
+        def move_regulation(regulation_id, direction)
+          regulation = @regulations[regulation_id]
+          position = regulation[:position] + (direction == :up ? 1 : -1)
+          regulation[:position] = [[position, self.class::LOOSE].max, self.class::TIGHT].min
+          apply_r3_limits if regulation_id == 'R3'
+        end
+
+        def r3_ownership_limit
+          self.class::R3_OWNERSHIP_LIMITS[regulation_value('R3')]
+        end
+
+        def apply_r3_limits
+          @corporations.each { |corporation| update_ownership_limit_for(corporation) }
+        end
+
+        def update_ownership_limit_for(corporation)
+          corporation.max_ownership_percent =
+            if corporation.share_price&.type == :no_cert_limit
+              self.class::NO_CERT_LIMIT_OWNERSHIP
+            else
+              r3_ownership_limit
+            end
+        end
+
+        def upgrade_cost(tile, hex, entity, spender)
+          cost = super
+          return cost if tile.color == :white
+
+          cost + r2_track_upgrade_cost(tile)
+        end
+
+        def tile_cost_with_discount(tile, hex, entity, spender, cost)
+          discounted = super
+          return discounted unless tile.color == :yellow
+
+          discounted + r1_track_laying_cost
+        end
+
+        def r1_track_laying_cost
+          case regulation_value('R1')
+          when self.class::LOOSE then 0
+          when self.class::NORMAL then @round.num_laid_track.positive? ? self.class::REGULATION_COST : 0
+          else self.class::REGULATION_COST
+          end
+        end
+
+        def r2_track_upgrade_cost(tile)
+          case regulation_value('R2')
+          when self.class::LOOSE then 0
+          when self.class::NORMAL then tile.cities.empty? && tile.towns.empty? ? self.class::REGULATION_COST : 0
+          else self.class::REGULATION_COST
+          end
         end
       end
     end

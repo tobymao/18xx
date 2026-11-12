@@ -1357,6 +1357,7 @@ module Engine
           raise NotImplementedError
         end
         log_share_price(corporation, old_price) if sell_movement(corporation) != :none
+        share_price_changed(corporation, old_price)
       end
 
       def sold_out_increase?(_corporation)
@@ -1370,6 +1371,12 @@ module Engine
       def sold_out_stock_movement(corporation)
         @stock_market.move_up(corporation)
       end
+
+      # Called after a share sale, the end of a stock round and a dividend may
+      # have moved a corporation's share price; `from` is the price before the
+      # move (it can be the current price if nothing moved). Override it for
+      # rules that depend on where the price lands.
+      def share_price_changed(_entity, _from); end
 
       def log_share_price(entity, from, steps = nil, log_steps: false)
         from_price = from.price
