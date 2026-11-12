@@ -329,10 +329,11 @@ describe 'G18OE abandoning a minor (§9.5)' do
       expect(step).not_to be_passed
     end
 
-    it 'ends the step after a sale when nothing can be bought' do
+    it 'keeps the step open after a sale while more shares can be sold' do
       game.close_corporation(minor, quiet: true)
       sell_share!
-      expect(step).to be_passed
+      expect(step).not_to be_passed
+      expect(step.actions(major)).to include('sell_shares')
     end
   end
 
