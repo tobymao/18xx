@@ -272,10 +272,10 @@ describe 'G18OE Orient Express (§12)' do
       expect(game.double_head_candidates(major)).to eq([first_two])
     end
 
-    it 'combines a 2+2, 3 and 2+2 into one 7+4 train' do
+    it 'combines a 2+2, 3 and 2+2 into one 7+4C train' do
       combined = combine!(first_two, three, second_two)
 
-      expect(combined.name).to eq('7+4')
+      expect(combined.name).to eq('7+4C')
       expect(combined.distance).to eq([{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 99 },
                                        { 'nodes' => %w[city offboard town], 'pay' => 7, 'visit' => 7 }])
       expect(combined.owner).to eq(major)
@@ -292,7 +292,7 @@ describe 'G18OE Orient Express (§12)' do
     it 'logs the combination' do
       combine!(first_two, three, second_two)
 
-      expect(game.log.last.message).to eq("#{major.name} combines 2+2, 2+2, 3 into a 7+4 train for the Orient Express")
+      expect(game.log.last.message).to eq("#{major.name} combines 2+2, 2+2, 3 into a 7+4C train for the Orient Express")
     end
 
     it 'rejects combining a non-permanent train with a permanent one' do
