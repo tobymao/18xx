@@ -98,6 +98,16 @@ module Engine
         expect(step.actions(system)).to be_empty
       end
 
+      it 'keeps the turn open for a player who can act only through the system' do
+        hold_in_treasury(20)
+        player_a.spend(player_a.cash, game.bank) if player_a.cash.positive?
+        player_a.shares.dup.each { |share| share.transfer(player_c) unless share.president }
+        act_as(player_a)
+
+        expect(step.actions(system)).to include('buy_shares')
+        expect(step.actions(player_a)).to eq(['pass'])
+      end
+
       it 'refuses a third redemption by a system even if one is submitted' do
         hold_in_treasury(20)
         game.round.redemptions[system] = 2
