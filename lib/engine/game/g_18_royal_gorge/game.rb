@@ -42,7 +42,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
 
         TILE_LAYS = ([{ lay: true, upgrade: true, cost: 0 }] * 6).freeze
-        MUST_BUY_TRAIN = :always
+        MUST_BUY_TRAIN = :route
         CAPITALIZATION = :incremental
         ESTABLISHED = {
           'KP' => 1869,
