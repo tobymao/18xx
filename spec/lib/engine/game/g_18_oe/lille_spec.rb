@@ -185,6 +185,43 @@ describe 'G18OE Lille ferry passage (§11.2.2)' do
     end
   end
 
+  context 'with a second Channel crossing' do
+    let(:p27_code) { 'path=a:4,b:1' }
+
+    def lay_code!(hex_id, code)
+      game.hex_by_id(hex_id).lay(Engine::Tile.from_code("X#{hex_id}", :yellow, code))
+    end
+
+    before do
+      lay_tile!('N31', 'OE33', 0)
+      lay_code!('O30', 'city=revenue:20;path=a:3,b:_0;path=a:0,b:_0')
+      lay_code!('P29', 'path=a:3,b:1')
+      lay_code!('P27', p27_code)
+      lay_code!('P25', 'path=a:4,b:2')
+      lay_code!('O24', 'town=revenue:10;path=a:5,b:_0;path=a:3,b:_0')
+      lay_code!('M26', 'town=revenue:10;path=a:0,b:_0;path=a:4,b:_0')
+      lay_code!('M28', 'city=revenue:30;path=a:1,b:_0;path=a:5,b:_0')
+      lay_code!('O32', 'path=a:2,b:4')
+      fill_lille!
+      token!(west, corp)
+      game.graph.clear
+    end
+
+    it 'passes from London through Lille onto its land sides after reaching Lille overland' do
+      expect(reachable('M28')).to be(true)
+      expect(reachable('O32')).to be(true)
+    end
+
+    context 'when the way back to London crosses a converging exit' do
+      let(:p27_code) { 'path=a:4,b:1;path=a:0,b:1' }
+
+      it 'still opens its land sides after reaching Lille overland' do
+        expect(reachable('M28')).to be(true)
+        expect(reachable('O32')).to be(true)
+      end
+    end
+  end
+
   context 'with the auto-router' do
     let(:east) { game.hex_by_id('O32').tile.cities.first }
     let(:train) { game.trains.find { |t| t.name == '3' && !t.owner.is_a?(Engine::Corporation) } }
