@@ -197,8 +197,10 @@ module Engine
 
         def init_round
           round_num = @draft_round_num || 1
-          G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
+          G1835::Round::Draft.new(self, [
+            G1835::Step::SwapChoice, # we don't actually swap during Draft, but need the round state to be set
+            G1835::Step::Draft,
+            ], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
         end
 
         def new_draft_round
@@ -260,8 +262,7 @@ module Engine
           shares_taken = []
           num_shares_taken = 0
 
-          # make sure we use the big shares first. We will later offer to swap for smaller shares if possible
-          shares.sort_by(&:percent).reverse_each do |share|
+          shares.each do |share|
             break if num_shares_taken >= num_shares
 
             shares_taken << share

@@ -10,10 +10,11 @@ module Engine
           def round_state
             super.merge(
               {
+                swap_presidents_share: nil,
                 swap_choice_player: nil,
                 swap_location: nil,
                 swap_other_player: nil,
-                swap_corporation: nil,
+                swap_for_higher_percentage: true,
               }
             )
           end
@@ -31,7 +32,7 @@ module Engine
           end
 
           def description
-            'Presidency Swap Choice'
+            'Swap choice for Presidency share'
           end
 
           def active?
@@ -52,13 +53,13 @@ module Engine
 
           def choices
             choices = {}
-            choices['keep_one'] = "Keep one #{denominations[0]}% cert"
-            choices['swap_for_two'] = "Swap for two #{denominations[1]}% certs"
+            choices['keep_one'] = "One #{denominations[0]}% cert"
+            choices['swap_for_two'] = "Two #{denominations[1]}% certs"
             choices
           end
 
           def choice_name
-            'Swap for Presidency'
+            "Old director: Choose the shares to receive in exchange for your #{denominations[0]}% presidency share"
           end
 
           def process_choose(action)
@@ -67,22 +68,26 @@ module Engine
 
             case choice
             when 'swap_for_two'
-              @log << "#{entity.name} chooses to swap for two #{denominations[1]}% certificates"
-              @game.share_pool.swap(@round.swap_location, @round.swap_other_player, @round.swap_corporation, denominations[0])
+              @log << "#{entity.name} chooses two #{denominations[1]}% certificates"
+              @round.swap_for_higher_percentage = false
             else
-              @log << "#{entity.name} chooses to keep the #{denominations[0]}% certificate"
+              @log << "#{entity.name} chooses one #{denominations[0]}% certificate"
+              @round.swap_for_higher_percentage = true
             end
+
+            @game.share_pool.change_president(@round.swap_presidents_share, @round.swap_location, @round.swap_other_player,
+                                              @round.swap_choice_player)
 
             @round.swap_choice_player = nil
             @round.swap_location = nil
             @round.swap_other_player = nil
-            @round.swap_corporation = nil
+            @round.swap_presidents_share = nil
           end
 
           private
 
           def denominations
-            @round.swap_corporation == @game.prussian ? [10, 5] : [20, 10]
+            @round.swap_presidents_share.corporation == @game.prussian ? [10, 5] : [20, 10]
           end
         end
       end
