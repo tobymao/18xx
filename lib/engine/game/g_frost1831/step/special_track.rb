@@ -31,7 +31,13 @@ module Engine
           def sold_tile_available?
             ability = @game.abilities(@company, :tile_lay, time: 'sold')
             ability.hexes.any? do |hex_id|
-              !upgradeable_tiles(@company, @game.hex_by_id(hex_id)).empty?
+              hex = @game.hex_by_id(hex_id)
+              potential_tiles(@company, hex).any? do |tile|
+                rotation = tile.rotation
+                legal = !legal_tile_rotations(@company, hex, tile).empty?
+                tile.rotate!(rotation)
+                legal
+              end
             end
           end
         end
