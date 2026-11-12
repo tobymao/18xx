@@ -11,6 +11,27 @@ module Engine
             'Consolidate regionals into majors'
           end
 
+          def help
+            return super if @converting || @converted
+
+            player = current_entity
+            regionals = @game.corporations.select { |c| c.type == :regional && c.president?(player) }
+            requirements = []
+            if over_certificate_limit?(player)
+              requirements << "Get down to the certificate limit (#{@game.cert_limit(player)}): sell shares or close privates"
+            end
+            requirements << "Convert to a major: #{regionals.map(&:name).join(', ')}" unless regionals.empty?
+            requirements.concat(minor_consolidation_help(player, regionals))
+            return [] if requirements.empty?
+
+            heading = if @round.current_actions.empty?
+                        "#{player.name} cannot pass until:"
+                      else
+                        "#{player.name} may end this turn, but cannot pass on a later turn until:"
+                      end
+            [heading] + requirements
+          end
+
           def actions(entity)
             actions = super
             return actions - ['pass'] if entity.corporation?
@@ -51,6 +72,30 @@ module Engine
           end
 
           private
+
+          def minor_consolidation_help(player, regionals)
+            groups = owned_minors(player).group_by do |minor|
+              if !@game.merge_targets(player, minor).empty?
+                @game.merge_offer_majors(minor).empty? ? :merge : :offer_or_merge
+              else
+                regionals.empty? ? :offer_or_abandon : :convert
+              end
+            end
+            groups.map do |requirement, minors|
+              names = minors.map(&:name).join(', ')
+              case requirement
+              when :merge
+                "Merge into one of their majors: #{names}"
+              when :offer_or_merge
+                "Merge into one of their majors or offer to other players: #{names}. "\
+                'If no one offers, they choose which of their majors it merges into.'
+              when :offer_or_abandon
+                "Offer to other players: #{names}. If no one offers, it is abandoned."
+              when :convert
+                "Convert a regional, then merge or offer: #{names}"
+              end
+            end
+          end
 
           def offer_request?(action)
             target = action.target
