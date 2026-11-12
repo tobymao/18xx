@@ -149,7 +149,7 @@ Failures:
          .eval(script, filename: @file)
 ```
 
-1. Look for a file `17849.json` (in the spec folder)
+1. Look for a file `17849.json` (in `public/fixtures/`)
 2. Start a new game in the UI
 3. Import a hotseat game
 4. Copy the file content in the box and click `create`
@@ -161,9 +161,12 @@ Run `docker compose exec rack rake` while a docker instance is running to run ru
 
 Run a specific set of test fixtures using the `-e` flag to `rspec`. This is useful when testing a specific bug or reproducing an issue.
 
-`docker compose exec rack rspec spec/lib/engine/game/fixtures_spec.rb -e '<folder_name> <fixture_name>' [...]`
+`docker compose exec rack rspec spec/lib/engine/game/fixtures -e '<folder_name> <fixture_name>' [...]`
 
-e.g. `docker compose exec rack rspec spec/lib/engine/game/fixtures_spec.rb -e '1860 19354'`
+e.g. `docker compose exec rack rspec spec/lib/engine/game/fixtures -e '1860 19354'`
+
+The fixture tests are split across `spec/lib/engine/game/fixtures/shard_NN_spec.rb` so
+`rake spec_parallel` can run them on every worker; passing the directory runs all shards.
 
 See also `public/fixtures/README.md` for more details on fixture tests and debugging.
 
@@ -177,7 +180,7 @@ sides.
 
 #### Profiling the code
 
-Run `docker compose exec rack rake stackprof[spec/fixtures/18_chesapeake/1277.json]` (or other file) to load and process the json file 1000 times. This will generate a stackprof.dump which can be further analyzed
+Run `docker compose exec rack rake stackprof[public/fixtures/18Chesapeake/1277.json]` (or other file) to load and process the json file 10 times. This will generate a stackprof.dump which can be further analyzed
 
 ```
 stackprof --d3-flamegraph stackprof.dump >stackprof.html
