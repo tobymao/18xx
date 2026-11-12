@@ -134,6 +134,13 @@ module Engine
             expect([game.sold_out?(fc), fc.share_price.price]).to eq([true, 50])
           end
 
+          it 'moves a sold-out FC one space straight to the right when it pays' do
+            buy_fc_shares(10)
+            fc_dividend
+
+            expect(fc.share_price.price).to eq(60)
+          end
+
           it 'pays 10% per share, lets the sole holder sell share 0 at an unchanged price and pays nothing for it in the pool' do
             holder = game.current_entity
             buy_fc_shares(1)
