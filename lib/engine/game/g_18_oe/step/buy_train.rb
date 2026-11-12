@@ -31,7 +31,18 @@ module Engine
             end
           end
 
+          def buyable_train_variants(train, entity)
+            variants = super
+            return variants unless train.owned_by_corporation?
+
+            variants.select { |variant| variant[:name] == train.name }
+          end
+
           def process_buy_train(action)
+            if action.train.owned_by_corporation? && action.variant && action.variant != action.train.name
+              raise GameError, 'A train purchased from another railroad must keep its current type'
+            end
+
             reserved = action.train.name == '2+2' && action.train.from_depot?
             super
             @game.fulfill_train_obligation!(action.entity) if reserved
