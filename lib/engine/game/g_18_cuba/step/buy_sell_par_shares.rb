@@ -134,6 +134,18 @@ module Engine
             # Fallback to default engine rules
             super
           end
+
+          def can_dump?(entity, bundle)
+            return true if bundle.corporation.type == :national
+
+            super
+          end
+
+          def allow_president_change?(corporation)
+            return false if corporation.type == :national
+
+            super
+          end
         end
       end
     end

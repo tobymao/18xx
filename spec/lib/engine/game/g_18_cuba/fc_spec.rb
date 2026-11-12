@@ -83,6 +83,100 @@ module Engine
           end
         end
 
+        describe 'FC shares' do
+          let(:ms) { game.corporation_by_id('MS') }
+          let(:fc) { game.fc }
+
+          def buy_fc_shares(count)
+            count.times { act(Action::BuyShares, shares: fc.ipo_shares.first, share_price: fc.share_price.price) }
+          end
+
+          def play_until
+            until yield
+              step = game.round.active_step
+              actions = step.actions(game.current_entity)
+              if actions.include?('buy_train') && ms.trains.empty?
+                train = step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
+                act(Action::BuyTrain, train: train, price: train.price)
+              elsif actions.include?('run_routes')
+                act(Action::RunRoutes, routes: [])
+              else
+                act(Action::Pass)
+              end
+            end
+          end
+
+          def on_turn(entity, klass, **args)
+            play_until { game.current_entity == entity }
+            act(klass, entity, **args)
+          end
+
+          def fc_dividend
+            or_key = nil
+            play_until { (or_key ||= game.round.operating? && [game.turn, game.round.round_num]) && fc.operating_history[or_key] }
+            fc.operating_history[or_key].revenue
+          end
+
+          before do
+            float_major!(ms)
+          end
+
+          it 'sells IPO shares for the bank, without float, president, double listing or sold-out bump' do
+            bank_cash = game.bank.cash
+            buy_fc_shares(10)
+
+            expect(game.bank.cash).to eq(bank_cash + 500)
+            expect([fc.cash, fc.owner]).to eq([0, nil])
+            expect(game.log.map(&:message)).not_to include(a_string_matching(/president of FC|FC floats/))
+            expect(game.operating_order.count(fc)).to eq(1)
+            expect(game.operating_order.last).to eq(fc)
+            play_until { game.round.operating? }
+            expect([game.sold_out?(fc), fc.share_price.price]).to eq([true, 50])
+          end
+
+          it 'pays 10% per share, lets the sole holder sell share 0 at an unchanged price and pays nothing for it in the pool' do
+            holder = game.current_entity
+            buy_fc_shares(1)
+            holder_cash = holder.cash
+            revenue = fc_dividend
+            expect(revenue).to be_positive
+            expect(holder.cash).to eq(holder_cash + (revenue * holder.percent_of(fc) / 100))
+
+            price = fc.share_price
+            expect(game.value_for_dumpable(holder, fc)).to eq(price.price)
+            on_turn(holder, Action::SellShares, shares: holder.shares_of(fc), share_price: price.price, percent: 10)
+            expect([fc.share_price, fc.owner, game.share_pool.shares_of(fc).map(&:index)]).to eq([price, nil, [0]])
+
+            bank_cash = game.bank.cash
+            fc_dividend
+            expect([fc.cash, game.bank.cash]).to eq([0, bank_cash])
+          end
+
+          it 'keeps the FC without president when share 0 is sold next to another holder' do
+            holder = game.current_entity
+            buy_fc_shares(2)
+            play_until { game.turn == 2 && game.round.stock? }
+            price = fc.share_price
+            on_turn(holder, Action::SellShares, shares: holder.shares_of(fc), share_price: price.price, percent: 10)
+
+            expect([fc.share_price, fc.owner]).to eq([price, nil])
+            expect(game.log.map(&:message)).not_to include(a_string_matching(/president of FC/))
+          end
+
+          it 'lets a major president in emergency sell share 0 of the FC' do
+            president = ms.owner
+            major = game.corporations.find { |c| c != ms && c.type == :major && game.can_par?(c, president) }
+            on_turn(president, Action::BuyShares, shares: fc.ipo_shares.first, share_price: fc.share_price.price)
+            on_turn(president, Action::Par, corporation: major, share_price: game.stock_market.par_prices.max_by(&:price))
+            on_turn(president, Action::BuyShares, shares: major.ipo_shares.first, share_price: 100) while president.cash >= 100
+            game.export_train_to_fc! until top_broad_train.name == '8+'
+            play_until { game.round.active_step.is_a?(G18Cuba::Step::BuyTrain) }
+
+            act(Action::SellShares, president, shares: president.shares_of(fc), share_price: fc.share_price.price, percent: 10)
+            expect(game.share_pool.shares_of(fc).map(&:index)).to eq([0])
+          end
+        end
+
         describe '#crowded_corps' do
           it 'never includes the FC (no train limit, never discards)' do
             # the FC holds its preprinted train and its train limit is 0 — flagged without the exemption

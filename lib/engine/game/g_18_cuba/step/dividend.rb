@@ -30,6 +30,12 @@ module Engine
             { share_direction: :up, share_times: 1 }
           end
 
+          def corporation_dividends(entity, per_share)
+            return 0 if entity.type == :national
+
+            super
+          end
+
           def process_dividend(action)
             entity = action.entity
             revenue = total_revenue
