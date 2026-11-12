@@ -270,7 +270,7 @@ module Engine
           end
 
           if num_shares_taken != num_shares
-            raise GameError, "Cannot find exactly #{num_shares} while search for shares to swap. Found #{num_shares_taken}"
+            raise GameError, "Could not find exactly #{num_shares} while searching for shares to swap. Found #{num_shares_taken}."
           end
 
           shares_taken
