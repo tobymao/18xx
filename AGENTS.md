@@ -80,6 +80,8 @@ MRI specs pass even when the browser breaks, so follow these rules in `lib/engin
   `(numerator.to_f / divisor).floor` or `(numerator.to_f / divisor).ceil`, whichever the rules require, wherever an
   integer result matters. Don't use `.round`.
 - **Emptiness checks.** Prefer `!array.empty?` over `array.any?`; `empty?` is much cheaper.
+- **Use the built-in method.** Prefer `start_with?` over manual prefix checks and `a.intersect?(b)` over
+  `!(a & b).empty?`.
 
 When a change affects what the UI renders, render the page headlessly (above) at a state that exercises it.
 
@@ -112,8 +114,21 @@ When a change affects what the UI renders, render the page headlessly (above) at
 - **Keep display in the views.** The engine exposes game state and data (e.g. a game method that returns a status
   string); views in `assets/app/view` decide layout, widths and formatting. Don't put layout concerns in
   `lib/engine` or game rules in views.
+- **Let the game own its state.** Steps don't reach into the game's internal data; they call named game methods,
+  usually bang-suffixed for anything that mutates state (e.g. `@game.claim_region!(...)`).
+- **Errors vs. early returns.** Raise `GameError` for real invariant violations and illegal actions; use guard
+  clauses (`return unless ...`) for ordinary "nothing to do" paths.
+- **Memoize derived values.** Cache expensive lookups with `@x ||= ...` inside a method of the same name rather than
+  recomputing them. Only memoize values that can't change during the game (or clear the cache when they do), and
+  remember `||=` recomputes when the value is `nil` or `false`.
+- **Skip graph validation while loading.** Replayed actions were validated when they were first submitted, so checks
+  that walk the route graph (connectivity, available hexes, legal tile rotations, token reachability) are skipped
+  when `@game.loading` is true, as in `Step::Tracker` and `Step::Tokener`. Only skip validation this way, never
+  anything that changes state, or the replay diverges from the original game. Loading with `strict: true` runs
+  every check.
 - **Keep it simple.** Prefer the simplest solution that matches the rules. If a mechanic needs many special cases,
-  look for a new abstraction that removes them.
+  look for a new abstraction that removes them. If a subclass file (e.g. a game variant's step) no longer overrides
+  anything its parent doesn't already do, delete it rather than keeping an empty subclass.
 - **Avoid duplication.** Before implementing a mechanic, search other titles for the same or a similar one. If it
   exists, generalize it and share it rather than copying it.
 - **Check the blast radius of shared code.** When changing core engine code or code another title uses, find every
@@ -173,7 +188,9 @@ site will break when replayed. In that case:
 - Try to repair the affected games with a migration script first. Copy `scripts/migrate_game.rb` to
   `scripts/migrate_<title>_<change>.rb`, keep its reading and writing of games (`migrate_json`,
   `migrate_db_actions`, `migrate_title`, etc.) as is, and change only the `repair` section. Test it against fixtures
-  or imported games with `migrate_json` (see "Testing a Game Migration" in `DEVELOPMENT.md`). Migration scripts are
+  or imported games with `migrate_json` (see "Testing a Game Migration" in `DEVELOPMENT.md`), and before merging,
+  run it against real production games of the affected title (`scripts/import_game.rb`) and confirm the migrated
+  games load with `Engine::Game.load(data, strict: true)`; a hand-picked example isn't enough. Migration scripts are
   one-off: delete them once they have run in production, and don't use existing ones as templates.
 - If a migration isn't possible, that's fine: the affected games get pinned to the previous code instead.
 
@@ -203,6 +220,8 @@ which games to migrate, pin or archive. If a title has no label yet, name the ti
 - Add the `migration`, `pins` or `archive_alpha_games` label, plus each affected title's label, when the change
   breaks live games (see [Breaking live games](#breaking-live-games)).
 - Run rubocop and the full suite before opening the PR, and fill in the PR template.
+- Never force-push once review has started. Push new commits on top so reviewers' comments and view of the diff stay
+  valid.
 - In the description, say what you verified (specs, fixtures, reproduced games) and what you didn't run, and why
   the change does or doesn't need pins or a migration.
 
