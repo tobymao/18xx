@@ -17,7 +17,7 @@ module Engine
           end
 
           def route_includes_london?(routes)
-            routes.flat_map(&:connection_hexes).include?(Engine::Game::G1894::Game::LONDON_HEX)
+            routes.flat_map(&:connection_hex_ids).include?(Engine::Game::G1894::Game::LONDON_HEX)
           end
 
           def available_hex(entity, hex)

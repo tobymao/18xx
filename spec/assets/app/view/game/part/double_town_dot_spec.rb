@@ -14,16 +14,16 @@ module View
         let(:corp) { game.corporation_by_id('A') }
         let(:j77) { game.hex_by_id('J77') }
         let(:west) { game.hex_by_id('I76').tile.cities.first }
-        let(:a) { j77.tile.towns[0] }
-        let(:b) { j77.tile.towns[1] }
-        let(:east) { game.hex_by_id('K78').tile.cities.first }
+        let(:double_town) { j77.tile.double_towns.first }
         let(:train) { buy_train!(game, corp, '3') }
         let(:route) do
           Engine::Route.new(game, game.phase, train, routes: []).tap { |r| r.routes = [r] }
         end
+
+        let(:selected_route) { route }
         let(:dot) do
-          described_class.new(nil, tile: j77.tile, double_town: j77.tile.double_towns.first, show_revenue: false,
-                                   region_use: {}, game: game)
+          described_class.new(nil, tile: j77.tile, double_town: double_town, show_revenue: false,
+                                   region_use: {}, game: game, selected_route: selected_route)
         end
 
         before do
@@ -48,50 +48,60 @@ module View
           train
         end
 
-        def route_nodes
-          return [route.last_node].compact if route.connection_data.empty?
-
-          [route.head[:left]] + route.connection_data.map { |c| c[:right] }
+        def hit_box_callback(current_actions)
+          step = double('Step', current_actions: current_actions)
+          allow(game).to receive(:active_step).and_return(step)
+          allow(dot).to receive(:translate).and_return('translate(0 0)')
+          callback = nil
+          allow(dot).to receive(:h) do |component, props|
+            callback = props[:click] if component == View::Game::HitBox
+          end
+          dot.render_hit_box
+          callback
         end
 
-        def click_pill
-          dot.send(:touch_towns, route)
-          route_nodes
+        it 'renders no hit box when the double town is the only node on its tile' do
+          allow(dot).to receive(:translate).and_return('translate(0 0)')
+
+          expect(dot.render_hit_box).to be_nil
         end
 
-        it 'touches both towns when neither is on the route' do
-          expect(click_pill).to contain_exactly(a, b)
-        end
+        context 'with a city beside the double town' do
+          let(:tile) do
+            Engine::Tile.from_code('XJ77', :green, 'city=revenue:20;double_town=revenue:10;path=a:0,b:_0;path=a:3,b:_1')
+          end
+          let(:double_town) { tile.double_towns.first }
+          let(:dot) do
+            described_class.new(nil, tile: tile, double_town: double_town, show_revenue: false,
+                                     region_use: {}, game: game, selected_route: selected_route)
+          end
 
-        it 'touches the other town when the route already has one' do
-          route.touch_node(west)
-          route.touch_node(a)
-          expect(click_pill).to contain_exactly(west, a, b)
-        end
+          before { j77.lay(tile) }
 
-        it 'touches the other town when the route starts at one town' do
-          route.touch_node(b)
-          expect(click_pill).to contain_exactly(a, b)
-        end
+          it 'adds the double town to the selected route with one click' do
+            route.touch_node(west)
+            expect(route).to receive(:touch_node).with(double_town).once.and_call_original
+            expect(dot).to receive(:store).with(:selected_route, route).once
 
-        it 'removes both towns when they end the route' do
-          [west, a, b].each { |node| route.touch_node(node) }
-          expect(click_pill).to eq([west])
-        end
+            hit_box_callback(['run_routes']).call
+          end
 
-        it 'removes both towns when they end a route built from the other side' do
-          [east, b, a].each { |node| route.touch_node(node) }
-          expect(click_pill).to eq([east])
-        end
+          it 'ignores a click when the step does not run routes' do
+            expect(route).not_to receive(:touch_node)
+            expect(dot).not_to receive(:store)
 
-        it 'removes both towns when they start the route' do
-          [a, b, east].each { |node| route.touch_node(node) }
-          expect(click_pill).to be_empty
-        end
+            hit_box_callback([]).call
+          end
 
-        it 'leaves the route alone when both towns are mid-route' do
-          [west, a, b, east].each { |node| route.touch_node(node) }
-          expect(click_pill).to contain_exactly(west, a, b, east)
+          context 'with no selected route' do
+            let(:selected_route) { nil }
+
+            it 'ignores a click' do
+              expect(dot).not_to receive(:store)
+
+              hit_box_callback(['run_routes']).call
+            end
+          end
         end
       end
     end

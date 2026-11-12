@@ -586,7 +586,7 @@ module Engine
         attr_reader :saved_tokens_hex
 
         def check_distance(route, _visits)
-          if route.connection_hexes.flatten.include?(LONDON_HEX) && !ferry_marker?(current_entity)
+          if route.connection_hex_ids.include?(LONDON_HEX) && !ferry_marker?(current_entity)
             raise GameError, 'Cannot run to London without a Ferry marker'
           end
 

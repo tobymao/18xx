@@ -276,22 +276,24 @@ module Engine
       let(:tile) { Tile.from_code('dt', 'green', code) }
       let(:double_town) { tile.double_towns.first }
 
-      it 'adds two ordinary towns joined by an internal path' do
-        expect(tile.double_towns.size).to eq(1)
-        expect(double_town.double_town?).to be(true)
-        expect(double_town.towns).to eq(tile.towns)
-        expect(tile.towns.size).to eq(2)
-        expect(tile.towns).to all(be_a(Part::Town))
-        expect(tile.towns.map(&:max_revenue)).to eq([10, 10])
-        internal = tile.paths.select { |p| p.exits.empty? }
-        expect(internal.size).to eq(1)
-        expect(internal.first.nodes).to match_array(tile.towns)
+      it 'is the only node and takes every exit path once' do
+        expect(tile.double_towns).to eq([double_town])
+        expect(tile.towns).to eq([double_town])
+        expect(tile.city_towns).to eq([double_town])
+        expect(tile.nodes).to eq([double_town])
+        expect(double_town).to be_a(Part::Town)
+        expect(tile.paths.size).to eq(4)
+        expect(tile.paths.map(&:exits)).to match_array([[0], [1], [3], [4]])
+        expect(tile.paths.map(&:nodes)).to all(eq([double_town]))
       end
 
-      it 'joins every exit to both towns' do
-        [0, 1, 3, 4].each do |edge|
-          expect(tile.paths.select { |p| p.exits == [edge] }.flat_map(&:nodes)).to match_array(tile.towns)
-        end
+      it 'carries two town stops that are not tile parts' do
+        expect(double_town.stops.size).to eq(2)
+        expect(double_town.stops).to all(be_a(Part::Town))
+        expect(double_town.stops.map(&:max_revenue)).to eq([10, 10])
+        expect(double_town.stops.map(&:tile)).to eq([tile, tile])
+        expect(tile.parts).not_to include(*double_town.stops)
+        expect(double_town.towns).to eq(double_town.stops)
       end
 
       it 'keeps the pill and revenue positions' do
@@ -305,13 +307,15 @@ module Engine
         expect(blank.revenue_locs).to eq([1.5, 4.5])
       end
 
-      it 'hides both towns because the double town draws them' do
-        expect(tile.towns.map(&:hidden?)).to eq([true, true])
-        expect(tile.towns.map(&:rect?)).to eq([false, false])
+      it 'hides itself so the pill draws it, and sits in the centre' do
+        expect(double_town.hidden?).to be(true)
+        expect(double_town.rect?).to be(false)
+        expect(tile.preferred_city_town_edges[double_town]).to be_nil
       end
 
-      it 'centres both towns' do
-        expect(tile.towns.map { |t| tile.preferred_city_town_edges[t] }).to eq([nil, nil])
+      it 'gives a plain town one stop' do
+        town = Tile.for('3').towns.first
+        expect(town.stops).to eq([town])
       end
 
       it 'leaves plain towns alone' do

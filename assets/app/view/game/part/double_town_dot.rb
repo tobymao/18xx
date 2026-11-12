@@ -74,16 +74,18 @@ module View
         end
 
         def render_hit_box
-          h(HitBox, click: -> { touch_both_towns }, transform: translate, r: DOT_OFFSET + PILL_HALF_WIDTH)
+          return if @double_town.solo?
+
+          h(HitBox, click: -> { touch_node(@double_town) }, transform: translate, r: DOT_OFFSET + PILL_HALF_WIDTH)
         end
 
         def render_revenues
-          towns.zip(@double_town.revenue_locs).map do |town, loc|
+          towns.zip(@double_town.revenue_locs).each_with_index.map do |(town, loc), index|
             revenue = town.uniq_revenues.first
             next if revenue.nil? || revenue.zero?
 
             x, y = direction(loc, REVENUE_DISPLACEMENT)
-            h(:g, { key: "#{town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
+            h(:g, { key: "#{@double_town.id}-r#{index}", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
               h(Part::SingleRevenue, revenue: revenue, transform: rotation_for_layout),
             ])
           end.compact
@@ -92,45 +94,9 @@ module View
         def render_part
           children = render_pill + render_dots
           children.concat(render_revenues) if @show_revenue
-          children << render_hit_box
-          h(:g, { key: "#{towns.first.id}-d" }, children)
-        end
-
-        private
-
-        def touch_both_towns
-          return if !@game.active_step.current_actions.include?('run_routes') || !@selected_route
-
-          touch_towns(@selected_route)
-          store(:selected_route, @selected_route)
-        end
-
-        def touch_towns(route)
-          on_route = towns.select { |town| route_nodes(route).include?(town) }
-
-          if on_route.size == 2
-            remove_end_towns(route)
-          else
-            (towns - on_route).each { |town| route.touch_node(town) }
-          end
-        end
-
-        def remove_end_towns(route)
-          while (town = towns.find { |t| route_ends(route).include?(t) })
-            route.touch_node(town)
-          end
-        end
-
-        def route_ends(route)
-          return [route.last_node].compact if route.connection_data.empty?
-
-          [route.head[:left], route.tail[:right]]
-        end
-
-        def route_nodes(route)
-          return [route.last_node].compact if route.connection_data.empty?
-
-          [route.head[:left]] + route.connection_data.map { |connection| connection[:right] }
+          hit_box = render_hit_box
+          children << hit_box if hit_box
+          h(:g, { key: "#{@double_town.id}-d" }, children)
         end
       end
     end

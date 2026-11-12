@@ -1217,6 +1217,10 @@ module Engine
           orient_express_bonus_route?(route) ? "#{str} + Orient Express" : str
         end
 
+        def route_node_revisitable?(node)
+          node.town?
+        end
+
         def check_connected(route, corporation)
           return super unless wcf_restricted?(corporation)
           return if route.ordered_paths.each_cons(2).all? { |a, b| wcf_pass?(a, b) || a.connects_to?(b, corporation) }

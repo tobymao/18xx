@@ -16,6 +16,10 @@ module Engine
         @tile.nodes.one?
       end
 
+      def stops
+        [self]
+      end
+
       def paths
         @paths ||= @tile.paths.select { |p| p.nodes.any? { |n| n == self } }
       end
