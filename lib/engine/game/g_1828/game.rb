@@ -874,7 +874,7 @@ module Engine
         end
 
         def route_includes_coalfields?(route)
-          route.connection_hexes.flatten.include?(self.class::VA_COALFIELDS_HEX)
+          route.connection_hex_ids.include?(self.class::VA_COALFIELDS_HEX)
         end
 
         def route_uses_tile_lay(route)

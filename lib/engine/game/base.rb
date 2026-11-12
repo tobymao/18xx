@@ -1577,6 +1577,10 @@ module Engine
       # Intended for game specific rules that only depend on one route
       def check_other(_route); end
 
+      def route_node_revisitable?(_node)
+        false
+      end
+
       # Intended for game specific rules that depend on multiple routes
       def check_route_combination(_routes); end
 
@@ -1638,7 +1642,7 @@ module Engine
       end
 
       def visited_stops(route)
-        route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact
+        route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact.flat_map(&:stops)
       end
 
       def revenue_stops(route)

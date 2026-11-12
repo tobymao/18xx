@@ -104,19 +104,12 @@ module Engine
           end
         end
 
-        ends = [params['a'], params['b']]
-        double_town = ends.find(&:double_town?)
-        variants = [ends]
-        variants = double_town.towns.map { |town| ends.map { |e| e == double_town ? town : e } } if double_town
-
-        variants.map do |a, b|
-          Part::Path.make_lanes(a, b, terminal: params['terminal'],
-                                      lanes: params['lanes'], a_lane: params['a_lane'],
-                                      b_lane: params['b_lane'],
-                                      track: params['track'],
-                                      ignore: params['ignore'],
-                                      color: params['color'])
-        end
+        Part::Path.make_lanes(params['a'], params['b'], terminal: params['terminal'],
+                                                        lanes: params['lanes'], a_lane: params['a_lane'],
+                                                        b_lane: params['b_lane'],
+                                                        track: params['track'],
+                                                        ignore: params['ignore'],
+                                                        color: params['color'])
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
@@ -167,8 +160,7 @@ module Engine
                                            route: params['route'],
                                            format: params['format'])
         cache << double_town
-        towns = double_town.towns
-        [double_town, *towns, Part::Path.new(*towns)]
+        double_town
       when 'halt'
         halt = Part::Halt.new(params['symbol'],
                               revenue: params['revenue'],
@@ -686,12 +678,11 @@ module Engine
           else
             @paths << part
           end
-        elsif part.double_town?
-          @double_towns << part
         elsif part.town?
           @towns << part
           @city_towns << part
           @halts << part if part.halt?
+          @double_towns << part if part.double_town?
         elsif part.upgrade?
           @upgrades << part
         elsif part.offboard?

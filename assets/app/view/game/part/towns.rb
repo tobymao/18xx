@@ -33,8 +33,8 @@ module View
           @tile.double_towns.each do |double_town|
             rendered << h(DoubleTownDot, double_town: double_town, tile: @tile, region_use: @region_use,
                                          show_revenue: @show_revenue,
-                                         color: value_for(double_town.towns, :color),
-                                         width: value_for(double_town.towns, :width))
+                                         color: value_for(double_town, :color),
+                                         width: value_for(double_town, :width))
           end
 
           rendered
