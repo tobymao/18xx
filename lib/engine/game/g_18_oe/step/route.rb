@@ -110,7 +110,7 @@ module Engine
                 { 'nodes' => %w[city offboard town], 'pay' => cities, 'visit' => cities },
               ]
               train = Engine::Train.new(name: sym, distance: distance, price: 0)
-              train.name = "#{cities}+#{towns}"
+              train.name = "#{cities}+#{towns}C"
 
               @game.depot.add_train(train)
               @game.update_trains_cache
