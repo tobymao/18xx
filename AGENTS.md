@@ -114,6 +114,8 @@ When a change affects what the UI renders, render the page headlessly (above) at
 - **Keep display in the views.** The engine exposes game state and data (e.g. a game method that returns a status
   string); views in `assets/app/view` decide layout, widths and formatting. Don't put layout concerns in
   `lib/engine` or game rules in views.
+- **Small, single-purpose steps.** Give each narrow mechanic its own step file rather than growing one step to
+  handle several different actions. Keep `round/` classes thin; logic lives in `game.rb` and the steps.
 - **Let the game own its state.** Steps don't reach into the game's internal data; they call named game methods,
   usually bang-suffixed for anything that mutates state (e.g. `@game.claim_region!(...)`).
 - **Errors vs. early returns.** Raise `GameError` for real invariant violations and illegal actions; use guard
