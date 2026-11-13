@@ -13,6 +13,7 @@ module Engine
           def setup
             super
             @points_used = 0
+            @cross_water_fee = 0
           end
 
           def can_lay_tile?(entity)
@@ -39,6 +40,8 @@ module Engine
             raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && points_cost > points_available
             raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && points_cost > points_available
 
+            tile.rotate!(action.rotation)
+            @cross_water_fee = @game.cross_water_tile_fee(@round.current_operator, action.hex, tile)
             lay_tile(action)
             @game.log << "Used #{points_cost} tile point(s) to lay tile"
             @game.log << "#{points_available - points_cost} point(s) remaining"
@@ -50,6 +53,14 @@ module Engine
             @round.num_laid_track += 1
             @round.laid_hexes << action.hex
             @points_used += points_cost
+          end
+
+          def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, extra_cost)
+            fee = @cross_water_fee
+            super(entity_or_entities, tile, rotation, hex, spender, cost + fee, extra_cost)
+            return unless fee.positive?
+
+            @game.log << "#{spender.name} pays #{@game.format_currency(fee)} to cross water"
           end
 
           def tracker_available_hex(entity, hex)

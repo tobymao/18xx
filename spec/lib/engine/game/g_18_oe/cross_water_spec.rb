@@ -92,4 +92,35 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     game.clear_graph_for_entity(game.corporation_by_id('GSWR'))
     expect(game.sea_network(dsj)).not_to equal(before)
   end
+
+  describe 'laying across water (§11.1.3, §11.1.6)' do
+    let(:player) { game.players.first }
+
+    def or_with_dsj!
+      start_regional!(game, 'DSJ', player)
+      enter_round!(game, game.operating_round(1))
+    end
+
+    def tile(name, rotation) = game.tiles.find { |t| t.name == name && !t.hex }.tap { |t| t.rotate!(rotation) }
+
+    it 'rejects a tile that does not meet the port arrow' do
+      round = or_with_dsj!
+      expect { act!(round, Engine::Action::LayTile.new(dsj, tile: tile('3', 4), hex: game.hex_by_id('D41'), rotation: 4)) }
+        .to raise_error(/not legally rotated/)
+    end
+
+    it 'charges £10 per sea zone on top of the terrain cost' do
+      round = or_with_dsj!
+      cash = dsj.cash
+      act!(round, Engine::Action::LayTile.new(dsj, tile: tile('4', 0), hex: game.hex_by_id('D41'), rotation: 0))
+      expect(cash - dsj.cash).to eq(36 + 10)
+      expect(game.log.map(&:message)).to include('DSJ pays £10 to cross water')
+    end
+
+    it 'charges £5 per ferry distance when the ferry is cheaper than the ports' do
+      gswr = game.corporation_by_id('GSWR')
+      token!('I20', gswr)
+      expect(game.cross_water_tile_fee(gswr, game.hex_by_id('J23'), tile('4', 2))).to eq(5)
+    end
+  end
 end
