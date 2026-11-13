@@ -142,6 +142,18 @@ module Engine
       end
     end
 
+    def extra_root_hexes(corporation)
+      return {} if !@home_as_token || !corporation.coordinates
+
+      home_hexes(corporation)
+    end
+
+    def extra_root_nodes(corporation)
+      return {} if !@home_as_token || !corporation.coordinates
+
+      home_hex_nodes(corporation)
+    end
+
     # Called from #compute when @home_is_token is true.
     # Returns a hash whose keys are the Engine::Hex objects for each hex in the
     # entity's coordinates list. The values are hashes with keys that are the
@@ -211,10 +223,8 @@ module Engine
         end
       end
 
-      if @home_as_token && corporation.coordinates
-        hexes.merge!(home_hexes(corporation))
-        nodes.merge!(home_hex_nodes(corporation))
-      end
+      hexes.merge!(extra_root_hexes(corporation)) { |_, a, b| a.merge(b) }
+      nodes.merge!(extra_root_nodes(corporation))
 
       tokens = nodes.dup
 
