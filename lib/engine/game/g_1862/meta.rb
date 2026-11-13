@@ -65,11 +65,11 @@ module Engine
           },
         ].freeze
 
-        MUTEX_RULES = 
-        [
-          %i[simple_express simple_freight advanced_express advanced_freight],
-          %i[short_length long_length],      
-        ].freeze
+        MUTEX_RULES =
+          [
+            %i[simple_express simple_freight advanced_express advanced_freight],
+            %i[short_length long_length],
+          ].freeze
       end
     end
   end
