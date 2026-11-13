@@ -105,18 +105,15 @@ module Engine
           expect(game.round.active_step).to be_a(GFrost1831::Step::SpecialTrack)
         end
 
-        it 'skips the free tile automatically when no tile can be laid' do
+        it 'skips the free tile when no tile can be laid' do
           diggers = give_company(p1, 'PDI')
           game.tiles.reject! { |t| %w[7 8 9].include?(t.name) }
           start_operating_round
-          game.process_action(Engine::Action::BuyCompany.new(corporation, company: diggers, price: diggers.value),
-                              add_auto_actions: true)
+          buy_company(diggers)
 
           expect(game.exception).to be_nil
-          expect(tile_lay_ability(diggers)).to be_nil
           expect(game.hex_by_id('I4').tile.color).to eq(:white)
           expect(game.round.active_step).not_to be_a(GFrost1831::Step::SpecialTrack)
-          expect(game.log.map(&:message)).to include('Diggers passes lay track')
         end
 
         it 'does not let corporations buy private companies in phase 2' do

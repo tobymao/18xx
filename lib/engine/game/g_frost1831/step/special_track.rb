@@ -10,18 +10,12 @@ module Engine
         class SpecialTrack < Engine::Step::SpecialTrack
           include Engine::Step::TrackLayWhenCompanySold
 
-          PASS_ACTION = %w[pass].freeze
+          def blocking_for_sold_company?
+            return false unless super
+            return true if sold_tile_available?
 
-          def actions(entity)
-            return super if !blocking_for_sold_company? || sold_tile_available?
-
-            PASS_ACTION
-          end
-
-          def auto_actions(entity)
-            return super if !blocking_for_sold_company? || sold_tile_available?
-
-            [Engine::Action::Pass.new(@company)]
+            @company = nil
+            false
           end
 
           private
