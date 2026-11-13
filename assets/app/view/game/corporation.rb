@@ -462,11 +462,15 @@ module View
         num_treasury_shares = share_number_str(@corporation.num_treasury_shares)
 
         pool_rows = []
+        # Without a market row, a line separates the IPO from the players
+        ipo_row_props = {}
+        ipo_row_props = { style: { borderBottom: '1px solid currentColor' } } if @corporation.no_market && player_rows.any?
+
         if !num_ipo_shares.empty? ||
            num_dc_avail.positive? ||
            !%i[full none].include?(@corporation.capitalization) ||
            @game.class::ALWAYS_SHOW_PAR_PRICE
-          pool_rows << h('tr.ipo', [
+          pool_rows << h('tr.ipo', ipo_row_props, [
             h('td.left', @game.ipo_name(@corporation)),
             h('td.right', shares_props, ('d' * num_dc_avail) + num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
@@ -502,7 +506,7 @@ module View
           market_tr_props[:style][:color] = contrast_on(color)
         end
 
-        if player_rows.any? || @corporation.num_market_shares.positive?
+        if !@corporation.no_market && (player_rows.any? || @corporation.num_market_shares.positive?)
           at_limit = @game.share_pool.bank_at_limit?(@corporation)
           double_certs = @game.share_pool.shares_of(@corporation).count(&:double_cert)
           other_flags = @game.share_flags(@game.share_pool.shares_of(@corporation))
