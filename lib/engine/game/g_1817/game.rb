@@ -212,6 +212,20 @@ module Engine
         attr_accessor :pittsburgh_private
         attr_reader :owner_when_liquidated, :stock_prices_start_merger
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['5 or 10-share Corporation sold out at end of SR', '1 →'],
+            ['Per share in market at end of SR', '1 ←'],
+            ['Per loan taken', '1 ←'],
+            ['Per loan repaid', '1 →'],
+          ]
+        end
+
         def timeline
           @timeline = [
             'At the end of each OR the next available train will be exported
