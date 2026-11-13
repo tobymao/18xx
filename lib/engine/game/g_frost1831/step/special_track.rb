@@ -13,15 +13,13 @@ module Engine
           PASS_ACTION = %w[pass].freeze
 
           def actions(entity)
-            return super unless blocking_for_sold_company?
-            return super if sold_tile_available?
+            return super if !blocking_for_sold_company? || sold_tile_available?
 
             PASS_ACTION
           end
 
           def auto_actions(entity)
-            return super unless blocking_for_sold_company?
-            return super if sold_tile_available?
+            return super if !blocking_for_sold_company? || sold_tile_available?
 
             [Engine::Action::Pass.new(@company)]
           end
