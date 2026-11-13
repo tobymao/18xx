@@ -53,7 +53,7 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     token!('I50', dsj)
     landing = { game.hex_by_id('C48') => { 0 => true } }
     nodes = [game.hex_by_id('C48').tile.cities.first]
-    allow(game).to receive(:sea_network).with(dsj).and_return(double(landings: landing, landing_nodes: nodes))
+    allow(game.graph).to receive(:sea_network).with(dsj).and_return(double(landings: landing, landing_nodes: nodes))
     game.clear_graph
     game.graph.route_info(dsj)
     expect(game.graph.reachable_hexes(dsj)).to have_key(game.hex_by_id('C48'))
@@ -93,17 +93,17 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
   it 'sees a private port once the corporation tokens its city' do
     token!('I50', dsj)
     game.clear_graph
-    expect(game.sea_network(dsj).usable?('I52', 0)).to be(false)
+    expect(game.graph.sea_network(dsj).usable?('I52', 0)).to be(false)
     token!('I52', dsj)
     game.clear_graph_for_entity(dsj)
-    expect(game.sea_network(dsj).usable?('I52', 0)).to be(true)
+    expect(game.graph.sea_network(dsj).usable?('I52', 0)).to be(true)
   end
 
   it 'drops every network when any entity clears the graph' do
     token!('I50', dsj)
-    before = game.sea_network(dsj)
+    before = game.graph.sea_network(dsj)
     game.clear_graph_for_entity(game.corporation_by_id('GSWR'))
-    expect(game.sea_network(dsj)).not_to equal(before)
+    expect(game.graph.sea_network(dsj)).not_to equal(before)
   end
 
   describe 'laying across water (§11.1.3, §11.1.6)' do

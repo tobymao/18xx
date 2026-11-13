@@ -5,7 +5,6 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'stock_market'
 require_relative 'graph'
-require_relative 'sea_network'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
@@ -424,7 +423,6 @@ module Engine
 
         def setup
           super
-          @sea_networks = {}
           @minor_regional_order = []
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
@@ -1145,26 +1143,12 @@ module Engine
           super
         end
 
-        def sea_network(corporation)
-          @sea_networks[corporation] ||= SeaNetwork.new(self, corporation)
-        end
-
         def cross_water_tile_fee(corporation, hex, tile)
-          (sea_network(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_FERRY_DISTANCE
+          (@graph.sea_network(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_FERRY_DISTANCE
         end
 
         def cross_water_token_fee(corporation, city)
-          (sea_network(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_FERRY_DISTANCE
-        end
-
-        def clear_graph
-          super
-          @sea_networks&.clear
-        end
-
-        def clear_graph_for_entity(entity)
-          super
-          @sea_networks&.clear
+          (@graph.sea_network(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_FERRY_DISTANCE
         end
 
         def init_graph

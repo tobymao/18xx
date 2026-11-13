@@ -1,17 +1,32 @@
 # frozen_string_literal: true
 
 require_relative '../../graph'
+require_relative 'sea_network'
 
 module Engine
   module Game
     module G18OE
       class Graph < Engine::Graph
+        def initialize(game, **opts)
+          @sea_networks = {}
+          super
+        end
+
+        def clear
+          super
+          @sea_networks.clear
+        end
+
+        def sea_network(corporation)
+          @sea_networks[corporation] ||= SeaNetwork.new(@game, corporation)
+        end
+
         def extra_root_hexes(corporation)
-          super.merge(@game.sea_network(corporation).landings) { |_, first, second| first.merge(second) }
+          super.merge(sea_network(corporation).landings) { |_, first, second| first.merge(second) }
         end
 
         def extra_root_nodes(corporation)
-          super.merge(@game.sea_network(corporation).landing_nodes.to_h { |node| [node, true] })
+          super.merge(sea_network(corporation).landing_nodes.to_h { |node| [node, true] })
         end
 
         def compute(corporation, **opts, &block)
@@ -19,7 +34,7 @@ module Engine
           reachable = @reachable_hexes[corporation]
           return result if opts[:one_token] || !reachable
 
-          @game.sea_network(corporation).landing_nodes.each { |node| reachable[node.hex] = true }
+          sea_network(corporation).landing_nodes.each { |node| reachable[node.hex] = true }
           result
         end
 
@@ -55,7 +70,7 @@ module Engine
         private
 
         def landing_tokenable_cities(corporation)
-          @game.sea_network(corporation).landing_nodes.select do |node|
+          sea_network(corporation).landing_nodes.select do |node|
             node.city? && node.tokenable?(corporation, free: true)
           end
         end
