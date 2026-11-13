@@ -84,6 +84,14 @@ describe 'G18OE sea network (§11.3.6, §11.3.7)' do
     expect(network(gswr).tile_cost(game.hex_by_id('J23'), tile)).to eq(1)
   end
 
+  it 'prices a ferry landing on a hex with no usable port (§11.1.6)' do
+    sfr = game.corporation_by_id('SFR')
+    token!('Z47', sfr)
+    lay!('Z47', '57', 0)
+    tile = game.tiles.find { |t| t.name == '9' && !t.hex }.tap { |t| t.rotate!(0) }
+    expect(network(sfr).tile_cost(game.hex_by_id('AB41'), tile)).to eq(1)
+  end
+
   it 'connects an offshore city directly at one zone (§11.3.6)' do
     token!('I50', dsj)
     christiania = game.hex_by_id('C48').tile.cities.first

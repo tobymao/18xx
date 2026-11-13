@@ -70,8 +70,8 @@ module Engine
           return 0 if @token_hex_ids.include?(hex.id)
 
           paths = hex.tile.paths + neighbor_paths(hex, tile.exits)
-          anchors = anchor_costs(hex).keys.select { |exit| exit == :offshore || tile.exits.include?(exit) }
-          cheapest(island_costs(paths) + anchors.map { |exit| @costs[[hex.id, exit]] })
+          anchors = @anchors.keys.select { |hex_id, exit| hex_id == hex.id && (exit == :offshore || tile.exits.include?(exit)) }
+          cheapest(island_costs(paths) + anchors.map { |key| @costs[key] })
         end
 
         def city_cost(city)
