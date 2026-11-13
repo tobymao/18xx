@@ -16,9 +16,10 @@ module Engine
 
         def compute(corporation, **opts, &block)
           result = super
-          if !opts[:one_token] && !opts[:routes_only]
-            @game.sea_network(corporation).landings.each_key { |hex| @reachable_hexes[corporation][hex] = true }
-          end
+          reachable = @reachable_hexes[corporation]
+          return result if opts[:one_token] || !reachable
+
+          @game.sea_network(corporation).landings.each_key { |hex| reachable[hex] = true }
           result
         end
 

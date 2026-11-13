@@ -49,6 +49,15 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     expect(game.graph.tokenable_cities(dsj)).to include(christiania)
   end
 
+  it 'keeps the offshore city reachable after a routes-only compute (§11.3.6)' do
+    token!('I50', dsj)
+    landing = { game.hex_by_id('C48') => { 0 => true } }
+    allow(game).to receive(:sea_network).with(dsj).and_return(double(landings: landing, landing_nodes: []))
+    game.clear_graph
+    game.graph.route_info(dsj)
+    expect(game.graph.reachable_hexes(dsj)).to have_key(game.hex_by_id('C48'))
+  end
+
   it 'does not connect a full city reached only by sea (§11.3.6)' do
     token!('I50', dsj)
     lay!('H21', '57', 1)
