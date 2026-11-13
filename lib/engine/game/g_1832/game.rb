@@ -154,6 +154,7 @@ module Engine
           @reissued = {}
           @coal_token_counter = 5
           @miami_has_been_run = false
+          @miami_first_run_round = nil
           @p4_invested_in = nil
           @final_merger_triggered = false
 
@@ -247,6 +248,15 @@ module Engine
           return super if visits.none? { |v| v.hex == coal_hex } || route.train.owner.coal_token
 
           raise GameError, 'Corporation must own coal token to enter West Virginia Coalfields'
+        end
+
+        def event_final_merger_chance!
+          @log << '-- Event: Final merger and takeover opportunity --'
+          @final_merger_triggered = true
+        end
+
+        def final_merger_triggered?
+          @final_merger_triggered
         end
 
         def event_remove_tokens!
@@ -349,9 +359,17 @@ module Engine
           found ? revenue : 0
         end
 
-        # Miami first-run rule: worth $0 the first time any corporation runs there prior to phase 5
+        # Miami first-run rule: before phase 5, Miami is worth $0 to every corporation for the whole
+        # operating round in which it is first reached.
         def miami_scores_zero?
-          phase.status.include?('first_miami_run_is_zero') && !@miami_has_been_run
+          return false unless phase.status.include?('first_miami_run_is_zero')
+
+          @miami_first_run_round.nil? || @miami_first_run_round == @round_counter
+        end
+
+        def record_miami_run!
+          @miami_has_been_run = true
+          @miami_first_run_round ||= @round_counter
         end
 
         def miami_revenue(route, stops)
@@ -395,12 +413,13 @@ module Engine
           @share_pool.sell_shares(bundle)
         end
 
-        def num_certs(entity)
+        def num_certs(entity, price_protecting: false)
           entity.shares.sum do |s|
             next 0 unless s.corporation.counts_for_limit
             next 0 unless s.counts_for_limit
-            # Don't count shares that have been sold and will go to yellow unless protected
-            next 0 if @sell_queue.any? do |bundle, _|
+            # Don't count shares that have been sold and will go to yellow unless protected.
+            # While price protecting, DO count them, since protecting keeps them white.
+            next 0 if !price_protecting && @sell_queue.any? do |bundle, _|
               bundle.corporation == s.corporation &&
                 !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :down)).counts_for_limit
             end
@@ -479,7 +498,7 @@ module Engine
           new_sp = merger_determine_merged_share_price(corp1, corp2)
           raise GameError, 'Cannot determine system share price' unless new_sp
 
-          stock_market.set_par(system, new_sp)
+          par_corporation(system, new_sp)
           system.ipoed = true
 
           # corp1 is the initiator. Capture its president before the presidencies are converted;
