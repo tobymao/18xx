@@ -7,6 +7,7 @@ require_relative 'entities'
 require_relative 'tiles'
 require_relative 'step/buy_cert'
 require_relative 'step/dividend'
+require_relative 'step/special_track'
 require_relative '../base'
 
 module Engine
@@ -31,6 +32,8 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
 
         EBUY_CAN_SELL_SHARES = false
+
+        CONVOY = 'PCO'
 
         TILE_LAYS = [
           { lay: true, upgrade: true },
@@ -106,6 +109,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: %w[can_buy_companies],
           },
           {
             name: '4',
@@ -113,6 +117,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: %w[can_buy_companies],
           },
           {
             name: '5',
@@ -314,6 +319,7 @@ module Engine
           @faction_influence = Hash.new(0)
           @parliament_open = false
           @regulations = REGULATIONS.transform_values { |name| { name: name, position: NORMAL } }
+          @player_influence = Hash.new(0)
         end
 
         def new_auction_round
@@ -328,6 +334,21 @@ module Engine
               share_pool.buy_shares(player, share, exchange: :free)
             end
           end
+          return unless company.sym == self.class::CONVOY
+
+          @player_influence[player.id] += 1
+          @log << "#{player.name} receives 1 Influence from #{company.name}"
+        end
+
+        def player_influence(player)
+          @player_influence[player.id]
+        end
+
+        def player_card_rows(player)
+          influence = player_influence(player)
+          return unless influence.positive?
+
+          ['Influence', influence.to_s]
         end
 
         def stock_round
@@ -340,6 +361,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            GFrost1831::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
