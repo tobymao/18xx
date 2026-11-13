@@ -51,19 +51,21 @@ module View
         def hit_box_callback(current_actions)
           step = double('Step', current_actions: current_actions)
           allow(game).to receive(:active_step).and_return(step)
+          rendered_hit_box_props&.dig(:click)
+        end
+
+        def rendered_hit_box_props
           allow(dot).to receive(:translate).and_return('translate(0 0)')
-          callback = nil
-          allow(dot).to receive(:h) do |component, props|
-            callback = props[:click] if component == View::Game::HitBox
+          props = nil
+          allow(dot).to receive(:h) do |component, hash|
+            props = hash if component == View::Game::HitBox
           end
-          dot.render_hit_box
-          callback
+          dot.render_part
+          props
         end
 
         it 'renders no hit box when the double town is the only node on its tile' do
-          allow(dot).to receive(:translate).and_return('translate(0 0)')
-
-          expect(dot.render_hit_box).to be_nil
+          expect(rendered_hit_box_props).to be_nil
         end
 
         context 'with a city beside the double town' do

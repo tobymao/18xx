@@ -73,12 +73,6 @@ module View
           end
         end
 
-        def render_hit_box
-          return if @double_town.solo?
-
-          h(HitBox, click: -> { touch_node(@double_town) }, transform: translate, r: DOT_OFFSET + PILL_HALF_WIDTH)
-        end
-
         def render_revenues
           towns.zip(@double_town.revenue_locs).each_with_index.map do |(town, loc), index|
             revenue = town.uniq_revenues.first
@@ -94,8 +88,9 @@ module View
         def render_part
           children = render_pill + render_dots
           children.concat(render_revenues) if @show_revenue
-          hit_box = render_hit_box
-          children << hit_box if hit_box
+          unless @double_town.solo?
+            children << h(HitBox, click: -> { touch_node(@double_town) }, transform: translate, r: DOT_OFFSET + PILL_HALF_WIDTH)
+          end
           h(:g, { key: "#{@double_town.id}-d" }, children)
         end
       end

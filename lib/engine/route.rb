@@ -376,7 +376,7 @@ module Engine
     end
 
     def connection_hex_ids
-      connection_hexes.flat_map { |c| c.is_a?(Hash) ? c['hexes'] : c }
+      connection_hexes.flat_map { |c| hex_ids_of(c) }
     end
 
     def connection_data
