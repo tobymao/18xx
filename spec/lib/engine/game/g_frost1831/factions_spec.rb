@@ -20,6 +20,17 @@ module Engine
           end
         end
 
+        it 'does not let a player par a Faction' do
+          expect(game.factions.none? { |faction| game.can_par?(faction, game.players.first) }).to be(true)
+          expect(game.factions.map(&:capitalization).uniq).to eq([:none])
+        end
+
+        it 'picks the certificate limit by the Corporations in play' do
+          expect(game.cert_limit).to eq(25)
+          game.corporation_by_id('CM').close!
+          expect(game.send(:init_cert_limit)).to eq(22)
+        end
+
         it 'starts each faction with only its home base as a token' do
           factions.each do |faction|
             expect(faction.tokens.size).to eq(1)

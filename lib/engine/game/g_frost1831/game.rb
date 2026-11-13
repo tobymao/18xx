@@ -327,12 +327,25 @@ module Engine
           factions.each { |faction| @bank.spend(self.class::FACTION_TREASURY, faction) }
         end
 
+        # Factions are not capitalized: founding one pays nothing into its Treasury
         def init_corporations(stock_market)
           min_price = stock_market.par_prices.map(&:price).min
           factions = self.class::FACTIONS.map do |faction|
-            Faction.new(min_price: min_price, capitalization: self.class::CAPITALIZATION, **faction.merge(corporation_opts))
+            Faction.new(min_price: min_price, capitalization: :none, **faction.merge(corporation_opts))
           end
           super + factions
+        end
+
+        # Factions are bought from Parliament, never parred like Corporations
+        def can_par?(corporation, parrer)
+          corporation.type != :faction && super
+        end
+
+        # The certificate limit depends on the Corporations in play (8.6), not the Factions
+        def init_cert_limit
+          cert_limit = self.class::CERT_LIMIT[@players.size]
+          corporations = @corporations.count { |c| c.type != :faction && !c.closed? }
+          cert_limit.reject { |k, _| k < corporations }.min_by(&:first)&.last || cert_limit.first.last
         end
 
         def factions
