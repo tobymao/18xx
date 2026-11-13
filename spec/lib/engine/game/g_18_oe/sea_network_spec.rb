@@ -100,6 +100,13 @@ describe 'G18OE sea network (§11.3.6, §11.3.7)' do
     expect(network.landing_nodes).to include(christiania)
   end
 
+  it 'keeps overland track on a city in a sea-zone hex part of the land network (§11.3.6)' do
+    token!('T87', dsj)
+    lay!('S86', '4', 1)
+    lay!('S84', '58', 4)
+    expect(network.hex_cost(game.hex_by_id('S86'))).to eq(0)
+  end
+
   it 'does not land in a city it could not run through (§11.3.6)' do
     token!('I50', dsj)
     lay!('H21', '57', 1)

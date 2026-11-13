@@ -166,8 +166,9 @@ module Engine
         end
 
         def build_islands!
-          land_paths = @game.hexes.reject { |hex| @game.sea_zone(hex.id) }
-            .flat_map { |hex| hex.tile.paths.reject(&:terminal?) }
+          land_paths = @game.hexes.flat_map do |hex|
+            hex.tile.paths.reject { |path| path.terminal? || (@game.sea_zone(hex.id) && path.nodes.empty?) }
+          end
           land_paths.each { |path| @parent[path] = path }
           land_paths.each do |path|
             adjacent_paths(path).each { |other| union(path, other) if @parent.key?(other) }
