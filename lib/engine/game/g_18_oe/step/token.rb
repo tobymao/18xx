@@ -23,6 +23,24 @@ module Engine
             super
           end
 
+          def setup
+            super
+            @cross_water_fee = 0
+          end
+
+          def place_token(entity, city, token, **opts)
+            @cross_water_fee = @game.cross_water_token_fee(entity, city)
+            super
+          end
+
+          def pay_token_cost(entity, cost, city)
+            fee = @cross_water_fee
+            super(entity, cost + fee, city)
+            return unless fee.positive?
+
+            @game.log << "#{entity.name} pays #{@game.format_currency(fee)} to cross water"
+          end
+
           def check_connected(entity, city, hex)
             city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
             unless @game.city_in_track_rights?(entity, hex)

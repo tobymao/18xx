@@ -1153,6 +1153,10 @@ module Engine
           (sea_network(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_UNIT
         end
 
+        def cross_water_token_fee(corporation, city)
+          (sea_network(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_UNIT
+        end
+
         def clear_graph
           super
           @sea_networks&.clear

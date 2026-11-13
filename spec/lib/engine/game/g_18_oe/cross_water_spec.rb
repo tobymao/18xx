@@ -123,4 +123,37 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       expect(game.cross_water_tile_fee(gswr, game.hex_by_id('J23'), tile('4', 2))).to eq(5)
     end
   end
+
+  describe 'tokens across water (§11.2.1)' do
+    def or_at_token_step!
+      start_regional!(game, 'DSJ', game.players.first)
+      round = enter_round!(game, game.operating_round(1))
+      act!(round, Engine::Action::Pass.new(dsj))
+      round
+    end
+    let(:christiania) { game.hex_by_id('C48').tile.cities.first }
+
+    it 'charges £40 per sea zone for three zones (§11.2.1 example)' do
+      lnwr = game.corporation_by_id('LNWR')
+      token!('M28', lnwr)
+      expect(game.cross_water_token_fee(lnwr, christiania)).to eq(120)
+    end
+
+    it 'charges the token price plus £40 for one zone' do
+      round = or_at_token_step!
+      cash = dsj.cash
+      act!(round, Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0))
+      expect(cash - dsj.cash).to eq(20 + 40)
+      expect(game.log.map(&:message)).to include('DSJ pays £40 to cross water')
+    end
+
+    it 'charges the same fee on replay, when connectivity is not checked' do
+      round = or_at_token_step!
+      game.clear_graph
+      game.instance_variable_set(:@loading, true)
+      cash = dsj.cash
+      act!(round, Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0))
+      expect(cash - dsj.cash).to eq(20 + 40)
+    end
+  end
 end
