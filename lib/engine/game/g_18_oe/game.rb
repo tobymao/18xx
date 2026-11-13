@@ -422,6 +422,7 @@ module Engine
 
         def setup
           super
+          @sea_networks = {}
           @minor_regional_order = []
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
@@ -1140,6 +1141,20 @@ module Engine
           return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
 
           super
+        end
+
+        def sea_network(corporation)
+          @sea_networks[corporation] ||= SeaNetwork.new(self, corporation)
+        end
+
+        def clear_graph
+          super
+          @sea_networks&.clear
+        end
+
+        def clear_graph_for_entity(entity)
+          super
+          @sea_networks&.clear
         end
 
         def init_graph

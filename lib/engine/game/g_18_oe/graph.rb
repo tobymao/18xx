@@ -6,6 +6,30 @@ module Engine
   module Game
     module G18OE
       class Graph < Engine::Graph
+        def extra_root_hexes(corporation)
+          super.merge(@game.sea_network(corporation).landings) { |_, first, second| first.merge(second) }
+        end
+
+        def extra_root_nodes(corporation)
+          super.merge(@game.sea_network(corporation).landing_nodes.to_h { |node| [node, true] })
+        end
+
+        def compute(corporation, **opts, &block)
+          result = super
+          if !opts[:one_token] && !opts[:routes_only]
+            @game.sea_network(corporation).landings.each_key { |hex| @reachable_hexes[corporation][hex] = true }
+          end
+          result
+        end
+
+        def can_token?(corporation, **opts)
+          super || landing_tokenable_cities(corporation).any?
+        end
+
+        def tokenable_cities(corporation)
+          (super + landing_tokenable_cities(corporation)).uniq
+        end
+
         def walk_token(node, skip_paths:, corporation:, **opts)
           return super unless @game.wcf_placeholder
 
@@ -25,6 +49,14 @@ module Engine
           end
           opts = opts.merge(pruner: nil) if @game.wcf_restricted?(corporation)
           super(node, skip_paths: skip_paths, corporation: corporation, **opts, &walker)
+        end
+
+        private
+
+        def landing_tokenable_cities(corporation)
+          @game.sea_network(corporation).landing_nodes.select do |node|
+            node.city? && node.tokenable?(corporation, free: true)
+          end
         end
       end
     end
