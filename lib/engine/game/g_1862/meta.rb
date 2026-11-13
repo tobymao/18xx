@@ -34,6 +34,26 @@ module Engine
             short_name: 'Long Length',
             desc: 'Use increased train numbers in train roster',
           },
+          {
+            sym: :simple_express,
+            short_name: 'Simple Express',
+            desc: 'Express trains only, recommended for new 18xx players',
+          },
+          {
+            sym: :simple_freight,
+            short_name: 'Simple Freight',
+            desc: 'Freight trains only, recommended for new 1862 players',
+          },
+          {
+            sym: :advanced_express,
+            short_name: 'Advanced Express',
+            desc: 'Express and local trains only',
+          },
+          {
+            sym: :advanced_freight,
+            short_name: 'Advanced Freight',
+            desc: 'Freight and local trains only',
+          },
         ].freeze
 
         GAME_VARIANTS = [
@@ -43,6 +63,12 @@ module Engine
             title: '1862 Solo',
             desc: 'Solo variant',
           },
+        ].freeze
+
+        MUTEX_RULES = 
+        [
+          %i[simple_express simple_freight advanced_express advanced_freight],
+          %i[short_length long_length],      
         ].freeze
       end
     end
