@@ -26,6 +26,7 @@ module Engine
 
           def share_price_change(entity, revenue = 0)
             return super unless entity.type == :national
+            return { share_direction: :right, share_times: 1 } if @game.sold_out?(entity)
 
             { share_direction: :up, share_times: 1 }
           end
