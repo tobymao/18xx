@@ -197,8 +197,10 @@ module Engine
 
         def init_round
           round_num = @draft_round_num || 1
-          G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
+          G1835::Round::Draft.new(self, [
+            G1835::Step::SwapChoice, # we don't actually swap during Draft, but need the round state to be set
+            G1835::Step::Draft,
+            ], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
         end
 
         def new_draft_round
@@ -241,6 +243,7 @@ module Engine
           G1835::Round::Stock.new(self, [
             Engine::Step::HomeToken,
             G1835::Step::MinorExchange,
+            G1835::Step::SwapChoice,
             G1835::Step::BuySellParShares,
           ])
         end
@@ -253,6 +256,24 @@ module Engine
           return super if share_holder.player? && major?(corporation)
 
           []
+        end
+
+        def shares_for_presidency_swap(shares, num_shares)
+          shares_taken = []
+          num_shares_taken = 0
+
+          shares.each do |share|
+            break if num_shares_taken >= num_shares
+
+            shares_taken << share
+            num_shares_taken += share.num_shares(ceil: false)
+          end
+
+          if num_shares_taken != num_shares
+            raise GameError, "Could not find exactly #{num_shares} while searching for shares to swap. Found #{num_shares_taken}."
+          end
+
+          shares_taken
         end
 
         def maybe_ipo_next_block(corporation)
