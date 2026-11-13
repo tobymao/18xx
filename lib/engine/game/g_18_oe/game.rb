@@ -273,8 +273,8 @@ module Engine
         ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
         TILE_POINT_BUDGET = { minor: 3, regional: 3, major: 6, national: 9 }.freeze
         MINOR_MAX_TREASURY = 180
-        TILE_FEE_PER_UNIT = 5
-        TOKEN_FEE_PER_UNIT = 20
+        TILE_FEE_PER_FERRY_DISTANCE = 5
+        TOKEN_FEE_PER_FERRY_DISTANCE = 20
         EF_TERRAIN_AUGMENT          = { 'E' => %i[water river lake], 'F' => %i[mountain hill] }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
@@ -1150,11 +1150,11 @@ module Engine
         end
 
         def cross_water_tile_fee(corporation, hex, tile)
-          (sea_network(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_UNIT
+          (sea_network(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_FERRY_DISTANCE
         end
 
         def cross_water_token_fee(corporation, city)
-          (sea_network(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_UNIT
+          (sea_network(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_FERRY_DISTANCE
         end
 
         def clear_graph
