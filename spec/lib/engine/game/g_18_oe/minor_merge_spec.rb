@@ -221,6 +221,24 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     expect(minor).to be_closed
   end
 
+  it 'drops the memoized sea network when a minor token is replaced (§10.5)' do
+    major
+    city = place_minor_token!('Q38')
+    merge!
+    before = game.sea_network(major)
+    act!(round, Engine::Action::PlaceToken.new(major, city: city, slot: 0))
+    expect(game.sea_network(major)).not_to equal(before)
+  end
+
+  it 'drops the memoized sea network when a minor token is declined (§10.5)' do
+    major
+    place_minor_token!('Q38')
+    merge!
+    before = game.sea_network(major)
+    act!(round, Engine::Action::Pass.new(major))
+    expect(game.sea_network(major)).not_to equal(before)
+  end
+
   it 'rejects replacing a minor token in another city (§10.5)' do
     major
     place_minor_token!('Q38')
