@@ -65,7 +65,7 @@ describe 'G18OE sea network (§11.3.6, §11.3.7)' do
   it 'starts at an offshore anchor of the token hex but not at an unconnected exit port' do
     token!('I50', dsj)
     expect(network.anchor_costs(game.hex_by_id('I50'))[:offshore]).to eq(0)
-    expect(network.anchor_costs(game.hex_by_id('I50'))[5]).not_to eq(0)
+    expect(network.anchor_costs(game.hex_by_id('I50'))[5]).to eq(4)
   end
 
   it 'reaches a public port two zones away at 4 units and marks only the port edge' do
@@ -105,6 +105,12 @@ describe 'G18OE sea network (§11.3.6, §11.3.7)' do
     lay!('S86', '4', 1)
     lay!('S84', '58', 4)
     expect(network.hex_cost(game.hex_by_id('S86'))).to eq(0)
+  end
+
+  it 'does not join an offshore anchor to the track of a city it could not run through (§11.3.6)' do
+    expect(network.anchor_island_ids('L37', :offshore)).not_to be_empty
+    token!('L37', game.corporation_by_id('GSWR'))
+    expect(network.anchor_island_ids('L37', :offshore)).to be_empty
   end
 
   it 'does not land in a city it could not run through (§11.3.6)' do

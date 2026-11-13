@@ -45,7 +45,7 @@ module Engine
         def anchor_island_ids(hex_id, exit)
           hex = @game.hex_by_id(hex_id)
           paths = if exit == :offshore
-                    hex.tile.cities.flat_map(&:paths)
+                    hex.tile.cities.reject { |city| city.blocks?(@corporation) }.flat_map(&:paths)
                   else
                     hex.paths[exit] || []
                   end
@@ -93,7 +93,7 @@ module Engine
           landing_anchors.flat_map do |hex_id, exit|
             tile = @game.hex_by_id(hex_id).tile
             nodes = exit == :offshore ? tile.cities : tile.paths.select { |path| path.exits.include?(exit) }.flat_map(&:nodes)
-            nodes.reject { |node| node.city? && node.blocks?(@corporation) }
+            nodes.reject { |node| node.blocks?(@corporation) }
           end.uniq
         end
 
@@ -186,7 +186,7 @@ module Engine
             adjacent.concat(neighbor.paths[hex.invert(edge)])
           end
           path.nodes.each do |node|
-            adjacent.concat(node.paths) if !node.city? || !node.blocks?(@corporation)
+            adjacent.concat(node.paths) unless node.blocks?(@corporation)
           end
           adjacent
         end

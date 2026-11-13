@@ -52,7 +52,8 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
   it 'keeps the offshore city reachable after a routes-only compute (§11.3.6)' do
     token!('I50', dsj)
     landing = { game.hex_by_id('C48') => { 0 => true } }
-    allow(game).to receive(:sea_network).with(dsj).and_return(double(landings: landing, landing_nodes: []))
+    nodes = [game.hex_by_id('C48').tile.cities.first]
+    allow(game).to receive(:sea_network).with(dsj).and_return(double(landings: landing, landing_nodes: nodes))
     game.clear_graph
     game.graph.route_info(dsj)
     expect(game.graph.reachable_hexes(dsj)).to have_key(game.hex_by_id('C48'))
@@ -64,6 +65,18 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     token!('H21', game.corporation_by_id('GSWR'))
     game.clear_graph
     expect(game.graph.connected_nodes(dsj)).not_to have_key(game.hex_by_id('H21').tile.cities.first)
+  end
+
+  it 'does not run through an offboard reached only by sea (§11.3.6)' do
+    token!('I50', dsj)
+    game.clear_graph
+    expect(game.graph.connected_hexes(dsj)).not_to have_key(game.hex_by_id('AF49'))
+  end
+
+  it 'offers no hex it cannot token from a home token alone (§11.2.1)' do
+    token!('I50', dsj)
+    game.clear_graph
+    expect(game.graph.reachable_hexes(dsj)).not_to have_key(game.hex_by_id('D57'))
   end
 
   it 'keeps ports out of the merge graph (§10.5)' do
@@ -115,6 +128,14 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       act!(round, Engine::Action::LayTile.new(dsj, tile: tile('4', 0), hex: game.hex_by_id('D41'), rotation: 0))
       expect(cash - dsj.cash).to eq(36 + 10)
       expect(game.log.map(&:message)).to include('DSJ pays £10 to cross water')
+    end
+
+    it 'charges the fee for the rotation in the action when the tile arrives unrotated, as on replay' do
+      round = or_with_dsj!
+      unrotated = tile('4', 1)
+      cash = dsj.cash
+      act!(round, Engine::Action::LayTile.new(dsj, tile: unrotated, hex: game.hex_by_id('D41'), rotation: 0))
+      expect(cash - dsj.cash).to eq(36 + 10)
     end
 
     it 'charges £5 per ferry distance when the ferry is cheaper than the ports' do

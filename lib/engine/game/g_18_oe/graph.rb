@@ -19,12 +19,12 @@ module Engine
           reachable = @reachable_hexes[corporation]
           return result if opts[:one_token] || !reachable
 
-          @game.sea_network(corporation).landings.each_key { |hex| reachable[hex] = true }
+          @game.sea_network(corporation).landing_nodes.each { |node| reachable[node.hex] = true }
           result
         end
 
         def can_token?(corporation, **opts)
-          super || landing_tokenable_cities(corporation).any?
+          super || !landing_tokenable_cities(corporation).empty?
         end
 
         def tokenable_cities(corporation)
