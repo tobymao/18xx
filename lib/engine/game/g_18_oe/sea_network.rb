@@ -18,6 +18,8 @@ module Engine
           @island_ids = {}
           build_islands!
           build_anchors!
+          build_edges!
+          @costs = shortest_costs(start_nodes)
         end
 
         def usable?(hex_id, exit)
@@ -50,7 +52,118 @@ module Engine
           paths.map { |path| island_of(path) }.compact.uniq
         end
 
+        def hex_cost(hex)
+          return 0 if @token_hex_ids.include?(hex.id)
+
+          cheapest(island_costs(hex.tile.paths + neighbor_paths(hex, hex.neighbors.keys)))
+        end
+
+        def anchor_costs(hex)
+          @anchors.each_with_object({}) do |((hex_id, exit), data), costs|
+            next if hex_id != hex.id || !data[:port] || !usable?(hex_id, exit)
+
+            costs[exit] = @costs[[hex_id, exit]] if @costs.key?([hex_id, exit])
+          end
+        end
+
+        def tile_cost(hex, tile)
+          return 0 if @token_hex_ids.include?(hex.id)
+
+          paths = hex.tile.paths + neighbor_paths(hex, tile.exits)
+          anchors = anchor_costs(hex).keys.select { |exit| exit == :offshore || tile.exits.include?(exit) }
+          cheapest(island_costs(paths) + anchors.map { |exit| @costs[[hex.id, exit]] })
+        end
+
+        def city_cost(city)
+          return 0 if @token_cities.include?(city)
+
+          offshore = @costs[[city.hex.id, :offshore]] if @anchors.key?([city.hex.id, :offshore])
+          cheapest(island_costs(city.paths) + [offshore])
+        end
+
+        def landings
+          landing_anchors.each_with_object({}) do |(hex_id, exit), result|
+            hex = @game.hex_by_id(hex_id)
+            edges = exit == :offshore ? hex.neighbors.keys : [exit]
+            edges.each { |edge| (result[hex] ||= {})[edge] = true }
+          end
+        end
+
+        def landing_nodes
+          landing_anchors.flat_map do |hex_id, exit|
+            tile = @game.hex_by_id(hex_id).tile
+            nodes = exit == :offshore ? tile.cities : tile.paths.select { |path| path.exits.include?(exit) }.flat_map(&:nodes)
+            nodes.reject { |node| node.city? && node.blocks?(@corporation) }
+          end.uniq
+        end
+
         private
+
+        def landing_anchors
+          @anchors.keys.select do |hex_id, exit|
+            @anchors[[hex_id, exit]][:port] && usable?(hex_id, exit) && @costs.key?([hex_id, exit])
+          end
+        end
+
+        def neighbor_paths(hex, edges)
+          edges.flat_map do |edge|
+            neighbor = hex.neighbors[edge]
+            neighbor ? neighbor.paths[hex.invert(edge)] || [] : []
+          end
+        end
+
+        def island_costs(paths)
+          paths.map { |path| island_of(path) }.compact.uniq.map { |id| @costs[id] }
+        end
+
+        def cheapest(costs)
+          costs.compact.min
+        end
+
+        def build_edges!
+          @edges = Hash.new { |hash, key| hash[key] = [] }
+          @anchors.each do |(hex_id, exit), data|
+            key = [hex_id, exit]
+            anchor_island_ids(hex_id, exit).each { |id| link!(key, id, 0) }
+            ferry_links(hex_id, exit).each { |other, distance| link!(key, other, distance) if @anchors.key?(other) }
+            zone = data[:port] && usable?(hex_id, exit) && @game.port_sea_zone(hex_id, exit)
+            next unless zone
+
+            @edges[key] << [zone, ZONE_UNITS]
+            @edges[zone] << [key, 0] unless @token_hex_ids.include?(hex_id)
+          end
+          @game.sea_zone_neighbors.each do |zone, others|
+            others.each { |other| @edges[zone] << [other, ZONE_UNITS] }
+          end
+        end
+
+        def link!(first, second, weight)
+          @edges[first] << [second, weight]
+          @edges[second] << [first, weight]
+        end
+
+        def start_nodes
+          starts = @token_cities.flat_map { |city| city.paths.map { |path| island_of(path) } }.compact
+          @token_cities.each do |city|
+            hex_id = city.hex.id
+            starts << [hex_id, :offshore] if @anchors.key?([hex_id, :offshore])
+            city.paths.flat_map(&:exits).uniq.each { |exit| starts << [hex_id, exit] if @anchors.key?([hex_id, exit]) }
+          end
+          starts.uniq
+        end
+
+        def shortest_costs(starts)
+          costs = starts.to_h { |node| [node, 0] }
+          settled = {}
+          while (node = costs.keys.reject { |key| settled[key] }.min_by { |key| costs[key] })
+            settled[node] = true
+            @edges[node].each do |other, weight|
+              candidate = costs[node] + weight
+              costs[other] = candidate if !settled[other] && (!costs.key?(other) || candidate < costs[other])
+            end
+          end
+          costs
+        end
 
         def build_islands!
           land_paths = @game.hexes.reject { |hex| @game.sea_zone(hex.id) }

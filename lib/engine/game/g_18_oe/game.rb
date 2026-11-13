@@ -1274,7 +1274,9 @@ module Engine
             neighbors = self.class::SEA_ZONES.keys.to_h { |zone| [zone, []] }
             self.class::SEA_ZONES.each do |zone, data|
               data[:hexes].each do |id|
-                hex_by_id(id).all_neighbors.each_value do |neighbor|
+                next unless (hex = hex_by_id(id))
+
+                hex.all_neighbors.each_value do |neighbor|
                   other = sea_zone(neighbor.id)
                   neighbors[zone] << other if other && other != zone
                 end

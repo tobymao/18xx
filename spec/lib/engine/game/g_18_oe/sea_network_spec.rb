@@ -56,4 +56,45 @@ describe 'G18OE sea network (§11.3.6, §11.3.7)' do
     expect(anchors).to have_key(['M28', :offshore])
     expect(anchors.keys.map(&:first)).to all(satisfy { |id| uk_fr.hex_by_id(id) })
   end
+
+  it 'has nothing reachable for a corporation without tokens' do
+    expect(network.landings).to eq({})
+    expect(network.hex_cost(game.hex_by_id('K60'))).to be_nil
+  end
+
+  it 'starts at an offshore anchor of the token hex but not at an unconnected exit port' do
+    token!('I50', dsj)
+    expect(network.anchor_costs(game.hex_by_id('I50'))).to eq({ offshore: 0 })
+  end
+
+  it 'reaches a public port two zones away at 4 units and marks only the port edge' do
+    token!('I50', dsj)
+    expect(network.anchor_costs(game.hex_by_id('K60'))).to eq({ 3 => 4 })
+    expect(network.landings[game.hex_by_id('K60')]).to eq({ 3 => true })
+    expect(network.landing_nodes).not_to include(game.hex_by_id('K60').tile.towns.first)
+    lay!('K60', '4', 0)
+    expect(network.landing_nodes).to include(game.hex_by_id('K60').tile.towns.first)
+  end
+
+  it 'prices a ferry crossing below the port crossing (§11.1.6)' do
+    gswr = game.corporation_by_id('GSWR')
+    token!('I20', gswr)
+    tile = game.tiles.find { |t| t.name == '4' && !t.hex }.tap { |t| t.rotate!(2) }
+    expect(network(gswr).tile_cost(game.hex_by_id('J23'), tile)).to eq(1)
+  end
+
+  it 'connects an offshore city directly at one zone (§11.3.6)' do
+    token!('I50', dsj)
+    christiania = game.hex_by_id('C48').tile.cities.first
+    expect(network.city_cost(christiania)).to eq(2)
+    expect(network.landings[game.hex_by_id('C48')].keys.sort).to eq([0, 1, 2, 3, 4, 5])
+    expect(network.landing_nodes).to include(christiania)
+  end
+
+  it 'does not land in a city it could not run through (§11.3.6)' do
+    token!('I50', dsj)
+    lay!('H21', '57', 1)
+    token!('H21', game.corporation_by_id('GSWR'))
+    expect(network.landing_nodes).not_to include(game.hex_by_id('H21').tile.cities.first)
+  end
 end
