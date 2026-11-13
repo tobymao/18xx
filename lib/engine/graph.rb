@@ -154,7 +154,7 @@ module Engine
       home_hex_nodes(corporation)
     end
 
-    # Called from #compute when @home_is_token is true.
+    # Called from #extra_root_hexes when @home_as_token is true.
     # Returns a hash whose keys are the Engine::Hex objects for each hex in the
     # entity's coordinates list. The values are hashes with keys that are the
     # edge numbers of all adjacent hexes and values of +true+.
@@ -167,7 +167,7 @@ module Engine
       home_hexes
     end
 
-    # Called from #compute when @home_is_token is true.
+    # Called from #extra_root_nodes when @home_as_token is true.
     # Returns a hash whose keys are the nodes (either Engine::Part::City or
     # Engine::Part::Town objects) for nodes in the hexes that are in the
     # entity's coordinates list. The value for each item is +true+.
