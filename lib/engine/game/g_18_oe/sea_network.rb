@@ -130,7 +130,7 @@ module Engine
             next unless zone
 
             @edges[key] << [zone, ZONE_UNITS]
-            @edges[zone] << [key, 0] unless @token_hex_ids.include?(hex_id)
+            @edges[zone] << [key, 0]
           end
           @game.sea_zone_neighbors.each do |zone, others|
             others.each { |other| @edges[zone] << [other, ZONE_UNITS] }

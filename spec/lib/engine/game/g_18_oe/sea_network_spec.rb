@@ -64,7 +64,8 @@ describe 'G18OE sea network (§11.3.6, §11.3.7)' do
 
   it 'starts at an offshore anchor of the token hex but not at an unconnected exit port' do
     token!('I50', dsj)
-    expect(network.anchor_costs(game.hex_by_id('I50'))).to eq({ offshore: 0 })
+    expect(network.anchor_costs(game.hex_by_id('I50'))[:offshore]).to eq(0)
+    expect(network.anchor_costs(game.hex_by_id('I50'))[5]).not_to eq(0)
   end
 
   it 'reaches a public port two zones away at 4 units and marks only the port edge' do
