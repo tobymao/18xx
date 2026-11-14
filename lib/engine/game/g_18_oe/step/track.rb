@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
-require_relative 'cross_water_fee'
 require_relative 'skip_abbreviated_round'
 
 module Engine
@@ -9,7 +8,6 @@ module Engine
     module G18OE
       module Step
         class Track < Engine::Step::Track
-          include CrossWaterFee
           include SkipAbbreviatedRound
 
           def setup
@@ -42,9 +40,8 @@ module Engine
             raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && points_cost > points_available
 
             tile.rotate!(action.rotation)
-            fee = cross_water_fee!(action) { @game.cross_water_tile_fee(action.entity, action.hex, tile) }
-            lay_tile(action)
-            pay_cross_water_fee!(action.entity, fee)
+            action.extra_cost = cross_water_fee(action) unless @game.loading
+            lay_tile(action, extra_cost: action.extra_cost || 0)
             @game.log << "Used #{points_cost} tile point(s) to lay tile"
             @game.log << "#{points_available - points_cost} point(s) remaining"
             @game.fulfill_patronage!(action.entity, action.hex)
@@ -70,6 +67,15 @@ module Engine
             return nil if cost > points_available
 
             connected
+          end
+
+          private
+
+          def cross_water_fee(action)
+            fee = @game.cross_water_tile_fee(action.entity, action.hex, action.tile)
+            return fee if !action.extra_cost || action.extra_cost == fee
+
+            raise GameError, "Cross-water fee is #{@game.format_currency(fee)}, not #{@game.format_currency(action.extra_cost)}"
           end
         end
       end

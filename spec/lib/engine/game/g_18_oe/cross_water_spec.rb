@@ -127,7 +127,7 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       cash = dsj.cash
       act!(round, Engine::Action::LayTile.new(dsj, tile: tile('4', 0), hex: game.hex_by_id('D41'), rotation: 0))
       expect(cash - dsj.cash).to eq(36 + 10)
-      expect(game.log.map(&:message)).to include('DSJ pays £10 to cross water')
+      expect(game.log.map(&:message)).to include('DSJ spends £46 and lays tile #4 with rotation 0 on D41 (Stavanger)')
     end
 
     it 'charges the fee for the rotation in the action when the tile arrives unrotated, as on replay' do
@@ -142,7 +142,7 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       round = or_with_dsj!
       action = Engine::Action::LayTile.new(dsj, tile: tile('4', 0), hex: game.hex_by_id('D41'), rotation: 0)
       act!(round, action)
-      expect(action.cost).to eq(10)
+      expect(action.extra_cost).to eq(10)
     end
 
     it 'trusts the recorded fee on replay without building a sea network' do
@@ -150,17 +150,16 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       game.instance_variable_set(:@loading, true)
       expect(Engine::Game::G18OE::SeaNetwork).not_to receive(:new)
       cash = dsj.cash
-      act!(round, Engine::Action::LayTile.new(dsj, tile: tile('4', 1), hex: game.hex_by_id('D41'), rotation: 0, cost: 10))
+      act!(round, Engine::Action::LayTile.new(dsj, tile: tile('4', 1), hex: game.hex_by_id('D41'), rotation: 0, extra_cost: 10))
       expect(cash - dsj.cash).to eq(36 + 10)
-      expect(game.log.map(&:message)).to include('DSJ pays £10 to cross water')
     end
 
     it 'rejects a recorded fee that differs from the computed one' do
       round = or_with_dsj!
       expect do
-        act!(round, Engine::Action::LayTile.new(dsj, tile: tile('4', 0), hex: game.hex_by_id('D41'), rotation: 0, cost: 20))
+        act!(round, Engine::Action::LayTile.new(dsj, tile: tile('4', 0), hex: game.hex_by_id('D41'), rotation: 0, extra_cost: 20))
       end
-        .to raise_error(Engine::GameError, /does not match/)
+        .to raise_error(Engine::GameError, /Cross-water fee is £10, not £20/)
     end
 
     it 'charges £5 per ferry distance when the ferry is cheaper than the ports' do
@@ -190,32 +189,31 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       cash = dsj.cash
       act!(round, Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0))
       expect(cash - dsj.cash).to eq(20 + 40)
-      expect(game.log.map(&:message)).to include('DSJ pays £40 to cross water')
+      expect(game.log.map(&:message)).to include('DSJ places a token on C48 (Christiania)  for £60')
     end
 
     it 'records the fee on the action' do
       round = or_at_token_step!
       action = Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0)
       act!(round, action)
-      expect(action.cost).to eq(40)
+      expect(action.cost).to eq(60)
     end
 
     it 'trusts the recorded fee on replay without building a sea network' do
       round = or_at_token_step!
       game.clear_graph
       game.instance_variable_set(:@loading, true)
-      action = Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0, cost: 40)
+      action = Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0, cost: 60)
       expect(Engine::Game::G18OE::SeaNetwork).not_to receive(:new)
       cash = dsj.cash
       round.active_step.process_place_token(action)
       expect(cash - dsj.cash).to eq(20 + 40)
-      expect(game.log.map(&:message)).to include('DSJ pays £40 to cross water')
     end
 
     it 'rejects a recorded fee that differs from the computed one' do
       round = or_at_token_step!
       expect { act!(round, Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0, cost: 20)) }
-        .to raise_error(Engine::GameError, /does not match/)
+        .to raise_error(Engine::GameError, /Token costs £60, not £20/)
     end
   end
 end
