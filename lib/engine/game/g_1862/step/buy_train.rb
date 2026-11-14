@@ -181,7 +181,7 @@ module Engine
 
           def room_for_any_type?(entity)
             trains = entity.trains.group_by { |t| @game.train_type(t) }
-            trains.keys.size < 3 || trains.values.any? { |v| v.size < @game.train_limit_by_type(entity) }
+            trains.keys.size < @game.train_types.size || trains.values.any? { |v| v.size < @game.train_limit_by_type(entity) }
           end
 
           def room_for_type?(entity, type)

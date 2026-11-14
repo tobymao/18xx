@@ -199,7 +199,60 @@ module Engine
           },
         ].freeze
 
+        SIMPLE_TRAIN_LIMIT = { 'A' => 4, 'B' => 4, 'C' => 4, 'D' => 4, 'E' => 3, 'F' => 3, 'G' => 2, 'H' => 2 }.freeze
+
+        def game_phases
+          return super unless single_train_type?
+
+          super.map do |phase|
+            phase.merge(
+              train_limit: SIMPLE_TRAIN_LIMIT[phase[:name]],
+              status: phase[:status].grep_v(/_(per|total)\z/),
+            )
+          end
+        end
+
         def game_trains
+          all_game_trains.map do |train|
+            train.merge(variants: train[:variants].select { |variant| train_type_offered?(variant[:name]) })
+          end
+        end
+
+        TRAIN_RULE_TYPES = {
+          simple_freight: %i[freight],
+          simple_express: %i[express],
+          advanced_freight: %i[freight local],
+          advanced_express: %i[express local],
+        }.freeze
+
+        def train_types
+          rule = TRAIN_RULE_TYPES.keys.find { |name| @optional_rules&.include?(name) }
+          rule ? TRAIN_RULE_TYPES[rule] : %i[freight express local]
+        end
+
+        def permit_deck
+          case train_types.size
+          when 1
+            Array.new(@players.size < 7 ? 16 : 18, train_types.first)
+          when 2
+            train_types.flat_map { |type| Array.new(8, type) }
+          else
+            permits = 6.times.flat_map { %i[freight express local] }
+            permits.pop(2) if @players.size < 7
+            permits
+          end
+        end
+
+        def train_type_offered?(name)
+          type = train_type_by_name(name)
+          type.nil? || train_types.include?(type)
+        end
+
+        def single_train_type?
+          train_types.size == 1
+        end
+
+        def all_game_trains
           [
             {
               name: 'A',
@@ -463,9 +516,9 @@ module Engine
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'three_per' => ['3 per kind',
-                          'Limit of 3 trains of each kind (Freight/Local/Express)'],
+                          'Limit of 3 trains of each kind'],
           'two_per' => ['2 per kind',
-                        'Limit of 2 trains of each kind (Freight/Local/Express)'],
+                        'Limit of 2 trains of each kind'],
           'three_total' => ['3 total',
                             'Limit of 3 trains total'],
           'first_rev' => ['First offboard',
@@ -550,6 +603,10 @@ module Engine
         end
 
         def setup
+          if (Array(@optional_rules) & TRAIN_RULE_TYPES.keys).size > 1
+            raise GameError, 'Only one train rule (simple or advanced) can be used'
+          end
+
           @cached_freight_sets = nil
           @global_stops = nil
           @deferred_rust = []
@@ -595,8 +652,7 @@ module Engine
           @chartered = {}
 
           # randomize and distribute train permits
-          permit_list = 6.times.flat_map { %i[freight express local] }
-          permit_list.pop(2) if @players.size < 7
+          permit_list = permit_deck
           permit_list.sort_by! { rand }
           @permits = Hash.new { |h, k| h[k] = [] }
           @original_permits = Hash.new { |h, k| h[k] = [] }
@@ -1718,7 +1774,9 @@ module Engine
         end
 
         def train_limit(entity)
-          @phase.train_limit(entity) * (@phase.available?('G') ? 1 : 3)
+          return train_limit_by_type(entity) if single_train_type?
+
+          @phase.train_limit(entity) * (@phase.available?('G') ? 1 : train_types.size)
         end
 
         def train_limit_by_type(entity)
