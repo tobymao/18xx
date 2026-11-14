@@ -67,10 +67,11 @@ module Engine
             sym: 'PAF',
             abilities: [
               {
-                type: 'choose_ability',
+                type: 'exchange',
+                corporations: %w[TEC GUA EXP LOR],
                 owner_type: 'player',
-                when: 'stock_round',
-                choices: %w[exchange_faction],
+                when: 'owning_player_sr_turn',
+                from: 'ipo',
               },
             ],
             color: nil,
@@ -197,6 +198,7 @@ module Engine
             coordinates: nil,
             color: '#e8940a',
             type: :faction,
+            always_market_price: true,
             desc: 'Path of Reason. Opposition: Guardians.',
           },
           {
@@ -210,6 +212,7 @@ module Engine
             coordinates: nil,
             color: '#e07868',
             type: :faction,
+            always_market_price: true,
             desc: 'Path of Tradition. Opposition: Expansionists.',
           },
           {
@@ -223,6 +226,7 @@ module Engine
             coordinates: nil,
             color: '#b83421',
             type: :faction,
+            always_market_price: true,
             desc: 'Path of Faith. Opposition: Technicians.',
           },
           {
@@ -236,6 +240,7 @@ module Engine
             coordinates: nil,
             color: '#f1d538',
             type: :faction,
+            always_market_price: true,
             desc: 'Path of Progress. Opposition: Lords.',
           },
         ].freeze

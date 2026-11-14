@@ -6,6 +6,11 @@ require_relative 'map'
 require_relative 'entities'
 require_relative 'faction'
 require_relative 'tiles'
+require_relative 'stock_market'
+require_relative 'round/stock'
+require_relative 'step/buy_sell_par_shares'
+require_relative 'step/home_token'
+require_relative 'step/exchange'
 require_relative 'step/buy_cert'
 require_relative 'step/dividend'
 require_relative 'step/special_track'
@@ -79,6 +84,12 @@ module Engine
           %w[0c,arrow:none 0c,arrow:none],
           %w[70r 80r 100r 120r 140r 160r 190r 220r 250r,arrow:none],
         ].freeze
+
+        FACTION_ROW = 9
+
+        FACTION_START_PRICE = 70
+
+        FACTION_RESERVED_CITIES = %w[F3 G8 K14 M8].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           close: :orange,
@@ -412,10 +423,18 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          GFrost1831::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::BuySellParShares,
+            GFrost1831::Step::HomeToken,
+            GFrost1831::Step::Exchange,
+            GFrost1831::Step::BuySellParShares,
           ])
+        end
+
+        def init_stock_market
+          GFrost1831::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                      multiple_buy_types: self.class::MULTIPLE_BUY_TYPES,
+                                      sold_out_top_row_movement: self.class::SOLD_OUT_TOP_ROW_MOVEMENT)
         end
 
         def operating_round(round_num)
@@ -437,9 +456,40 @@ module Engine
           @parliament_open
         end
 
+        # Factions start on their Parliament track at £70
         def event_parliament_opens!
           @log << "-- Event: New London's Parliament opens! --"
           @parliament_open = true
+
+          start_price = stock_market.market[FACTION_ROW].find { |p| p&.price == FACTION_START_PRICE }
+          factions.each do |faction|
+            faction.ipoed = true
+            faction.par_price = start_price
+            faction.share_price = start_price
+            start_price.corporations << faction
+          end
+        end
+
+        def faction_share_price(faction)
+          faction.share_price.price
+        end
+
+        def operating_order
+          super.reject { |c| c.type == :faction }
+        end
+
+        def sold_shares_destination(corporation)
+          corporation.type == :faction ? :corporation : super
+        end
+
+        def sold_out_increase?(corporation)
+          corporation.type != :faction && super
+        end
+
+        def available_faction_cities
+          FACTION_RESERVED_CITIES.select do |hex_id|
+            hex_by_id(hex_id).tile.cities.first.tokens.none? { |t| t&.corporation&.type == :faction }
+          end
         end
 
         def faction_display_name(faction_sym)
@@ -545,6 +595,8 @@ module Engine
         end
 
         def update_ownership_limit_for(corporation)
+          return if corporation.type == :faction
+
           corporation.max_ownership_percent =
             if corporation.share_price&.type == :no_cert_limit
               self.class::NO_CERT_LIMIT_OWNERSHIP
