@@ -113,4 +113,26 @@ describe 'G18OE auto-router over sea (§11.3.4, §11.3.8)' do
 
     expect(stops).to include(contain_exactly(town('D41'), city('B41'), city('G26')))
   end
+
+  it 'rides the public Edinburgh ferry from a city reached by land without an Edinburgh token (§11.3.7)' do
+    lay_code!('H25', 'city=revenue:20;path=a:3,b:_0')
+    lay_code!('G26', 'city=revenue:20;path=a:0,b:_0')
+    token!('H25', corp)
+    stops = routes_for(four).map(&:visited_stops)
+
+    expect(stops).to include(contain_exactly(city('H25'), city('G26'), city('B41')))
+  end
+
+  it 'walks the public Edinburgh ferry from a root reaching Edinburgh by land without a token there (§11.3.7)' do
+    lay_code!('H25', 'city=revenue:20;path=a:3,b:_0')
+    lay_code!('G26', 'city=revenue:20;path=a:0,b:_0')
+    token!('H25', corp)
+    ferries = []
+    game.graph.walk_routes(city('H25'), corporation: corp, skip_paths: nil) do |path, _visited_paths, _visited|
+      ferries << path if path.respond_to?(:kind) && path.kind == :ferry
+      nil
+    end
+
+    expect(ferries.map { |ferry| ferry.nodes.map(&:hex).map(&:id) }).to include(%w[G26 B41])
+  end
 end

@@ -57,7 +57,7 @@ module Engine
             walkers: {},
             visited: {},
           }
-          @game.port_anchors(node, corporation).each do |anchor|
+          root_anchors(node, corporation).each do |anchor|
             depart(context, node, anchor, {}, nil) if anchor[1] == :offshore
           end
           walk_token(node, visited: context[:visited], corporation: corporation, skip_paths: skip_paths, **opts,
@@ -101,6 +101,17 @@ module Engine
           end
         end
 
+        def root_anchors(node, corporation)
+          anchors = @game.port_anchors(node, corporation)
+          offshore = [node.hex.id, :offshore]
+          anchors << offshore if node.city? && !anchors.include?(offshore) && @game.pathless_ferry_partner(offshore)
+          anchors
+        end
+
+        def departable?(usable, anchor)
+          usable[anchor] || @game.pathless_ferry_partner(anchor)
+        end
+
         def sea_walker(context, landing_hex)
           context[:walkers][landing_hex] ||= proc do |path, visited_paths, visited|
             result = context[:block].call(path, visited_paths, visited)
@@ -110,10 +121,11 @@ module Engine
             path.nodes.each do |node|
               hex_id = node.hex.id
               path.exits.each do |exit|
-                depart(context, node, [hex_id, exit], visited_paths, landing_hex, path) if usable[[hex_id, exit]]
+                anchor = [hex_id, exit]
+                depart(context, node, anchor, visited_paths, landing_hex, path) if departable?(usable, anchor)
               end
               offshore = [hex_id, :offshore]
-              depart(context, node, offshore, visited_paths, landing_hex, path) if !visited[node] && usable[offshore]
+              depart(context, node, offshore, visited_paths, landing_hex, path) if !visited[node] && departable?(usable, offshore)
             end
             result
           end
@@ -121,7 +133,7 @@ module Engine
 
         def depart(context, node, anchor, visited_paths, landing_hex, path = nil)
           level = context[:level]
-          if node.hex != landing_hex
+          if node.hex != landing_hex && context[:usable][anchor]
             context[:ports].each do |target|
               next if target[0] == node.hex.id
 
