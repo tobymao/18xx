@@ -1480,7 +1480,11 @@ module Engine
       end
 
       def compute_other_paths(routes, route)
-        routes.reject { |r| r == route }.flat_map(&:paths)
+        routes.reject { |r| r == route }.flat_map(&:paths).reject { |path| route_path_shareable?(path) }
+      end
+
+      def route_path_shareable?(_path)
+        false
       end
 
       def city_tokened_by?(city, entity)
@@ -1506,6 +1510,8 @@ module Engine
 
         routes.each do |route|
           route.paths.each do |path|
+            next if route_path_shareable?(path)
+
             a = path.a
             b = path.b
 

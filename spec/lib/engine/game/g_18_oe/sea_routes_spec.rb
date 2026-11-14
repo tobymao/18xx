@@ -376,4 +376,41 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       expect { game.check_other(route) }.not_to raise_error
     end
   end
+
+  describe 'shared sea traffic (§11.3.8)' do
+    include_context 'with 18OE route helpers'
+
+    let(:corp) { game.corporation_by_id('DSJ') }
+    let(:four) { buy_train!('4') }
+    let(:three) { buy_train!('3') }
+
+    before do
+      baltic!
+      token!('I50', corp)
+      token!('I52', corp)
+    end
+
+    def pair(first, second)
+      first.routes = second.routes = [first, second]
+      [first, second]
+    end
+
+    def shared_pair(from, to)
+      pair(explicit_route(four, from, to), explicit_route(three, from, to))
+    end
+
+    it 'lets two trains make the same crossing and ride the same ferry, but not reuse land track (row 13)' do
+      expect { game.check_overlap(shared_pair(city('I50'), city('I52'))) }.not_to raise_error
+      expect { game.check_overlap(shared_pair(town('H55'), town('K60'))) }.not_to raise_error
+      expect { game.check_overlap(shared_pair(city('I52'), town('H55'))) }.to raise_error(Engine::GameError, /reuse track/)
+    end
+
+    it 'still offers the ferry to a second train (row 14)' do
+      first = explicit_route(four, town('H55'), town('K60'))
+      second = Engine::Route.new(game, game.phase, three, routes: [])
+      first.routes = second.routes = [first, second]
+
+      expect(second.select(town('H55'), town('K60')).size).to eq(2)
+    end
+  end
 end

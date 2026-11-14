@@ -1379,6 +1379,10 @@ module Engine
           ferry_track?(path) || path.exits.any? { |exit| port_exit?(path.hex.id, exit) }
         end
 
+        def route_path_shareable?(path)
+          sea_traffic?(path)
+        end
+
         def port_token_reduction(phase)
           self.class::PORT_TOKEN_REDUCTION[phase.name]
         end
