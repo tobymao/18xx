@@ -2,6 +2,7 @@
 
 require_relative '../../../step/special_track'
 require_relative '../../../step/track_lay_when_company_sold'
+require_relative 'new_london_route'
 
 module Engine
   module Game
@@ -9,6 +10,7 @@ module Engine
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
           include Engine::Step::TrackLayWhenCompanySold
+          include NewLondonRoute
 
           def blocking_for_sold_company?
             return false unless super

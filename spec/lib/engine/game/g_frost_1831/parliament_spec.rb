@@ -100,7 +100,7 @@ module Engine
 
             expect(game.faction_influence_gain('LOR')).to be(false)
             expect(game.faction_influence('LOR')).to eq(6)
-            expect(messages).to include('Lords has reached the limit of 6 Influence in Parliament (cube discarded)')
+            expect(messages).to include('Lords has reached the limit of 6 Influence in Parliament (discarded)')
           end
 
           it 'never goes below zero' do
