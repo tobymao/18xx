@@ -12,7 +12,7 @@ module Engine
   module Game
     module G18Cuba
       class Game < Game::Base
-        attr_reader :fc, :fc_bypass_graph
+        attr_reader :fc, :fc_bypass_graph, :fc_rent_revenue
 
         include_meta(G18Cuba::Meta)
         include Entities
@@ -32,6 +32,8 @@ module Engine
         DEPOT_CLASS = G18Cuba::Depot
 
         BANK_CASH = 10_000
+
+        FC_STATION_RENT = 20
 
         GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, second_eight_plus: :immediate }.freeze
 
@@ -235,6 +237,7 @@ module Engine
           @fc.ipoed = true
           par_corporation(@fc, @stock_market.market.first.first)
           @fc_exported_8plus = 0
+          @fc_rent_revenue = 0
           train = train_by_id('1-0')
           buy_train(@fc, train, :free)
           # Never bought back (rule VII.16).
@@ -277,15 +280,32 @@ module Engine
         end
 
         def check_connected(route, corporation)
-          return super unless plus_train?(route.train)
+          return super if fc_rented_cities(route, corporation).empty?
 
+          super(route, nil)
+        end
+
+        def fc_rented_cities(route, corporation)
           visits = route.visited_stops
-          return super if visits.size <= 2
+          return [] if corporation.type == :minor || visits.size <= 2
 
           blocked = visits[1..-2].select { |stop| stop.city? && stop.blocks?(corporation) }
-          return super(route, nil) if blocked.one? && blocked.first.tokened_by?(@fc)
+          blocked.all? { |city| city.tokened_by?(@fc) } ? blocked : []
+        end
 
-          super
+        def fc_rent(route)
+          rented = fc_rented_cities(route, route.corporation).size
+          rented -= 1 if plus_train?(route.train)
+          [rented, 0].max * self.class::FC_STATION_RENT
+        end
+
+        def pay_fc_rent!(entity, routes)
+          rent = routes.sum { |route| fc_rent(route) }
+          return unless rent.positive?
+
+          entity.spend(rent, @bank)
+          @fc_rent_revenue += rent / 2
+          @log << "#{entity.name} pays #{format_currency(rent)} FC station rent"
         end
 
         def init_tile_groups
@@ -404,6 +424,7 @@ module Engine
 
         def or_round_finished
           reset_cubes_on_train
+          @fc_rent_revenue = 0
         end
 
         def or_set_finished
@@ -437,7 +458,7 @@ module Engine
         end
 
         def fc_revenue
-          fc_city_revenue + unshipped_cubes_revenue
+          fc_city_revenue + unshipped_cubes_revenue + @fc_rent_revenue
         end
 
         def game_end_check_second_eight_plus?
@@ -450,6 +471,9 @@ module Engine
           # Legal as long as the delivering routes can be matched to distinct harbors;
           # a route with harbors at both ends contributes both as candidates, not just the first.
           super
+          rent = routes.sum { |route| fc_rent(route) }
+          raise GameError, 'Cannot afford the FC station rent' if rent.positive? && rent > routes.first.corporation.cash
+
           delivering_routes = routes.select { |r| train_with_cubes?(r.train) }
           return if delivering_routes.size <= 1
 

@@ -58,7 +58,8 @@ module Engine
           private
 
           def log_fc_revenue_split(entity)
-            @log << "#{entity.name} earns #{@game.format_currency(@game.fc_city_revenue)} from cities and "\
+            @log << "#{entity.name} earns #{@game.format_currency(@game.fc_city_revenue)} from cities, "\
+                    "#{@game.format_currency(@game.fc_rent_revenue)} from station rent and "\
                     "#{@game.format_currency(@game.unshipped_cubes_revenue)} from unshipped sugar cubes"
           end
         end

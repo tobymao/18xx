@@ -30,12 +30,16 @@ module Engine
             actions
           end
 
+          def process_run_routes(action)
+            super
+            @game.pay_fc_rent!(action.entity, action.routes)
+          end
+
           def available_hex(entity, hex)
             return true if super
+            return false if entity.type == :minor
 
-            return @game.fc_bypass_graph.reachable_hexes(entity)[hex] if entity.trains.any? { |t| @game.plus_train?(t) }
-
-            false
+            @game.fc_bypass_graph.reachable_hexes(entity)[hex]
           end
 
           def choosing?(entity)
