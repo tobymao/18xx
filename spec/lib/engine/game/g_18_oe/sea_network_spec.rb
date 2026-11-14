@@ -68,7 +68,7 @@ describe 'G18OE sea network (§11.3.6, §11.3.7)' do
     expect(network.anchor_costs(game.hex_by_id('I50'))[5]).to eq(4)
   end
 
-  it 'reaches a public port two zones away at ferry distance 4 and marks only the port edge' do
+  it 'reaches a public port two zones away at water distance 4 and marks only the port edge' do
     token!('I50', dsj)
     expect(network.anchor_costs(game.hex_by_id('K60'))).to eq({ 3 => 4 })
     expect(network.landings[game.hex_by_id('K60')]).to eq({ 3 => true })

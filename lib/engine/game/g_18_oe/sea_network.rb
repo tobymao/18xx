@@ -4,7 +4,7 @@ module Engine
   module Game
     module G18OE
       class SeaNetwork
-        SEA_ZONE_DISTANCE = 2
+        SEA_ZONE_WATER_DISTANCE = 2
 
         attr_reader :anchors
 
@@ -129,11 +129,11 @@ module Engine
             zone = data[:port] && usable?(hex_id, exit) && @game.port_sea_zone(hex_id, exit)
             next unless zone
 
-            @edges[key] << [zone, SEA_ZONE_DISTANCE]
+            @edges[key] << [zone, SEA_ZONE_WATER_DISTANCE]
             @edges[zone] << [key, 0]
           end
           @game.sea_zone_neighbors.each do |zone, others|
-            others.each { |other| @edges[zone] << [other, SEA_ZONE_DISTANCE] }
+            others.each { |other| @edges[zone] << [other, SEA_ZONE_WATER_DISTANCE] }
           end
         end
 
