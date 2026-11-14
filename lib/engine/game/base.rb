@@ -1581,6 +1581,10 @@ module Engine
         false
       end
 
+      def extra_node_chains(_start_node, _end_node, _corporation)
+        []
+      end
+
       # Intended for game specific rules that depend on multiple routes
       def check_route_combination(_routes); end
 

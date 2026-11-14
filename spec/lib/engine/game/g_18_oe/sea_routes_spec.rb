@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require_relative 'helpers'
+require_relative 'route_helpers'
 
 describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
   include G18OESpecHelpers
@@ -50,23 +51,10 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
   end
 
   describe 'sea chains (§11.3.4, §11.3.6)' do
+    include_context 'with 18OE route helpers'
+
     let(:dsj) { game.corporation_by_id('DSJ') }
     let(:bjv) { game.corporation_by_id('BJV') }
-
-    def token!(hex_id, corporation)
-      city = game.hex_by_id(hex_id).tile.cities.first
-      city.place_token(corporation, Engine::Token.new(corporation), free: true, check_tokenable: false)
-      game.graph.clear
-    end
-
-    def lay_code!(hex_id, code)
-      game.hex_by_id(hex_id).lay(Engine::Tile.from_code("X#{hex_id}", :green, code))
-      game.graph.clear
-    end
-
-    def city(hex_id) = game.hex_by_id(hex_id).tile.cities.first
-    def town(hex_id) = game.hex_by_id(hex_id).tile.towns.first
-    def offboard(hex_id) = game.hex_by_id(hex_id).tile.offboards.first
 
     it 'offers one crossing per usable port pair, cheapest first, with a JSON-safe id' do
       lay_code!('I50', 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0')
@@ -137,6 +125,71 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       expect(game.port_usable?('I52', 0, bjv)).to be(false)
       expect(game.port_usable?('E28', 4, dsj)).to be(false)
       expect(game.sea_chains(city('I50'), city('I52'), dsj).size).to eq(1)
+    end
+  end
+
+  describe 'selecting, saving and rebuilding a crossing' do
+    include_context 'with 18OE route helpers'
+
+    let(:corp) { game.corporation_by_id('DSJ') }
+    let(:four) { buy_train!('4') }
+
+    before { baltic! }
+
+    it 'offers the land connections first and then the crossings when a node is clicked (row 1)' do
+      token!('I50', corp)
+      token!('I52', corp)
+      route = Engine::Route.new(game, game.phase, four, routes: [])
+
+      expect(route.select(city('I50'), city('I52')).map { |c| c[:paths].empty? }).to eq([true])
+      expect(route.select(city('I52'), town('H55')).map { |c| c[:paths].empty? }).to eq([false, true])
+    end
+
+    it 'extends the end that has a land link before attaching a crossing to either end (Review Focus 6)' do
+      token!('I50', corp)
+      token!('I52', corp)
+      route = route_through(four, city('I52'), city('I50'), town('H55'))
+
+      expect(node_sequence(route)).to eq([[city('I50'), city('I52')], [city('I52'), town('H55')]])
+      expect(route.chains.map { |c| c[:paths].empty? }).to eq([true, false])
+    end
+
+    it 'has no sea chain to a private port without the corporation’s token (row 7)' do
+      token!('I50', corp)
+      route = Engine::Route.new(game, game.phase, four, routes: [])
+      expect(route.select(city('I50'), city('I52'))).to be_empty
+    end
+
+    it 'round-trips a crossing from a pathless city through its saved form (row 8)' do
+      bjv = game.corporation_by_id('BJV')
+      token!('C48', bjv)
+      train = game.trains.find { |t| t.name == '3' && !t.owner.is_a?(Engine::Corporation) }
+      game.buy_train(bjv, train, :free)
+      route = route_through(train, city('I50'), city('C48'))
+
+      expect(route.connection_hexes).to eq(
+        [{ 'from' => 'C48-0', 'hexes' => %w[crossing I50 offshore C48 offshore], 'to' => 'I50-0' }],
+      )
+      rebuilt = rebuild(route)
+      expect(node_sequence(rebuilt)).to eq(node_sequence(route))
+      expect(rebuilt.chains.first[:crossing].units).to eq(1)
+    end
+
+    it 'rebuilds to an empty route when the saved crossing’s private port token is gone (row 16)' do
+      token!('I50', corp)
+      token!('I52', corp)
+      route = route_through(four, city('I50'), city('I52'))
+      saved = route.connection_hexes
+      city('I52').tokens.compact.each(&:remove!)
+      game.graph.clear
+      rebuilt = Engine::Route.new(game, game.phase, four, routes: [], connection_hexes: saved)
+
+      expect(rebuilt.connection_data).to eq([])
+    end
+
+    it 'offers the Edinburgh–Bergen ferry chain (row 12a)' do
+      route = Engine::Route.new(game, game.phase, four, routes: [])
+      expect(route.select(city('B41'), city('G26')).map { |c| c[:crossing].kind }).to eq([:ferry])
     end
   end
 end

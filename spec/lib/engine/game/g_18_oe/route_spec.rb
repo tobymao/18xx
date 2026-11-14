@@ -3,56 +3,7 @@
 require 'spec_helper'
 require 'json'
 require 'timeout'
-require_relative 'helpers'
-
-shared_context 'with 18OE route helpers' do
-  include G18OESpecHelpers
-
-  let(:game) { new_game }
-  let(:corp) { game.corporation_by_id('A') }
-  let(:c1) { game.hex_by_id('J79').tile.cities.first }
-  let(:c3) { game.hex_by_id('J83').tile.cities.first }
-  let(:c2) { game.hex_by_id('K80').tile.cities.first }
-
-  def buy_train!(name)
-    train = game.trains.find { |t| t.name == name && !t.owner.is_a?(Engine::Corporation) }
-    game.buy_train(corp, train, :free)
-    train
-  end
-
-  def route_through(train, *nodes)
-    route = Engine::Route.new(game, game.phase, train, routes: [])
-    route.routes = [route]
-    nodes.each { |node| route.touch_node(node) }
-    route
-  end
-
-  def explicit_route(train, *nodes)
-    route = Engine::Route.new(game, game.phase, train, routes: [])
-    route.routes = [route]
-    nodes.each_cons(2) do |left, right|
-      chain = route.select(left, right).first
-      raise "No unused connection between #{left.signature} and #{right.signature}" unless chain
-
-      route.connection_data << route.segment(chain, left: left)
-    end
-    route
-  end
-
-  def lay_code!(hex_id, code)
-    game.hex_by_id(hex_id).lay(Engine::Tile.from_code("X#{hex_id}", :green, code))
-  end
-
-  def rebuild(route)
-    rebuilt = Engine::Route.new(game, game.phase, route.train, routes: [], connection_hexes: route.connection_hexes)
-    rebuilt.routes = [rebuilt]
-    rebuilt
-  end
-
-  def node_sequence(route)
-    route.connection_data.map { |c| [c[:left], c[:right]] }
-  end
-end
+require_relative 'route_helpers'
 
 describe 'G18OE routes through a town twice (§11.3.1)' do
   include_context 'with 18OE route helpers'
