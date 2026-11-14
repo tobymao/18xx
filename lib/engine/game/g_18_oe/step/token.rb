@@ -23,6 +23,12 @@ module Engine
             super
           end
 
+          def process_place_token(action)
+            action.cost = token_cost(action) unless @game.loading
+            action.token.price = action.cost
+            super
+          end
+
           def check_connected(entity, city, hex)
             city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
             unless @game.city_in_track_rights?(entity, hex)
@@ -32,6 +38,15 @@ module Engine
             return if @game.loading || @game.token_graph_for_entity(entity).connected_nodes(entity)[city]
 
             raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
+          end
+
+          private
+
+          def token_cost(action)
+            cost = action.token.price + @game.cross_water_token_fee(action.entity, action.city)
+            return cost if !action.cost || action.cost == cost
+
+            raise GameError, "Token costs #{@game.format_currency(cost)}, not #{@game.format_currency(action.cost)}"
           end
         end
       end

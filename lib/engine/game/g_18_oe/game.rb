@@ -272,6 +272,8 @@ module Engine
         ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
         TILE_POINT_BUDGET = { minor: 3, regional: 3, major: 6, national: 9 }.freeze
         MINOR_MAX_TREASURY = 180
+        TILE_FEE_PER_WATER_DISTANCE = 5
+        TOKEN_FEE_PER_WATER_DISTANCE = 20
         EF_TERRAIN_AUGMENT          = { 'E' => %i[water river lake], 'F' => %i[mountain hill] }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
@@ -1141,6 +1143,14 @@ module Engine
           super
         end
 
+        def cross_water_tile_fee(corporation, hex, tile)
+          (@graph.sea_network(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_WATER_DISTANCE
+        end
+
+        def cross_water_token_fee(corporation, city)
+          (@graph.sea_network(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_WATER_DISTANCE
+        end
+
         def init_graph
           G18OE::Graph.new(self)
         end
@@ -1273,7 +1283,9 @@ module Engine
             neighbors = self.class::SEA_ZONES.keys.to_h { |zone| [zone, []] }
             self.class::SEA_ZONES.each do |zone, data|
               data[:hexes].each do |id|
-                hex_by_id(id).all_neighbors.each_value do |neighbor|
+                next unless (hex = hex_by_id(id))
+
+                hex.all_neighbors.each_value do |neighbor|
                   other = sea_zone(neighbor.id)
                   neighbors[zone] << other if other && other != zone
                 end

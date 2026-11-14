@@ -76,6 +76,7 @@ module Engine
 
             pending_token.remove!
             action.city.exchange_token(new_token)
+            @game.clear_graph
             @game.log << "#{pending_corporation.name} replaces #{pending_minor.name} token on #{action.city.hex.name}"
 
             resolve_forced!
@@ -107,6 +108,7 @@ module Engine
           def decline!(token, verb)
             hex_name = token.city.hex.name
             token.remove!
+            @game.clear_graph
             @game.log << "#{pending_corporation.name} #{verb} #{pending_minor.name} token on #{hex_name}"
           end
 

@@ -1,11 +1,51 @@
 # frozen_string_literal: true
 
 require_relative '../../graph'
+require_relative 'sea_network'
 
 module Engine
   module Game
     module G18OE
       class Graph < Engine::Graph
+        def initialize(game, **opts)
+          @sea_networks = {}
+          super
+        end
+
+        def clear
+          super
+          @sea_networks.clear
+        end
+
+        def sea_network(corporation)
+          @sea_networks[corporation] ||= SeaNetwork.new(@game, corporation)
+        end
+
+        def extra_root_hexes(corporation)
+          super.merge(sea_network(corporation).landings) { |_, first, second| first.merge(second) }
+        end
+
+        def extra_root_nodes(corporation)
+          super.merge(sea_network(corporation).landing_nodes.to_h { |node| [node, true] })
+        end
+
+        def compute(corporation, **opts, &block)
+          result = super
+          reachable = @reachable_hexes[corporation]
+          return result if opts[:one_token] || !reachable
+
+          sea_network(corporation).landing_nodes.each { |node| reachable[node.hex] = true }
+          result
+        end
+
+        def can_token?(corporation, **opts)
+          super || !landing_tokenable_cities(corporation).empty?
+        end
+
+        def tokenable_cities(corporation)
+          (super + landing_tokenable_cities(corporation)).uniq
+        end
+
         def walk_token(node, skip_paths:, corporation:, **opts)
           return super unless @game.wcf_placeholder
 
@@ -25,6 +65,14 @@ module Engine
           end
           opts = opts.merge(pruner: nil) if @game.wcf_restricted?(corporation)
           super(node, skip_paths: skip_paths, corporation: corporation, **opts, &walker)
+        end
+
+        private
+
+        def landing_tokenable_cities(corporation)
+          sea_network(corporation).landing_nodes.select do |node|
+            node.city? && node.tokenable?(corporation, free: true)
+          end
         end
       end
     end
