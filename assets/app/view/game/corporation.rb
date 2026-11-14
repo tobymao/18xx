@@ -464,7 +464,7 @@ module View
         pool_rows = []
         # Without a market row, a line separates the IPO from the players
         ipo_row_props = {}
-        ipo_row_props = { style: { borderBottom: '1px solid currentColor' } } if @corporation.no_market && player_rows.any?
+        ipo_row_props = { style: { borderBottom: '1px solid currentColor' } } if @corporation.no_market && !player_rows.empty?
 
         if !num_ipo_shares.empty? ||
            num_dc_avail.positive? ||
