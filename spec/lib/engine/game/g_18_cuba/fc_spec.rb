@@ -258,7 +258,7 @@ module Engine
             expect(game.fc_city_revenue).to eq(60)
           end
 
-          describe 'plus trains and FC stations' do
+          describe 'FC station rent' do
             let(:cvc) { game.corporation_by_id('CVC') }
 
             def city(hex_id)
@@ -304,24 +304,69 @@ module Engine
                 plus_route = route(train, 'B9', 'B11', 'C14')
                 expect(plus_route.visited_stops[1..-2]).to eq([city('B11')])
 
+                cash = ms.cash
                 act(Action::RunRoutes, routes: [plus_route])
                 expect(game.round.routes).to eq([plus_route])
                 expect(plus_route.stops).to include(city('B11'))
                 expect(plus_route.revenue).to eq(70)
+                expect(ms.cash).to eq(cash)
+                expect(game.fc_rent_revenue).to eq(0)
               end
 
-              it 'keeps a train without plus blocked' do
-                expect { act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')]) }
-                  .to raise_error(GameError, 'Route is not connected')
+              it 'charges a train without plus 20 to run through it' do
+                cash = ms.cash
+                bank_cash = game.bank.cash
+                act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')])
+
+                expect(ms.cash).to eq(cash - 20)
+                expect(game.bank.cash).to eq(bank_cash + 20)
+                expect(game.fc_rent_revenue).to eq(10)
+                expect(game.log.map(&:message)).to include('MS pays $20 FC station rent')
               end
 
-              it 'offers the hex behind it in the route step only with a plus train' do
+              it 'offers the hex behind it in the route step to any major train' do
                 step = game.round.active_step
-                expect(step.available_hex(ms, game.hex_by_id('C14'))).to be_falsy
-
-                train.variant = '3+'
                 expect(step.available_hex(ms, game.hex_by_id('C14'))).to be_truthy
               end
+
+              it 'rejects the run when the treasury cannot pay the rent' do
+                ms.spend(ms.cash - 10, game.bank)
+
+                expect { act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')]) }
+                  .to raise_error(GameError, 'Cannot afford the FC station rent')
+                expect(ms.cash).to eq(10)
+              end
+
+              it 'adds the rent to the FC payout of the same OR and starts the next OR at 0' do
+                fc = game.fc
+                or_key = [game.turn, game.round.round_num]
+                act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')])
+                fc_revenue = game.fc_city_revenue + game.unshipped_cubes_revenue + 10
+                advance until fc.operating_history[or_key]
+
+                expect(fc.operating_history[or_key].revenue).to eq(fc_revenue)
+                expect(game.log.map(&:message)).to include(a_string_matching(/from station rent/))
+                expect(game.round).to be_a(Engine::Round::Stock)
+                expect(game.fc_rent_revenue).to eq(0)
+              end
+            end
+
+            it 'charges two trains through the same FC station twice' do
+              place_cvc('B11')
+              lay('B11', :green, 0)
+              lay('B9', :green, 5)
+              lay('C10', :yellow, 3)
+              advance_to_route_step
+              first = route(ms.trains.first, 'B9', 'B11', 'C14')
+              second = Engine::Route.new(game, game.phase, give_train(ms, '4'), routes: [])
+              first.routes = second.routes = [first, second]
+              %w[B9 B11 A12].each { |hex_id| second.touch_node(game.hex_by_id(hex_id).tile.nodes.first) }
+              cash = ms.cash
+
+              act(Action::RunRoutes, routes: [first, second])
+              expect(second.ordered_hexes.map(&:id)).to eq(%w[A12 B11 C10 B9])
+              expect(ms.cash).to eq(cash - 40)
+              expect(game.fc_rent_revenue).to eq(20)
             end
 
             it 'keeps a plus train blocked by a city full of other majors only' do
@@ -334,7 +379,7 @@ module Engine
                 .to raise_error(GameError, 'Route is not connected')
             end
 
-            it 'keeps a plus train blocked by two full FC stations' do
+            it 'charges a plus train 20 from the second FC station on' do
               place_cvc('C14')
               lay('C14', :green)
               place_cvc('B11')
@@ -342,9 +387,10 @@ module Engine
               advance_to_route_step
               train = give_train(ms, '4')
               train.variant = '4+'
+              cash = ms.cash
 
-              expect { act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14', 'D15')]) }
-                .to raise_error(GameError, 'Route is not connected')
+              act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14', 'D15')])
+              expect(ms.cash).to eq(cash - 20)
             end
           end
         end
