@@ -434,9 +434,9 @@ module Engine
     end
 
     def extend!(node)
-      head_land, head_sea = select(head[:left], node).partition { |c| !c[:paths].empty? }
-      tail_land, tail_sea = select(tail[:right], node).partition { |c| !c[:paths].empty? }
-      head_chain, tail_chain = [[head_land.first, tail_land.first], [head_sea.first, tail_sea.first]].find(&:any?)
+      head_track, head_pathless = select(head[:left], node).partition { |c| !c[:paths].empty? }
+      tail_track, tail_pathless = select(tail[:right], node).partition { |c| !c[:paths].empty? }
+      head_chain, tail_chain = [[head_track.first, tail_track.first], [head_pathless.first, tail_pathless.first]].find(&:any?)
 
       if head_chain
         connection_data.unshift(segment(head_chain, right: head[:left]))
