@@ -25,7 +25,13 @@ module Engine
 
         PLAYER_RANGE = [2, 5].freeze
 
-        OPTIONAL_RULES = [].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :parliamentary_intervention,
+            short_name: 'Parliamentary Intervention',
+            desc: "A player's 2nd corporation must support at least 1 faction not supported by their 1st",
+          },
+        ].freeze
       end
     end
   end

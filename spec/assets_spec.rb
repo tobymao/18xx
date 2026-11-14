@@ -484,6 +484,67 @@ describe 'Assets' do
       expect(minor_html + major_html).not_to include('cannot be continued')
     end
 
+    describe 'Frost 1831' do
+      def frost_game_until_float
+        game = Engine::Game::GFrost1831::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 1)
+        100.times do
+          break unless game.round.is_a?(Engine::Round::Auction)
+
+          entity = game.current_entity
+          step = game.round.active_step
+          auctioning = step.auctioning
+          company = step.available.find(&:company?)
+          game.process_action(
+            if auctioning.is_a?(Engine::Corporation)
+              Engine::Action::Par.new(entity, corporation: auctioning,
+                                              share_price: step.get_par_prices(entity, auctioning).first)
+            elsif !auctioning && company
+              Engine::Action::Bid.new(entity, company: company, price: company.value)
+            else
+              Engine::Action::Pass.new(entity)
+            end
+          )
+        end
+        corporation = game.corporation_by_id('CM')
+        player = game.current_entity
+        game.process_action(Engine::Action::Par.new(player, corporation: corporation,
+                                                            share_price: game.stock_market.par_prices.first))
+        20.times do
+          break if corporation.floated?
+
+          entity = game.current_entity
+          game.process_action(
+            if entity == player
+              Engine::Action::BuyShares.new(entity, shares: corporation.ipo_shares.first, percent: 10)
+            else
+              Engine::Action::Pass.new(entity)
+            end
+          )
+        end
+        game
+      end
+
+      it 'renders the Influence Arena below the Faction choice' do
+        game = frost_game_until_float
+        expect(game.round.active_step).to be_a(Engine::Game::GFrost1831::Step::ChooseFactions)
+
+        player = game.current_entity
+        needs = {
+          game_data: {
+            id: 1,
+            user: { id: player.id, name: player.name },
+            players: game.players.map { |p| { id: p.id, name: p.name } },
+            title: 'Frost 1831',
+            actions: game.actions.map(&:to_h),
+            loaded: true,
+          },
+          user: { id: player.id, name: player.name, settings: { consent: true } },
+        }
+
+        expect(render(app_route: '/game/1', **needs)).to include('Choose faction to support for', 'Influence Arena')
+      end
+    end
+
     def render_game_at_action(data, action_count, string, suffix = '')
       data['actions'] = data['actions'].take(action_count) if action_count
       data[:loaded] = true

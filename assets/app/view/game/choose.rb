@@ -62,6 +62,9 @@ module View
           paragraphs = explanation.map { |text_block| h(:p, text_block) }
           children << h(:div, { style: { marginTop: '0.5rem' } }, paragraphs)
         end
+        if step.respond_to?(:choice_views)
+          step.choice_views.each { |view, props| children << h(Object.const_get("View::Game::#{view}"), props) }
+        end
         h(:div, children)
       end
 
