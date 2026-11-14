@@ -350,6 +350,20 @@ module Engine
           end
         end
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Dividend ≥ 3x share price', '3 →'],
+            ['Dividend ≥ 4x share price', '4 →'],
+            ['Per share sold', '1 ↙ or ↖ (zigzag movement)'],
+            ['Sold out at end of SR', 'none'],
+          ]
+        end
+
         def setup
           @distance_graph = DistanceGraph.new(self, separate_node_types: true)
           @bankrupt_corps = []
