@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/token'
+require_relative 'cross_water_fee'
 require_relative 'skip_abbreviated_round'
 
 module Engine
@@ -8,6 +9,7 @@ module Engine
     module G18OE
       module Step
         class Token < Engine::Step::Token
+          include CrossWaterFee
           include SkipAbbreviatedRound
 
           def actions(entity)
@@ -23,14 +25,10 @@ module Engine
             super
           end
 
-          def place_token(entity, city, token, **opts)
-            fee = @game.cross_water_token_fee(entity, city)
+          def process_place_token(action)
+            fee = cross_water_fee!(action) { @game.cross_water_token_fee(action.entity, action.city) }
             super
-            return unless fee.positive?
-
-            spender = opts[:spender] || entity
-            spender.spend(fee, @game.bank)
-            @game.log << "#{spender.name} pays #{@game.format_currency(fee)} to cross water"
+            pay_cross_water_fee!(action.entity, fee)
           end
 
           def check_connected(entity, city, hex)
