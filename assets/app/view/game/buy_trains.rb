@@ -490,7 +490,7 @@ module View
                 ))
               end
 
-              if other_owner(other) == corp_owner(@corporation)
+              if same_effective_owner?(@corporation, other)
                 if !@corporation.loans.empty? &&
                    !@game.interest_paid?(@corporation) &&
                    !@game.can_pay_interest?(@corporation, -price)
@@ -520,7 +520,7 @@ module View
               train_props[:style][:backgroundColor] = color
               train_props[:style][:color] = contrast_on(color)
             end
-            line = if corp_owner(other) && (@show_other_players || other_owner(other) == corp_owner(@corporation))
+            line = if corp_owner(other) && (@show_other_players || same_effective_owner?(corporation, other))
                      [h(:div, train_props, name),
                       h('div.nowrap', train_props,
                         "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{corp_owner(other).name}#{real_name})"),
@@ -573,6 +573,10 @@ module View
                              'Hide trains from other players')
         end
         trains_to_buy
+      end
+
+      def same_effective_owner?(corporation, other_corp)
+        @game.same_acting_player?(corp_owner(corporation), other_owner(other_corp))
       end
 
       # need to abstract due to corporations owning minors owning trains
