@@ -19,5 +19,110 @@ module Engine
       green = game.tiles.find { |tile| tile.name == 'X14' }
       expect(game.upgrades_to?(baltimore, green)).to be true
     end
+
+    it 'gives each of the nine minors its own reserved, unbuyable 2-train' do
+      minors = game.minors
+      expect(minors.size).to eq(9)
+      minors.each do |minor|
+        expect(minor.trains).to contain_exactly(
+          have_attributes(name: '2', owner: minor, reserved: true, buyable: false),
+        )
+      end
+      expect(minors.flat_map(&:trains).uniq.size).to eq(9)
+    end
+
+    it 'keeps ownership certificates separate from the nine operating minors' do
+      expect(game.minors).to all(be_a(Minor))
+      expect(game.minors).to all(have_attributes(floated?: false, owner: nil))
+      expect(game.corporations.map(&:id)).to contain_exactly('B&O', 'B&A', 'CNJ', 'ERIE', 'NH', 'PRR', 'NYC')
+      game.companies.each do |company|
+        expect(game.minor_for(company).id).to eq(company.id.delete_prefix('P'))
+      end
+    end
+
+    it 'places minor and public home tokens without placing NYC' do
+      (game.minors + game.corporations).each do |entity|
+        if entity.id == 'NYC'
+          expect(entity.tokens).to all(have_attributes(used: false))
+        else
+          city = game.hex_by_id(entity.coordinates).tile.cities[entity.city || 0]
+          expect(entity.tokens.first.city).to eq(city)
+        end
+      end
+    end
+
+    it 'activates the operating minor when its ownership certificate is auctioned' do
+      company = game.company_by_id('P1')
+      owner = game.players.first
+      game.process_action(Action::Bid.new(owner, company: company, price: 110))
+      game.maybe_raise!
+      game.players.drop(1).each do |player|
+        game.process_action(Action::Pass.new(player))
+        game.maybe_raise!
+      end
+
+      expect(company.owner).to eq(owner)
+      expect(owner.companies).to include(company)
+      expect(game.minor_for(company)).to have_attributes(owner: owner, floated?: true, cash: 0)
+      expect(game.operating_order).to eq([game.minor_for(company)])
+    end
+
+    it 'pays half of minor earnings to the owner and leaves the other half in the bank' do
+      minor = game.minor_by_id('1')
+      owner = game.players.first
+      game.after_buy_company(owner, game.company_by_id('P1'), 110)
+      round = game.operating_round(1)
+      round.extra_revenue = 70
+      step = round.steps.find { |candidate| candidate.is_a?(Game::G18PA::Step::Dividend) }
+
+      expect { step.process_dividend(Action::Dividend.new(minor, kind: 'payout')) }
+        .to change(owner, :cash).by(35).and change(game.bank, :cash).by(-35)
+      expect(minor.cash).to eq(0)
+    end
+
+    it 'limits minor upgrades to green while public corporations can use brown tiles' do
+      step = Game::G18PA::Step::Track.new(game, game.round)
+      game.phase.instance_variable_set(:@name, '5')
+      game.phase.instance_variable_set(:@tiles, %i[yellow green brown])
+      hex = game.hex_by_id('D17')
+
+      expect(step.potential_tile_colors(game.minor_by_id('1'), hex)).to eq(%w[yellow green])
+      expect(step.potential_tile_colors(game.corporation_by_id('PRR'), hex)).to eq(%i[yellow green brown])
+    end
+
+    it 'gives NYC a reserved, unbuyable 3-train' do
+      nyc = game.corporation_by_id('NYC')
+      expect(nyc.trains).to contain_exactly(
+        have_attributes(name: '3', owner: nyc, reserved: true, buyable: false),
+      )
+    end
+
+    it 'leaves five 2-trains and four 3-trains in the depot, in that order' do
+      expect(game.depot.upcoming.count { |train| train.name == '2' }).to eq(5)
+      expect(game.depot.upcoming.count { |train| train.name == '3' }).to eq(4)
+      expect(game.depot.depot_trains.map(&:name)).to eq(['2'])
+
+      game.depot.export_all!('2')
+      expect(game.depot.depot_trains.map(&:name)).to eq(['3'])
+
+      game.depot.export_all!('3')
+      expect(game.depot.depot_trains.map(&:name)).to eq(['4'])
+      expect(game.corporation_by_id('NYC').trains.map(&:name)).to eq(['3'])
+    end
+
+    it 'keeps starting trains out of both depot and intercompany sales' do
+      starting_trains = (game.minors + game.corporations).flat_map(&:trains)
+      expect(starting_trains.size).to eq(10)
+      expect(game.depot.upcoming & starting_trains).to be_empty
+
+      (game.minors + game.corporations).each { |corporation| corporation.owner = game.players.first }
+      expect(game.depot.other_trains(game.corporation_by_id('PRR'))).to be_empty
+    end
+
+    it 'allocates starting trains without spending cash or advancing the phase' do
+      expect((game.minors + game.corporations).map(&:cash)).to all(eq(0))
+      expect(game.bank.cash).to eq(6_500)
+      expect(game.phase.name).to eq('2')
+    end
   end
 end
