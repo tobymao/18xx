@@ -7,6 +7,7 @@ require_relative '../base'
 require_relative '../double_sided_tiles'
 require_relative 'trains'
 require_relative 'sugar'
+require_relative 'machines'
 
 module Engine
   module Game
@@ -19,6 +20,7 @@ module Engine
         include Map
         include Trains
         include Sugar
+        include Machines
 
         include DoubleSidedTiles
 
@@ -56,6 +58,8 @@ module Engine
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
+          'green_machines' => ['Green machines', 'Minors can buy green machines'],
+          'brown_machines' => ['Brown machines', 'Minors can buy brown machines'],
         ).freeze
 
         PHASES = [{ name: '2', train_limit: { minor: 2, major: 4 }, tiles: [:yellow], operating_rounds: 1 },
@@ -64,7 +68,7 @@ module Engine
                     on: '3',
                     train_limit: { minor: 2, major: 4 },
                     tiles: %i[yellow green],
-                    status: ['can_buy_trains'],
+                    status: %w[can_buy_trains green_machines],
                     operating_rounds: 2,
                   },
                   {
@@ -72,7 +76,7 @@ module Engine
                     on: '4',
                     train_limit: { minor: 2, major: 3 },
                     tiles: %i[yellow green],
-                    status: ['can_buy_trains'],
+                    status: %w[can_buy_trains green_machines],
                     operating_rounds: 2,
                   },
                   {
@@ -80,7 +84,7 @@ module Engine
                     on: '5',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown],
-                    status: ['can_buy_trains'],
+                    status: %w[can_buy_trains green_machines brown_machines],
                     operating_rounds: 3,
                   },
                   {
@@ -88,7 +92,7 @@ module Engine
                     on: '6',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown],
-                    status: ['can_buy_trains'],
+                    status: %w[can_buy_trains green_machines brown_machines],
                     operating_rounds: 3,
                   },
                   {
@@ -96,7 +100,7 @@ module Engine
                     on: '8+',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown gray],
-                    status: ['can_buy_trains'],
+                    status: %w[can_buy_trains green_machines brown_machines],
                     operating_rounds: 3,
                   }].freeze
 
@@ -121,6 +125,7 @@ module Engine
             G18Cuba::Step::Dividend,
             G18Cuba::Step::DiscardTrain,
             G18Cuba::Step::BuyTrain,
+            G18Cuba::Step::BuyMachine,
             [G18Cuba::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -227,6 +232,7 @@ module Engine
           initialize_tile_opposites!
           @unused_tiles = []
           sugar_setup
+          machines_setup
           fc_setup
           @minor_graph = Graph.new(self, skip_track: :broad)
           @fc_bypass_graph = Graph.new(self, skip_track: :narrow, no_blocking: true)
