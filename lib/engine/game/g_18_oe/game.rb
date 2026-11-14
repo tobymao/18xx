@@ -1202,17 +1202,6 @@ module Engine
           raise GameError, 'Combined trains may only run an Orient Express route' unless orient_express_run?(route)
         end
 
-        def check_sea_crossing_separation(route)
-          chains = route.chains
-          crossings = chains.each_index.select { |index| chains[index][:crossing]&.kind == :crossing }
-          crossings.each_cons(2) do |first, second|
-            between = chains[(first + 1)...second]
-            next if between.any? { |chain| chain[:paths].map(&:hex).uniq.size > 1 || chain[:crossing]&.kind == :ferry }
-
-            raise GameError, 'Sea crossings must be separated by a land hex side'
-          end
-        end
-
         def sea_legs(route)
           route.connection_data.filter_map { |connection| connection[:chain][:crossing] } + ferry_legs(route)
         end
@@ -1535,6 +1524,17 @@ module Engine
             assigned[index] += 1 if index
             cheapest_sea_cost(legs, rest, reduction, assigned)
           end.min
+        end
+
+        def check_sea_crossing_separation(route)
+          chains = route.chains
+          crossings = chains.each_index.select { |index| chains[index][:crossing]&.kind == :crossing }
+          crossings.each_cons(2) do |first, second|
+            between = chains[(first + 1)...second]
+            next if between.any? { |chain| chain[:paths].map(&:hex).uniq.size > 1 || chain[:crossing]&.kind == :ferry }
+
+            raise GameError, 'Sea crossings must be separated by a land hex side'
+          end
         end
 
         def ferry_legs(route)

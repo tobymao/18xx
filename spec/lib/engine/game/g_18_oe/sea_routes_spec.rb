@@ -410,7 +410,7 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       second = Engine::Route.new(game, game.phase, three, routes: [])
       first.routes = second.routes = [first, second]
 
-      expect(second.select(town('H55'), town('K60')).size).to eq(2)
+      expect(second.select(town('H55'), town('K60')).map { |c| c[:paths].empty? }).to eq([false, true])
     end
   end
 
