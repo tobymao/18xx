@@ -36,4 +36,81 @@ describe 'G18OE auto-router over sea (§11.3.4, §11.3.8)' do
 
     expect(Engine::AutoRouter.new(game).bitfield_from_connection(route.connection_data, Hash.new { |h, k| h[k] = 0 })).to eq([0])
   end
+
+  it 'offers a route that ends with a crossing (row 17)' do
+    token!('I50', corp)
+    token!('I52', corp)
+    routes = routes_for(four)
+    crossing_routes = routes.select { |route| route.chains.any? { |c| c[:paths].empty? } }
+
+    expect(crossing_routes.map(&:visited_stops)).to include(contain_exactly(city('I50'), city('I52')))
+    full = contain_exactly(city('I50'), city('I52'), town('H55'), town('K60'), city('J63'))
+    expect(crossing_routes.map(&:visited_stops)).to include(full)
+  end
+
+  it 'departs from a pathless root city and from a port section reached by land (row 17a)' do
+    bjv = game.corporation_by_id('BJV')
+    token!('C48', bjv)
+    token!('J63', bjv)
+    train = game.trains.find { |t| t.name == '4' && !t.owner.is_a?(Engine::Corporation) }
+    game.buy_train(bjv, train, :free)
+    stops = routes_for(train, bjv).map(&:visited_stops)
+
+    expect(stops).to include(contain_exactly(city('C48'), city('I50')))
+    expect(stops).to include(contain_exactly(city('J63'), town('K60'), city('C48')))
+  end
+
+  it 'lands at New York and makes its hex clickable (row 12b)' do
+    token!('I50', corp)
+    five = buy_train!('5')
+
+    expect(game.graph.reachable_hexes(corp)[game.hex_by_id('N1')]).to be(true)
+    expect(routes_for(five).map(&:visited_stops)).to include(contain_exactly(city('I50'), offboard('N1')))
+    expect(game.graph.connected_nodes(corp)).not_to have_key(offboard('N1'))
+  end
+
+  it 'returns ferry routes for two trains whose bitfields do not conflict (row 18)' do
+    token!('I52', corp)
+    token!('J63', corp)
+    train_routes = Engine::AutoRouter.new(game).path([three, four], corp).first
+    first = train_routes[three].find { |r| r.visited_stops.to_set == [city('I52'), town('H55'), town('K60')].to_set }
+    second = train_routes[four].find { |r| r.visited_stops.to_set == [city('J63'), town('K60'), town('H55')].to_set }
+
+    expect(first).not_to be_nil
+    expect(second).not_to be_nil
+    expect(first.bitfield.zip(second.bitfield).all? { |a, b| ((a || 0) & (b || 0)).zero? }).to be(true)
+    expect { game.check_overlap([first, second]) }.not_to raise_error
+  end
+
+  it 'never offers two adjacent crossings (row 19)' do
+    token!('I50', corp)
+    token!('I52', corp)
+    adjacent = routes_for(four).any? do |route|
+      route.chains.each_cons(2).any? { |a, b| a[:crossing]&.kind == :crossing && b[:crossing]&.kind == :crossing }
+    end
+
+    expect(adjacent).to be(false)
+  end
+
+  it 'finishes the path walk within the timeout on a busy coast (row 20)' do
+    city('I20').reservations.clear
+    %w[I50 I52 J63 C48 B41 M28 AE72 AA20 I20 N31].each { |hex_id| token!(hex_id, corp) }
+    lay_code!('AA20', 'city=revenue:30;path=a:5,b:_0')
+    lay_code!('AB27', 'city=revenue:20;path=a:1,b:_0;path=a:0,b:_0')
+    lay_code!('D41', 'town=revenue:10;path=a:0,b:_0;path=a:3,b:_0')
+    five = buy_train!('5')
+    started = Time.now
+    _routes, timed_out = Engine::AutoRouter.new(game).path([three, four, five], corp, path_timeout: 5)
+    warn "sea auto-router path walk: #{(Time.now - started).round(1)}s"
+
+    expect(timed_out).to be(false)
+  end
+
+  it 'departs by the Edinburgh ferry from the hex a crossing landed on (§11.3.7)' do
+    lay_code!('D41', 'town=revenue:10;path=a:0,b:_0;path=a:3,b:_0')
+    token!('B41', corp)
+    stops = routes_for(three).map(&:visited_stops)
+
+    expect(stops).to include(contain_exactly(town('D41'), city('B41'), city('G26')))
+  end
 end

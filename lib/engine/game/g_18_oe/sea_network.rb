@@ -89,6 +89,10 @@ module Engine
           landing_anchors.flat_map { |hex_id, exit| anchor_nodes(hex_id, exit) }.reject { |node| node.blocks?(@corporation) }.uniq
         end
 
+        def landing_offboards
+          landing_anchors.flat_map { |hex_id, exit| anchor_nodes(hex_id, exit) }.select(&:offboard?).uniq
+        end
+
         def anchor_nodes(hex_id, exit)
           hex = @game.hex_by_id(hex_id)
           exit == :offshore ? hex.tile.cities : (hex.paths[exit] || []).flat_map(&:nodes)

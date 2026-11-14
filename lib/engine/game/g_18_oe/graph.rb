@@ -34,8 +34,34 @@ module Engine
           reachable = @reachable_hexes[corporation]
           return result if opts[:one_token] || !reachable
 
-          sea_network(corporation).landing_nodes.each { |node| reachable[node.hex] = true }
+          network = sea_network(corporation)
+          (network.landing_nodes + network.landing_offboards).each { |node| reachable[node.hex] = true }
           result
+        end
+
+        def walk_routes(node, corporation:, skip_paths:, **opts, &block)
+          return walk_token(node, corporation: corporation, skip_paths: skip_paths, **opts, &block) unless corporation
+
+          ports = usable_ports(corporation)
+          return walk_token(node, corporation: corporation, skip_paths: skip_paths, **opts, &block) if ports.empty?
+
+          context = {
+            corporation: corporation,
+            skip_paths: skip_paths,
+            opts: opts,
+            block: block,
+            network: sea_network(corporation),
+            level: @game.largest_train_level(corporation),
+            ports: ports,
+            usable: ports.to_h { |anchor| [anchor, true] },
+            walkers: {},
+            visited: {},
+          }
+          @game.port_anchors(node, corporation).each do |anchor|
+            depart(context, node, anchor, {}, nil) if anchor[1] == :offshore
+          end
+          walk_token(node, visited: context[:visited], corporation: corporation, skip_paths: skip_paths, **opts,
+                     &sea_walker(context, nil))
         end
 
         def can_token?(corporation, **opts)
@@ -68,6 +94,66 @@ module Engine
         end
 
         private
+
+        def usable_ports(corporation)
+          @game.class::PORTS.flat_map do |hex_id, exits|
+            exits.keys.select { |exit| @game.port_usable?(hex_id, exit, corporation) }.map { |exit| [hex_id, exit] }
+          end
+        end
+
+        def sea_walker(context, landing_hex)
+          context[:walkers][landing_hex] ||= proc do |path, visited_paths, visited|
+            result = context[:block].call(path, visited_paths, visited)
+            next result if result == :abort
+
+            usable = context[:usable]
+            path.nodes.each do |node|
+              hex_id = node.hex.id
+              path.exits.each do |exit|
+                depart(context, node, [hex_id, exit], visited_paths, landing_hex, path) if usable[[hex_id, exit]]
+              end
+              offshore = [hex_id, :offshore]
+              depart(context, node, offshore, visited_paths, landing_hex, path) if !visited[node] && usable[offshore]
+            end
+            result
+          end
+        end
+
+        def depart(context, node, anchor, visited_paths, landing_hex, path = nil)
+          level = context[:level]
+          if node.hex != landing_hex
+            context[:ports].each do |target|
+              next if target[0] == node.hex.id
+
+              distance = @game.port_distance(anchor, target)
+              jump(context, :crossing, node, anchor, target, visited_paths, landing_hex, path) if distance && distance <= level
+            end
+          end
+          partner = @game.pathless_ferry_partner(anchor)
+          jump(context, :ferry, node, anchor, partner, visited_paths, landing_hex, path) if partner
+        end
+
+        def jump(context, kind, node, anchor, target, visited_paths, landing_hex, path)
+          visited = context[:visited]
+          corporation = context[:corporation]
+          context[:network].anchor_nodes(*target).each do |landing|
+            next if visited[landing]
+
+            crossing = @game.sea_crossing(kind, anchor, target, [node, landing])
+            jump_paths = visited_paths.dup
+            jump_paths.delete(path) if path
+            jump_paths[crossing] = true
+            result = context[:block].call(crossing, jump_paths, visited)
+            next if result == :abort || landing.blocks?(corporation)
+
+            marked = !visited[node]
+            visited[node] = true if marked
+            walker = sea_walker(context, kind == :crossing ? landing.hex : landing_hex)
+            walk_token(landing, visited: visited, visited_paths: jump_paths, corporation: corporation,
+                                skip_paths: context[:skip_paths], counter: Hash.new(0), **context[:opts], &walker)
+            visited.delete(node) if marked
+          end
+        end
 
         def landing_tokenable_cities(corporation)
           sea_network(corporation).landing_nodes.select do |node|

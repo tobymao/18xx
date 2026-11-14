@@ -1271,6 +1271,10 @@ module Engine
           @round.respond_to?(:combined_trains) && @round.combined_trains.key?(train)
         end
 
+        def largest_train_level(corporation)
+          route_trains(corporation).map { |train| distance(train).first }.max || 0
+        end
+
         def distance(train)
           [train.distance[1]['pay'], train.distance[0]['pay']]
         end

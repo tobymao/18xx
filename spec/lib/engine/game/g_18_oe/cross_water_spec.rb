@@ -53,7 +53,8 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     token!('I50', dsj)
     landing = { game.hex_by_id('C48') => { 0 => true } }
     nodes = [game.hex_by_id('C48').tile.cities.first]
-    allow(game.graph).to receive(:sea_network).with(dsj).and_return(double(landings: landing, landing_nodes: nodes))
+    allow(game.graph).to receive(:sea_network).with(dsj).and_return(double(landings: landing, landing_nodes: nodes,
+                                                                           landing_offboards: []))
     game.clear_graph
     game.graph.route_info(dsj)
     expect(game.graph.reachable_hexes(dsj)).to have_key(game.hex_by_id('C48'))
