@@ -343,6 +343,10 @@ module Engine
       node.walk(**opts, &block)
     end
 
+    def walk_routes(node, **opts, &block)
+      walk_token(node, **opts, &block)
+    end
+
     class Pruner
       def initialize(roots:, found:, corporation: nil, skip_paths: nil, skip_track: nil, backtracking: false)
         @roots = roots

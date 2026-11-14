@@ -65,7 +65,7 @@ module Engine
       now = Time.now
 
       skip_paths = if @train_autoroute_group.nil?
-                     static.flat_map(&:paths).to_h { |path| [path, true] }
+                     static.flat_map(&:paths).reject { |path| @game.route_path_shareable?(path) }.to_h { |path| [path, true] }
                    elsif @train_autoroute_group == :each_train_separate
                      # all trains have their own autoroute group so it's not possible to fill skip_paths
                      {}
@@ -94,7 +94,7 @@ module Engine
         end
 
         walk_corporation = graph.no_blocking? ? nil : corporation
-        graph.walk_token(node, corporation: walk_corporation, skip_paths: skip_paths) do |_, vp|
+        graph.walk_routes(node, corporation: walk_corporation, skip_paths: skip_paths) do |_, vp|
           paths = vp.keys
           chains = []
           chain = []
@@ -130,10 +130,18 @@ module Engine
           end
 
           paths.each do |path|
-            chain << path
-            a, b = path.nodes
+            if path.path?
+              chain << path
+              a, b = path.nodes
 
-            assign.call(a, b) if a || b
+              assign.call(a, b) if a || b
+            else
+              chain = []
+              left = nil
+              right = nil
+              chains << path.chain
+              last_left, last_right = path.nodes
+            end
           end
 
           # a 1-city Local train will have no chains but will have a left; route.revenue will reject if not valid for game
@@ -148,7 +156,7 @@ module Engine
             # of them
             id = [left]
           else
-            id = chains.flat_map { |c| c[:paths] }.sort!
+            id = [chains.flat_map { |c| c[:paths] }.sort!, chains.filter_map { |c| c[:id] if c[:paths].empty? }]
           end
 
           next if connections[id]
@@ -219,8 +227,13 @@ module Engine
     def bitfield_from_connection(connection, hexside_bits)
       bitfield = [0]
       connection.each do |conn|
-        paths = conn[:chain][:paths]
-        if paths.size == 1 # special case for tiny intra-tile path like in 18NewEngland (issue #6890)
+        all_paths = conn[:chain][:paths]
+        paths = all_paths.reject { |path| @game.route_path_shareable?(path) }
+        next if paths.empty?
+
+        if paths.size == 1 && all_paths.size > 1
+          paths[0].edges.each { |edge| check_edge_and_set(bitfield, edge.id, hexside_bits) }
+        elsif paths.size == 1 # special case for tiny intra-tile path like in 18NewEngland (issue #6890)
           hexside_left = paths[0].nodes[0].id
           check_edge_and_set(bitfield, hexside_left, hexside_bits)
           if paths[0].nodes.size > 1 # local trains may not have a second node
