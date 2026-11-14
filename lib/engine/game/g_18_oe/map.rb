@@ -1611,6 +1611,8 @@ module Engine
           ['North Atlantic (Silver Coast)', 'Strait of Gibraltar'],
         ].freeze
 
+        FERRY_TRACK_COLOR = '#0047AB'
+
         PORTS = {
           'AD1' => { 4 => { port: :public } },
           'AC6' => { 1 => { port: :public } },

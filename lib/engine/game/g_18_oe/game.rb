@@ -277,6 +277,7 @@ module Engine
         TOKEN_FEE_PER_WATER_DISTANCE = 20
         MINOR_E_TERRAIN = %i[water river lake].freeze
         MINOR_F_TERRAIN = %i[mountain hill].freeze
+        PORT_TOKEN_REDUCTION = { '2' => 1, '3' => 1, '4' => 1, '5' => 1, '6' => 1, '7' => 2, '8' => 2 }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -1295,6 +1296,29 @@ module Engine
             data[:hexes].each { |id| by_hex[id] = zone }
           end
           @sea_zone_by_hex[hex_id]
+        end
+
+        def ferry_track?(path)
+          path.color == self.class::FERRY_TRACK_COLOR
+        end
+
+        def port_exit?(hex_id, exit)
+          entry = self.class::PORTS.dig(hex_id, exit)
+          exit.is_a?(Integer) && !entry.nil? && !entry[:dead_end]
+        end
+
+        def sea_traffic?(path)
+          ferry_track?(path) || path.exits.any? { |exit| port_exit?(path.hex.id, exit) }
+        end
+
+        def port_token_reduction(phase)
+          self.class::PORT_TOKEN_REDUCTION[phase.name]
+        end
+
+        def ferry_links(hex_id, exit)
+          ferries = self.class::PORTS.dig(hex_id, exit)&.dig(:ferries) || []
+          ferries.select { |ferry| hex_by_id(ferry[:hex]) }
+            .map { |ferry| [[ferry[:hex], ferry[:exit]], ferry[:distance]] }
         end
 
         def sea(zone)

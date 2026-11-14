@@ -31,11 +31,7 @@ module Engine
         end
 
         def ferry_links(hex_id, exit)
-          data = @anchors[[hex_id, exit]]
-          return [] unless data
-
-          (data[:ferries] || []).select { |ferry| @game.hex_by_id(ferry[:hex]) }
-            .map { |ferry| [[ferry[:hex], ferry[:exit]], ferry[:distance]] }
+          @game.ferry_links(hex_id, exit)
         end
 
         def island_of(path)
