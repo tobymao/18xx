@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative 'parliament_movement'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'faction'
 require_relative 'tiles'
 require_relative 'step/buy_cert'
 require_relative 'step/dividend'
@@ -312,6 +313,8 @@ module Engine
 
         attr_reader :government_marker, :regulations
 
+        FACTION_TREASURY = 500
+
         def setup
           super
 
@@ -320,6 +323,63 @@ module Engine
           @parliament_open = false
           @regulations = REGULATIONS.transform_values { |name| { name: name, position: NORMAL } }
           @player_influence = Hash.new(0)
+
+          factions.each { |faction| @bank.spend(self.class::FACTION_TREASURY, faction) }
+        end
+
+        # Factions are not capitalized: founding one pays nothing into its Treasury
+        def init_corporations(stock_market)
+          min_price = stock_market.par_prices.map(&:price).min
+          factions = self.class::FACTIONS.map do |faction|
+            Faction.new(min_price: min_price, capitalization: :none, **faction.merge(corporation_opts))
+          end
+          super + factions
+        end
+
+        # Factions are bought from Parliament, never parred like Corporations
+        def can_par?(corporation, parrer)
+          corporation.type != :faction && super
+        end
+
+        # The certificate limit depends on the Corporations in play (8.6), not the Factions
+        def init_cert_limit
+          cert_limit = self.class::CERT_LIMIT[@players.size]
+          corporations = @corporations.count { |c| c.type != :faction && !c.closed? }
+          cert_limit.reject { |k, _| k < corporations }.min_by(&:first)&.last || cert_limit.first.last
+        end
+
+        def factions
+          @corporations.select { |c| c.type == :faction }
+        end
+
+        # Actions store a Faction's entity_type as 'faction'
+        def faction_by_id(id)
+          corporation_by_id(id)
+        end
+
+        def ipo_name(entity = nil)
+          entity&.type == :faction ? 'Parliament' : super
+        end
+
+        def count_available_tokens(corporation)
+          return super unless corporation.type == :faction
+
+          corporation.tokens_in_parliament
+        end
+
+        def token_string(corporation)
+          return super unless corporation.type == :faction
+
+          "#{corporation.tokens_in_parliament}/#{corporation.tokens_total}"
+        end
+
+        def status_array(corporation)
+          return unless corporation.type == :faction
+
+          [
+            ["Influence: #{faction_influence(corporation.id)}/#{faction_influence_limit}", ''],
+            ["Tokens: #{token_string(corporation)}", ''],
+          ]
         end
 
         def new_auction_round

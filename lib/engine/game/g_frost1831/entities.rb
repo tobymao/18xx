@@ -183,6 +183,62 @@ module Engine
           },
 
         ].freeze
+
+        # Rules 1.2
+        FACTIONS = [
+          {
+            float_percent: 40,
+            sym: 'TEC',
+            name: 'Technicians',
+            logo: 'frost_1831/TEC',
+            simple_logo: 'frost_1831/TEC.alt',
+            shares: [20, 20, 20, 20, 20],
+            tokens: [0],
+            coordinates: nil,
+            color: '#e8940a',
+            type: :faction,
+            desc: 'Path of Reason. Opposition: Guardians.',
+          },
+          {
+            float_percent: 40,
+            sym: 'LOR',
+            name: 'Lords',
+            logo: 'frost_1831/LOR',
+            simple_logo: 'frost_1831/LOR.alt',
+            shares: [20, 20, 20, 20, 20],
+            tokens: [0],
+            coordinates: nil,
+            color: '#e07868',
+            type: :faction,
+            desc: 'Path of Tradition. Opposition: Expansionists.',
+          },
+          {
+            float_percent: 40,
+            sym: 'GUA',
+            name: 'Guardians',
+            logo: 'frost_1831/GUA',
+            simple_logo: 'frost_1831/GUA.alt',
+            shares: [20, 20, 20, 20, 20],
+            tokens: [0],
+            coordinates: nil,
+            color: '#b83421',
+            type: :faction,
+            desc: 'Path of Faith. Opposition: Technicians.',
+          },
+          {
+            float_percent: 40,
+            sym: 'EXP',
+            name: 'Expansionists',
+            logo: 'frost_1831/EXP',
+            simple_logo: 'frost_1831/EXP.alt',
+            shares: [20, 20, 20, 20, 20],
+            tokens: [0],
+            coordinates: nil,
+            color: '#f1d538',
+            type: :faction,
+            desc: 'Path of Progress. Opposition: Lords.',
+          },
+        ].freeze
       end
     end
   end
