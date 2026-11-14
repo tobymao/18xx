@@ -41,6 +41,7 @@ module View
           j51 = Hex.coordinates(game.hex_by_id('J51'), [1, 1])
 
           expect(lines.size).to eq(1)
+          expect(rendered.last[1][:attrs]).to include('pointer-events': 'none')
           expect(lines.first[1][:attrs]).to include(stroke: '#A40122', 'stroke-dasharray': '18 12', points: points)
           expect(texts.map(&:last)).to eq(['2'])
           expect(texts.first[1][:attrs]).to include(x: (h49[0] + j51[0]) / 2.0, y: (h49[1] + j51[1]) / 2.0)

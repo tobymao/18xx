@@ -20,7 +20,7 @@ module View
           end
         end
 
-        h(:g, { attrs: { id: 'sea-routes' } }, children)
+        h(:g, { attrs: { id: 'sea-routes', 'pointer-events': 'none' } }, children)
       end
 
       private
