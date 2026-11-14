@@ -223,6 +223,7 @@ describe 'G18OE Orient Express (§12)' do
 
     before do
       allow(game).to receive(:can_run_route?).and_return(true)
+      allow(game).to receive(:sea_reachable?).and_return(false)
       allow(step).to receive(:current_entity).and_return(major)
     end
 

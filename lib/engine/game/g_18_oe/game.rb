@@ -1288,6 +1288,10 @@ module Engine
           @orient_express_destination_hexes ||= location_hexes(self.class::ORIENT_EXPRESS_DESTINATIONS)
         end
 
+        def sea_reachable?(corporation)
+          !graph_for_entity(corporation).sea_network(corporation).landings.empty?
+        end
+
         def orient_express_reachable?(corporation)
           connected = graph_for_entity(corporation).connected_nodes(corporation).keys.map(&:hex)
           connected.intersect?(orient_express_origin_hexes) && connected.intersect?(orient_express_destination_hexes)

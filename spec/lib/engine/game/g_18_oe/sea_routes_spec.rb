@@ -413,4 +413,19 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       expect(second.select(town('H55'), town('K60')).size).to eq(2)
     end
   end
+
+  describe 'route step help' do
+    include_context 'with 18OE route helpers'
+
+    let(:corp) { game.corporation_by_id('DSJ') }
+    let(:step) { Engine::Game::G18OE::Step::Route.new(game, game.round) }
+
+    before { allow(step).to receive(:current_entity).and_return(corp) }
+
+    it 'explains sea crossings only when the corporation can reach the sea' do
+      expect(Array(step.help).join).not_to include('across the sea')
+      token!('I50', corp)
+      expect(Array(step.help).join).to include('Click a city or town across the sea to add a crossing')
+    end
+  end
 end

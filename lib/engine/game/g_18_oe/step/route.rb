@@ -7,6 +7,11 @@ module Engine
     module G18OE
       module Step
         class Route < Engine::Step::Route
+          ORIENT_EXPRESS_HELP = '2+2, 3 and 4 trains may be combined into one train to make an Orient Express run. '\
+                                'A combined train must run an Orient Express route; use Undo to cancel a combination.'
+          SEA_HELP = 'Click a city or town across the sea to add a crossing; each sea zone and ferry distance counts '\
+                     "against the train's city limit, less 1 per port token on the route (2 from Phase 7)."
+
           def actions(entity)
             return [] if @game.repeat_last_revenue?(entity)
 
@@ -23,12 +28,12 @@ module Engine
 
           def help
             base_help = super
-            return base_help if current_entity.type != :major || !@game.non_permanent_trains?
+            extra = []
+            extra << ORIENT_EXPRESS_HELP if current_entity.type == :major && @game.non_permanent_trains?
+            extra << SEA_HELP if @game.sea_reachable?(current_entity)
+            return base_help if extra.empty?
 
-            Array(base_help).reject(&:empty?) + [
-              '2+2, 3 and 4 trains may be combined into one train to make an Orient Express run. '\
-              'A combined train must run an Orient Express route; use Undo to cancel a combination.',
-            ]
+            Array(base_help).reject(&:empty?) + extra
           end
 
           def round_state
