@@ -30,6 +30,14 @@ module Engine
             actions
           end
 
+          def available_hex(entity, hex)
+            return true if super
+
+            return @game.fc_bypass_graph.reachable_hexes(entity)[hex] if entity.trains.any? { |t| @game.plus_train?(t) }
+
+            false
+          end
+
           def choosing?(entity)
             return false if entity.minor?
 

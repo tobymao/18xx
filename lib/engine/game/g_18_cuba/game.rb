@@ -12,7 +12,7 @@ module Engine
   module Game
     module G18Cuba
       class Game < Game::Base
-        attr_reader :fc
+        attr_reader :fc, :fc_bypass_graph
 
         include_meta(G18Cuba::Meta)
         include Entities
@@ -227,6 +227,7 @@ module Engine
           sugar_setup
           fc_setup
           @minor_graph = Graph.new(self, skip_track: :broad)
+          @fc_bypass_graph = Graph.new(self, skip_track: :narrow, no_blocking: true)
         end
 
         def fc_setup
@@ -262,6 +263,7 @@ module Engine
 
         def clear_graph
           @minor_graph.clear
+          @fc_bypass_graph.clear
           super
         end
 
@@ -270,7 +272,20 @@ module Engine
             @minor_graph.clear
           else
             super
+            @fc_bypass_graph.clear
           end
+        end
+
+        def check_connected(route, corporation)
+          return super unless plus_train?(route.train)
+
+          visits = route.visited_stops
+          return super if visits.size <= 2
+
+          blocked = visits[1..-2].select { |stop| stop.city? && stop.blocks?(corporation) }
+          return super(route, nil) if blocked.one? && blocked.first.tokened_by?(@fc)
+
+          super
         end
 
         def init_tile_groups

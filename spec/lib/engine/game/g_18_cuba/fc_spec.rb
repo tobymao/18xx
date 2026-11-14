@@ -257,6 +257,96 @@ module Engine
             game.export_train_to_fc!
             expect(game.fc_city_revenue).to eq(60)
           end
+
+          describe 'plus trains and FC stations' do
+            let(:cvc) { game.corporation_by_id('CVC') }
+
+            def city(hex_id)
+              game.hex_by_id(hex_id).tile.cities.first
+            end
+
+            def place_cvc(hex_id)
+              city(hex_id).place_token(cvc, cvc.next_token, free: true)
+            end
+
+            def route(train, *hex_ids)
+              route = Engine::Route.new(game, game.phase, train, routes: [])
+              route.routes = [route]
+              hex_ids.each { |hex_id| route.touch_node(city(hex_id)) }
+              route
+            end
+
+            def advance_to_route_step
+              advance until game.current_entity == ms && game.round.active_step.is_a?(G18Cuba::Step::Route)
+            end
+
+            before do
+              float_major!(ms)
+              game.export_train_to_fc! while game.phase.name == '2'
+              lay('B9', :yellow, 4)
+              lay('B11', :yellow, 5)
+              lay('C12', :yellow, 4)
+              lay('C14', :yellow, 5)
+              lay('D15', :yellow)
+            end
+
+            context 'with the FC station B11 full' do
+              let(:train) { ms.trains.first }
+
+              before do
+                place_cvc('B11')
+                lay('B11', :green)
+                advance_to_route_step
+              end
+
+              it 'lets a plus train run through it and counts its revenue' do
+                train.variant = '3+'
+                plus_route = route(train, 'B9', 'B11', 'C14')
+                expect(plus_route.visited_stops[1..-2]).to eq([city('B11')])
+
+                act(Action::RunRoutes, routes: [plus_route])
+                expect(game.round.routes).to eq([plus_route])
+                expect(plus_route.stops).to include(city('B11'))
+                expect(plus_route.revenue).to eq(70)
+              end
+
+              it 'keeps a train without plus blocked' do
+                expect { act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')]) }
+                  .to raise_error(GameError, 'Route is not connected')
+              end
+
+              it 'offers the hex behind it in the route step only with a plus train' do
+                step = game.round.active_step
+                expect(step.available_hex(ms, game.hex_by_id('C14'))).to be_falsy
+
+                train.variant = '3+'
+                expect(step.available_hex(ms, game.hex_by_id('C14'))).to be_truthy
+              end
+            end
+
+            it 'keeps a plus train blocked by a city full of other majors only' do
+              advance_to_route_step
+              place_cvc('B11')
+              train = ms.trains.first
+              train.variant = '3+'
+
+              expect { act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')]) }
+                .to raise_error(GameError, 'Route is not connected')
+            end
+
+            it 'keeps a plus train blocked by two full FC stations' do
+              place_cvc('C14')
+              lay('C14', :green)
+              place_cvc('B11')
+              lay('B11', :green)
+              advance_to_route_step
+              train = give_train(ms, '4')
+              train.variant = '4+'
+
+              expect { act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14', 'D15')]) }
+                .to raise_error(GameError, 'Route is not connected')
+            end
+          end
         end
       end
     end
