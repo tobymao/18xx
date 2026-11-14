@@ -577,8 +577,11 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Augments the zone terrain discount from 20% to 50% for water/coast '\
-                             'track construction in the owning RR\'s zone (§11.1.5). '\
+                description: 'Terrain discount: 33% off blue (water/coast, river and lake) construction costs. '\
+                             'Track-rights zone discount: 20% off construction within Spain/Portugal, Italy, '\
+                             'Sweden/Norway/Denmark or Russia when the RR has track rights there. '\
+                             'When both apply, they combine to give a 50% discount. '\
+                             'Round the final construction cost down to whole pounds. '\
                              'Extra tile point for matching terrain: not yet implemented (BUG-034).',
               },
             ],
@@ -597,8 +600,11 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Augments the zone terrain discount from 20% to 50% for mountain/rough '\
-                             'track construction in the owning RR\'s zone (§11.1.5). '\
+                description: 'Terrain discount: 33% off green (mountain, hill and rough) construction costs. '\
+                             'Track-rights zone discount: 20% off construction within Spain/Portugal, Italy, '\
+                             'Sweden/Norway/Denmark or Russia when the RR has track rights there. '\
+                             'When both apply, they combine to give a 50% discount. '\
+                             'Round the final construction cost down to whole pounds. '\
                              'Extra tile point for matching terrain: not yet implemented (BUG-034).',
               },
             ],
