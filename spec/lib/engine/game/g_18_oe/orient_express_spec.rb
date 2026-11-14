@@ -103,6 +103,15 @@ describe 'G18OE Orient Express (§12)' do
 
       expect(game.orient_express_run?(route)).to be(false)
     end
+
+    it 'rejects an Orient Express run made only of sea crossings (§12, row 15)' do
+      route = route_for(train_for(major, '5'), [city_at('M28'), city_at('AA82')])
+      allow(route).to receive(:chains).and_return([{ paths: [] }])
+      expect { game.check_other(route) }.to raise_error(Engine::GameError, /sea crossings/)
+
+      allow(route).to receive(:chains).and_return([{ paths: [] }, { paths: [double('path')] }])
+      expect { game.check_other(route) }.not_to raise_error
+    end
   end
 
   describe 'extra revenue' do

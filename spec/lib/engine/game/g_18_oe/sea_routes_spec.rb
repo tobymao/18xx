@@ -315,4 +315,65 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       expect(game.route_distance_str(route)).to eq('0')
     end
   end
+
+  describe 'connection and legality (§11.3.4, §11.3.6, §11.3.7)' do
+    include_context 'with 18OE route helpers'
+
+    let(:corp) { game.corporation_by_id('DSJ') }
+    let(:four) { buy_train!('4') }
+    let(:three) { buy_train!('3') }
+
+    before { baltic! }
+
+    it 'runs to a full foreign city by sea but not through it (row 9)' do
+      lay_code!('H21', 'city=revenue:20;path=a:4,b:_0;path=a:1,b:_0')
+      lay_code!('H19', 'town=revenue:10;path=a:4,b:_0')
+      gswr = game.corporation_by_id('GSWR')
+      token!('I20', gswr)
+      token!('H21', game.corporation_by_id('BJV'))
+      game.buy_train(gswr, three, :free)
+
+      expect { game.check_connected(explicit_route(three, city('I20'), city('H21')), gswr) }.not_to raise_error
+      expect { game.check_connected(explicit_route(three, city('I20'), city('H21'), town('H19')), gswr) }
+        .to raise_error(Engine::GameError, 'Route is not connected')
+    end
+
+    it 'requires a land hex side between two crossings (row 10)' do
+      token!('I50', corp)
+      lay_code!('D41', 'town=revenue:10;path=a:0,b:_0;path=a:3,b:_0')
+
+      expect { game.check_other(explicit_route(four, city('I50'), city('C48'), town('D41'))) }
+        .to raise_error(Engine::GameError, /land hex side/)
+      expect { game.check_other(explicit_route(four, city('C48'), city('I50'), town('K60'))) }
+        .to raise_error(Engine::GameError)
+
+      lay_code!('I50', 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0')
+      in_offshore_out_exit = explicit_route(four, city('C48'), city('I50'), town('K60'))
+      expect(in_offshore_out_exit.chains.map { |c| c[:crossing].from[1] }).to eq([:offshore, 5])
+      expect { game.check_other(in_offshore_out_exit) }.to raise_error(Engine::GameError)
+    end
+
+    it 'lets a ferry follow an offshore landing on the same hex (row 11)' do
+      lnwr = game.corporation_by_id('LNWR')
+      token!('M28', lnwr)
+      train = game.trains.find { |t| t.name == '5' && !t.owner.is_a?(Engine::Corporation) }
+      game.buy_train(lnwr, train, :free)
+      route = explicit_route(train, city('N31'), city('M28'), city('C48'))
+
+      expect { game.check_other(route) }.not_to raise_error
+      expect(game.sea_cost(route)).to eq(2)
+    end
+
+    it 'exempts the Edinburgh–Bergen ferry from the land hex side rule (row 12a)' do
+      lay_code!('D41', 'town=revenue:10;path=a:0,b:_0;path=a:3,b:_0')
+      token!('G26', corp)
+      route = explicit_route(four, town('D41'), city('B41'))
+      ferry = route.select(city('B41'), city('G26')).find { |c| c[:crossing]&.kind == :ferry }
+      route.connection_data << route.segment(ferry, left: city('B41'))
+      route.connection_data << route.segment(route.select(city('G26'), city('C48')).first, left: city('G26'))
+
+      expect(route.chains.map { |c| c[:crossing].kind }).to eq(%i[crossing ferry crossing])
+      expect { game.check_other(route) }.not_to raise_error
+    end
+  end
 end

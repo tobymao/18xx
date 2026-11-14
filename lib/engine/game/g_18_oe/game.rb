@@ -1192,9 +1192,25 @@ module Engine
 
           hexes = route.visited_stops.reject(&:town?).map(&:hex)
           raise GameError, 'Route visits same city hex twice' if hexes.size != hexes.uniq.size
+
+          check_sea_crossing_separation(route)
+          if orient_express_run?(route) && !route.chains.empty? && route.chains.all? { |chain| chain[:paths].empty? }
+            raise GameError, 'An Orient Express run may not consist entirely of sea crossings'
+          end
           return unless combined_train?(route.train)
 
           raise GameError, 'Combined trains may only run an Orient Express route' unless orient_express_run?(route)
+        end
+
+        def check_sea_crossing_separation(route)
+          chains = route.chains
+          crossings = chains.each_index.select { |index| chains[index][:crossing]&.kind == :crossing }
+          crossings.each_cons(2) do |first, second|
+            between = chains[(first + 1)...second]
+            next if between.any? { |chain| chain[:paths].map(&:hex).uniq.size > 1 || chain[:crossing]&.kind == :ferry }
+
+            raise GameError, 'Sea crossings must be separated by a land hex side'
+          end
         end
 
         def sea_legs(route)
@@ -1307,10 +1323,18 @@ module Engine
         end
 
         def check_connected(route, corporation)
-          return super unless wcf_restricted?(corporation)
-          return if route.ordered_paths.each_cons(2).all? { |a, b| wcf_pass?(a, b) || a.connects_to?(b, corporation) }
+          route.connection_data.each_cons(2) do |a, b|
+            next if !a[:chain][:paths].empty? && !b[:chain][:paths].empty?
 
-          raise GameError, 'Route is not connected'
+            raise GameError, 'Route is not connected' if a[:right].blocks?(corporation)
+          end
+
+          connected = land_stretches(route).all? do |paths|
+            paths.each_cons(2).all? do |a, b|
+              (wcf_restricted?(corporation) && wcf_pass?(a, b)) || a.connects_to?(b, corporation)
+            end
+          end
+          raise GameError, 'Route is not connected' unless connected
         end
 
         def wcf_pass?(entering, leaving)
