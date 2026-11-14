@@ -270,6 +270,7 @@ module Engine
         ZONE_DISCOUNT_ZONES         = %w[SP IT SC RU].freeze
         ZONE_DISCOUNT_RATE          = 0.2 # 20% §11.1.5
         ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
+        TERRAIN_COST_MULTIPLIER = 0.67
         TILE_POINT_BUDGET = { minor: 3, regional: 3, major: 6, national: 9 }.freeze
         MINOR_MAX_TREASURY = 180
         TILE_FEE_PER_WATER_DISTANCE = 5
@@ -445,6 +446,8 @@ module Engine
           setup_minor_k!
           @minor_g_ability = corporation_by_id('G')&.abilities&.first
           @minor_b_ability = corporation_by_id('B')&.abilities&.first
+          @minor_e_ability = corporation_by_id('E')&.abilities&.first
+          @minor_f_ability = corporation_by_id('F')&.abilities&.first
         end
 
         def setup_minor_k!
@@ -710,16 +713,20 @@ module Engine
               self.class::NATIONAL_REGION_HEXES[zone].include?(hex.coordinates)
           end
 
-          return super unless zone_match
+          terrain_minor = terrain_discount_minor(entity, tile)
+          return super if !zone_match && !terrain_minor
 
-          # §11.1.5: 20% zone discount; E/F augment to 50% when terrain matches
-          ef_corp = terrain_augmented_by?(entity, tile)
-          rate = ef_corp ? self.class::ZONE_TERRAIN_DISCOUNT_RATE : self.class::ZONE_DISCOUNT_RATE
-          cost = (base_cost * (1 - rate)).floor
+          multiplier = if zone_match
+                         1 - (terrain_minor ? self.class::ZONE_TERRAIN_DISCOUNT_RATE : self.class::ZONE_DISCOUNT_RATE)
+                       else
+                         self.class::TERRAIN_COST_MULTIPLIER
+                       end
+          cost = (base_cost * multiplier).floor
           discount = base_cost - cost
           if discount.positive?
-            pct = (rate * 100).to_i
-            label = ef_corp ? "#{pct}% zone+#{ef_corp.name}" : "#{pct}% zone"
+            pct = (100 - (multiplier * 100)).to_i
+            source = [zone_match ? 'zone' : nil, terrain_minor&.name].compact.join('+')
+            label = "#{pct}% #{source}"
             @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
           end
           cost
@@ -1339,12 +1346,17 @@ module Engine
           self.class::CORPORATIONS_TRACK_RIGHTS[corp.id] || @minor_floated_regions[corp.id]
         end
 
-        def terrain_augmented_by?(entity, tile)
+        def terrain_discount_minor(entity, tile)
           corp = owning_corporation(entity)
-          return nil unless corp
+          return if !corp || corp.type == :national
 
-          terrains = self.class::EF_TERRAIN_AUGMENT[corp.id]
-          terrains && (tile.terrain & terrains).any? ? corp : nil
+          return corporation_by_id('E') if corp.abilities.include?(@minor_e_ability) &&
+                                          tile.terrain.intersect?(self.class::EF_TERRAIN_AUGMENT['E'])
+
+          return unless corp.abilities.include?(@minor_f_ability)
+          return unless tile.terrain.intersect?(self.class::EF_TERRAIN_AUGMENT['F'])
+
+          corporation_by_id('F')
         end
 
         def owning_corporation(entity)

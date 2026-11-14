@@ -157,6 +157,138 @@ describe 'G18OE lay track (§11.1)' do
     expect(cost('E52', minor_in('E', 'SC'))).to eq(22)
   end
 
+  describe 'Minor E/F terrain cash discounts (§15.5–15.6)' do
+    def major_with_terrain_minor!(minor_id, zone = 'UK')
+      major = game.corporation_by_id('LNWR')
+      major.type = :major
+      minor = game.corporation_by_id(minor_in(minor_id, zone))
+      game.add_minor_charter!(minor, major)
+      game.close_corporation(minor, quiet: true)
+      major
+    end
+
+    it 'discounts E water, river and lake construction by 33%, rounding the cost down' do
+      e = minor_in('E', 'UK')
+
+      expect([cost('K42', e), cost('M30', e), cost('M34', e)]).to eq([20, 30, 40])
+    end
+
+    it 'discounts F hill and mountain construction by 33%, using the stated 0.67 multiplier' do
+      f = minor_in('F', 'UK')
+
+      expect([cost('S38', f), cost('O54', f), cost('U38', f)]).to eq([30, 40, 80])
+    end
+
+    it 'keeps exact whole-pound amounts from the printed 0.67 multiplier' do
+      e = game.corporation_by_id('E')
+      tile = Engine::Tile.from_code('terrain', :white, 'upgrade=cost:100,terrain:river')
+      hex = game.hex_by_id('M30')
+
+      expect(game.upgrade_cost(tile, hex, e, e)).to eq(67)
+    end
+
+    it 'leaves nonmatching terrain at full cost or the ordinary zone discount' do
+      e = minor_in('E', 'SP')
+      f = minor_in('F', 'SP')
+
+      expect([cost('O54', e), cost('X23', e), cost('M30', f), cost('Z23', f)]).to eq([60, 96, 45, 24])
+    end
+
+    it 'transfers E cash discounts to its acquiring major (§6.2, §10.5)' do
+      major_with_terrain_minor!('E', 'SP')
+
+      expect([cost('M30', 'LNWR'), cost('Z23', 'LNWR')]).to eq([30, 15])
+    end
+
+    it 'transfers F cash discounts to its acquiring major (§6.2, §10.5)' do
+      major_with_terrain_minor!('F', 'SP')
+
+      expect([cost('U38', 'LNWR'), cost('V9', 'LNWR')]).to eq([80, 22])
+    end
+
+    it 'keeps both terrain benefits without stacking the discounts (§11.1.5)' do
+      major_with_terrain_minor!('E', 'SP')
+      major_with_terrain_minor!('F', 'SP')
+
+      expect([cost('M30', 'LNWR'), cost('U38', 'LNWR'), cost('Z23', 'LNWR'), cost('X23', 'LNWR')])
+        .to eq([30, 80, 15, 60])
+    end
+
+    it 'removes the cash benefit when the transferred ability is removed' do
+      ability = game.corporation_by_id('E').abilities.first
+      major = major_with_terrain_minor!('E', 'SP')
+      major.remove_ability(ability)
+
+      expect([cost('M30', 'LNWR'), cost('Z23', 'LNWR')]).to eq([45, 24])
+    end
+
+    it 'moves the cash benefit with the original ability' do
+      ability = game.corporation_by_id('E').abilities.first
+      major = major_with_terrain_minor!('E')
+      other = game.corporation_by_id('SB')
+      other.type = :major
+      major.remove_ability(ability)
+      other.add_ability(ability)
+
+      expect([cost('M30', 'LNWR'), cost('M30', 'SB')]).to eq([45, 30])
+    end
+
+    it 'does not leave a cash benefit on the minor after transferring its ability' do
+      major_with_terrain_minor!('E', 'SP')
+
+      expect([cost('M30', 'E'), cost('Z23', 'E')]).to eq([45, 24])
+    end
+
+    it 'excludes nationals from inherited minor cash benefits (§6.2)' do
+      major = major_with_terrain_minor!('E')
+      major.type = :national
+
+      expect(cost('M30', 'LNWR')).to eq(45)
+    end
+
+    it 'does not charge terrain again when upgrading a laid tile (§11.1.5)' do
+      major = major_with_terrain_minor!('E')
+      hex = game.hex_by_id('M30')
+      tile = game.tiles.find { |candidate| candidate.name == '7' }
+      hex.lay(tile)
+
+      expect(game.upgrade_cost(tile, hex, major, major)).to eq(0)
+    end
+
+    it 'does not require absent E/F abilities in the UK–France scenario' do
+      scenario = new_game(%w[a b], klass: Engine::Game::G18OEUKFR::Game)
+      hex = scenario.hex_by_id('M30')
+      regional = scenario.corporation_by_id('LNWR')
+
+      expect(scenario.upgrade_cost(hex.tile, hex, regional, regional)).to eq(45)
+    end
+
+    it 'lists the terrain and zone discounts separately and explains their combined rate' do
+      %w[E F].each do |id|
+        description = game.corporation_by_id(id).abilities.first.description
+
+        expect(description).to include('Terrain discount: 33%', 'Track-rights zone discount: 20%',
+                                       'combine to give a 50% discount', 'down to whole pounds',
+                                       'Extra tile point for matching terrain: not yet implemented')
+      end
+    end
+
+    %i[medium_start long_endgame].each do |rule|
+      it "preserves E/F cash discounts with #{rule}" do
+        variant = new_game(optional_rules: [rule])
+        major = variant.corporation_by_id('LNWR')
+        major.type = :major
+        variant.minor_floated_regions['E'] = 'SP'
+        variant.add_minor_charter!(variant.corporation_by_id('E'), major)
+        river = variant.hex_by_id('M30')
+        water = variant.hex_by_id('Z23')
+
+        expect(variant.upgrade_cost(river.tile, river, major, major)).to eq(30)
+        expect(variant.upgrade_cost(water.tile, water, major, major)).to eq(15)
+      end
+    end
+  end
+
   describe 'Minor B upgrade discount (§15.2, §10.5)' do
     def major_with_b!
       major = start_major!(game, 'LNWR', player)
