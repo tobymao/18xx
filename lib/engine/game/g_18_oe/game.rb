@@ -5,6 +5,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'stock_market'
 require_relative 'graph'
+require_relative 'sea_crossing'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
@@ -1330,6 +1331,79 @@ module Engine
 
           neighbor = hex_by_id(hex_id).all_neighbors[exit]
           neighbor && sea_zone(neighbor.id)
+        end
+
+        def port_marker_hex(hex_id, exit)
+          ports = self.class::PORTS[hex_id]
+          return unless ports
+
+          if exit == :offshore
+            hex_by_id(ports.dig(:offshore, :hex))
+          else
+            hex_by_id(hex_id)&.all_neighbors&.[](exit)
+          end
+        end
+
+        def sea_crossing(kind, from, to, nodes)
+          units = if kind == :ferry
+                    ferry_links(*from).find { |anchor, _distance| anchor == to }&.last
+                  else
+                    port_distance(from, to)
+                  end
+          hexes = [port_marker_hex(*from) || nodes[0].hex, port_marker_hex(*to) || nodes[1].hex]
+          SeaCrossing.new(kind: kind, from: from, to: to, nodes: nodes, units: units, hexes: hexes)
+        end
+
+        def port_usable?(hex_id, exit, corporation)
+          entry = self.class::PORTS.dig(hex_id, exit)
+          hex = hex_by_id(hex_id)
+          return false if !entry || !entry[:port] || entry[:dead_end] || !hex
+
+          entry[:port] == :public || hex.tile.cities.any? { |city| city_tokened_by?(city, corporation) }
+        end
+
+        def port_anchors(node, corporation)
+          hex_id = node.hex.id
+          exits = (self.class::PORTS[hex_id] || {}).keys.select do |exit|
+            port_usable?(hex_id, exit, corporation) && anchor_attaches?(node, [hex_id, exit])
+          end
+          exits.map { |exit| [hex_id, exit] }
+        end
+
+        def pathless_ferry_partner(anchor)
+          links = ferry_links(*anchor)
+          if anchor[1] == :offshore
+            links.first&.first
+          else
+            links.find { |other, _distance| other[1] == :offshore }&.first
+          end
+        end
+
+        def sea_chains(from_node, to_node, corporation)
+          return [] if !corporation || from_node.hex == to_node.hex
+
+          crossings = port_anchors(from_node, corporation).product(port_anchors(to_node, corporation)).filter_map do |from, to|
+            sea_crossing(:crossing, from, to, [from_node, to_node])
+          end
+          crossings = crossings.select(&:units).sort_by.with_index { |crossing, index| [crossing.units, index] }
+          ferries = (self.class::PORTS[from_node.hex.id] || {}).keys.filter_map do |exit|
+            from = [from_node.hex.id, exit]
+            next unless anchor_attaches?(from_node, from)
+
+            to = pathless_ferry_partner(from)
+            sea_crossing(:ferry, from, to, [from_node, to_node]) if to && anchor_attaches?(to_node, to)
+          end
+          (crossings + ferries).map(&:chain)
+        end
+
+        def extra_node_chains(start_node, end_node, corporation)
+          sea_chains(start_node, end_node, corporation)
+        end
+
+        def anchor_attaches?(node, anchor)
+          return false unless node.hex.id == anchor[0]
+
+          anchor[1] == :offshore ? node.city? : node.paths.any? { |path| path.exits.include?(anchor[1]) }
         end
 
         def sea_zone_neighbors
