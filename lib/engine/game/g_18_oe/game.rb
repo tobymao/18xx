@@ -1382,10 +1382,10 @@ module Engine
         def sea_chains(from_node, to_node, corporation)
           return [] if !corporation || from_node.hex == to_node.hex
 
-          crossings = port_anchors(from_node, corporation).product(port_anchors(to_node, corporation)).filter_map do |from, to|
+          crossings = port_anchors(from_node, corporation).product(port_anchors(to_node, corporation)).map do |from, to|
             sea_crossing(:crossing, from, to, [from_node, to_node])
           end
-          crossings = crossings.select(&:units).sort_by.with_index { |crossing, index| [crossing.units, index] }
+          crossings = crossings.select(&:units).sort_by { |crossing| [crossing.units, crossing.id] }
           ferries = (self.class::PORTS[from_node.hex.id] || {}).keys.filter_map do |exit|
             from = [from_node.hex.id, exit]
             next unless anchor_attaches?(from_node, from)
@@ -1398,12 +1398,6 @@ module Engine
 
         def extra_node_chains(start_node, end_node, corporation)
           sea_chains(start_node, end_node, corporation)
-        end
-
-        def anchor_attaches?(node, anchor)
-          return false unless node.hex.id == anchor[0]
-
-          anchor[1] == :offshore ? node.city? : node.paths.any? { |path| path.exits.include?(anchor[1]) }
         end
 
         def sea_zone_neighbors
@@ -1451,6 +1445,12 @@ module Engine
         end
 
         private
+
+        def anchor_attaches?(node, anchor)
+          return false unless node.hex.id == anchor[0]
+
+          anchor[1] == :offshore ? node.city? : node.paths.any? { |path| path.exits.include?(anchor[1]) }
+        end
 
         def location_hexes(names)
           self.class::LOCATION_NAMES.filter_map { |id, name| hex_by_id(id) if names.include?(name) }
