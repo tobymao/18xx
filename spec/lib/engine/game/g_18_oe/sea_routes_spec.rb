@@ -192,4 +192,127 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       expect(route.select(city('B41'), city('G26')).map { |c| c[:crossing].kind }).to eq([:ferry])
     end
   end
+
+  describe 'city limit (§11.3.3, §11.3.4, §11.3.7)' do
+    include_context 'with 18OE route helpers'
+
+    let(:corp) { game.corporation_by_id('DSJ') }
+    let(:four) { buy_train!('4') }
+    let(:three) { buy_train!('3') }
+    let(:two_plus_two) { buy_train!('2+2') }
+
+    def phase_named(name) = double('phase', name: name, tiles: %i[yellow green])
+
+    before { baltic! }
+
+    it 'counts every sea zone against the city limit and shows it in the distance (rows 2, 10)' do
+      token!('J63', corp)
+      route = explicit_route(four, city('I50'), town('K60'), city('J63'))
+
+      expect(route.chains.first[:crossing].units).to eq(2)
+      expect(game.sea_cost(route)).to eq(2)
+      expect(route.distance_str).to eq('2 + 2 sea')
+      expect(route.revenue).to eq(60)
+      expect { explicit_route(two_plus_two, city('I50'), town('K60'), city('J63')).revenue }.to raise_error(Engine::RouteTooLong)
+    end
+
+    it 'cancels the crossing with the København and Malmö tokens and charges the ferry (PB 4.5, row 3)' do
+      token!('I50', corp)
+      token!('I52', corp)
+      route = route_through(four, city('I50'), city('I52'), town('H55'), town('K60'), city('J63'))
+
+      expect(game.sea_cost(route)).to eq(1)
+      expect(route.distance_str).to eq('3 + 1 sea')
+      expect(route.revenue).to eq(80)
+      expect { route_through(three, city('I50'), city('I52'), town('H55'), town('K60'), city('J63')).revenue }
+        .to raise_error(Engine::RouteTooLong)
+    end
+
+    it 'applies a token at the far port of the crossing (row 4)' do
+      token!('J63', corp)
+      route = explicit_route(three, town('H55'), city('J63'))
+
+      expect(route.chains.first[:crossing].units).to eq(1)
+      expect(game.sea_cost(route)).to eq(0)
+    end
+
+    it 'reduces by two from Phase 7 (row 5)' do
+      token!('I50', corp)
+      six = Engine::Route.new(game, phase_named('6'), four, routes: [])
+      seven = Engine::Route.new(game, phase_named('7'), four, routes: [])
+      [six, seven].each { |route| route.routes = [route] }
+      [six, seven].each do |route|
+        route.connection_data << route.segment(route.select(city('I50'), town('K60')).first, left: city('I50'))
+      end
+
+      expect(game.sea_cost(six)).to eq(1)
+      expect(game.sea_cost(seven)).to eq(0)
+    end
+
+    it 'uses each port token once per train and picks the cheapest assignment (PB 4.5 J minor, row 6)' do
+      j = game.corporation_by_id('J')
+      lay_code!('AA20', 'city=revenue:30;path=a:5,b:_0')
+      lay_code!('AB27', 'city=revenue:20;path=a:1,b:_0;path=a:0,b:_0')
+      token!('AA20', j)
+      train = game.trains.find { |t| t.name == '3' && !t.owner.is_a?(Engine::Corporation) }
+      game.buy_train(j, train, :free)
+      route = explicit_route(train, offboard('AF25'), city('AA20'), city('AB27'))
+
+      expect(node_sequence(route)).to eq([[offboard('AF25'), city('AA20')], [city('AA20'), city('AB27')]])
+      expect(game.sea_legs(route).map(&:units)).to eq([1, 1])
+      expect(game.sea_cost(route)).to eq(1)
+      token!('AB27', j)
+      expect(game.sea_cost(explicit_route(train, offboard('AF25'), city('AA20'), city('AB27')))).to eq(0)
+    end
+
+    it 'counts only a port token the train runs through (§11.3.4)' do
+      lay_code!('M28', 'city=revenue:40;city=revenue:40;path=a:5,b:_0;path=a:2,b:_1')
+      london_west, london_east = game.hex_by_id('M28').tile.cities
+      london_east.place_token(corp, Engine::Token.new(corp), free: true, check_tokenable: false)
+      game.graph.clear
+      route = explicit_route(four, london_west, city('C48'))
+
+      expect(route.chains.first[:crossing].units).to eq(3)
+      expect(game.sea_cost(route)).to eq(3)
+    end
+
+    it 'charges a ferry its full distance once, towns holding no tokens (row 12)' do
+      expect(game.sea_cost(explicit_route(two_plus_two, town('H55'), town('K60')))).to eq(1)
+      expect(game.sea_cost(explicit_route(three, city('AE72'), town('AE74')))).to eq(1)
+      expect(game.sea_cost(explicit_route(three, city('AE72'), town('AE74'), city('AD79')))).to eq(1)
+      expect(game.sea_cost(explicit_route(three, town('AE74'), city('AD79')))).to eq(1)
+    end
+
+    it 'charges the Edinburgh–Bergen ferry one unit (row 12a)' do
+      expect(game.sea_cost(explicit_route(three, city('B41'), city('G26')))).to eq(1)
+    end
+
+    it 'reaches New York from København with a 5 train (row 12b)' do
+      token!('I50', corp)
+      route = explicit_route(buy_train!('5'), city('I50'), offboard('N1'))
+
+      expect(route.distance_str).to eq('2 + 3 sea')
+      expect { route.revenue }.not_to raise_error
+    end
+
+    it 'reduces the city row of a 4D train (Review Focus 3)' do
+      token!('J63', corp)
+      four_d = game.trains.find { |t| t.name == '7+7' }
+      four_d.variant = '4D'
+      four_d.owner = corp
+      route = explicit_route(four_d, city('I50'), town('K60'), city('J63'))
+
+      expect(game.route_train_distance(route, four_d).find { |row| row['nodes'].include?('city') }['visit']).to eq(2)
+      expect(route.visited_stops).to include(town('K60'))
+      expect(route.stops).not_to include(town('K60'))
+    end
+
+    it 'costs nothing for a train without an owner (Review Focus 4)' do
+      train = game.trains.find { |t| t.name == '3' && !t.owner.is_a?(Engine::Corporation) }
+      route = Engine::Route.new(game, game.phase, train, routes: [])
+
+      expect(game.sea_cost(route)).to eq(0)
+      expect(game.route_distance_str(route)).to eq('0')
+    end
+  end
 end

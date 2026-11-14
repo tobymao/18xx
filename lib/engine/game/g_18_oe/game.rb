@@ -1197,6 +1197,49 @@ module Engine
           raise GameError, 'Combined trains may only run an Orient Express route' unless orient_express_run?(route)
         end
 
+        def sea_legs(route)
+          route.connection_data.filter_map { |connection| connection[:chain][:crossing] } + ferry_legs(route)
+        end
+
+        def sea_cost(route)
+          corporation = route.corporation
+          return 0 unless corporation
+
+          legs = sea_legs(route)
+          return 0 if legs.empty?
+
+          tokens = legs.flat_map(&:nodes).uniq.select { |node| node.city? && city_tokened_by?(node, corporation) }
+          token_legs = tokens.map { |token| legs.each_index.select { |index| legs[index].nodes.include?(token) } }
+          cheapest_sea_cost(legs, token_legs, port_token_reduction(route.phase) || 0, Array.new(legs.size, 0))
+        end
+
+        def route_train_distance(route, train)
+          distance = train.distance
+          return distance if distance.is_a?(Numeric)
+
+          cost = sea_cost(route)
+          return distance if cost.zero?
+
+          distance.map do |row|
+            next row unless row['nodes'].include?('city')
+
+            reduced = row.dup
+            reduced['visit'] = [(row['visit'] || row['pay']) - cost, 0].max
+            reduced['pay'] = [row['pay'] - cost, 0].max
+            reduced
+          end
+        end
+
+        def route_distance(route)
+          route.visited_stops.count { |stop| !stop.town? } + sea_cost(route)
+        end
+
+        def route_distance_str(route)
+          stops = route.visited_stops.count { |stop| !stop.town? }
+          cost = sea_cost(route)
+          cost.positive? ? "#{stops} + #{cost} sea" : stops.to_s
+        end
+
         def double_head_candidates(corporation)
           return [] if !corporation.corporation? || corporation.type != :major
           return [] if corporation.trains.any? { |train| combined_train?(train) }
@@ -1445,6 +1488,97 @@ module Engine
         end
 
         private
+
+        def cheapest_sea_cost(legs, token_legs, reduction, counts)
+          return legs.each_index.sum { |index| [legs[index].units - (reduction * counts[index]), 0].max } if token_legs.empty?
+
+          rest = token_legs[1..]
+          options = [nil] + token_legs.first
+          options.map do |index|
+            assigned = counts.dup
+            assigned[index] += 1 if index
+            cheapest_sea_cost(legs, rest, reduction, assigned)
+          end.min
+        end
+
+        def ferry_legs(route)
+          legs = {}
+          land_stretches(route).each do |paths|
+            ferry_runs(paths).each do |before, run, after|
+              leg = ferry_leg(before, run, after)
+              legs[leg[0]] ||= leg[1] if leg
+            end
+          end
+          legs.values
+        end
+
+        def land_stretches(route)
+          stretches = [[]]
+          route.connection_data.each do |connection|
+            if connection[:chain][:crossing]
+              stretches << []
+              next
+            end
+
+            paths = connection[:chain][:paths]
+            paths = paths.reverse if !paths.empty? && !paths[0].nodes.include?(connection[:left])
+            stretches.last.concat(paths)
+          end
+          stretches
+        end
+
+        def ferry_runs(paths)
+          runs = []
+          index = 0
+          while index < paths.size
+            if ferry_track?(paths[index])
+              finish = index
+              finish += 1 while finish + 1 < paths.size && ferry_track?(paths[finish + 1])
+              before = index.positive? ? paths[index - 1] : nil
+              after = paths[finish + 1]
+              runs << [before, paths[index..finish], after]
+              index = finish + 1
+            else
+              index += 1
+            end
+          end
+          runs
+        end
+
+        def ferry_anchor(land, ferry_path)
+          return unless land
+
+          land.exits.each do |exit|
+            next unless land.hex.all_neighbors[exit]&.id == ferry_path.hex.id
+
+            anchor = [land.hex.id, exit]
+            return anchor unless ferry_links(*anchor).empty?
+          end
+          nil
+        end
+
+        def ferry_leg(before, run, after)
+          from = ferry_anchor(before, run.first)
+          to = ferry_anchor(after, run.last)
+          entry =
+            if from && to
+              ferry_links(*from).find { |anchor, _distance| anchor == to }
+            elsif from
+              single_ferry_entry(ferry_links(*from), run.last)
+            elsif to
+              single_ferry_entry(ferry_links(*to), run.first)
+            end
+          return unless entry
+
+          key = [from || to, entry[0]].map(&:to_s).sort
+          nodes = [before&.nodes, after&.nodes].flatten.compact.uniq
+          [key, SeaLeg.new(entry[1], nodes)]
+        end
+
+        def single_ferry_entry(links, ferry_path)
+          adjacent = ferry_path.hex.all_neighbors.values.map(&:id) + [ferry_path.hex.id]
+          links.find { |anchor, _distance| adjacent.include?(anchor[0]) } || links.first
+        end
 
         def anchor_attaches?(node, anchor)
           return false unless node.hex.id == anchor[0]
