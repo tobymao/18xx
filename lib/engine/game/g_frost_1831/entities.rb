@@ -198,6 +198,15 @@ module Engine
                       { type: 'close', on_phase: 'never' }],
         }.freeze
 
+        INTERVENTION_CARD_COMPANY = {
+          sym: 'INT',
+          name: 'Intervention Card',
+          value: 0,
+          revenue: 0,
+          desc: 'Counts as 1 certificate towards the certificate limit. It cannot be sold.',
+          abilities: [{ type: 'no_buy' }, { type: 'close', on_phase: 'never' }],
+        }.freeze
+
         FACTIONS = [
           {
             float_percent: 40,

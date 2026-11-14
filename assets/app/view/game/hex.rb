@@ -3,6 +3,7 @@
 require 'lib/hex'
 require 'lib/settings'
 require 'lib/tile_selector'
+require 'lib/hex_choice_selector'
 require 'view/game/actionable'
 require 'view/game/runnable'
 require 'view/game/tile'
@@ -229,6 +230,10 @@ module View
               token_type: next_token
             ))
           end
+          if @actions.include?('choose') && step.respond_to?(:hex_choices) && !(choices = step.hex_choices(@hex)).empty?
+            return store(:tile_selector, Lib::HexChoiceSelector.new(@hex, coordinates, choices))
+          end
+
           if @actions.include?('choose') && step.choices.include?(@hex.id)
             return process_action(Engine::Action::Choose.new(
                 @entity,
