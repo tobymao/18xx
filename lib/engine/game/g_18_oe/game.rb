@@ -275,7 +275,8 @@ module Engine
         MINOR_MAX_TREASURY = 180
         TILE_FEE_PER_WATER_DISTANCE = 5
         TOKEN_FEE_PER_WATER_DISTANCE = 20
-        EF_TERRAIN_AUGMENT          = { 'E' => %i[water river lake], 'F' => %i[mountain hill] }.freeze
+        MINOR_E_TERRAIN = %i[water river lake].freeze
+        MINOR_F_TERRAIN = %i[mountain hill].freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -693,7 +694,29 @@ module Engine
           return 1 if upgrade && old_tile.cities.empty? && entity.abilities.include?(@minor_b_ability)
 
           base_cost = upgrade ? 2 : 1
-          metropolis_hex?(old_tile.hex) ? base_cost * 2 : base_cost
+          base_cost *= 2 if metropolis_hex?(old_tile.hex)
+          return base_cost unless zero_point_tile_lays_available?(entity)
+          return base_cost unless blue_terrain_point_tile?(old_tile)
+
+          base_cost - 1
+        end
+
+        def zero_point_tile_lays_available?(entity)
+          return false unless @minor_e_ability
+
+          entity.abilities.include?(@minor_e_ability) && ability_usable_this_or?(@minor_e_ability)
+        end
+
+        def after_lay_tile(entity, old_tile, tile)
+          return unless tile.color == :yellow
+          return unless zero_point_tile_lays_available?(entity)
+          return unless blue_terrain_point_tile?(old_tile)
+
+          @minor_e_ability.use!
+        end
+
+        def blue_terrain_point_tile?(tile)
+          tile.color == :white && tile.terrain.intersect?(self.class::MINOR_E_TERRAIN)
         end
 
         def can_buy_train_from_others?
@@ -1351,10 +1374,10 @@ module Engine
           return if !corp || corp.type == :national
 
           return corporation_by_id('E') if corp.abilities.include?(@minor_e_ability) &&
-                                          tile.terrain.intersect?(self.class::EF_TERRAIN_AUGMENT['E'])
+                                          tile.terrain.intersect?(self.class::MINOR_E_TERRAIN)
 
           return unless corp.abilities.include?(@minor_f_ability)
-          return unless tile.terrain.intersect?(self.class::EF_TERRAIN_AUGMENT['F'])
+          return unless tile.terrain.intersect?(self.class::MINOR_F_TERRAIN)
 
           corporation_by_id('F')
         end
