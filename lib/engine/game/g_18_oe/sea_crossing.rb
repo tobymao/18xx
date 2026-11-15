@@ -18,12 +18,12 @@ module Engine
           @game = game
         end
 
-        def sea_hexes
-          @sea_hexes ||= @game.sea_hex_path(*@hexes)
+        def sea_hex?(hex)
+          !!@game.sea_zone(hex.id)
         end
 
-        def straighten(hexes)
-          @game.straighten_sea_hexes(hexes)
+        def channel_passage_cost
+          @game.sea_channel_passage_cost
         end
 
         def id

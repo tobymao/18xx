@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/sea_path'
 require 'lib/settings'
 require 'view/game/hex'
 require 'view/game/part/city'
@@ -12,6 +13,7 @@ module View
       LANE_SPACING = 1.5
       MITER_LIMIT = 2
 
+      needs :game, store: true
       needs :routes
       needs :start_pos, default: [1, 1]
 
@@ -150,18 +152,22 @@ module View
       def step_route_indexes(raw)
         steps = Hash.new { |hash, key| hash[key] = [] }
         raw.each do |index, crossing|
-          crossing.sea_hexes.each_cons(2) { |a, b| steps[leg_key(a, b)] << index }
+          sea_path(crossing).each_cons(2) { |a, b| steps[leg_key(a, b)] << index }
         end
         steps.transform_values { |indexes| indexes.uniq.sort }
       end
 
       def crossing_hexes(crossing, step_routes)
-        joined = sea_pieces(crossing.sea_hexes, step_routes).each_with_index.flat_map do |piece, i|
-          straight = crossing.straighten(piece)
+        joined = sea_pieces(sea_path(crossing), step_routes).each_with_index.flat_map do |piece, i|
+          straight = Lib::SeaPath.for(@game).straighten(piece, crossing)
           i.zero? ? straight : straight.drop(1)
         end
         hexes = [crossing.nodes[0].hex, *joined, crossing.nodes[1].hex]
         hexes.each_with_index.map { |hex, i| hex if i.zero? || hex != hexes[i - 1] }.compact
+      end
+
+      def sea_path(crossing)
+        Lib::SeaPath.for(@game).path(*crossing.hexes, crossing)
       end
 
       def sea_pieces(path, step_routes)

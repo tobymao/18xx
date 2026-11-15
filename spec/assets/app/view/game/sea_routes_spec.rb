@@ -11,7 +11,7 @@ module View
 
       let(:corp) { game.corporation_by_id('DSJ') }
       let(:four) { buy_train!('4') }
-      let(:component) { described_class.new(nil, routes: routes, start_pos: [1, 1]) }
+      let(:component) { described_class.new(nil, routes: routes, start_pos: [1, 1], game: game) }
 
       def rendered
         calls = []
@@ -120,7 +120,8 @@ module View
         let(:routes) { [double(chains: [{ crossing: crossing }])] }
 
         it 'passes through the centre of an interior waypoint on an unshared leg' do
-          waypoint = crossing.straighten(crossing.sea_hexes)[1..-2].first
+          waypoint = Lib::SeaPath.for(game).straighten(Lib::SeaPath.for(game).path(*crossing.hexes, crossing),
+                                                       crossing)[1..-2].first
           expect(waypoint).not_to be_nil
           wx, wy = Hex.coordinates(waypoint, [1, 1])
           expect(points_of(polylines.first)).to include([be_within(0.01).of(wx), be_within(0.01).of(wy)])

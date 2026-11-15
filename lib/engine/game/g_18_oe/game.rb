@@ -44,9 +44,6 @@ module Engine
           %w[60p 65 70 75 80],
           %w[50 60 65 70],
         ].freeze
-        SEA_PATH_LAND_COST = 20
-        SEA_PATH_CLEARANCE = 3
-        SEA_PATH_COAST_COST = 2
 
         CERT_LIMIT = { 2 => 99, 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20 }.freeze
         # Standard game: £5,400 total / num_players, rounded up to nearest £5.
@@ -282,6 +279,7 @@ module Engine
         TOKEN_FEE_PER_WATER_DISTANCE = 20
         MINOR_E_TERRAIN = %i[water river lake].freeze
         MINOR_F_TERRAIN = %i[mountain hill].freeze
+        SEA_CHANNEL_PASSAGE_COST = 20
         PORT_TOKEN_REDUCTION = { '2' => 1, '3' => 1, '4' => 1, '5' => 1, '6' => 1, '7' => 2, '8' => 2 }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
@@ -1384,6 +1382,10 @@ module Engine
           sea_traffic?(path)
         end
 
+        def sea_channel_passage_cost
+          self.class::SEA_CHANNEL_PASSAGE_COST
+        end
+
         def port_token_reduction(phase)
           self.class::PORT_TOKEN_REDUCTION[phase.name]
         end
@@ -1424,61 +1426,6 @@ module Engine
                   end
           hexes = [port_marker_hex(*from) || nodes[0].hex, port_marker_hex(*to) || nodes[1].hex]
           SeaCrossing.new(kind: kind, from: from, to: to, nodes: nodes, units: units, hexes: hexes, game: self)
-        end
-
-        def sea_path_hexes(from_hex, to_hex)
-          @sea_path_hexes ||= {}
-          @sea_path_hexes[[from_hex.id, to_hex.id]] ||= straighten_sea_hexes(sea_hex_path(from_hex, to_hex))
-        end
-
-        def sea_hex_path(from_hex, to_hex)
-          @sea_hex_paths ||= {}
-          forward = (from_hex.id <=> to_hex.id) <= 0
-          first, last = forward ? [from_hex, to_hex] : [to_hex, from_hex]
-          path = (@sea_hex_paths[[first.id, last.id]] ||= cheapest_sea_path(first, last))
-          forward ? path : path.reverse
-        end
-
-        def straighten_sea_hexes(hexes)
-          @straightened_sea_hexes ||= {}
-          forward = (hexes.first.id <=> hexes.last.id) <= 0
-          canonical = forward ? hexes : hexes.reverse
-          straight = (@straightened_sea_hexes[canonical.map(&:id)] ||= straighten_sea_path(canonical))
-          forward ? straight : straight.reverse
-        end
-
-        def sea_land_distance(hex)
-          @sea_land_distance ||= begin
-            distance = {}
-            land = @hexes.reject { |h| sea_zone(h.id) }
-            edge = @hexes.select { |h| sea_zone(h.id) && h.all_neighbors.size < 6 }
-            land.each { |h| distance[h] = 0 }
-            edge.each { |h| distance[h] = 1 }
-            queue = land + edge
-            until queue.empty?
-              current = queue.shift
-              current.all_neighbors.each_value do |neighbor|
-                next if distance.key?(neighbor)
-
-                distance[neighbor] = distance[current] + 1
-                queue << neighbor
-              end
-            end
-            distance
-          end
-          @sea_land_distance[hex] || @hexes.size
-        end
-
-        def sea_line_hexes(from_hex, to_hex)
-          dq = grid_q(to_hex) - grid_q(from_hex)
-          dr = to_hex.y - from_hex.y
-          steps = ((dq.abs + dr.abs + (dq + dr).abs) / 2.0).round
-          return [from_hex] if steps.zero?
-
-          (0..steps).map do |k|
-            t = k / steps.to_f
-            hex_at_cube(grid_q(from_hex) + (dq * t) + 1e-6, from_hex.y + (dr * t) + 1e-6)
-          end
         end
 
         def port_usable?(hex_id, exit, corporation)
@@ -1572,86 +1519,6 @@ module Engine
         end
 
         private
-
-        def cheapest_sea_path(from_hex, to_hex)
-          costs = { from_hex => 0 }
-          previous = {}
-          frontier = [from_hex]
-          done = {}
-          until frontier.empty?
-            current = frontier.min_by.with_index { |hex, index| [costs[hex], index] }
-            frontier.delete(current)
-            next if done[current]
-
-            done[current] = true
-            break if current == to_hex
-
-            current.all_neighbors.each_value do |neighbor|
-              cost = costs[current] + sea_step_cost(neighbor)
-              next if costs[neighbor] && costs[neighbor] <= cost
-
-              costs[neighbor] = cost
-              previous[neighbor] = current
-              frontier << neighbor
-            end
-          end
-          path = [to_hex]
-          path.unshift(previous[path.first]) while previous[path.first]
-          path
-        end
-
-        def sea_step_cost(hex)
-          return self.class::SEA_PATH_LAND_COST unless sea_zone(hex.id)
-
-          shortfall = [self.class::SEA_PATH_CLEARANCE - sea_land_distance(hex), 0].max
-          1 + (self.class::SEA_PATH_COAST_COST * shortfall)
-        end
-
-        def straighten_sea_path(path)
-          allowed = path.to_h { |hex| [hex, true] }
-          result = [path.first]
-          index = 0
-          while index < path.size - 1
-            jump = (path.size - 1).downto(index + 1).find do |candidate|
-              line = sea_line_hexes(path[index], path[candidate])
-              next unless line.all? { |hex| hex && (sea_zone(hex.id) || allowed[hex]) }
-
-              line.map { |hex| sea_land_distance(hex) }.min >=
-                path[index..candidate].map { |hex| sea_land_distance(hex) }.min
-            end
-            index = jump || (index + 1)
-            result << path[index]
-          end
-          result
-        end
-
-        def grid_parity
-          @grid_parity ||= (@hexes.first.x - @hexes.first.y) % 2
-        end
-
-        def grid_q(hex)
-          (hex.x - hex.y - grid_parity) / 2.0
-        end
-
-        def hex_by_grid
-          @hex_by_grid ||= @hexes.to_h { |hex| [[hex.x, hex.y], hex] }
-        end
-
-        def hex_at_cube(q, r)
-          s = -q - r
-          rq = q.round
-          rr = r.round
-          rs = s.round
-          dq = (rq - q).abs
-          dr = (rr - r).abs
-          ds = (rs - s).abs
-          if dq > dr && dq > ds
-            rq = -rr - rs
-          elsif dr > ds
-            rr = -rq - rs
-          end
-          hex_by_grid[[(2 * rq) + rr + grid_parity, rr]]
-        end
 
         def cheapest_sea_cost(legs, token_legs, reduction, counts)
           return legs.each_index.sum { |index| [legs[index].units - (reduction * counts[index]), 0].max } if token_legs.empty?
