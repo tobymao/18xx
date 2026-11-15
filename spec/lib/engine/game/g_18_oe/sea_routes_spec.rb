@@ -35,10 +35,10 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
 
   describe 'port token distance (§11.3.4)' do
     it 'reduces by one through Phase 6 and by two from Phase 7' do
-      expect(game.port_token_reduction(double('phase', name: '2'))).to eq(1)
-      expect(game.port_token_reduction(double('phase', name: '6'))).to eq(1)
-      expect(game.port_token_reduction(double('phase', name: '7'))).to eq(2)
-      expect(game.port_token_reduction(double('phase', name: '8'))).to eq(2)
+      expect(game.port_token_distance(double('phase', name: '2'))).to eq(1)
+      expect(game.port_token_distance(double('phase', name: '6'))).to eq(1)
+      expect(game.port_token_distance(double('phase', name: '7'))).to eq(2)
+      expect(game.port_token_distance(double('phase', name: '8'))).to eq(2)
     end
   end
 

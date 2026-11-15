@@ -280,7 +280,7 @@ module Engine
         MINOR_E_TERRAIN = %i[water river lake].freeze
         MINOR_F_TERRAIN = %i[mountain hill].freeze
         SEA_CHANNEL_PASSAGE_COST = 20
-        PORT_TOKEN_REDUCTION = { '2' => 1, '3' => 1, '4' => 1, '5' => 1, '6' => 1, '7' => 2, '8' => 2 }.freeze
+        PORT_TOKEN_DISTANCE_BY_PHASE = { '2' => 1, '3' => 1, '4' => 1, '5' => 1, '6' => 1, '7' => 2, '8' => 2 }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -1217,7 +1217,7 @@ module Engine
 
           tokens = legs.flat_map(&:nodes).uniq.select { |node| node.city? && city_tokened_by?(node, corporation) }
           token_legs = tokens.map { |token| legs.each_index.select { |index| legs[index].nodes.include?(token) } }
-          cheapest_sea_cost(legs, token_legs, port_token_reduction(route.phase) || 0, Array.new(legs.size, 0))
+          cheapest_sea_cost(legs, token_legs, port_token_distance(route.phase) || 0, Array.new(legs.size, 0))
         end
 
         def route_train_distance(route, train)
@@ -1386,8 +1386,8 @@ module Engine
           self.class::SEA_CHANNEL_PASSAGE_COST
         end
 
-        def port_token_reduction(phase)
-          self.class::PORT_TOKEN_REDUCTION[phase.name]
+        def port_token_distance(phase)
+          self.class::PORT_TOKEN_DISTANCE_BY_PHASE[phase.name]
         end
 
         def ferry_links(hex_id, exit)
