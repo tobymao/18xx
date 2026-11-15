@@ -18,8 +18,12 @@ module Engine
           @game = game
         end
 
-        def path_hexes
-          @path_hexes ||= @game.sea_path_hexes(*@hexes)
+        def sea_hexes
+          @sea_hexes ||= @game.sea_hex_path(*@hexes)
+        end
+
+        def straighten(hexes)
+          @game.straighten_sea_hexes(hexes)
         end
 
         def id

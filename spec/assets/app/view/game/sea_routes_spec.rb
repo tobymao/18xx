@@ -120,10 +120,50 @@ module View
         let(:routes) { [double(chains: [{ crossing: crossing }])] }
 
         it 'passes through the centre of an interior waypoint on an unshared leg' do
-          waypoint = crossing.path_hexes[1..-2].first
+          waypoint = crossing.straighten(crossing.sea_hexes)[1..-2].first
           expect(waypoint).not_to be_nil
           wx, wy = Hex.coordinates(waypoint, [1, 1])
           expect(points_of(polylines.first)).to include([be_within(0.01).of(wx), be_within(0.01).of(wy)])
+        end
+      end
+
+      context 'with routes leaving København by the same sea to Stavanger and New York' do
+        let(:five) { buy_train!('5') }
+        let(:first_route) do
+          lay_code!('D41', 'town=revenue:10;path=a:0,b:_0;path=a:3,b:_0')
+          explicit_route(four, city('I50'), town('D41'))
+        end
+        let(:second_route) { explicit_route(five, city('I50'), offboard('N1')) }
+        let(:routes) { [first_route, second_route].each { |r| r.routes = [first_route, second_route] } }
+
+        def hex_sequence(attrs)
+          points_of(attrs).map do |x, y|
+            game.hexes.min_by { |hex| Math.hypot(Hex.coordinates(hex, [1, 1])[0] - x, Hex.coordinates(hex, [1, 1])[1] - y) }
+          end
+        end
+
+        def lane_side(points, index, hexes)
+          ax, ay = Hex.coordinates(hexes[index], [1, 1])
+          bx, by = Hex.coordinates(hexes[index + 1], [1, 1])
+          mx = (points[index][0] + points[index + 1][0]) / 2.0
+          my = (points[index][1] + points[index + 1][1]) / 2.0
+          ((bx - ax) * (my - ay)) - ((by - ay) * (mx - ax))
+        end
+
+        it 'keeps the first route on one side of its travel along every shared leg and splits after the junction' do
+          first, second = polylines
+          first_hexes = hex_sequence(first)
+          second_hexes = hex_sequence(second)
+          shared = (1..first_hexes.size - 3).select do |i|
+            second_hexes.each_cons(2).any? do |a, b|
+              [a, b].sort_by(&:id) == [first_hexes[i], first_hexes[i + 1]].sort_by(&:id)
+            end
+          end
+          expect(shared.size).to be >= 2
+          sides = shared.map { |i| lane_side(points_of(first), i, first_hexes) }
+          expect(sides.map(&:abs)).to all(be > 1)
+          expect(sides.map { |side| side <=> 0 }.uniq.size).to eq(1)
+          expect(first_hexes.last).not_to eq(second_hexes.last)
         end
       end
 

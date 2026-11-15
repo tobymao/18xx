@@ -1428,14 +1428,33 @@ module Engine
 
         def sea_path_hexes(from_hex, to_hex)
           @sea_path_hexes ||= {}
-          @sea_path_hexes[[from_hex.id, to_hex.id]] ||= straighten_sea_path(cheapest_sea_path(from_hex, to_hex))
+          @sea_path_hexes[[from_hex.id, to_hex.id]] ||= straighten_sea_hexes(sea_hex_path(from_hex, to_hex))
+        end
+
+        def sea_hex_path(from_hex, to_hex)
+          @sea_hex_paths ||= {}
+          forward = (from_hex.id <=> to_hex.id) <= 0
+          first, last = forward ? [from_hex, to_hex] : [to_hex, from_hex]
+          path = (@sea_hex_paths[[first.id, last.id]] ||= cheapest_sea_path(first, last))
+          forward ? path : path.reverse
+        end
+
+        def straighten_sea_hexes(hexes)
+          @straightened_sea_hexes ||= {}
+          forward = (hexes.first.id <=> hexes.last.id) <= 0
+          canonical = forward ? hexes : hexes.reverse
+          straight = (@straightened_sea_hexes[canonical.map(&:id)] ||= straighten_sea_path(canonical))
+          forward ? straight : straight.reverse
         end
 
         def sea_land_distance(hex)
           @sea_land_distance ||= begin
             distance = {}
-            queue = @hexes.reject { |h| sea_zone(h.id) }
-            queue.each { |h| distance[h] = 0 }
+            land = @hexes.reject { |h| sea_zone(h.id) }
+            edge = @hexes.select { |h| sea_zone(h.id) && h.all_neighbors.size < 6 }
+            land.each { |h| distance[h] = 0 }
+            edge.each { |h| distance[h] = 1 }
+            queue = land + edge
             until queue.empty?
               current = queue.shift
               current.all_neighbors.each_value do |neighbor|

@@ -446,13 +446,36 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
     it 'keeps mid-route waypoints in open water where the sea is wide' do
       path = game.sea_path_hexes(from_hex, game.port_marker_hex('N1', 5))
       expect(path[2..-2]).not_to be_empty
-      expect(path[2..-2].map { |hex| game.sea_land_distance(hex) }).to all(be >= 3)
+      expect(path[2..-2].map { |hex| game.sea_land_distance(hex) }).to all(be >= 2)
     end
 
     it 'has interior waypoints at sea on the Stavanger run, where the water is one hex wide' do
       path = game.sea_path_hexes(from_hex, game.port_marker_hex('D41', 0))
       expect(path[1..-2]).not_to be_empty
       expect(path[1..-2].map { |hex| game.sea_land_distance(hex) }).to all(be >= 1)
+    end
+
+    it 'counts the map edge as a coast for sea hexes with only sea neighbours' do
+      edge = game.hexes.find do |hex|
+        game.sea_zone(hex.id) && hex.all_neighbors.size < 6 && hex.all_neighbors.values.all? { |n| game.sea_zone(n.id) }
+      end
+      expect(edge).not_to be_nil
+      expect(game.sea_land_distance(edge)).to eq(1)
+    end
+
+    it 'keeps the København to New York line off the map edge' do
+      path = game.sea_path_hexes(from_hex, game.port_marker_hex('N1', 5))
+      expect(path[1..-2].map { |hex| hex.all_neighbors.size }).to all(eq(6))
+    end
+
+    it 'finds the same raw sea path in either direction' do
+      to_hex = game.port_marker_hex('N1', 5)
+      expect(game.sea_hex_path(from_hex, to_hex)).to eq(game.sea_hex_path(to_hex, from_hex).reverse)
+    end
+
+    it 'straightens a hex run the same way in either direction' do
+      path = game.sea_hex_path(from_hex, game.port_marker_hex('N1', 5))
+      expect(game.straighten_sea_hexes(path).reverse).to eq(game.straighten_sea_hexes(path.reverse))
     end
 
     it 'measures distance to land in hex steps' do

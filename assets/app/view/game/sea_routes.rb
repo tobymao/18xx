@@ -16,21 +16,20 @@ module View
       needs :start_pos, default: [1, 1]
 
       def render
-        segment_indexes = Hash.new { |hash, key| hash[key] = [] }
         @route_nodes = {}
-        crossings = []
+        raw = []
         @routes.each_with_index do |route, index|
           (route.chains || []).each do |chain|
             crossing = chain[:crossing]
             next unless crossing
 
             crossing.nodes.each { |node| @route_nodes[node.hex] = node }
-            hexes = crossing_hexes(crossing)
-            hexes.each_cons(2) { |a, b| segment_indexes[leg_key(a, b)] << index }
-            crossings << [index, hexes]
+            raw << [index, crossing]
           end
         end
-        @segment_indexes = segment_indexes.transform_values { |indexes| indexes.uniq.sort }
+        step_routes = step_route_indexes(raw)
+        crossings = raw.map { |index, crossing| [index, crossing_hexes(crossing, step_routes)] }
+        index_legs(crossings)
 
         children = crossings.map { |index, hexes| polyline(index, hexes) }.compact
         h(:g, { attrs: { id: 'sea-routes', 'pointer-events': 'none' } }, children)
@@ -123,21 +122,58 @@ module View
         return [0, 0] if indexes.one?
 
         shift = (indexes.index(index) - ((indexes.size - 1) / 2.0)) * leg_spacing(indexes)
-        x1, y1 = Hex.coordinates(key[0], @start_pos)
-        x2, y2 = Hex.coordinates(key[1], @start_pos)
+        x1, y1 = Hex.coordinates(@leg_travel[key][0], @start_pos)
+        x2, y2 = Hex.coordinates(@leg_travel[key][1], @start_pos)
         dx = x2 - x1
         dy = y2 - y1
         length = Math.sqrt((dx * dx) + (dy * dy))
         [-dy / length * shift, dx / length * shift]
       end
 
-      def leg_key(a, b)
-        a.id <= b.id ? [a, b] : [b, a]
+      def index_legs(crossings)
+        segment_indexes = Hash.new { |hash, key| hash[key] = [] }
+        lead = {}
+        @leg_travel = {}
+        crossings.each do |index, hexes|
+          hexes.each_cons(2) do |a, b|
+            key = leg_key(a, b)
+            segment_indexes[key] << index
+            next if lead[key] && lead[key] <= index
+
+            lead[key] = index
+            @leg_travel[key] = [a, b]
+          end
+        end
+        @segment_indexes = segment_indexes.transform_values { |indexes| indexes.uniq.sort }
       end
 
-      def crossing_hexes(crossing)
-        hexes = [crossing.nodes[0].hex, *crossing.path_hexes, crossing.nodes[1].hex]
+      def step_route_indexes(raw)
+        steps = Hash.new { |hash, key| hash[key] = [] }
+        raw.each do |index, crossing|
+          crossing.sea_hexes.each_cons(2) { |a, b| steps[leg_key(a, b)] << index }
+        end
+        steps.transform_values { |indexes| indexes.uniq.sort }
+      end
+
+      def crossing_hexes(crossing, step_routes)
+        joined = sea_pieces(crossing.sea_hexes, step_routes).each_with_index.flat_map do |piece, i|
+          straight = crossing.straighten(piece)
+          i.zero? ? straight : straight.drop(1)
+        end
+        hexes = [crossing.nodes[0].hex, *joined, crossing.nodes[1].hex]
         hexes.each_with_index.map { |hex, i| hex if i.zero? || hex != hexes[i - 1] }.compact
+      end
+
+      def sea_pieces(path, step_routes)
+        cuts = (1...path.size - 1).reject do |i|
+          step_routes[leg_key(path[i - 1], path[i])] == step_routes[leg_key(path[i], path[i + 1])]
+        end
+        bounds = [0, *cuts, path.size - 1]
+        bounds.each_cons(2).map { |from, to| path[from..to] }
+      end
+
+      def leg_key(a, b)
+        a.id <= b.id ? [a, b] : [b, a]
       end
     end
   end
