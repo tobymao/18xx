@@ -49,8 +49,8 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
     end
 
     it 'does not count a dead-end arrow as a port exit' do
-      expect(game.port_exit?('E28', 4)).to be(false)
-      expect(game.port_exit?('H55', 4)).to be(true)
+      expect(game.sea_exit?('E28', 4)).to be(false)
+      expect(game.sea_exit?('H55', 4)).to be(true)
     end
   end
 
@@ -81,7 +81,7 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       lay_code!('I50', 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0')
       lay_code!('I52', 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0')
       token!('I52', dsj)
-      chains = game.sea_chains(city('I50'), city('I52'), dsj)
+      chains = game.sea_links(city('I50'), city('I52'), dsj)
 
       expect(chains.map { |c| c[:crossing].units }).to eq([1, 2])
       expect(chains.first[:id]).to eq(%w[crossing I50 5 I52 0])
@@ -91,36 +91,36 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
     end
 
     it 'needs track to an exit port but none to an offshore port (§11.3.6, PB 4.4)' do
-      expect(game.sea_chains(city('I50'), city('C48'), dsj).map { |c| c[:id] }).to eq([%w[crossing I50 offshore C48 offshore]])
-      expect(game.port_anchors(city('I50'), dsj)).to eq([['I50', :offshore]])
+      expect(game.sea_links(city('I50'), city('C48'), dsj).map { |c| c[:id] }).to eq([%w[crossing I50 offshore C48 offshore]])
+      expect(game.usable_ports(city('I50'), dsj)).to eq([['I50', :offshore]])
     end
 
     it 'uses a private port only with the corporation’s own token in its city (§11.3.6)' do
       lay_code!('I52', 'city=revenue:20;path=a:0,b:_0')
-      expect(game.sea_chains(city('I50'), city('I52'), dsj)).to be_empty
+      expect(game.sea_links(city('I50'), city('I52'), dsj)).to be_empty
       token!('I52', bjv)
-      expect(game.sea_chains(city('I50'), city('I52'), dsj)).to be_empty
-      expect(game.sea_chains(city('I50'), city('I52'), bjv).size).to eq(1)
+      expect(game.sea_links(city('I50'), city('I52'), dsj)).to be_empty
+      expect(game.sea_links(city('I50'), city('I52'), bjv).size).to eq(1)
     end
 
     it 'never crosses between two ports on one hex and returns nothing without a corporation' do
       lay_code!('I50', 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0')
-      expect(game.sea_chains(city('I50'), city('I50'), dsj)).to be_empty
-      expect(game.sea_chains(city('I50'), city('C48'), nil)).to be_empty
+      expect(game.sea_links(city('I50'), city('I50'), dsj)).to be_empty
+      expect(game.sea_links(city('I50'), city('C48'), nil)).to be_empty
     end
 
     it 'lets a crossing start or end at a red zone with printed track to its arrow (ruling 9)' do
-      chains = game.sea_chains(city('I50'), offboard('N1'), dsj)
+      chains = game.sea_links(city('I50'), offboard('N1'), dsj)
       expect(chains.map { |c| c[:crossing].units }).to eq([4])
     end
 
     it 'models Edinburgh–Bergen as a public pathless ferry of distance 1 (ruling 11)' do
-      chains = game.sea_chains(city('B41'), city('G26'), dsj)
+      chains = game.sea_links(city('B41'), city('G26'), dsj)
       expect(chains.size).to eq(1)
       expect(chains.first[:crossing].kind).to eq(:ferry)
       expect(chains.first[:crossing].units).to eq(1)
       expect(chains.first[:id]).to eq(%w[ferry B41 1 G26 offshore])
-      expect(game.sea_chains(city('G26'), city('B41'), dsj).first[:crossing].kind).to eq(:ferry)
+      expect(game.sea_links(city('G26'), city('B41'), dsj).first[:crossing].kind).to eq(:ferry)
     end
 
     it 'builds on the UK-FR map without the missing hexes' do
@@ -129,11 +129,11 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       london = uk_fr.hex_by_id('M28').tile.cities.first
       lille = uk_fr.hex_by_id('N31').tile.cities.first
       southampton = uk_fr.hex_by_id('O28').tile.cities.first
-      expect { uk_fr.sea_chains(london, lille, lnwr) }.not_to raise_error
+      expect { uk_fr.sea_links(london, lille, lnwr) }.not_to raise_error
       expect(uk_fr.port_marker_hex('I50', :offshore)).to be_nil
       expect(uk_fr.port_marker_hex('M28', :offshore)).to be_nil
 
-      chains = uk_fr.sea_chains(london, southampton, lnwr)
+      chains = uk_fr.sea_links(london, southampton, lnwr)
       expect(chains.map { |c| c[:crossing].units }).to eq([1])
       expect(chains.first[:crossing].hexes.map(&:id)).to eq(%w[M28 O26])
     end
@@ -141,11 +141,11 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
     it 'reads private port usability from tokens without building a sea network' do
       lay_code!('I52', 'city=revenue:20;path=a:0,b:_0')
       token!('I52', dsj)
-      expect(game.graph).not_to receive(:sea_network)
+      expect(game.graph).not_to receive(:sea_reach)
       expect(game.port_usable?('I52', 0, dsj)).to be(true)
       expect(game.port_usable?('I52', 0, bjv)).to be(false)
       expect(game.port_usable?('E28', 4, dsj)).to be(false)
-      expect(game.sea_chains(city('I50'), city('I52'), dsj).size).to eq(1)
+      expect(game.sea_links(city('I50'), city('I52'), dsj).size).to eq(1)
     end
   end
 
@@ -231,7 +231,7 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       route = explicit_route(four, city('I50'), town('K60'), city('J63'))
 
       expect(route.chains.first[:crossing].units).to eq(2)
-      expect(game.sea_cost(route)).to eq(2)
+      expect(game.sea_distance(route)).to eq(2)
       expect(route.distance_str).to eq('2 + 2 sea')
       expect(route.revenue).to eq(60)
       expect { explicit_route(two_plus_two, city('I50'), town('K60'), city('J63')).revenue }.to raise_error(Engine::RouteTooLong)
@@ -242,7 +242,7 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       token!('I52', corp)
       route = route_through(four, city('I50'), city('I52'), town('H55'), town('K60'), city('J63'))
 
-      expect(game.sea_cost(route)).to eq(1)
+      expect(game.sea_distance(route)).to eq(1)
       expect(route.distance_str).to eq('3 + 1 sea')
       expect(route.revenue).to eq(80)
       expect { route_through(three, city('I50'), city('I52'), town('H55'), town('K60'), city('J63')).revenue }
@@ -254,7 +254,7 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       route = explicit_route(three, town('H55'), city('J63'))
 
       expect(route.chains.first[:crossing].units).to eq(1)
-      expect(game.sea_cost(route)).to eq(0)
+      expect(game.sea_distance(route)).to eq(0)
     end
 
     it 'reduces by two from Phase 7 (row 5)' do
@@ -266,8 +266,8 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
         route.connection_data << route.segment(route.select(city('I50'), town('K60')).first, left: city('I50'))
       end
 
-      expect(game.sea_cost(six)).to eq(1)
-      expect(game.sea_cost(seven)).to eq(0)
+      expect(game.sea_distance(six)).to eq(1)
+      expect(game.sea_distance(seven)).to eq(0)
     end
 
     it 'uses each port token once per train and picks the cheapest assignment (PB 4.5 J minor, row 6)' do
@@ -281,9 +281,9 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
 
       expect(node_sequence(route)).to eq([[offboard('AF25'), city('AA20')], [city('AA20'), city('AB27')]])
       expect(game.sea_legs(route).map(&:units)).to eq([1, 1])
-      expect(game.sea_cost(route)).to eq(1)
+      expect(game.sea_distance(route)).to eq(1)
       token!('AB27', j)
-      expect(game.sea_cost(explicit_route(train, offboard('AF25'), city('AA20'), city('AB27')))).to eq(0)
+      expect(game.sea_distance(explicit_route(train, offboard('AF25'), city('AA20'), city('AB27')))).to eq(0)
     end
 
     it 'counts only a port token the train runs through (§11.3.4)' do
@@ -294,18 +294,18 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       route = explicit_route(four, london_west, city('C48'))
 
       expect(route.chains.first[:crossing].units).to eq(3)
-      expect(game.sea_cost(route)).to eq(3)
+      expect(game.sea_distance(route)).to eq(3)
     end
 
     it 'charges a ferry its full distance once, towns holding no tokens (row 12)' do
-      expect(game.sea_cost(explicit_route(two_plus_two, town('H55'), town('K60')))).to eq(1)
-      expect(game.sea_cost(explicit_route(three, city('AE72'), town('AE74')))).to eq(1)
-      expect(game.sea_cost(explicit_route(three, city('AE72'), town('AE74'), city('AD79')))).to eq(1)
-      expect(game.sea_cost(explicit_route(three, town('AE74'), city('AD79')))).to eq(1)
+      expect(game.sea_distance(explicit_route(two_plus_two, town('H55'), town('K60')))).to eq(1)
+      expect(game.sea_distance(explicit_route(three, city('AE72'), town('AE74')))).to eq(1)
+      expect(game.sea_distance(explicit_route(three, city('AE72'), town('AE74'), city('AD79')))).to eq(1)
+      expect(game.sea_distance(explicit_route(three, town('AE74'), city('AD79')))).to eq(1)
     end
 
     it 'charges the Edinburgh–Bergen ferry one unit (row 12a)' do
-      expect(game.sea_cost(explicit_route(three, city('B41'), city('G26')))).to eq(1)
+      expect(game.sea_distance(explicit_route(three, city('B41'), city('G26')))).to eq(1)
     end
 
     it 'reaches New York from København with a 5 train (row 12b)' do
@@ -332,7 +332,7 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       train = game.trains.find { |t| t.name == '3' && !t.owner.is_a?(Engine::Corporation) }
       route = Engine::Route.new(game, game.phase, train, routes: [])
 
-      expect(game.sea_cost(route)).to eq(0)
+      expect(game.sea_distance(route)).to eq(0)
       expect(game.route_distance_str(route)).to eq('0')
     end
   end
@@ -382,7 +382,7 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       route = explicit_route(train, city('N31'), city('M28'), city('C48'))
 
       expect { game.check_other(route) }.not_to raise_error
-      expect(game.sea_cost(route)).to eq(2)
+      expect(game.sea_distance(route)).to eq(2)
     end
 
     it 'exempts the Edinburgh–Bergen ferry from the land hex side rule (row 12a)' do

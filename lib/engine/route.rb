@@ -130,7 +130,7 @@ module Engine
               }
             end
           end
-          new_chains.sort_by { |chain| chain[:paths].size } + @game.extra_node_chains(start_node, end_node, corporation)
+          new_chains.sort_by { |chain| chain[:paths].size } + @game.route_links(start_node, end_node, corporation)
         end
     end
 

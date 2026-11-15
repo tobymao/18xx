@@ -2,9 +2,9 @@
 
 require './spec/spec_helper'
 require_relative '../../../lib/engine/game/g_18_oe/helpers'
-require 'lib/sea_path'
+require 'lib/sea_crossing_path'
 
-describe Lib::SeaPath do
+describe Lib::SeaCrossingPath do
   include G18OESpecHelpers
 
   let(:game) { new_game }

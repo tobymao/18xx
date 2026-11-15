@@ -1480,10 +1480,10 @@ module Engine
       end
 
       def compute_other_paths(routes, route)
-        routes.reject { |r| r == route }.flat_map(&:paths).reject { |path| route_path_shareable?(path) }
+        routes.reject { |r| r == route }.flat_map(&:paths).reject { |path| shared_track?(path) }
       end
 
-      def route_path_shareable?(_path)
+      def shared_track?(_path)
         false
       end
 
@@ -1510,7 +1510,7 @@ module Engine
 
         routes.each do |route|
           route.paths.each do |path|
-            next if route_path_shareable?(path)
+            next if shared_track?(path)
 
             a = path.a
             b = path.b
@@ -1591,7 +1591,7 @@ module Engine
         false
       end
 
-      def extra_node_chains(_start_node, _end_node, _corporation)
+      def route_links(_start_node, _end_node, _corporation)
         []
       end
 

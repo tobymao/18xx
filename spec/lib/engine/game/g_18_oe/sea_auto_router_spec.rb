@@ -20,7 +20,7 @@ describe 'G18OE auto-router over sea (§11.3.4, §11.3.8)' do
   it 'turns a yielded link into a pathless chain and keeps the route (core link assembly)' do
     token!('I50', corp)
     token!('I52', corp)
-    link = game.sea_chains(city('I50'), city('I52'), corp).first[:crossing]
+    link = game.sea_links(city('I50'), city('I52'), corp).first[:crossing]
     allow(game.graph).to receive(:walk_token).and_wrap_original do |original, node, **opts, &block|
       if opts[:links]
         block.call(link, { link => true }, {})

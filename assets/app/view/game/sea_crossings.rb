@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'lib/sea_path'
+require 'lib/sea_crossing_path'
 require 'lib/settings'
 require 'view/game/hex'
 require 'view/game/part/city'
 
 module View
   module Game
-    class SeaRoutes < Snabberb::Component
+    class SeaCrossings < Snabberb::Component
       include Lib::Settings
 
       LANE_SPACING = 1.5
@@ -159,7 +159,7 @@ module View
 
       def crossing_hexes(crossing, step_routes)
         joined = sea_pieces(sea_path(crossing), step_routes).each_with_index.flat_map do |piece, i|
-          straight = Lib::SeaPath.for(@game).straighten(piece, crossing)
+          straight = Lib::SeaCrossingPath.for(@game).straighten(piece, crossing)
           i.zero? ? straight : straight.drop(1)
         end
         hexes = [crossing.nodes[0].hex, *joined, crossing.nodes[1].hex]
@@ -167,7 +167,7 @@ module View
       end
 
       def sea_path(crossing)
-        Lib::SeaPath.for(@game).path(*crossing.hexes, crossing)
+        Lib::SeaCrossingPath.for(@game).path(*crossing.hexes, crossing)
       end
 
       def sea_pieces(path, step_routes)

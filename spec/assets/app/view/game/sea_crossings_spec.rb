@@ -2,11 +2,11 @@
 
 require './spec/spec_helper'
 require_relative '../../../../lib/engine/game/g_18_oe/route_helpers'
-require 'view/game/sea_routes'
+require 'view/game/sea_crossings'
 
 module View
   module Game
-    describe SeaRoutes do
+    describe SeaCrossings do
       include_context 'with 18OE route helpers'
 
       let(:corp) { game.corporation_by_id('DSJ') }
@@ -120,8 +120,8 @@ module View
         let(:routes) { [double(chains: [{ crossing: crossing }])] }
 
         it 'passes through the centre of an interior waypoint on an unshared leg' do
-          waypoint = Lib::SeaPath.for(game).straighten(Lib::SeaPath.for(game).path(*crossing.hexes, crossing),
-                                                       crossing)[1..-2].first
+          waypoint = Lib::SeaCrossingPath.for(game).straighten(Lib::SeaCrossingPath.for(game).path(*crossing.hexes, crossing),
+                                                               crossing)[1..-2].first
           expect(waypoint).not_to be_nil
           wx, wy = Hex.coordinates(waypoint, [1, 1])
           expect(points_of(polylines.first)).to include([be_within(0.01).of(wx), be_within(0.01).of(wy)])

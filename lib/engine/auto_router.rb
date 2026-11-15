@@ -65,7 +65,7 @@ module Engine
       now = Time.now
 
       skip_paths = if @train_autoroute_group.nil?
-                     static.flat_map(&:paths).reject { |path| @game.route_path_shareable?(path) }.to_h { |path| [path, true] }
+                     static.flat_map(&:paths).reject { |path| @game.shared_track?(path) }.to_h { |path| [path, true] }
                    elsif @train_autoroute_group == :each_train_separate
                      # all trains have their own autoroute group so it's not possible to fill skip_paths
                      {}
@@ -228,7 +228,7 @@ module Engine
       bitfield = [0]
       connection.each do |conn|
         all_paths = conn[:chain][:paths]
-        paths = all_paths.reject { |path| @game.route_path_shareable?(path) }
+        paths = all_paths.reject { |path| @game.shared_track?(path) }
         next if paths.empty?
 
         if paths.size == 1 && all_paths.size > 1

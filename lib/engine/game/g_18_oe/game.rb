@@ -1179,11 +1179,11 @@ module Engine
         end
 
         def cross_water_tile_fee(corporation, hex, tile)
-          (@graph.sea_network(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_WATER_DISTANCE
+          (@graph.sea_reach(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_WATER_DISTANCE
         end
 
         def cross_water_token_fee(corporation, city)
-          (@graph.sea_network(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_WATER_DISTANCE
+          (@graph.sea_reach(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_WATER_DISTANCE
         end
 
         def init_graph

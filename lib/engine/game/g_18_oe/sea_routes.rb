@@ -10,16 +10,16 @@ module Engine
           path.color == self.class::FERRY_TRACK_COLOR
         end
 
-        def port_exit?(hex_id, exit)
+        def sea_exit?(hex_id, exit)
           entry = self.class::PORTS.dig(hex_id, exit)
           exit.is_a?(Integer) && !entry.nil? && !entry[:dead_end]
         end
 
         def sea_traffic?(path)
-          ferry_track?(path) || path.exits.any? { |exit| port_exit?(path.hex.id, exit) }
+          ferry_track?(path) || path.exits.any? { |exit| sea_exit?(path.hex.id, exit) }
         end
 
-        def route_path_shareable?(path)
+        def shared_track?(path)
           sea_traffic?(path)
         end
 
@@ -66,7 +66,7 @@ module Engine
           entry[:port] == :public || hex.tile.cities.any? { |city| city_tokened_by?(city, corporation) }
         end
 
-        def port_anchors(node, corporation)
+        def usable_ports(node, corporation)
           hex_id = node.hex.id
           exits = (self.class::PORTS[hex_id] || {}).keys.select do |exit|
             port_usable?(hex_id, exit, corporation) && anchor_attaches?(node, [hex_id, exit])
@@ -74,7 +74,7 @@ module Engine
           exits.map { |exit| [hex_id, exit] }
         end
 
-        def pathless_ferry_partner(anchor)
+        def offshore_ferry_end(anchor)
           links = ferry_links(*anchor)
           if anchor[1] == :offshore
             links.first&.first
@@ -83,10 +83,10 @@ module Engine
           end
         end
 
-        def sea_chains(from_node, to_node, corporation)
+        def sea_links(from_node, to_node, corporation)
           return [] if !corporation || from_node.hex == to_node.hex
 
-          crossings = port_anchors(from_node, corporation).product(port_anchors(to_node, corporation)).map do |from, to|
+          crossings = usable_ports(from_node, corporation).product(usable_ports(to_node, corporation)).map do |from, to|
             sea_crossing(:crossing, from, to, [from_node, to_node])
           end
           crossings = crossings.select(&:units).sort_by { |crossing| [crossing.units, crossing.id] }
@@ -94,21 +94,21 @@ module Engine
             from = [from_node.hex.id, exit]
             next unless anchor_attaches?(from_node, from)
 
-            to = pathless_ferry_partner(from)
+            to = offshore_ferry_end(from)
             sea_crossing(:ferry, from, to, [from_node, to_node]) if to && anchor_attaches?(to_node, to)
           end
           (crossings + ferries).map(&:chain)
         end
 
-        def extra_node_chains(start_node, end_node, corporation)
-          sea_chains(start_node, end_node, corporation)
+        def route_links(from_node, to_node, corporation)
+          sea_links(from_node, to_node, corporation)
         end
 
         def sea_legs(route)
           route.connection_data.filter_map { |connection| connection[:chain][:crossing] } + ferry_legs(route)
         end
 
-        def sea_cost(route)
+        def sea_distance(route)
           corporation = route.corporation
           return 0 unless corporation
 
@@ -124,7 +124,7 @@ module Engine
           distance = train.distance
           return distance if distance.is_a?(Numeric)
 
-          cost = sea_cost(route)
+          cost = sea_distance(route)
           return distance if cost.zero?
 
           distance.map do |row|
@@ -138,12 +138,12 @@ module Engine
         end
 
         def route_distance(route)
-          route.visited_stops.count { |stop| !stop.town? } + sea_cost(route)
+          route.visited_stops.count { |stop| !stop.town? } + sea_distance(route)
         end
 
         def route_distance_str(route)
           stops = route.visited_stops.count { |stop| !stop.town? }
-          cost = sea_cost(route)
+          cost = sea_distance(route)
           cost.positive? ? "#{stops} + #{cost} sea" : stops.to_s
         end
 
@@ -152,7 +152,7 @@ module Engine
         end
 
         def sea_reachable?(corporation)
-          !graph_for_entity(corporation).sea_network(corporation).landings.empty?
+          !graph_for_entity(corporation).sea_reach(corporation).landings.empty?
         end
 
         private
@@ -251,7 +251,7 @@ module Engine
 
           key = [from || to, entry[0]].map(&:to_s).sort
           nodes = [before&.nodes, after&.nodes].flatten.compact.uniq
-          [key, SeaLeg.new(entry[1], nodes)]
+          [key, FerryLeg.new(entry[1], nodes)]
         end
 
         def single_ferry_entry(links, ferry_path)

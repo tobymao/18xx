@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Lib
-  class SeaPath
+  class SeaCrossingPath
     CLEARANCE = 3
     COAST_COST = 2
 

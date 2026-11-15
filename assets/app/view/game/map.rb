@@ -5,7 +5,7 @@ require '../lib/settings'
 require 'view/game/axis'
 require 'view/game/hex'
 require 'view/game/map_legend'
-require 'view/game/sea_routes'
+require 'view/game/sea_crossings'
 require 'view/game/tile_confirmation'
 require 'view/game/tile_selector'
 require 'view/game/token_selector'
@@ -190,7 +190,7 @@ module View
           h(:g, { attrs: { transform: "scale(#{@scale})" } }, [
             h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{map_x} #{map_y})" } }, @hexes),
             h(:g, { attrs: { id: 'map-sea-routes', transform: "translate(#{map_x} #{map_y})" } },
-              [h(SeaRoutes, routes: routes, start_pos: @start_pos)]),
+              [h(SeaCrossings, routes: routes, start_pos: @start_pos)]),
             h(Axis,
               cols: @cols,
               rows: @rows,

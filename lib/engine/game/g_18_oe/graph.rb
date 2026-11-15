@@ -1,32 +1,32 @@
 # frozen_string_literal: true
 
 require_relative '../../graph'
-require_relative 'sea_network'
+require_relative 'sea_reach'
 
 module Engine
   module Game
     module G18OE
       class Graph < Engine::Graph
         def initialize(game, **opts)
-          @sea_networks = {}
+          @sea_reaches = {}
           super
         end
 
         def clear
           super
-          @sea_networks.clear
+          @sea_reaches.clear
         end
 
-        def sea_network(corporation)
-          @sea_networks[corporation] ||= SeaNetwork.new(@game, corporation)
+        def sea_reach(corporation)
+          @sea_reaches[corporation] ||= SeaReach.new(@game, corporation)
         end
 
         def extra_root_hexes(corporation)
-          super.merge(sea_network(corporation).landings) { |_, first, second| first.merge(second) }
+          super.merge(sea_reach(corporation).landings) { |_, first, second| first.merge(second) }
         end
 
         def extra_root_nodes(corporation)
-          super.merge(sea_network(corporation).landing_nodes.to_h { |node| [node, true] })
+          super.merge(sea_reach(corporation).landing_nodes.to_h { |node| [node, true] })
         end
 
         def compute(corporation, **opts, &block)
@@ -34,13 +34,13 @@ module Engine
           reachable = @reachable_hexes[corporation]
           return result if opts[:one_token] || !reachable
 
-          network = sea_network(corporation)
+          network = sea_reach(corporation)
           (network.landing_nodes + network.landing_offboards).each { |node| reachable[node.hex] = true }
           result
         end
 
         def walk_token(node, skip_paths:, corporation:, links: false, **opts, &block)
-          ports = links && corporation ? usable_ports(corporation) : []
+          ports = links && corporation ? corporation_ports(corporation) : []
           return walk_track(node, skip_paths: skip_paths, corporation: corporation, **opts, &block) if ports.empty?
 
           walk_with_sea_links(node, ports, skip_paths: skip_paths, corporation: corporation, **opts, &block)
@@ -83,7 +83,7 @@ module Engine
             skip_paths: skip_paths,
             opts: opts,
             block: block,
-            network: sea_network(corporation),
+            network: sea_reach(corporation),
             level: @game.largest_train_level(corporation),
             ports: ports,
             usable: ports.to_h { |anchor| [anchor, true] },
@@ -97,21 +97,21 @@ module Engine
                      &sea_walker(context, nil))
         end
 
-        def usable_ports(corporation)
+        def corporation_ports(corporation)
           @game.class::PORTS.flat_map do |hex_id, exits|
             exits.keys.select { |exit| @game.port_usable?(hex_id, exit, corporation) }.map { |exit| [hex_id, exit] }
           end
         end
 
         def root_anchors(node, corporation)
-          anchors = @game.port_anchors(node, corporation)
+          anchors = @game.usable_ports(node, corporation)
           offshore = [node.hex.id, :offshore]
-          anchors << offshore if node.city? && !anchors.include?(offshore) && @game.pathless_ferry_partner(offshore)
+          anchors << offshore if node.city? && !anchors.include?(offshore) && @game.offshore_ferry_end(offshore)
           anchors
         end
 
         def departable?(usable, anchor)
-          usable[anchor] || @game.pathless_ferry_partner(anchor)
+          usable[anchor] || @game.offshore_ferry_end(anchor)
         end
 
         def sea_walker(context, landing_hex)
@@ -143,7 +143,7 @@ module Engine
               jump(context, :crossing, node, anchor, target, visited_paths, landing_hex, path) if distance && distance <= level
             end
           end
-          partner = @game.pathless_ferry_partner(anchor)
+          partner = @game.offshore_ferry_end(anchor)
           jump(context, :ferry, node, anchor, partner, visited_paths, landing_hex, path) if partner
         end
 
@@ -170,7 +170,7 @@ module Engine
         end
 
         def landing_tokenable_cities(corporation)
-          sea_network(corporation).landing_nodes.select do |node|
+          sea_reach(corporation).landing_nodes.select do |node|
             node.city? && node.tokenable?(corporation, free: true)
           end
         end

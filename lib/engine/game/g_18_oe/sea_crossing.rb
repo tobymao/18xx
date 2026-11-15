@@ -3,7 +3,7 @@
 module Engine
   module Game
     module G18OE
-      SeaLeg = Struct.new(:units, :nodes)
+      FerryLeg = Struct.new(:units, :nodes)
 
       class SeaCrossing
         attr_reader :kind, :from, :to, :nodes, :units, :hexes
