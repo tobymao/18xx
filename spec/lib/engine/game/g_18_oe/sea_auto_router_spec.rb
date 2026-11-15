@@ -21,8 +21,16 @@ describe 'G18OE auto-router over sea (§11.3.4, §11.3.8)' do
     token!('I50', corp)
     token!('I52', corp)
     link = game.sea_chains(city('I50'), city('I52'), corp).first[:crossing]
-    allow(game.graph).to receive(:walk_routes) { |_node, **, &block| block.call(link, { link => true }, {}) }
+    allow(game.graph).to receive(:walk_token).and_wrap_original do |original, node, **opts, &block|
+      if opts[:links]
+        block.call(link, { link => true }, {})
+      else
+        original.call(node, **opts, &block)
+      end
+    end
     routes = routes_for(three)
+
+    expect(game.graph).to have_received(:walk_token).with(anything, hash_including(links: true)).at_least(:once)
 
     expect(routes.size).to eq(1)
     expect(routes.first.chains).to eq([link.chain])
@@ -128,11 +136,26 @@ describe 'G18OE auto-router over sea (§11.3.4, §11.3.8)' do
     lay_code!('G26', 'city=revenue:20;path=a:0,b:_0')
     token!('H25', corp)
     ferries = []
-    game.graph.walk_routes(city('H25'), corporation: corp, skip_paths: nil) do |path, _visited_paths, _visited|
+    game.graph.walk_token(city('H25'), corporation: corp, skip_paths: nil, links: true) do |path, _visited_paths, _visited|
       ferries << path if path.respond_to?(:kind) && path.kind == :ferry
       nil
     end
 
     expect(ferries.map { |ferry| ferry.nodes.map(&:hex).map(&:id) }).to include(%w[G26 B41])
+  end
+
+  it 'never asks for sea links while computing connectivity' do
+    token!('I50', corp)
+    calls = []
+    original = game.graph.method(:walk_token)
+    allow(game.graph).to receive(:walk_token) do |node, **opts, &block|
+      calls << opts
+      original.call(node, **opts, &block)
+    end
+    game.graph.clear
+    game.graph.compute(corp)
+
+    expect(calls).not_to be_empty
+    expect(calls.map { |opts| opts[:links] }).to all(be_falsey)
   end
 end
