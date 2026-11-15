@@ -157,6 +157,16 @@ module Engine
           @concessions ||= @companies.select { |c| c.type == :concession }
         end
 
+        def after_buy_company(player, company, price)
+          ability = abilities(company, :shares)
+          return super unless ability&.shares&.all? { |share| share.corporation == @fc }
+
+          ability.shares.each do |share|
+            share_pool.buy_shares(player, share, exchange: :free, allow_president_change: false)
+          end
+          company.remove_ability(ability)
+        end
+
         def skip_route_track_type(train)
           # Wagons cannot run routes independently; only regular trains enforce track type.
           return if wagon?(train)

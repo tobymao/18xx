@@ -184,6 +184,47 @@ module Engine
           end
         end
 
+        describe 'concession M4' do
+          let(:player) { game.players.first }
+          let(:fc) { game.fc }
+          let(:m4) { game.company_by_id('M4') }
+
+          def draft_m4
+            until game.round.is_a?(Engine::Round::Draft)
+              step = game.round.active_step
+              company = step.companies.first
+              next act(Action::Pass) unless step.bids[company].empty?
+
+              act(Action::Bid, company: company, price: 0)
+            end
+            cash_before_bid = nil
+            until game.round.is_a?(Engine::Round::Stock)
+              next act(Action::Pass) if game.current_entity != player || m4.owner
+
+              cash_before_bid = player.cash
+              act(Action::Bid, company: m4, price: m4.value)
+            end
+            cash_before_bid
+          end
+
+          it 'gives the M4 buyer a free 10% FC share and leaves the FC without president' do
+            cash_before_bid = draft_m4
+
+            expect(player.shares_of(fc).map(&:id)).to eq(['FC_1'])
+            expect(player.cash).to eq(cash_before_bid - m4.value)
+            expect(fc.owner).to be_nil
+            expect(game.log.map(&:message)).not_to include(a_string_matching(/president of FC/))
+          end
+
+          it 'closes M4 when exchanged for a minor' do
+            draft_m4
+            ju = game.corporation_by_id('JU')
+            act(Action::Par, player, corporation: ju, share_price: game.stock_market.par_prices.find { |p| p.price == 70 })
+
+            expect(m4.closed?).to be(true)
+          end
+        end
+
         describe '#crowded_corps' do
           it 'never includes the FC (no train limit, never discards)' do
             # the FC holds its preprinted train and its train limit is 0 — flagged without the exemption
