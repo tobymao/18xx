@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../graph'
-require_relative 'graph/sea_reach'
+require_relative 'graph/sea_connectivity'
 require_relative 'graph/sea_link_walk'
 
 module Engine
@@ -11,25 +11,25 @@ module Engine
         include SeaLinkWalk
 
         def initialize(game, **opts)
-          @sea_reaches = {}
+          @sea_connectivityes = {}
           super
         end
 
         def clear
           super
-          @sea_reaches.clear
+          @sea_connectivityes.clear
         end
 
-        def sea_reach(corporation)
-          @sea_reaches[corporation] ||= SeaReach.new(@game, corporation)
+        def sea_connectivity(corporation)
+          @sea_connectivityes[corporation] ||= SeaConnectivity.new(@game, corporation)
         end
 
         def extra_root_hexes(corporation)
-          super.merge(sea_reach(corporation).landings) { |_, first, second| first.merge(second) }
+          super.merge(sea_connectivity(corporation).landings) { |_, first, second| first.merge(second) }
         end
 
         def extra_root_nodes(corporation)
-          super.merge(sea_reach(corporation).landing_nodes.to_h { |node| [node, true] })
+          super.merge(sea_connectivity(corporation).landing_nodes.to_h { |node| [node, true] })
         end
 
         def compute(corporation, **opts, &block)
@@ -37,7 +37,7 @@ module Engine
           reachable = @reachable_hexes[corporation]
           return result if opts[:one_token] || !reachable
 
-          network = sea_reach(corporation)
+          network = sea_connectivity(corporation)
           (network.landing_nodes + network.landing_offboards).each { |node| reachable[node.hex] = true }
           result
         end
@@ -81,7 +81,7 @@ module Engine
         end
 
         def landing_tokenable_cities(corporation)
-          sea_reach(corporation).landing_nodes.select do |node|
+          sea_connectivity(corporation).landing_nodes.select do |node|
             node.city? && node.tokenable?(corporation, free: true)
           end
         end

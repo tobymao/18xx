@@ -12,7 +12,7 @@ module Engine
             skip_paths: skip_paths,
             opts: opts,
             block: block,
-            network: sea_reach(corporation),
+            network: sea_connectivity(corporation),
             level: @game.largest_train_level(corporation),
             ports: ports,
             usable: ports.to_h { |anchor| [anchor, true] },

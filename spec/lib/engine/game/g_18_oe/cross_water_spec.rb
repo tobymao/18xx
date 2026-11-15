@@ -53,8 +53,8 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     token!('I50', dsj)
     landing = { game.hex_by_id('C48') => { 0 => true } }
     nodes = [game.hex_by_id('C48').tile.cities.first]
-    allow(game.graph).to receive(:sea_reach).with(dsj).and_return(double(landings: landing, landing_nodes: nodes,
-                                                                         landing_offboards: []))
+    allow(game.graph).to receive(:sea_connectivity).with(dsj).and_return(double(landings: landing, landing_nodes: nodes,
+                                                                                landing_offboards: []))
     game.clear_graph
     game.graph.route_info(dsj)
     expect(game.graph.reachable_hexes(dsj)).to have_key(game.hex_by_id('C48'))
@@ -94,17 +94,17 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
   it 'sees a private port once the corporation tokens its city' do
     token!('I50', dsj)
     game.clear_graph
-    expect(game.graph.sea_reach(dsj).usable?('I52', 0)).to be(false)
+    expect(game.graph.sea_connectivity(dsj).usable?('I52', 0)).to be(false)
     token!('I52', dsj)
     game.clear_graph_for_entity(dsj)
-    expect(game.graph.sea_reach(dsj).usable?('I52', 0)).to be(true)
+    expect(game.graph.sea_connectivity(dsj).usable?('I52', 0)).to be(true)
   end
 
   it 'drops every network when any entity clears the graph' do
     token!('I50', dsj)
-    before = game.graph.sea_reach(dsj)
+    before = game.graph.sea_connectivity(dsj)
     game.clear_graph_for_entity(game.corporation_by_id('GSWR'))
-    expect(game.graph.sea_reach(dsj)).not_to equal(before)
+    expect(game.graph.sea_connectivity(dsj)).not_to equal(before)
   end
 
   describe 'laying across water (§11.1.3, §11.1.6)' do
@@ -149,7 +149,7 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     it 'trusts the recorded fee on replay without building a sea network' do
       round = or_with_dsj!
       game.instance_variable_set(:@loading, true)
-      expect(Engine::Game::G18OE::SeaReach).not_to receive(:new)
+      expect(Engine::Game::G18OE::SeaConnectivity).not_to receive(:new)
       cash = dsj.cash
       act!(round, Engine::Action::LayTile.new(dsj, tile: tile('4', 1), hex: game.hex_by_id('D41'), rotation: 0, extra_cost: 10))
       expect(cash - dsj.cash).to eq(36 + 10)
@@ -205,7 +205,7 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       game.clear_graph
       game.instance_variable_set(:@loading, true)
       action = Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0, cost: 60)
-      expect(Engine::Game::G18OE::SeaReach).not_to receive(:new)
+      expect(Engine::Game::G18OE::SeaConnectivity).not_to receive(:new)
       cash = dsj.cash
       round.active_step.process_place_token(action)
       expect(cash - dsj.cash).to eq(20 + 40)

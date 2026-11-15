@@ -141,7 +141,7 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
     it 'reads private port usability from tokens without building a sea network' do
       lay_code!('I52', 'city=revenue:20;path=a:0,b:_0')
       token!('I52', dsj)
-      expect(game.graph).not_to receive(:sea_reach)
+      expect(game.graph).not_to receive(:sea_connectivity)
       expect(game.port_usable?('I52', 0, dsj)).to be(true)
       expect(game.port_usable?('I52', 0, bjv)).to be(false)
       expect(game.port_usable?('E28', 4, dsj)).to be(false)

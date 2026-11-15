@@ -3,7 +3,7 @@
 module Engine
   module Game
     module G18OE
-      class SeaReach
+      class SeaConnectivity
         SEA_ZONE_WATER_DISTANCE = 2
 
         attr_reader :anchors

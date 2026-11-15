@@ -30,7 +30,7 @@ module Engine
             base_help = super
             extra = []
             extra << ORIENT_EXPRESS_HELP if current_entity.type == :major && @game.non_permanent_trains?
-            extra << SEA_HELP if @game.sea_reachable?(current_entity)
+            extra << SEA_HELP if @game.sea_connectivityable?(current_entity)
             return base_help if extra.empty?
 
             Array(base_help).reject(&:empty?) + extra

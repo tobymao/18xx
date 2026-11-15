@@ -117,7 +117,7 @@ module Engine
 
           tokens = legs.flat_map(&:nodes).uniq.select { |node| node.city? && city_tokened_by?(node, corporation) }
           token_legs = tokens.map { |token| legs.each_index.select { |index| legs[index].nodes.include?(token) } }
-          cheapest_sea_cost(legs, token_legs, port_token_distance(route.phase) || 0, Array.new(legs.size, 0))
+          cheapest_sea_distance(legs, token_legs, port_token_distance(route.phase) || 0, Array.new(legs.size, 0))
         end
 
         def route_train_distance(route, train)
@@ -151,13 +151,13 @@ module Engine
           route_trains(corporation).map { |train| distance(train).first }.max || 0
         end
 
-        def sea_reachable?(corporation)
-          !graph_for_entity(corporation).sea_reach(corporation).landings.empty?
+        def sea_connectivityable?(corporation)
+          !graph_for_entity(corporation).sea_connectivity(corporation).landings.empty?
         end
 
         private
 
-        def cheapest_sea_cost(legs, token_legs, reduction, counts)
+        def cheapest_sea_distance(legs, token_legs, reduction, counts)
           return legs.each_index.sum { |index| [legs[index].units - (reduction * counts[index]), 0].max } if token_legs.empty?
 
           rest = token_legs[1..]
@@ -165,7 +165,7 @@ module Engine
           options.map do |index|
             assigned = counts.dup
             assigned[index] += 1 if index
-            cheapest_sea_cost(legs, rest, reduction, assigned)
+            cheapest_sea_distance(legs, rest, reduction, assigned)
           end.min
         end
 
