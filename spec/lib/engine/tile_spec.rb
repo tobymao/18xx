@@ -271,6 +271,27 @@ module Engine
       end
     end
 
+    describe 'routable option' do
+      it 'makes a pathless city a node of the tile' do
+        tile = Tile.from_code('X1', :white, 'city=revenue:10,routable:1')
+        expect(tile.nodes).to eq(tile.cities)
+      end
+
+      it 'leaves a pathless city out of the nodes without the option' do
+        expect(Tile.from_code('X1', :white, 'city=revenue:10').nodes).to be_empty
+      end
+
+      it 'makes a pathless town a node of the tile' do
+        tile = Tile.from_code('X1', :white, 'town=revenue:10,routable:1')
+        expect(tile.nodes).to eq(tile.towns)
+      end
+
+      it 'does not duplicate a routable city that has track' do
+        tile = Tile.from_code('X1', :white, 'city=revenue:10,routable:1;path=a:0,b:_0')
+        expect(tile.nodes).to eq(tile.cities)
+      end
+    end
+
     describe 'double_town' do
       let(:code) { 'double_town=revenue:10,axis:2,revenue_loc:2|5;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0' }
       let(:tile) { Tile.from_code('dt', 'green', code) }

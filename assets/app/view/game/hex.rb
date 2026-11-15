@@ -183,7 +183,6 @@ module View
         end
 
         nodes = @hex.tile.nodes
-        nodes = @hex.tile.city_towns if nodes.empty?
 
         if @actions.include?('run_routes')
           touch_node(nodes[0]) if nodes.one?

@@ -503,7 +503,7 @@ module Engine
 
       hex_id = signature.sub(/-\d+\z/, '')
       index = signature[/\d+\z/].to_i
-      @game.hex_by_id(hex_id)&.tile&.then { |tile| tile.city_towns + tile.offboards }&.find { |node| node.index == index }
+      @game.hex_by_id(hex_id)&.tile&.nodes&.find { |node| node.index == index }
     end
 
     def prefer_saved_nodes(options)

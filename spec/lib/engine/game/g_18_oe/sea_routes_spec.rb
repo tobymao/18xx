@@ -13,6 +13,27 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
     game.hex_by_id(hex_id).tile.paths.find { |path| path.exits.include?(exit) }
   end
 
+  describe 'pathless offshore-port cities' do
+    [
+      ['18OE', Engine::Game::G18OE::Game],
+      ['18OE UK-FR', Engine::Game::G18OEUKFR::Game],
+    ].each do |title, klass|
+      it "are routable on every pre-printed tile without track in #{title}" do
+        fresh = new_game(klass: klass)
+        pathless_ports = klass::PORTS.select do |hex_id, exits|
+          exits.key?(:offshore) && fresh.hex_by_id(hex_id)&.tile&.paths&.empty?
+        end
+        routable = fresh.hexes.select { |hex| hex.tile.city_towns.any?(&:routable?) }.map(&:id)
+        expect(pathless_ports).not_to be_empty
+        expect(routable).to match_array(pathless_ports.keys)
+        pathless_ports.each_key do |hex_id|
+          tile = fresh.hex_by_id(hex_id).tile
+          expect(tile.nodes).to match_array(tile.cities)
+        end
+      end
+    end
+  end
+
   describe 'sea traffic (§11.3.8)' do
     it 'paints every ferry with the one ferry colour' do
       colours = game.hexes.flat_map { |hex| hex.tile.paths }.filter_map(&:color).uniq
