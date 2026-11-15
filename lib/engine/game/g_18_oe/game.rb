@@ -5,6 +5,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'stock_market'
 require_relative 'graph'
+require_relative 'sea_routes'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
@@ -26,6 +27,7 @@ module Engine
         include_meta(G18OE::Meta)
         include G18OE::Entities
         include G18OE::Map
+        include G18OE::SeaRoutes
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
         attr_reader :concessions, :merged_minors, :wcf_placeholder
@@ -43,6 +45,7 @@ module Engine
           %w[60p 65 70 75 80],
           %w[50 60 65 70],
         ].freeze
+
         CERT_LIMIT = { 2 => 99, 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20 }.freeze
         # Standard game: £5,400 total / num_players, rounded up to nearest £5.
         # 2-player variant uses without-concessions formula (£5,200 / 2 = £2,600).
@@ -277,6 +280,8 @@ module Engine
         TOKEN_FEE_PER_WATER_DISTANCE = 20
         MINOR_E_TERRAIN = %i[water river lake].freeze
         MINOR_F_TERRAIN = %i[mountain hill].freeze
+        SEA_CHANNEL_PASSAGE_COST = 20
+        PORT_TOKEN_DISTANCE_BY_PHASE = { '2' => 1, '3' => 1, '4' => 1, '5' => 1, '6' => 1, '7' => 2, '8' => 2 }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -1180,11 +1185,11 @@ module Engine
         end
 
         def cross_water_tile_fee(corporation, hex, tile)
-          (@graph.sea_network(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_WATER_DISTANCE
+          (@graph.sea_connectivity(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_WATER_DISTANCE
         end
 
         def cross_water_token_fee(corporation, city)
-          (@graph.sea_network(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_WATER_DISTANCE
+          (@graph.sea_connectivity(corporation).city_cost(city) || 0) * self.class::TOKEN_FEE_PER_WATER_DISTANCE
         end
 
         def init_graph
@@ -1196,6 +1201,11 @@ module Engine
 
           hexes = route.visited_stops.reject(&:town?).map(&:hex)
           raise GameError, 'Route visits same city hex twice' if hexes.size != hexes.uniq.size
+
+          check_sea_crossing_separation(route)
+          if orient_express_run?(route) && !route.chains.empty? && route.chains.all? { |chain| chain[:paths].empty? }
+            raise GameError, 'An Orient Express run may not consist entirely of sea crossings'
+          end
           return unless combined_train?(route.train)
 
           raise GameError, 'Combined trains may only run an Orient Express route' unless orient_express_run?(route)
@@ -1268,10 +1278,18 @@ module Engine
         end
 
         def check_connected(route, corporation)
-          return super unless wcf_restricted?(corporation)
-          return if route.ordered_paths.each_cons(2).all? { |a, b| wcf_pass?(a, b) || a.connects_to?(b, corporation) }
+          route.connection_data.each_cons(2) do |a, b|
+            next if !a[:chain][:paths].empty? && !b[:chain][:paths].empty?
 
-          raise GameError, 'Route is not connected'
+            raise GameError, 'Route is not connected' if a[:right].blocks?(corporation)
+          end
+
+          connected = land_stretches(route).all? do |paths|
+            paths.each_cons(2).all? do |a, b|
+              (wcf_restricted?(corporation) && wcf_pass?(a, b)) || a.connects_to?(b, corporation)
+            end
+          end
+          raise GameError, 'Route is not connected' unless connected
         end
 
         def wcf_pass?(entering, leaving)

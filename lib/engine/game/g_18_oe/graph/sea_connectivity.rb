@@ -3,7 +3,7 @@
 module Engine
   module Game
     module G18OE
-      class SeaNetwork
+      class SeaConnectivity
         SEA_ZONE_WATER_DISTANCE = 2
 
         attr_reader :anchors
@@ -27,15 +27,11 @@ module Engine
           return false unless data
           return true unless data[:port]
 
-          data[:port] == :public || @token_hex_ids.include?(hex_id)
+          @game.port_usable?(hex_id, exit, @corporation)
         end
 
         def ferry_links(hex_id, exit)
-          data = @anchors[[hex_id, exit]]
-          return [] unless data
-
-          (data[:ferries] || []).select { |ferry| @game.hex_by_id(ferry[:hex]) }
-            .map { |ferry| [[ferry[:hex], ferry[:exit]], ferry[:distance]] }
+          @game.ferry_links(hex_id, exit)
         end
 
         def island_of(path)
@@ -90,11 +86,16 @@ module Engine
         end
 
         def landing_nodes
-          landing_anchors.flat_map do |hex_id, exit|
-            tile = @game.hex_by_id(hex_id).tile
-            nodes = exit == :offshore ? tile.cities : tile.paths.select { |path| path.exits.include?(exit) }.flat_map(&:nodes)
-            nodes.reject { |node| node.blocks?(@corporation) }
-          end.uniq
+          landing_anchors.flat_map { |hex_id, exit| anchor_nodes(hex_id, exit) }.reject { |node| node.blocks?(@corporation) }.uniq
+        end
+
+        def landing_offboards
+          landing_anchors.flat_map { |hex_id, exit| anchor_nodes(hex_id, exit) }.select(&:offboard?).uniq
+        end
+
+        def anchor_nodes(hex_id, exit)
+          hex = @game.hex_by_id(hex_id)
+          exit == :offshore ? hex.tile.cities : (hex.paths[exit] || []).flat_map(&:nodes)
         end
 
         private

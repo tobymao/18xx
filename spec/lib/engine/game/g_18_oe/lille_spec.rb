@@ -148,7 +148,9 @@ describe 'G18OE Lille ferry passage (§11.2.2)' do
 
     describe 'routes' do
       def route_through(*paths)
-        instance_double(Engine::Route, ordered_paths: paths)
+        chain = { paths: paths, crossing: nil }
+        segment = { left: paths.first.nodes.first, right: paths.last.nodes.first, chain: chain }
+        instance_double(Engine::Route, connection_data: [segment])
       end
 
       it 'rejects entering and leaving Lille by land' do

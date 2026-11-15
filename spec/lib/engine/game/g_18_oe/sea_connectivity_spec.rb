@@ -3,14 +3,14 @@
 require 'spec_helper'
 require_relative 'helpers'
 
-describe 'G18OE sea network (§11.3.6, §11.3.7)' do
+describe 'G18OE sea reach (§11.3.6, §11.3.7)' do
   include G18OESpecHelpers
 
   let(:game) { new_game }
   let(:dsj) { game.corporation_by_id('DSJ') }
 
   def network(corporation = dsj)
-    Engine::Game::G18OE::SeaNetwork.new(game, corporation)
+    Engine::Game::G18OE::SeaConnectivity.new(game, corporation)
   end
 
   def token!(hex_id, corporation)
@@ -52,7 +52,7 @@ describe 'G18OE sea network (§11.3.6, §11.3.7)' do
 
   it 'builds on the UK-France map, skipping ports whose hex is missing' do
     uk_fr = new_game(klass: Engine::Game::G18OEUKFR::Game)
-    anchors = Engine::Game::G18OE::SeaNetwork.new(uk_fr, uk_fr.corporation_by_id('LNWR')).anchors
+    anchors = Engine::Game::G18OE::SeaConnectivity.new(uk_fr, uk_fr.corporation_by_id('LNWR')).anchors
     expect(anchors).to have_key(['M28', :offshore])
     expect(anchors.keys.map(&:first)).to all(satisfy { |id| uk_fr.hex_by_id(id) })
   end

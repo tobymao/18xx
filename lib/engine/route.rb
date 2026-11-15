@@ -130,7 +130,7 @@ module Engine
               }
             end
           end
-          new_chains.sort_by { |chain| chain[:paths].size }
+          new_chains.sort_by { |chain| chain[:paths].size } + @game.route_links(start_node, end_node, corporation)
         end
     end
 
@@ -368,7 +368,7 @@ module Engine
                               connection_data&.map do |c|
                                 {
                                   'from' => c[:left].signature,
-                                  'hexes' => chain_id(c[:chain][:paths]),
+                                  'hexes' => c[:chain][:id] || chain_id(c[:chain][:paths]),
                                   'to' => c[:right].signature,
                                 }
                               end
@@ -434,10 +434,14 @@ module Engine
     end
 
     def extend!(node)
-      if (chain = select(head[:left], node)[0])
-        connection_data.unshift(segment(chain, right: head[:left]))
-      elsif (chain = select(tail[:right], node)[0])
-        connection_data << segment(chain, left: tail[:right])
+      head_track, head_pathless = select(head[:left], node).partition { |c| !c[:paths].empty? }
+      tail_track, tail_pathless = select(tail[:right], node).partition { |c| !c[:paths].empty? }
+      head_chain, tail_chain = [[head_track.first, tail_track.first], [head_pathless.first, tail_pathless.first]].find(&:any?)
+
+      if head_chain
+        connection_data.unshift(segment(head_chain, right: head[:left]))
+      elsif tail_chain
+        connection_data << segment(tail_chain, left: tail[:right])
       end
     end
 
@@ -513,6 +517,8 @@ module Engine
 
       start_hex = @game.hex_by_id(hex_ids.first.split.first)
       end_hex = @game.hex_by_id(hex_ids.last.split.first)
+      return [] if start_hex.nil? || end_hex.nil?
+
       matching = []
       start_hex.tile.nodes.each do |start_node|
         end_hex.tile.nodes.each do |end_node|

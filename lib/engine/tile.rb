@@ -120,6 +120,7 @@ module Engine
                               format: params['format'],
                               boom: params['boom'],
                               outline: params['outline'],
+                              routable: params['routable'],
                               loc: params['loc'])
         cache << city
         city
@@ -133,6 +134,7 @@ module Engine
                               format: params['format'],
                               boom: params['boom'],
                               loc: params['loc'],
+                              routable: params['routable'],
                               color: params['color'],
                               size: params['size'])
         cache << pass
@@ -147,6 +149,7 @@ module Engine
                               loc: params['loc'],
                               boom: params['boom'],
                               style: params['style'],
+                              routable: params['routable'],
                               to_city: params['to_city'])
         cache << town
         town
@@ -714,7 +717,7 @@ module Engine
         part.tile = self
       end
 
-      @nodes = @paths.flat_map(&:nodes).uniq
+      @nodes = (@paths.flat_map(&:nodes) + (@cities + @towns).select(&:routable?)).uniq
       @stops = @paths.flat_map(&:stops).uniq
       @edges = @paths.flat_map(&:edges).uniq
 

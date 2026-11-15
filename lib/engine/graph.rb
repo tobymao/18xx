@@ -339,7 +339,7 @@ module Engine
       end
     end
 
-    def walk_token(node, **opts, &block)
+    def walk_token(node, links: false, **opts, &block)
       node.walk(**opts, &block)
     end
 

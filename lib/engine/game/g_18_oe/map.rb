@@ -818,7 +818,7 @@ module Engine
             # Scotland — Highlands barrier
             ['F27'] => 'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable',
             ['F29'] => 'border=edge:0,type:impassable',
-            ['G26'] => 'city=revenue:10;label=Y;upgrade=cost:30,terrain:hill;' \
+            ['G26'] => 'city=revenue:10,routable:1;label=Y;upgrade=cost:30,terrain:hill;' \
                        'border=edge:3,type:impassable;icon=image:18_oe/offshore_docks,sticky:1',
             ['G28'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             # England — coastal/estuary
@@ -898,7 +898,7 @@ module Engine
               J15 Q26 V27 F49 L53 N49
               J73 V17 W6 X13 Y20 AA20 AC8 AC16 AB27 W40 H21
             ] => 'city=revenue:0',
-            ['C48'] => 'city=revenue:10;icon=image:18_oe/offshore_docks,sticky:1',
+            ['C48'] => 'city=revenue:10,routable:1;icon=image:18_oe/offshore_docks,sticky:1',
             # Cities — no terrain (added station geometry)
             %w[
               AA62 AB57 AB69 AC40 AF49 B67 D77 E56 G68 H47 H63
@@ -906,7 +906,7 @@ module Engine
               V55 Y70
             ] => 'city=revenue:0',
             # Cities — port icon
-            %w[F25 L25] => 'city=revenue:0;icon=image:18_oe/offshore_docks,sticky:1',
+            %w[F25 L25] => 'city=revenue:0,routable:1;icon=image:18_oe/offshore_docks,sticky:1',
             ['R23'] => 'city=revenue:0',
             ['V39'] => 'city=revenue:0',
             # Cities — label Y
@@ -924,7 +924,7 @@ module Engine
             ['D57'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
             ['AA82'] => 'city=revenue:20;city=revenue:20;upgrade=cost:45,terrain:river;' \
                         'label=C;path=a:2,b:_0;icon=image:18_oe/offshore_docks,sticky:1',
-            ['U24'] => 'city=revenue:10;icon=image:18_oe/offshore_docks,sticky:1',
+            ['U24'] => 'city=revenue:10,routable:1;icon=image:18_oe/offshore_docks,sticky:1',
             ['I20'] => 'city=revenue:10;path=a:4,b:_0',
             ['O28'] => 'city=revenue:10;path=a:1,b:_0',
             ['AD79'] => 'city=revenue:10;path=a:1,b:_0',
@@ -932,7 +932,7 @@ module Engine
                        'icon=image:18_oe/offshore_docks,sticky:1',
             ['X33'] => 'city=revenue:20;label=Y;path=a:5,b:_0',
             ['Z27'] => 'city=revenue:20;label=Y;path=a:0,b:_0',
-            ['K46'] => 'city=revenue:20;label=Y;icon=image:18_oe/offshore_docks,sticky:1',
+            ['K46'] => 'city=revenue:20,routable:1;label=Y;icon=image:18_oe/offshore_docks,sticky:1',
             ['M50'] => 'city=revenue:0;city=revenue:0;city=revenue:0;label=B',
             ['R47'] => 'city=revenue:0;label=Y',
             ['R55'] => 'city=revenue:0;city=revenue:0;city=revenue:0;label=A',
@@ -941,7 +941,7 @@ module Engine
             ['V41'] => 'city=revenue:0;label=Y',
             ['Z47'] => 'city=revenue:0;label=Y',
             ['AB51'] => 'city=revenue:20;label=N;path=a:1,b:_0',
-            ['C74'] => 'city=revenue:20;city=revenue:20;label=S;icon=image:18_oe/offshore_docks,sticky:1',
+            ['C74'] => 'city=revenue:20,routable:1;city=revenue:20,routable:1;label=S;icon=image:18_oe/offshore_docks,sticky:1',
             ['M62'] => 'city=revenue:0;label=Y',
             ['O80'] => 'city=revenue:0;label=Y',
             # Cities — water terrain
@@ -1610,6 +1610,8 @@ module Engine
           ['Black Sea', 'Aegean Sea'],
           ['North Atlantic (Silver Coast)', 'Strait of Gibraltar'],
         ].freeze
+
+        FERRY_TRACK_COLOR = '#0047AB'
 
         PORTS = {
           'AD1' => { 4 => { port: :public } },

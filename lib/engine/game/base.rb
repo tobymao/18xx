@@ -1480,7 +1480,11 @@ module Engine
       end
 
       def compute_other_paths(routes, route)
-        routes.reject { |r| r == route }.flat_map(&:paths)
+        routes.reject { |r| r == route }.flat_map(&:paths).reject { |path| shared_track?(path) }
+      end
+
+      def shared_track?(_path)
+        false
       end
 
       def city_tokened_by?(city, entity)
@@ -1506,6 +1510,8 @@ module Engine
 
         routes.each do |route|
           route.paths.each do |path|
+            next if shared_track?(path)
+
             a = path.a
             b = path.b
 
@@ -1535,7 +1541,7 @@ module Engine
 
       def check_distance(route, visits, train = nil)
         train ||= route.train
-        distance = train.distance
+        distance = route_train_distance(route, train)
         if distance.is_a?(Numeric)
           route_distance = visits.sum(&:visit_cost)
           raise RouteTooLong, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
@@ -1577,8 +1583,16 @@ module Engine
       # Intended for game specific rules that only depend on one route
       def check_other(_route); end
 
+      def route_train_distance(_route, train)
+        train.distance
+      end
+
       def route_node_revisitable?(_node)
         false
+      end
+
+      def route_links(_start_node, _end_node, _corporation)
+        []
       end
 
       # Intended for game specific rules that depend on multiple routes
@@ -1587,7 +1601,7 @@ module Engine
       def compute_stops(route, train = nil)
         train ||= route.train
         visits = revenue_stops(route)
-        distance = train.distance
+        distance = route_train_distance(route, train)
         return visits if distance.is_a?(Numeric)
         return [] if visits.empty?
 
