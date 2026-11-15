@@ -45,6 +45,8 @@ module Engine
           %w[50 60 65 70],
         ].freeze
         SEA_PATH_LAND_COST = 20
+        SEA_PATH_CLEARANCE = 3
+        SEA_PATH_COAST_COST = 2
 
         CERT_LIMIT = { 2 => 99, 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20 }.freeze
         # Standard game: £5,400 total / num_players, rounded up to nearest £5.
@@ -1429,6 +1431,25 @@ module Engine
           @sea_path_hexes[[from_hex.id, to_hex.id]] ||= straighten_sea_path(cheapest_sea_path(from_hex, to_hex))
         end
 
+        def sea_land_distance(hex)
+          @sea_land_distance ||= begin
+            distance = {}
+            queue = @hexes.reject { |h| sea_zone(h.id) }
+            queue.each { |h| distance[h] = 0 }
+            until queue.empty?
+              current = queue.shift
+              current.all_neighbors.each_value do |neighbor|
+                next if distance.key?(neighbor)
+
+                distance[neighbor] = distance[current] + 1
+                queue << neighbor
+              end
+            end
+            distance
+          end
+          @sea_land_distance[hex] || @hexes.size
+        end
+
         def sea_line_hexes(from_hex, to_hex)
           dq = grid_q(to_hex) - grid_q(from_hex)
           dr = to_hex.y - from_hex.y
@@ -1547,7 +1568,7 @@ module Engine
             break if current == to_hex
 
             current.all_neighbors.each_value do |neighbor|
-              cost = costs[current] + (sea_zone(neighbor.id) ? 1 : self.class::SEA_PATH_LAND_COST)
+              cost = costs[current] + sea_step_cost(neighbor)
               next if costs[neighbor] && costs[neighbor] <= cost
 
               costs[neighbor] = cost
@@ -1560,13 +1581,24 @@ module Engine
           path
         end
 
+        def sea_step_cost(hex)
+          return self.class::SEA_PATH_LAND_COST unless sea_zone(hex.id)
+
+          shortfall = [self.class::SEA_PATH_CLEARANCE - sea_land_distance(hex), 0].max
+          1 + (self.class::SEA_PATH_COAST_COST * shortfall)
+        end
+
         def straighten_sea_path(path)
           allowed = path.to_h { |hex| [hex, true] }
           result = [path.first]
           index = 0
           while index < path.size - 1
             jump = (path.size - 1).downto(index + 1).find do |candidate|
-              sea_line_hexes(path[index], path[candidate]).all? { |hex| hex && (sea_zone(hex.id) || allowed[hex]) }
+              line = sea_line_hexes(path[index], path[candidate])
+              next unless line.all? { |hex| hex && (sea_zone(hex.id) || allowed[hex]) }
+
+              line.map { |hex| sea_land_distance(hex) }.min >=
+                path[index..candidate].map { |hex| sea_land_distance(hex) }.min
             end
             index = jump || (index + 1)
             result << path[index]

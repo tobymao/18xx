@@ -443,6 +443,23 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       end
     end
 
+    it 'keeps mid-route waypoints in open water where the sea is wide' do
+      path = game.sea_path_hexes(from_hex, game.port_marker_hex('N1', 5))
+      expect(path[2..-2]).not_to be_empty
+      expect(path[2..-2].map { |hex| game.sea_land_distance(hex) }).to all(be >= 3)
+    end
+
+    it 'has interior waypoints at sea on the Stavanger run, where the water is one hex wide' do
+      path = game.sea_path_hexes(from_hex, game.port_marker_hex('D41', 0))
+      expect(path[1..-2]).not_to be_empty
+      expect(path[1..-2].map { |hex| game.sea_land_distance(hex) }).to all(be >= 1)
+    end
+
+    it 'measures distance to land in hex steps' do
+      expect(game.sea_land_distance(game.hex_by_id('I50'))).to eq(0)
+      expect(game.sea_land_distance(from_hex)).to eq(1)
+    end
+
     it 'crosses land once when two seas have no sea-hex link' do
       expect(game.sea_path_hexes(from_hex, game.hex_by_id('J51'))).to eq([from_hex, game.hex_by_id('J51')])
     end
