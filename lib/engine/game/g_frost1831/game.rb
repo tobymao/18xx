@@ -441,6 +441,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            GFrost1831::Step::HomeToken,
             GFrost1831::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,

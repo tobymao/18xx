@@ -85,6 +85,36 @@ module Engine
             expect(first_to_arrive_messages.size).to eq(1)
           end
         end
+
+        describe 'home station on an OO hex' do
+          let(:game) { new_game(3) }
+          let(:tv) { game.corporation_by_id('TV') }
+
+          before do
+            par = game.stock_market.par_prices.find { |price| price.price == 100 }
+            tv.ipoed = true
+            tv.par_price = par
+            tv.share_price = par
+            5.times { game.share_pool.transfer_shares(tv.ipo_shares.first.to_bundle, game.players.first) }
+            game.bank.spend(500, tv)
+            game.place_home_token(tv)
+            game.instance_variable_set(:@round, game.operating_round(1))
+            game.round.goto_entity!(tv)
+          end
+
+          it 'asks for the home city again after an OO tile is laid over the station' do
+            tile = game.tiles.find { |t| t.name == 'O1' }
+            game.process_action(Engine::Action::LayTile.new(tv, tile: tile, hex: game.hex_by_id('I12'), rotation: 0))
+
+            expect(game.exception).to be_nil
+            expect(game.round.active_step).to be_a(Step::HomeToken)
+
+            city = game.hex_by_id('I12').tile.cities.first
+            game.process_action(Engine::Action::PlaceToken.new(tv, city: city, slot: 0))
+
+            expect(city.tokened_by?(tv)).to be(true)
+          end
+        end
       end
     end
   end
