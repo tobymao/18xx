@@ -10,6 +10,7 @@ require_relative 'stock_market'
 require_relative 'round/stock'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/home_token'
+require_relative 'step/token'
 require_relative 'step/exchange'
 require_relative 'step/buy_cert'
 require_relative 'step/dividend'
@@ -443,7 +444,7 @@ module Engine
             GFrost1831::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
-            Engine::Step::Token,
+            GFrost1831::Step::Token,
             Engine::Step::Route,
             GFrost1831::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -490,6 +491,10 @@ module Engine
           FACTION_RESERVED_CITIES.select do |hex_id|
             hex_by_id(hex_id).tile.cities.first.tokens.none? { |t| t&.corporation&.type == :faction }
           end
+        end
+
+        def reserved_for_faction?(city)
+          available_faction_cities.include?(city.hex.id) && city.available_slots < 2
         end
 
         def faction_display_name(faction_sym)

@@ -170,6 +170,33 @@ module Engine
 
           expect(game.stock_market.down(cm, price.coordinates)).to eq(price.coordinates)
         end
+
+        describe 'reserved cities' do
+          let(:cm) { game.corporation_by_id('CM') }
+          let(:token_step) { game.round.steps.find { |s| s.is_a?(GFrost1831::Step::Token) } }
+
+          def city(hex_id)
+            game.hex_by_id(hex_id).tile.cities.first
+          end
+
+          before do
+            game.par_corporation(cm, game.stock_market.par_prices.first)
+            cm.floated = true
+            game.instance_variable_set(:@round, game.operating_round(1))
+          end
+
+          it 'keeps the only space of a reserved city free for a Faction base' do
+            expect(game.reserved_for_faction?(city('F3'))).to be(true)
+            expect { token_step.place_token(cm, city('F3'), cm.next_token, connected: false) }
+              .to raise_error(GameError, 'F3 is reserved for a Faction base')
+          end
+
+          it 'frees the city once a Faction has its base there' do
+            city('G8').place_token(tec, tec.next_token, check_tokenable: false)
+
+            expect(game.reserved_for_faction?(city('G8'))).to be(false)
+          end
+        end
       end
     end
   end
