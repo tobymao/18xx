@@ -28,21 +28,6 @@ module View
         Hex.coordinates(game.hex_by_id(hex_id), [1, 1])
       end
 
-      def segment_attrs(from, to, color, width)
-        x1, y1 = coords(from)
-        x2, y2 = coords(to)
-        {
-          x1: x1,
-          y1: y1,
-          x2: x2,
-          y2: y2,
-          stroke: color,
-          'stroke-width': width,
-          'stroke-dasharray': '18 12',
-          'stroke-linecap': 'round',
-        }
-      end
-
       def pulled(hex_id, toward_id, distance)
         x, y = coords(hex_id)
         tx, ty = coords(toward_id)
@@ -50,26 +35,23 @@ module View
         [x + ((tx - x) * distance / length), y + ((ty - y) * distance / length)]
       end
 
-      def distance_from_centre(line, hex_id)
-        cx, cy = coords(hex_id)
-        near = [[line[:x1], line[:y1]], [line[:x2], line[:y2]]].min_by { |x, y| Math.hypot(x - cx, y - cy) }
-        Math.hypot(near[0] - cx, near[1] - cy)
+      def polylines
+        rendered.select { |tag, _, _| tag == :polyline }.map { |_, props, _| props[:attrs] }
       end
 
-      def pulled_end(hex_id, toward_id, distance, xkey, ykey)
-        x, y = pulled(hex_id, toward_id, distance)
-        { xkey => x.round(2), ykey => y.round(2) }
+      def points_of(attrs)
+        attrs[:points].split.map { |pair| pair.split(',').map(&:to_f) }
       end
 
-      def shared_leg_lines
-        hx, hy = coords('H49')
-        lines.select do |l|
-          Math.hypot(l[:x1] - hx, l[:y1] - hy) < 8 && distance_from_centre(l, 'I50') < 40
-        end
+      def offset_from_line(point, hex_a, hex_b)
+        ax, ay = coords(hex_a)
+        bx, by = coords(hex_b)
+        length = Math.hypot(bx - ax, by - ay)
+        (((point[0] - ax) * (by - ay)) - ((point[1] - ay) * (bx - ax))) / length
       end
 
-      def lines
-        rendered.select { |tag, _, _| tag == :line }.map { |_, props, _| props[:attrs] }
+      def gap(point, hex_id)
+        Math.hypot(point[0] - coords(hex_id)[0], point[1] - coords(hex_id)[1])
       end
 
       before do
@@ -81,13 +63,20 @@ module View
       context 'with one crossing' do
         let(:routes) { [route_through(four, city('I50'), city('I52'), town('H55'))] }
 
-        it 'draws one dashed line per leg from København via the port markers to Malmö, without a zone label' do
-          expect(lines).to eq([
-            segment_attrs('H49', 'I50', '#A40122', 8).merge(pulled_end('I50', 'H49', 29, :x2, :y2)),
-            segment_attrs('H49', 'J51', '#A40122', 8),
-            segment_attrs('I52', 'J51', '#A40122', 8).merge(pulled_end('I52', 'J51', 29, :x1, :y1)),
-          ])
-          expect(rendered.map(&:first)).not_to include(:text)
+        it 'draws one dashed polyline from København via the port markers to Malmö, without a zone label' do
+          expect(polylines.size).to eq(1)
+          attrs = polylines.first
+          expect(attrs).to include(fill: 'none', stroke: '#A40122', 'stroke-width': 8, 'stroke-dasharray': '18 12',
+                                   'stroke-linecap': 'round', 'stroke-linejoin': 'round')
+          pts = points_of(attrs)
+          expect(pts.size).to eq(4)
+          start = pulled('I50', 'H49', 29)
+          finish = pulled('I52', 'J51', 29)
+          expect(pts[0]).to match([be_within(0.01).of(start[0]), be_within(0.01).of(start[1])])
+          expect(pts[1]).to match([be_within(0.01).of(coords('H49')[0]), be_within(0.01).of(coords('H49')[1])])
+          expect(pts[2]).to match([be_within(0.01).of(coords('J51')[0]), be_within(0.01).of(coords('J51')[1])])
+          expect(pts[3]).to match([be_within(0.01).of(finish[0]), be_within(0.01).of(finish[1])])
+          expect(rendered.map(&:first)).not_to include(:text, :line)
           expect(rendered.last[1][:attrs]).to include('pointer-events': 'none')
         end
       end
@@ -98,19 +87,19 @@ module View
         let(:second_route) { route_through(three, city('I50'), city('C48')) }
         let(:routes) { [first_route, second_route].each { |r| r.routes = [first_route, second_route] } }
 
-        it 'draws the shared leg as two parallel lanes 12 apart and unshared legs once (§11.3.8)' do
-          shared = shared_leg_lines
-          expect(shared.map { |l| [l[:stroke], l[:'stroke-width']] }).to eq([['#A40122', 8], ['#099FFA', 8]])
-          first, second = shared
-          cx, cy = coords('H49')
-          tx, ty = coords('I50')
-          length = Math.hypot(tx - cx, ty - cy)
-          side = ->(l) { (((l[:x1] - cx) * (ty - cy)) - ((l[:y1] - cy) * (tx - cx))) / length }
-          expect(side.call(first).abs).to be_within(0.01).of(6)
-          expect(side.call(second).abs).to be_within(0.01).of(6)
-          expect(side.call(first) - side.call(second)).to be_within(0.01).of(-12).or be_within(0.01).of(12)
-          expect(side.call(first) + side.call(second)).to be_within(0.01).of(0)
-          expect(lines.select { |l| l[:stroke] == '#A40122' }.map { |l| l[:'stroke-width'] }).to eq([8, 8, 8])
+        it 'joins the shared lane to the unshared leg at the marker with a single continuous line (§11.3.8)' do
+          expect(polylines.size).to eq(2)
+          first, second = polylines.map { |a| points_of(a) }
+          expect(polylines.map { |a| a[:stroke] }).to eq(%w[#A40122 #099FFA])
+          expect(offset_from_line(second[0], 'I50', 'H49').abs).to be_within(0.01).of(6)
+          lane = offset_from_line(second[0], 'I50', 'H49')
+          expect(offset_from_line(second[1], 'I50', 'H49')).to be_within(0.01).of(lane / 2)
+          expect(offset_from_line(second[1], 'H49', 'E46')).to be_within(0.01).of(lane / 2)
+          expect(offset_from_line(second[2], 'H49', 'E46')).to be_within(0.01).of(0)
+          expect(offset_from_line(second.last, 'E46', 'C48')).to be_within(0.01).of(0)
+          expect(gap(second.last, 'C48')).to be_within(0.01).of(29)
+          expect(offset_from_line(first[0], 'I50', 'H49').abs).to be_within(0.01).of(6)
+          expect(offset_from_line(first[0], 'I50', 'H49') + offset_from_line(second[0], 'I50', 'H49')).to be_within(0.01).of(0)
         end
       end
 
@@ -121,9 +110,8 @@ module View
         let(:routes) { [first_route, second_route].each { |r| r.routes = [first_route, second_route] } }
 
         it 'stops each line at the city edge plus half its stroke width along its own lane' do
-          lanes = shared_leg_lines
-          expect(lanes.size).to eq(2)
-          lanes.each { |l| expect(distance_from_centre(l, 'I50')).to be_within(0.01).of(Math.sqrt((29**2) + (6**2))) }
+          expect(polylines.size).to eq(2)
+          polylines.each { |a| expect(gap(points_of(a).first, 'I50')).to be_within(0.01).of(Math.sqrt((29**2) + (6**2))) }
         end
       end
 

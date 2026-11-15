@@ -10,6 +10,7 @@ module View
       include Lib::Settings
 
       LANE_SPACING = 1.5
+      MITER_LIMIT = 2
 
       needs :routes
       needs :start_pos, default: [1, 1]
@@ -17,58 +18,84 @@ module View
       def render
         segment_indexes = Hash.new { |hash, key| hash[key] = [] }
         @route_nodes = {}
+        crossings = []
         @routes.each_with_index do |route, index|
           (route.chains || []).each do |chain|
             crossing = chain[:crossing]
             next unless crossing
 
             crossing.nodes.each { |node| @route_nodes[node.hex] = node }
-            segments(crossing).each { |segment| segment_indexes[segment] << index }
+            hexes = crossing_hexes(crossing)
+            hexes.each_cons(2) { |a, b| segment_indexes[leg_key(a, b)] << index }
+            crossings << [index, hexes]
           end
         end
+        @segment_indexes = segment_indexes.transform_values { |indexes| indexes.uniq.sort }
 
-        children = []
-        @routes.each_index do |index|
-          segment_indexes.each do |(from, to), indexes|
-            indexes = indexes.uniq.sort
-            child = line(from, to, index, indexes) if indexes.include?(index)
-            children << child if child
-          end
-        end
-
+        children = crossings.map { |index, hexes| polyline(index, hexes) }.compact
         h(:g, { attrs: { id: 'sea-routes', 'pointer-events': 'none' } }, children)
       end
 
       private
 
-      def line(from, to, index, indexes)
+      def polyline(index, hexes)
         width = route_prop(index, :width).to_f
-        x1, y1 = Hex.coordinates(from, @start_pos)
-        x2, y2 = Hex.coordinates(to, @start_pos)
-        start = trimmed([x1, y1], [x2, y2], from, width)
-        finish = trimmed([x2, y2], [x1, y1], to, width)
-        return if start.nil? || finish.nil?
+        legs = hexes.each_cons(2).map { |a, b| leg(a, b, index) }
+        joins = legs.each_cons(2).each_with_index.map { |(a, b), i| vertex(a, b, hexes[i + 1]) }
+        points = [first_point(legs, hexes, width), *joins, last_point(legs, hexes, width)]
+        return if points.first.nil? || points.last.nil?
 
-        dx, dy = lane_offset(from, to, index, indexes)
-        x1, y1 = start
-        x2, y2 = finish
-        x1 = (x1 + dx).round(2)
-        y1 = (y1 + dy).round(2)
-        x2 = (x2 + dx).round(2)
-        y2 = (y2 + dy).round(2)
-
-        h(:line, {
+        h(:polyline, {
             attrs: {
-              x1: x1,
-              y1: y1,
-              x2: x2,
-              y2: y2,
+              points: points.map { |x, y| "#{x.round(2)},#{y.round(2)}" }.join(' '),
+              fill: 'none',
               stroke: route_prop(index, :color),
               'stroke-width': width,
               'stroke-dasharray': '18 12',
               'stroke-linecap': 'round',
+              'stroke-linejoin': 'round',
             },
           })
+      end
+
+      def leg(from, to, index)
+        key = leg_key(from, to)
+        indexes = @segment_indexes[key]
+        x1, y1 = Hex.coordinates(from, @start_pos)
+        x2, y2 = Hex.coordinates(to, @start_pos)
+        length = Math.sqrt(((x2 - x1)**2) + ((y2 - y1)**2))
+        {
+          direction: [(x2 - x1) / length, (y2 - y1) / length],
+          offset: lane_offset(key, index, indexes),
+          spacing: leg_spacing(indexes),
+        }
+      end
+
+      def first_point(legs, hexes, width)
+        start = trimmed(Hex.coordinates(hexes[0], @start_pos), Hex.coordinates(hexes[1], @start_pos), hexes[0], width)
+        start && [start[0] + legs.first[:offset][0], start[1] + legs.first[:offset][1]]
+      end
+
+      def last_point(legs, hexes, width)
+        finish = trimmed(Hex.coordinates(hexes[-1], @start_pos), Hex.coordinates(hexes[-2], @start_pos), hexes[-1], width)
+        finish && [finish[0] + legs.last[:offset][0], finish[1] + legs.last[:offset][1]]
+      end
+
+      def vertex(incoming, outgoing, hex)
+        cx, cy = Hex.coordinates(hex, @start_pos)
+        ox1, oy1 = incoming[:offset]
+        ox2, oy2 = outgoing[:offset]
+        average = [cx + ((ox1 + ox2) / 2.0), cy + ((oy1 + oy2) / 2.0)]
+        dx1, dy1 = incoming[:direction]
+        dx2, dy2 = outgoing[:direction]
+        cross = (dx1 * dy2) - (dy1 * dx2)
+        return average if cross.abs < 1e-6
+
+        along = (((ox2 - ox1) * dy2) - ((oy2 - oy1) * dx2)) / cross
+        x = cx + ox1 + (along * dx1)
+        y = cy + oy1 + (along * dy1)
+        limit = self.class::MITER_LIMIT * [incoming[:spacing], outgoing[:spacing]].max
+        Math.sqrt(((x - cx)**2) + ((y - cy)**2)) > limit ? average : [x, y]
       end
 
       def trimmed(point, other, hex, width)
@@ -81,30 +108,36 @@ module View
         pull = clearance(node) + (width / 2.0)
         return if length <= pull
 
-        [(point[0] + (dx * pull / length)).round(2), (point[1] + (dy * pull / length)).round(2)]
+        [point[0] + (dx * pull / length), point[1] + (dy * pull / length)]
       end
 
       def clearance(node)
         node.city? && node.slots(all: true) > 1 ? Part::City::SLOT_DIAMETER : Part::City::SLOT_RADIUS
       end
 
-      def lane_offset(from, to, index, indexes)
+      def leg_spacing(indexes)
+        indexes.map { |i| route_prop(i, :width).to_f }.max * self.class::LANE_SPACING
+      end
+
+      def lane_offset(key, index, indexes)
         return [0, 0] if indexes.one?
 
-        spacing = indexes.map { |i| route_prop(i, :width).to_f }.max * self.class::LANE_SPACING
-        shift = (indexes.index(index) - ((indexes.size - 1) / 2.0)) * spacing
-        x1, y1 = Hex.coordinates(from, @start_pos)
-        x2, y2 = Hex.coordinates(to, @start_pos)
+        shift = (indexes.index(index) - ((indexes.size - 1) / 2.0)) * leg_spacing(indexes)
+        x1, y1 = Hex.coordinates(key[0], @start_pos)
+        x2, y2 = Hex.coordinates(key[1], @start_pos)
         dx = x2 - x1
         dy = y2 - y1
         length = Math.sqrt((dx * dx) + (dy * dy))
         [-dy / length * shift, dx / length * shift]
       end
 
-      def segments(crossing)
+      def leg_key(a, b)
+        a.id <= b.id ? [a, b] : [b, a]
+      end
+
+      def crossing_hexes(crossing)
         hexes = [crossing.nodes[0].hex, *crossing.hexes, crossing.nodes[1].hex]
-        hexes = hexes.each_with_index.map { |hex, i| hex if i.zero? || hex != hexes[i - 1] }.compact
-        hexes.each_cons(2).map { |a, b| a.id <= b.id ? [a, b] : [b, a] }
+        hexes.each_with_index.map { |hex, i| hex if i.zero? || hex != hexes[i - 1] }.compact
       end
     end
   end
