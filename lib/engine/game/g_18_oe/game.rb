@@ -695,28 +695,34 @@ module Engine
 
           base_cost = upgrade ? 2 : 1
           base_cost *= 2 if metropolis_hex?(old_tile.hex)
-          return base_cost unless zero_point_tile_lays_available?(entity)
-          return base_cost unless blue_terrain_point_tile?(old_tile)
+          return base_cost unless terrain_point_ability(entity, old_tile)
 
           base_cost - 1
         end
 
         def zero_point_tile_lays_available?(entity)
-          return false unless @minor_e_ability
+          !terrain_point_abilities(entity).empty?
+        end
 
-          entity.abilities.include?(@minor_e_ability) && ability_usable_this_or?(@minor_e_ability)
+        def terrain_point_abilities(entity)
+          { blue: @minor_e_ability, green: @minor_f_ability }.select do |_, ability|
+            ability && entity.abilities.include?(ability) && ability_usable_this_or?(ability)
+          end
+        end
+
+        def terrain_point_ability(entity, tile)
+          return unless tile.color == :white
+
+          terrain_point_abilities(entity).find do |color, _|
+            terrain = color == :blue ? self.class::MINOR_E_TERRAIN : self.class::MINOR_F_TERRAIN
+            tile.terrain.intersect?(terrain)
+          end&.last
         end
 
         def after_lay_tile(entity, old_tile, tile)
           return unless tile.color == :yellow
-          return unless zero_point_tile_lays_available?(entity)
-          return unless blue_terrain_point_tile?(old_tile)
 
-          @minor_e_ability.use!
-        end
-
-        def blue_terrain_point_tile?(tile)
-          tile.color == :white && tile.terrain.intersect?(self.class::MINOR_E_TERRAIN)
+          terrain_point_ability(entity, old_tile)&.use!
         end
 
         def can_buy_train_from_others?

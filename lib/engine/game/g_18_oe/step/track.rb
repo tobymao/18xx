@@ -44,9 +44,11 @@ module Engine
             entity = current_entity
             tile_lay = remaining_tile_points(entity)
             text = "#{tile_lay} track points"
-            return text unless @game.zero_point_tile_lays_available?(entity)
+            abilities = @game.terrain_point_abilities(entity)
+            return text if abilities.empty?
 
-            "#{text} + 1 blue-terrain point (yellow lays only)"
+            points = abilities.keys.map { |color| "1 #{color}-terrain point" }.join(' + ')
+            "#{text} + #{points} (yellow lays only)"
           end
 
           def lay_tile_action(action)
