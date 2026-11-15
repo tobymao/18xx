@@ -2,6 +2,7 @@
 
 require 'lib/settings'
 require 'view/game/hex'
+require 'view/game/part/track'
 
 module View
   module Game
@@ -12,11 +13,21 @@ module View
       needs :start_pos, default: [1, 1]
 
       def render
-        children = []
+        segment_indexes = Hash.new { |hash, key| hash[key] = [] }
         @routes.each_with_index do |route, index|
           (route.chains || []).each do |chain|
             crossing = chain[:crossing]
-            children.concat(crossing_children(crossing, index)) if crossing
+            next unless crossing
+
+            segments(crossing).each { |segment| segment_indexes[segment] << index }
+          end
+        end
+
+        children = []
+        @routes.each_index do |index|
+          segment_indexes.each do |(from, to), indexes|
+            indexes = indexes.uniq.sort
+            children << line(from, to, index, indexes) if indexes.include?(index)
           end
         end
 
@@ -25,39 +36,35 @@ module View
 
       private
 
-      def crossing_children(crossing, index)
-        color = route_prop(index, :color)
-        marker_a, marker_b = crossing.hexes.map { |hex| Hex.coordinates(hex, @start_pos) }
+      def line(from, to, index, indexes)
+        x1, y1 = Hex.coordinates(from, @start_pos)
+        x2, y2 = Hex.coordinates(to, @start_pos)
 
-        [
-          h(:polyline, {
-              attrs: {
-                points: points(crossing),
-                fill: 'none',
-                stroke: color,
-                'stroke-width': route_prop(index, :width),
-                'stroke-dasharray': '18 12',
-                'stroke-linecap': 'round',
-                'stroke-linejoin': 'round',
-              },
-            }),
-          h(:text, {
-              attrs: {
-                x: (marker_a[0] + marker_b[0]) / 2.0,
-                y: (marker_a[1] + marker_b[1]) / 2.0,
-                'text-anchor': 'middle',
-                'dominant-baseline': 'central',
-                'font-size': 36,
-                fill: color,
-              },
-            }, crossing.units.to_s),
-        ]
+        h(:line, {
+            attrs: {
+              x1: x1,
+              y1: y1,
+              x2: x2,
+              y2: y2,
+              stroke: route_prop(index, :color),
+              'stroke-width': width_for(index, indexes),
+              'stroke-dasharray': '18 12',
+              'stroke-linecap': 'round',
+            },
+          })
       end
 
-      def points(crossing)
+      def width_for(index, indexes)
+        base = route_prop(index, :width).to_f
+        return base if indexes.one?
+
+        [base, Part::Track::MULTI_PATH[:broad][:width]].min * [1, 3 * indexes.reverse.index(index)].max
+      end
+
+      def segments(crossing)
         hexes = [crossing.nodes[0].hex, *crossing.hexes, crossing.nodes[1].hex]
         hexes = hexes.each_with_index.map { |hex, i| hex if i.zero? || hex != hexes[i - 1] }.compact
-        hexes.map { |hex| Hex.coordinates(hex, @start_pos).join(',') }.join(' ')
+        hexes.each_cons(2).map { |a, b| a.id <= b.id ? [a, b] : [b, a] }
       end
     end
   end
