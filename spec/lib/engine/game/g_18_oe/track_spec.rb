@@ -272,7 +272,7 @@ describe 'G18OE lay track (§11.1)' do
         if id == 'E'
           expect(description).to include('Each OR, 1 extra tile point for a yellow lay on blue terrain')
         else
-          expect(description).to include('Extra tile point for matching terrain: not yet implemented')
+          expect(description).to include('Each OR, 1 extra tile point for a yellow lay on green terrain')
         end
       end
     end
