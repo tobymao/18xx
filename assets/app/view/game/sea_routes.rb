@@ -136,7 +136,7 @@ module View
       end
 
       def crossing_hexes(crossing)
-        hexes = [crossing.nodes[0].hex, *crossing.hexes, crossing.nodes[1].hex]
+        hexes = [crossing.nodes[0].hex, *crossing.path_hexes, crossing.nodes[1].hex]
         hexes.each_with_index.map { |hex, i| hex if i.zero? || hex != hexes[i - 1] }.compact
       end
     end

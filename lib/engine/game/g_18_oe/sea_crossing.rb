@@ -8,13 +8,18 @@ module Engine
       class SeaCrossing
         attr_reader :kind, :from, :to, :nodes, :units, :hexes
 
-        def initialize(kind:, from:, to:, nodes:, units:, hexes:)
+        def initialize(kind:, from:, to:, nodes:, units:, hexes:, game:)
           @kind = kind
           @from = from
           @to = to
           @nodes = nodes
           @units = units
           @hexes = hexes
+          @game = game
+        end
+
+        def path_hexes
+          @path_hexes ||= @game.sea_path_hexes(*@hexes)
         end
 
         def id

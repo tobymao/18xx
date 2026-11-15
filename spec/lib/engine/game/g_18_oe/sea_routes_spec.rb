@@ -428,4 +428,32 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       expect(Array(step.help).join).to include('Click a city or town across the sea to add a crossing')
     end
   end
+
+  describe 'sea path hexes' do
+    let(:from_hex) { game.hex_by_id('H49') }
+
+    it 'bends around Jutland on the way to Stavanger, touching only sea hexes between waypoints' do
+      to_hex = game.port_marker_hex('D41', 0)
+      path = game.sea_path_hexes(from_hex, to_hex)
+      expect(path.first).to eq(from_hex)
+      expect(path.last).to eq(to_hex)
+      expect(path.size).to be > 2
+      path.each_cons(2) do |a, b|
+        expect(game.sea_line_hexes(a, b).map { |hex| game.sea_zone(hex.id) }).to all(be)
+      end
+    end
+
+    it 'crosses land once when two seas have no sea-hex link' do
+      expect(game.sea_path_hexes(from_hex, game.hex_by_id('J51'))).to eq([from_hex, game.hex_by_id('J51')])
+    end
+
+    it 'returns just the hex for the same hex' do
+      expect(game.sea_path_hexes(from_hex, from_hex)).to eq([from_hex])
+    end
+
+    it 'memoises the result' do
+      to_hex = game.port_marker_hex('D41', 0)
+      expect(game.sea_path_hexes(from_hex, to_hex)).to equal(game.sea_path_hexes(from_hex, to_hex))
+    end
+  end
 end

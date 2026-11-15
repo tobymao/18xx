@@ -115,6 +115,18 @@ module View
         end
       end
 
+      context 'with a crossing that bends' do
+        let(:crossing) { game.sea_crossing(:crossing, ['I50', 5], ['D41', 0], [city('I50'), town('D41')]) }
+        let(:routes) { [double(chains: [{ crossing: crossing }])] }
+
+        it 'passes through the centre of an interior waypoint on an unshared leg' do
+          waypoint = crossing.path_hexes[1..-2].first
+          expect(waypoint).not_to be_nil
+          wx, wy = Hex.coordinates(waypoint, [1, 1])
+          expect(points_of(polylines.first)).to include([be_within(0.01).of(wx), be_within(0.01).of(wy)])
+        end
+      end
+
       context 'with a land-only route' do
         let(:routes) { [route_through(four, city('I52'), town('H55'))] }
 

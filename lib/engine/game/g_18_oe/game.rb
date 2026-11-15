@@ -44,6 +44,8 @@ module Engine
           %w[60p 65 70 75 80],
           %w[50 60 65 70],
         ].freeze
+        SEA_PATH_LAND_COST = 20
+
         CERT_LIMIT = { 2 => 99, 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20 }.freeze
         # Standard game: £5,400 total / num_players, rounded up to nearest £5.
         # 2-player variant uses without-concessions formula (£5,200 / 2 = £2,600).
@@ -1419,7 +1421,24 @@ module Engine
                     port_distance(from, to)
                   end
           hexes = [port_marker_hex(*from) || nodes[0].hex, port_marker_hex(*to) || nodes[1].hex]
-          SeaCrossing.new(kind: kind, from: from, to: to, nodes: nodes, units: units, hexes: hexes)
+          SeaCrossing.new(kind: kind, from: from, to: to, nodes: nodes, units: units, hexes: hexes, game: self)
+        end
+
+        def sea_path_hexes(from_hex, to_hex)
+          @sea_path_hexes ||= {}
+          @sea_path_hexes[[from_hex.id, to_hex.id]] ||= straighten_sea_path(cheapest_sea_path(from_hex, to_hex))
+        end
+
+        def sea_line_hexes(from_hex, to_hex)
+          dq = grid_q(to_hex) - grid_q(from_hex)
+          dr = to_hex.y - from_hex.y
+          steps = ((dq.abs + dr.abs + (dq + dr).abs) / 2.0).round
+          return [from_hex] if steps.zero?
+
+          (0..steps).map do |k|
+            t = k / steps.to_f
+            hex_at_cube(grid_q(from_hex) + (dq * t) + 1e-6, from_hex.y + (dr * t) + 1e-6)
+          end
         end
 
         def port_usable?(hex_id, exit, corporation)
@@ -1513,6 +1532,75 @@ module Engine
         end
 
         private
+
+        def cheapest_sea_path(from_hex, to_hex)
+          costs = { from_hex => 0 }
+          previous = {}
+          frontier = [from_hex]
+          done = {}
+          until frontier.empty?
+            current = frontier.min_by.with_index { |hex, index| [costs[hex], index] }
+            frontier.delete(current)
+            next if done[current]
+
+            done[current] = true
+            break if current == to_hex
+
+            current.all_neighbors.each_value do |neighbor|
+              cost = costs[current] + (sea_zone(neighbor.id) ? 1 : self.class::SEA_PATH_LAND_COST)
+              next if costs[neighbor] && costs[neighbor] <= cost
+
+              costs[neighbor] = cost
+              previous[neighbor] = current
+              frontier << neighbor
+            end
+          end
+          path = [to_hex]
+          path.unshift(previous[path.first]) while previous[path.first]
+          path
+        end
+
+        def straighten_sea_path(path)
+          allowed = path.to_h { |hex| [hex, true] }
+          result = [path.first]
+          index = 0
+          while index < path.size - 1
+            jump = (path.size - 1).downto(index + 1).find do |candidate|
+              sea_line_hexes(path[index], path[candidate]).all? { |hex| hex && (sea_zone(hex.id) || allowed[hex]) }
+            end
+            index = jump || (index + 1)
+            result << path[index]
+          end
+          result
+        end
+
+        def grid_parity
+          @grid_parity ||= (@hexes.first.x - @hexes.first.y) % 2
+        end
+
+        def grid_q(hex)
+          (hex.x - hex.y - grid_parity) / 2.0
+        end
+
+        def hex_by_grid
+          @hex_by_grid ||= @hexes.to_h { |hex| [[hex.x, hex.y], hex] }
+        end
+
+        def hex_at_cube(q, r)
+          s = -q - r
+          rq = q.round
+          rr = r.round
+          rs = s.round
+          dq = (rq - q).abs
+          dr = (rr - r).abs
+          ds = (rs - s).abs
+          if dq > dr && dq > ds
+            rq = -rr - rs
+          elsif dr > ds
+            rr = -rq - rs
+          end
+          hex_by_grid[[(2 * rq) + rr + grid_parity, rr]]
+        end
 
         def cheapest_sea_cost(legs, token_legs, reduction, counts)
           return legs.each_index.sum { |index| [legs[index].units - (reduction * counts[index]), 0].max } if token_legs.empty?
