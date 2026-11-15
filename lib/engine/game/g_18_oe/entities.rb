@@ -577,12 +577,14 @@ module Engine
             abilities: [
               {
                 type: 'description',
+                count_per_or: 1,
                 description: 'Terrain discount: 33% off blue (water/coast, river and lake) construction costs. '\
                              'Track-rights zone discount: 20% off construction within Spain/Portugal, Italy, '\
                              'Sweden/Norway/Denmark or Russia when the RR has track rights there. '\
                              'When both apply, they combine to give a 50% discount. '\
                              'Round the final construction cost down to whole pounds. '\
-                             'Extra tile point for matching terrain: not yet implemented (BUG-034).',
+                             'Each OR, 1 extra tile point for a yellow lay on blue terrain, '\
+                             'including 1 point toward a metropolis.',
               },
             ],
           },

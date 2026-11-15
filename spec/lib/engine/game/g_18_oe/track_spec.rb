@@ -40,7 +40,7 @@ describe 'G18OE lay track (§11.1)' do
     start_regional!(game, 'LNWR', player)
     round = operating!
 
-    expect(round.active_step.description).to eq('3 track points')
+    expect(round.active_step.help).to eq('3 track points')
   end
 
   it 'charges 1 point for a yellow tile' do
@@ -48,7 +48,7 @@ describe 'G18OE lay track (§11.1)' do
     round = operating!
     lay_first_legal!(game, round, 'J29')
 
-    expect(round.active_step.description).to eq('2 track points')
+    expect(round.active_step.help).to eq('2 track points')
   end
 
   it 'charges 2 points for a yellow metropolis and lets SB choose its home station (§11.1.9)' do
@@ -60,7 +60,7 @@ describe 'G18OE lay track (§11.1)' do
 
     act!(round, Engine::Action::PlaceToken.new(sb, city: game.hex_by_id('R55').tile.cities[1], slot: 0))
 
-    expect(round.active_step.description).to eq('1 track points')
+    expect(round.active_step.help).to eq('1 track points')
     expect(game.hex_by_id('R55').tile.cities[1].tokened_by?(sb)).to be(true)
   end
 
@@ -70,7 +70,7 @@ describe 'G18OE lay track (§11.1)' do
     round = operating!
     lay_first_legal!(game, round, 'J27')
 
-    expect(round.active_step.description).to eq('1 track points')
+    expect(round.active_step.help).to eq('1 track points')
   end
 
   it 'refuses a lay that costs more points than remain' do
@@ -88,7 +88,7 @@ describe 'G18OE lay track (§11.1)' do
     start_major!(game, 'LNWR', player)
     round = operating!
 
-    expect(round.active_step.description).to eq('6 track points')
+    expect(round.active_step.help).to eq('6 track points')
   end
 
   it 'keeps a regional inside its track rights zone (§11.1.4)' do
@@ -268,8 +268,12 @@ describe 'G18OE lay track (§11.1)' do
         description = game.corporation_by_id(id).abilities.first.description
 
         expect(description).to include('Terrain discount: 33%', 'Track-rights zone discount: 20%',
-                                       'combine to give a 50% discount', 'down to whole pounds',
-                                       'Extra tile point for matching terrain: not yet implemented')
+                                       'combine to give a 50% discount', 'down to whole pounds')
+        if id == 'E'
+          expect(description).to include('Each OR, 1 extra tile point for a yellow lay on blue terrain')
+        else
+          expect(description).to include('Extra tile point for matching terrain: not yet implemented')
+        end
       end
     end
 
@@ -317,7 +321,7 @@ describe 'G18OE lay track (§11.1)' do
       round, step, hex = prepared_step(major, 'J29', '7', 3)
       upgrade!(round, major, hex, '80')
 
-      expect(step.description).to eq('2 track points')
+      expect(step.help).to eq('2 track points')
     end
 
     it 'charges B one point for a town upgrade' do
@@ -325,7 +329,7 @@ describe 'G18OE lay track (§11.1)' do
       round, step, hex = prepared_step(major, 'J29', '3', 3)
       upgrade!(round, major, hex, '143')
 
-      expect(step.description).to eq('2 track points')
+      expect(step.help).to eq('2 track points')
     end
 
     it 'lets B upgrade plain track with one tile point left' do
@@ -365,7 +369,7 @@ describe 'G18OE lay track (§11.1)' do
       expect(step.tracker_available_hex(major, hex)).to be_nil
       step.instance_variable_set(:@points_used, 3)
       upgrade!(round, major, hex, '80')
-      expect(step.description).to eq('1 track points')
+      expect(step.help).to eq('1 track points')
     end
 
     it 'keeps the two point cost for B on a city upgrade' do
@@ -375,7 +379,7 @@ describe 'G18OE lay track (§11.1)' do
       expect(step.tracker_available_hex(major, hex)).to be_nil
       step.instance_variable_set(:@points_used, 3)
       upgrade!(round, major, hex, '205')
-      expect(step.description).to eq('1 track points')
+      expect(step.help).to eq('1 track points')
     end
 
     it 'keeps the four point cost for B on a metropolis upgrade' do
@@ -391,7 +395,7 @@ describe 'G18OE lay track (§11.1)' do
       round, step, = prepared_step(major, 'J29', nil, 6)
       lay_first_legal!(game, round, 'J29')
 
-      expect(step.description).to eq('5 track points')
+      expect(step.help).to eq('5 track points')
     end
 
     it 'gives the discount only to the major that received B (§10.5)' do
