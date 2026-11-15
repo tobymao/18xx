@@ -50,11 +50,6 @@ module View
         [x + ((tx - x) * distance / length), y + ((ty - y) * distance / length)]
       end
 
-      def line_from_offshore(hex_id, width)
-        x, y = coords(hex_id)
-        lines.find { |l| l[:x1] == x && l[:y1] == y && l[:'stroke-width'] == width && distance_from_centre(l, 'I50') < 60 }
-      end
-
       def distance_from_centre(line, hex_id)
         cx, cy = coords(hex_id)
         near = [[line[:x1], line[:y1]], [line[:x2], line[:y2]]].min_by { |x, y| Math.hypot(x - cx, y - cy) }
@@ -64,6 +59,13 @@ module View
       def pulled_end(hex_id, toward_id, distance, xkey, ykey)
         x, y = pulled(hex_id, toward_id, distance)
         { xkey => x.round(2), ykey => y.round(2) }
+      end
+
+      def shared_leg_lines
+        hx, hy = coords('H49')
+        lines.select do |l|
+          Math.hypot(l[:x1] - hx, l[:y1] - hy) < 8 && distance_from_centre(l, 'I50') < 40
+        end
       end
 
       def lines
@@ -96,11 +98,19 @@ module View
         let(:second_route) { route_through(three, city('I50'), city('C48')) }
         let(:routes) { [first_route, second_route].each { |r| r.routes = [first_route, second_route] } }
 
-        it 'nests the shared leg with the lower route index underneath and draws unshared legs once (§11.3.8)' do
-          shared = lines.select { |l| l[:x1] == coords('H49')[0] && l[:y1] == coords('H49')[1] }
-          shared = shared.select { |l| distance_from_centre(l, 'I50') < 40 }
-          expect(shared.map { |l| [l[:stroke], l[:'stroke-width']] }).to eq([['#A40122', 24], ['#099FFA', 8]])
-          expect(lines.select { |l| l[:stroke] == '#A40122' }.map { |l| l[:'stroke-width'] }).to eq([24, 8, 8])
+        it 'draws the shared leg as two parallel lanes 12 apart and unshared legs once (§11.3.8)' do
+          shared = shared_leg_lines
+          expect(shared.map { |l| [l[:stroke], l[:'stroke-width']] }).to eq([['#A40122', 8], ['#099FFA', 8]])
+          first, second = shared
+          cx, cy = coords('H49')
+          tx, ty = coords('I50')
+          length = Math.hypot(tx - cx, ty - cy)
+          side = ->(l) { (((l[:x1] - cx) * (ty - cy)) - ((l[:y1] - cy) * (tx - cx))) / length }
+          expect(side.call(first).abs).to be_within(0.01).of(6)
+          expect(side.call(second).abs).to be_within(0.01).of(6)
+          expect(side.call(first) - side.call(second)).to be_within(0.01).of(-12).or be_within(0.01).of(12)
+          expect(side.call(first) + side.call(second)).to be_within(0.01).of(0)
+          expect(lines.select { |l| l[:stroke] == '#A40122' }.map { |l| l[:'stroke-width'] }).to eq([8, 8, 8])
         end
       end
 
@@ -110,11 +120,10 @@ module View
         let(:second_route) { route_through(three, city('I50'), city('C48')) }
         let(:routes) { [first_route, second_route].each { |r| r.routes = [first_route, second_route] } }
 
-        it 'stops each line at the city edge plus half its stroke width' do
-          wide = line_from_offshore('H49', 24)
-          narrow = line_from_offshore('H49', 8)
-          expect(distance_from_centre(wide, 'I50')).to be_within(0.01).of(37)
-          expect(distance_from_centre(narrow, 'I50')).to be_within(0.01).of(29)
+        it 'stops each line at the city edge plus half its stroke width along its own lane' do
+          lanes = shared_leg_lines
+          expect(lanes.size).to eq(2)
+          lanes.each { |l| expect(distance_from_centre(l, 'I50')).to be_within(0.01).of(Math.sqrt((29**2) + (6**2))) }
         end
       end
 

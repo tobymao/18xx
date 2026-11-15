@@ -3,12 +3,13 @@
 require 'lib/settings'
 require 'view/game/hex'
 require 'view/game/part/city'
-require 'view/game/part/track'
 
 module View
   module Game
     class SeaRoutes < Snabberb::Component
       include Lib::Settings
+
+      LANE_SPACING = 1.5
 
       needs :routes
       needs :start_pos, default: [1, 1]
@@ -41,15 +42,20 @@ module View
       private
 
       def line(from, to, index, indexes)
-        width = width_for(index, indexes)
+        width = route_prop(index, :width).to_f
         x1, y1 = Hex.coordinates(from, @start_pos)
         x2, y2 = Hex.coordinates(to, @start_pos)
         start = trimmed([x1, y1], [x2, y2], from, width)
         finish = trimmed([x2, y2], [x1, y1], to, width)
         return if start.nil? || finish.nil?
 
+        dx, dy = lane_offset(from, to, index, indexes)
         x1, y1 = start
         x2, y2 = finish
+        x1 = (x1 + dx).round(2)
+        y1 = (y1 + dy).round(2)
+        x2 = (x2 + dx).round(2)
+        y2 = (y2 + dy).round(2)
 
         h(:line, {
             attrs: {
@@ -82,11 +88,17 @@ module View
         node.city? && node.slots(all: true) > 1 ? Part::City::SLOT_DIAMETER : Part::City::SLOT_RADIUS
       end
 
-      def width_for(index, indexes)
-        base = route_prop(index, :width).to_f
-        return base if indexes.one?
+      def lane_offset(from, to, index, indexes)
+        return [0, 0] if indexes.one?
 
-        [base, Part::Track::MULTI_PATH[:broad][:width]].min * [1, 3 * indexes.reverse.index(index)].max
+        spacing = indexes.map { |i| route_prop(i, :width).to_f }.max * self.class::LANE_SPACING
+        shift = (indexes.index(index) - ((indexes.size - 1) / 2.0)) * spacing
+        x1, y1 = Hex.coordinates(from, @start_pos)
+        x2, y2 = Hex.coordinates(to, @start_pos)
+        dx = x2 - x1
+        dy = y2 - y1
+        length = Math.sqrt((dx * dx) + (dy * dy))
+        [-dy / length * shift, dx / length * shift]
       end
 
       def segments(crossing)
