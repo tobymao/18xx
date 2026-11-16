@@ -15,6 +15,7 @@ require_relative 'step/merge_minor'
 require_relative 'step/merge_offer'
 require_relative 'step/merge_token'
 require_relative 'step/concession'
+require_relative 'step/choose_operating_position'
 require_relative 'step/reserve_share'
 require_relative 'step/orient_express_bonus'
 require_relative 'step/route'
@@ -30,7 +31,7 @@ module Engine
         include G18OE::SeaRoutes
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
-        attr_reader :concessions, :merged_minors, :wcf_placeholder
+        attr_reader :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -450,6 +451,7 @@ module Engine
           setup_patronage_tiles!
           setup_wcf_placeholder!
           setup_minor_k!
+          @minor_c_ability = corporation_by_id('C')&.abilities&.first
           @minor_g_ability = corporation_by_id('G')&.abilities&.first
           @minor_b_ability = corporation_by_id('B')&.abilities&.first
           @minor_e_ability = corporation_by_id('E')&.abilities&.first
@@ -1162,6 +1164,7 @@ module Engine
 
         def operating_round(round_num)
           Round::G18OE::Operating.new(self, [
+            G18OE::Step::ChooseOperatingPosition,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,

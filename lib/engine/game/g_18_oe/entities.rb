@@ -535,9 +535,9 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'At the start of each OR, the president may choose this minor\'s operating '\
-                             'position: first, last, or normal order. The choice is announced before '\
-                             'any other RR operates that OR.',
+                description: 'At the start of each OR, the president may choose this minor\'s or its acquiring major\'s '\
+                             'operating position: first, last, or normal within its operating group. '\
+                             'The choice is announced before any RR operates that OR.',
               },
             ],
           },
