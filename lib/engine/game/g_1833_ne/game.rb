@@ -52,6 +52,20 @@ module Engine
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend < 1/2 stock price', '1 ←'],
+            ['Dividend ≥ 1/2 stock price but < stock price', 'none'],
+            ['Dividend ≥ stock price', '1 →'],
+            ['Dividend ≥ 2X stock price', '2 →'],
+            ['Dividend ≥ 3X stock price and stock price ≥ 165', '3 →'],
+            ['Corporation director sells any number of shares', '1 ←'],
+            ['Corporation has any shares in the Market at end of an SR', '1 ←'],
+            ['Corporation is sold out at end of an SR', '1 →'],
+          ]
+        end
+
         MARKET = [
           %w[0c 10 20 30 40p 50p 60p 70p 80p 90p 100p 112p 124p 137p 150p
              165 180 195 212 230 250 270 295 320 345 375 405 440 475 510 550 590 630 680 730],
@@ -160,6 +174,7 @@ module Engine
             ],
             events: [
               { 'type' => 'remove_bonuses' },
+              { 'type' => 'remove_ferries' },
               { 'type' => 'remove_reservations' },
             ],
           },
@@ -209,6 +224,7 @@ module Engine
 
           @last_action = nil
           @lowell_merchants_company_activated = false
+          @ferry_buy_keys = [] # [turn, round, corp id], one purchase per corporation per round
         end
 
         def ipo_name(_entity = nil)
@@ -239,6 +255,7 @@ module Engine
             G1833NE::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1833NE::Step::TrackAndToken,
+            G1833NE::Step::SpecialBuy,
             G1833NE::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -319,6 +336,30 @@ module Engine
             corporations.sort!
           end
         end
+
+        def event_remove_bonuses!; end
+
+        def event_remove_ferries!
+          FERRY_HEXES.each do |hex_id, info|
+            hex = hex_by_id(hex_id)
+            hex.tile.icons.reject! { |i| [info[:icon], ferry_token_name(hex_id)].include?(i.name) }
+            hex.remove_assignment!(NEW_FERRY_ICON)
+            hex.remove_assignment!(LAST_FERRY_ICON)
+          end
+
+          @corporations.each do |c|
+            FERRY_HEXES.each_key do |hex_id|
+              [ferry_key(hex_id), ferry_marker_key('new', hex_id), ferry_marker_key('last', hex_id)]
+                .each { |key| c.remove_assignment!(key) }
+            end
+          end
+
+          graph.clear
+          extension_graph.clear
+          @log << 'Ferries are removed'
+        end
+
+        def event_remove_reservations!; end
 
         def upgrade_cost(tile, hex, entity, spender)
           [self.class::TILE_COST, super].max
@@ -572,7 +613,8 @@ module Engine
         def revenue_for(route, stops)
           stops.sum { |stop| stop.route_revenue(route.phase, route.train) } +
             direct_connection_bonus(route, stops) +
-            interconnection_bonus(route, stops)
+            interconnection_bonus(route, stops) +
+            ferry_bonus(route, stops)
         end
 
         def revenue_stops(route)
@@ -589,7 +631,9 @@ module Engine
             range.include?(stop) ? stop.hex.name : "(#{stop.hex.name})"
           end.join('-')
 
-          entries = direct_bonus_entries(route, nil) + interconnection_bonus_entries(route, nil)
+          entries = direct_bonus_entries(route, nil) +
+                    interconnection_bonus_entries(route, nil) +
+                    ferry_bonus_entries(route, revenue_stops(route))
           return base if entries.empty?
 
           bonuses = entries.map { |label, value| "#{label} #{format_currency(value)}" }.join(', ')
@@ -676,6 +720,142 @@ module Engine
 
           []
         end
+
+        # ferry bonuses
+
+        FERRY_COST = 40
+        BOSTON_HEX = 'G22'
+        NEW_FERRY_ICON = 'new_ferry'
+        LAST_FERRY_ICON = 'last_ferry'
+        FERRY_NEW_BONUS = 20
+        FERRY_LAST_BONUS = 10
+
+        FERRY_HEXES = {
+          'C26' => { icon: 'new_haven_ferry', value: 20 },
+          'E26' => { icon: 'norwich_ferry', value: 20 },
+          'G26' => { icon: 'fall_river_ferry', value: 20 },
+          'F25' => { icon: 'providence_ferry', value: 10 },
+          'F27' => { icon: 'kingston_ferry', value: 20 },
+        }.freeze
+
+        ASSIGNMENT_TOKENS =
+          FERRY_HEXES.each_with_object({}) do |(hex_id, info), tokens|
+            tokens[hex_id] = "/icons/1833_ne/#{info[:icon]}_token.svg"
+            tokens["#{hex_id} "] = '/icons/1833_ne/new_ferry.svg'
+            tokens["#{hex_id}  "] = '/icons/1833_ne/last_ferry.svg'
+          end.merge(
+              NEW_FERRY_ICON => '/icons/1833_ne/new_ferry.svg',
+              LAST_FERRY_ICON => '/icons/1833_ne/last_ferry.svg',
+            ).freeze
+
+        def ferry_key(hex_id)
+          hex_id
+        end
+
+        def ferry_marker_key(kind, hex_id)
+          case kind
+          when 'new' then "#{hex_id} "
+          when 'last' then "#{hex_id}  "
+          end
+        end
+
+        def ferry_hexes
+          FERRY_HEXES.keys.map { |hex_id| hex_by_id(hex_id) }
+        end
+
+        def ferry_owned?(hex_id)
+          @corporations.any? { |c| c.assigned?(ferry_key(hex_id)) }
+        end
+
+        def ferry_available?(hex_id)
+          FERRY_HEXES.key?(hex_id) && !ferry_owned?(hex_id)
+        end
+
+        def ferries_remaining?
+          FERRY_HEXES.keys.any? { |hex_id| !ferry_owned?(hex_id) }
+        end
+
+        def ferry_buy_key(corporation)
+          [@turn, @round_num, corporation.id]
+        end
+
+        def reachable_hex_ids(corporation, graph_to_use)
+          graph_to_use.reachable_hexes(corporation).keys.map(&:id)
+        end
+
+        def can_buy_ferry?(entity, hex_id)
+          return false unless entity.corporation?
+          return false unless ferry_available?(hex_id)
+          return false if @ferry_buy_keys.include?(ferry_buy_key(entity))
+          return false unless buying_power(entity) >= FERRY_COST
+          return false unless reachable_hex_ids(entity, graph).include?(hex_id)
+
+          reachable_hex_ids(entity, extension_graph).include?(BOSTON_HEX)
+        end
+
+        def ferry_token_name(hex_id)
+          "#{FERRY_HEXES[hex_id][:icon]}_token"
+        end
+
+        def buy_ferry(entity, hex_id)
+          hex = hex_by_id(hex_id)
+          icon = hex.tile.icons.find { |i| i.name == FERRY_HEXES[hex_id][:icon] }
+          raise GameError, "Ferry icon #{FERRY_HEXES[hex_id][:icon]} not found on #{hex_id}" unless icon
+
+          entity.spend(FERRY_COST, @bank)
+          @log << "#{entity.name} buys the #{hex.location_name} ferry token for #{format_currency(FERRY_COST)}"
+
+          hex.tile.icons.delete(icon)
+          token = ferry_token_name(hex_id)
+          hex.tile.icons << Engine::Part::Icon.new("1833_ne/#{token}", token, true)
+
+          Assignable.remove_from_all!(ferry_hexes, NEW_FERRY_ICON)
+          clear_new_marker_keys
+          hex.assign!(NEW_FERRY_ICON)
+          entity.assign!(ferry_marker_key('new', hex_id))
+          entity.assign!(ferry_key(hex_id))
+
+          graph.clear
+          extension_graph.clear
+          @ferry_buy_keys << ferry_buy_key(entity)
+          @log << "#{entity.name} buys the last ferry and gets the New ferry bonus this round" unless ferries_remaining?
+        end
+
+        def clear_new_marker_keys
+          @corporations.each do |c|
+            FERRY_HEXES.each_key { |id| c.remove_assignment!(ferry_marker_key('new', id)) }
+          end
+        end
+
+        def ferry_bonus_entries(route, stops)
+          owned = stops.map(&:hex).select do |hex|
+            FERRY_HEXES.key?(hex.id) && route.corporation.assigned?(ferry_key(hex.id))
+          end
+
+          base = owned.map { |hex| ["#{hex.tile.location_name} ferry", FERRY_HEXES[hex.id][:value]] }
+          new_bonus = owned.select { |hex| hex.assigned?(NEW_FERRY_ICON) }.map { ['New ferry', FERRY_NEW_BONUS] }
+          last_bonus = owned.select { |hex| hex.assigned?(LAST_FERRY_ICON) }.map { ['Last ferry', FERRY_LAST_BONUS] }
+
+          base + new_bonus + last_bonus
+        end
+
+        def ferry_bonus(route, stops)
+          ferry_bonus_entries(route, stops).sum { |_label, value| value }
+        end
+
+        def flip_last_ferry_bonus!(corporation)
+          return if ferries_remaining?
+
+          hex = ferry_hexes.find { |h| h.assigned?(NEW_FERRY_ICON) }
+          return if !hex || !corporation.assigned?(ferry_key(hex.id))
+
+          hex.remove_assignment!(NEW_FERRY_ICON)
+          corporation.remove_assignment!(ferry_marker_key('new', hex.id))
+          hex.assign!(LAST_FERRY_ICON)
+          corporation.assign!(ferry_marker_key('last', hex.id))
+          @log << "#{corporation.name}'s last ferry bonus flips to its Last side"
+        end
+        # end of ferry code
 
         def takeover_game?
           @takeover_game ||= @optional_rules&.include?(:takeover_game)
