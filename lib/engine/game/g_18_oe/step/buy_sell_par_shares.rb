@@ -631,7 +631,7 @@ module Engine
             return false unless %i[major national].include?(corp.type)
             return false unless corp.president?(entity)
 
-            entity.common_percent_of(corp) >= 60
+            entity.common_percent_of(corp) >= @game.major_max_ownership_percent
           end
 
           def complete_conversion
