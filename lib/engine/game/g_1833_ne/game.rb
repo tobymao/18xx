@@ -256,6 +256,7 @@ module Engine
             G1846::Step::IssueShares,
             G1833NE::Step::TrackAndToken,
             G1833NE::Step::SpecialBuy,
+            G1833NE::Step::AssignLuxuryFerry,
             G1833NE::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -346,6 +347,8 @@ module Engine
             hex.remove_assignment!(NEW_FERRY_ICON)
             hex.remove_assignment!(LAST_FERRY_ICON)
           end
+
+          hex.remove_assignment!(luxury_ferry_service.id) if luxury_ferry_service
 
           @corporations.each do |c|
             FERRY_HEXES.each_key do |hex_id|
@@ -627,17 +630,16 @@ module Engine
           range = main_range(route, route.visited_stops)
           ordered = route.visited_stops
           ordered = ordered.reverse if range.any? && ordered.last == range.first
-          base = ordered.map do |stop|
+          text = ordered.map do |stop|
             range.include?(stop) ? stop.hex.name : "(#{stop.hex.name})"
           end.join('-')
 
-          entries = direct_bonus_entries(route, nil) +
-                    interconnection_bonus_entries(route, nil) +
-                    ferry_bonus_entries(route, revenue_stops(route))
-          return base if entries.empty?
+          bonuses = direct_bonus_entries(route, nil) + interconnection_bonus_entries(route, nil)
+          text += " (#{bonuses.map { |label, value| "#{label} #{format_currency(value)}" }.join(', ')})" unless bonuses.empty?
 
-          bonuses = entries.map { |label, value| "#{label} #{format_currency(value)}" }.join(', ')
-          "#{base} (#{bonuses})"
+          ferry_labels = ferry_bonus_entries(route, revenue_stops(route)).map(&:first)
+          text += "-#{ferry_labels.join('-')}" if ferry_labels.any?
+          text
         end
 
         def sellable_bundles(player, corporation)
@@ -744,9 +746,10 @@ module Engine
             tokens["#{hex_id} "] = '/icons/1833_ne/new_ferry.svg'
             tokens["#{hex_id}  "] = '/icons/1833_ne/last_ferry.svg'
           end.merge(
-              NEW_FERRY_ICON => '/icons/1833_ne/new_ferry.svg',
-              LAST_FERRY_ICON => '/icons/1833_ne/last_ferry.svg',
-            ).freeze
+            NEW_FERRY_ICON => '/icons/1833_ne/new_ferry.svg',
+            LAST_FERRY_ICON => '/icons/1833_ne/last_ferry.svg',
+            'P5' => '/icons/1833_ne/lux_ferry.svg',
+          ).freeze
 
         def ferry_key(hex_id)
           hex_id
@@ -827,16 +830,38 @@ module Engine
           end
         end
 
+        def luxury_ferry_assignable?(company, hex)
+          owner = company.owner
+          FERRY_HEXES.key?(hex.id) && owner&.corporation? && owner&.assigned?(ferry_key(hex.id))
+        end
+
+        def luxury_ferry_hex?(corporation, hex)
+          luxury = luxury_ferry_service
+          luxury && luxury.owner == corporation && hex.assigned?(luxury.id)
+        end
+
+        def ferry_hex_value(hex)
+          value = FERRY_HEXES[hex.id][:value]
+          value += FERRY_NEW_BONUS if hex.assigned?(NEW_FERRY_ICON)
+          value += FERRY_LAST_BONUS if hex.assigned?(LAST_FERRY_ICON)
+          value
+        end
+
         def ferry_bonus_entries(route, stops)
+          corporation = route.corporation
           owned = stops.map(&:hex).select do |hex|
-            FERRY_HEXES.key?(hex.id) && route.corporation.assigned?(ferry_key(hex.id))
+            FERRY_HEXES.key?(hex.id) && corporation.assigned?(ferry_key(hex.id))
           end
 
           base = owned.map { |hex| ["#{hex.tile.location_name} ferry", FERRY_HEXES[hex.id][:value]] }
           new_bonus = owned.select { |hex| hex.assigned?(NEW_FERRY_ICON) }.map { ['New ferry', FERRY_NEW_BONUS] }
           last_bonus = owned.select { |hex| hex.assigned?(LAST_FERRY_ICON) }.map { ['Last ferry', FERRY_LAST_BONUS] }
+          entries = base + new_bonus + last_bonus
 
-          base + new_bonus + last_bonus
+          doubled = owned.find { |hex| luxury_ferry_hex?(corporation, hex) }
+          return entries unless doubled
+
+          entries + [['Luxury Ferry Service', ferry_hex_value(doubled)]]
         end
 
         def ferry_bonus(route, stops)
@@ -895,6 +920,10 @@ module Engine
 
         def ogdensburg_rr_owner?(corporation)
           corporation == ogdensburg_rr.owner
+        end
+
+        def luxury_ferry_service
+          @luxury_ferry_service ||= company_by_id('P5')
         end
       end
     end

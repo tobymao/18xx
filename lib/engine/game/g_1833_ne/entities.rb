@@ -68,9 +68,24 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'Doubles the value of one ferry (and any bonuses). Cannot be reassigned.',
-            abilities: [], # todo
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[C26 E26 F25 F27 G26],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
             sym: 'P5',
           },
+
           {
             name: 'P6. Delaware & Hudson Railroad',
             value: 80,
