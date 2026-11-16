@@ -426,6 +426,7 @@ module Engine
         ORIENT_EXPRESS_BONUS = { '2' => 30, '3' => 30, '4' => 30, '5' => 60, '6' => 60, '7' => 100, '8' => 100 }.freeze
         CONVERSION_NEW_SHARES = 6
         MAJOR_MAX_OWNERSHIP_PERCENT = 60
+        TWO_PLAYER_MAX_OWNERSHIP_PERCENT = 70
         EXTENDED_FINAL_OPERATING_ROUNDS = 3
 
         def setup
@@ -977,8 +978,12 @@ module Engine
           train.sym.include?('_') ? train.sym.split('_').map { |id| train_by_id(id) } : [train]
         end
 
+        def major_max_ownership_percent
+          @players.size == 2 ? self.class::TWO_PLAYER_MAX_OWNERSHIP_PERCENT : self.class::MAJOR_MAX_OWNERSHIP_PERCENT
+        end
+
         def place_major_par_marker!(corporation)
-          corporation.max_ownership_percent = self.class::MAJOR_MAX_OWNERSHIP_PERCENT
+          corporation.max_ownership_percent = major_max_ownership_percent
           corporation.always_market_price = false
         end
 
