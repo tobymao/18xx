@@ -70,7 +70,8 @@ module View
 
         context 'with a city beside the double town' do
           let(:tile) do
-            Engine::Tile.from_code('XJ77', :green, 'city=revenue:20;double_town=revenue:10;path=a:0,b:_0;path=a:3,b:_1')
+            Engine::Tile.from_code('XJ77', :green, 'city=revenue:20;double_town=revenue:10;path=a:0,b:_0;path=a:3,b:_1',
+                                   revisitable_nodes: game.class::REVISITABLE_NODES)
           end
           let(:double_town) { tile.double_towns.first }
           let(:dot) do

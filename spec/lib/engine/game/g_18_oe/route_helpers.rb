@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'engine/auto_router'
 require_relative 'helpers'
 
 shared_context 'with 18OE route helpers' do
@@ -38,7 +39,8 @@ shared_context 'with 18OE route helpers' do
   end
 
   def lay_code!(hex_id, code)
-    game.hex_by_id(hex_id).lay(Engine::Tile.from_code("X#{hex_id}", :green, code))
+    game.hex_by_id(hex_id).lay(Engine::Tile.from_code("X#{hex_id}", :green, code,
+                                                      revisitable_nodes: game.class::REVISITABLE_NODES))
     game.graph.clear
   end
 
@@ -46,6 +48,10 @@ shared_context 'with 18OE route helpers' do
     rebuilt = Engine::Route.new(game, game.phase, route.train, routes: [], connection_hexes: route.connection_hexes)
     rebuilt.routes = [rebuilt]
     rebuilt
+  end
+
+  def auto_best(train)
+    Engine::AutoRouter.new(game).path([train], corp).first[train].first
   end
 
   def node_sequence(route)

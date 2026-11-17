@@ -191,7 +191,8 @@ describe 'G18OE Lille ferry passage (§11.2.2)' do
     let(:p27_code) { 'path=a:4,b:1' }
 
     def lay_code!(hex_id, code)
-      game.hex_by_id(hex_id).lay(Engine::Tile.from_code("X#{hex_id}", :yellow, code))
+      game.hex_by_id(hex_id).lay(Engine::Tile.from_code("X#{hex_id}", :yellow, code,
+                                                        revisitable_nodes: game.class::REVISITABLE_NODES))
     end
 
     before do
