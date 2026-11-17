@@ -389,6 +389,101 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#auto', **needs)).to include('Auto Actions')
     end
 
+    it 'renders Minor E track controls with only the blue-terrain point remaining' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        game = Engine::Game::G18OE::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 1, seed: 1)
+        entity = game.corporation_by_id('E')
+        entity.owner = game.players.first
+        game.bank.spend(120, entity)
+        game.minor_floated_regions['E'] = 'UK'
+        city = game.hex_by_id('J27').tile.cities.first
+        city.remove_all_reservations!
+        city.place_token(entity, entity.tokens.first, free: true)
+        round = Engine::Round::Operating.new(game, [Engine::Game::G18OE::Step::Track], round_num: 1)
+        round.entities = [entity]
+        round.instance_variable_set(:@current_operator, entity)
+        game.instance_variable_set(:@round, round)
+        step = round.steps.last
+        step.instance_variable_set(:@points_used, 3)
+        hex = game.hex_by_id('J29')
+        hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0;upgrade=cost:45,terrain:river'))
+        game.graph.clear
+        raise 'Eligible zero-point hex should keep Track active' unless step.auto_actions(entity).nil?
+        tile = step.upgradeable_tiles(entity, hex).first
+        selector = Lib::TileSelector.new(hex, tile, [0, 0], nil, entity, :map)
+        user = { 'id' => 1, 'name' => 'Player 1', 'settings' => { 'consent' => true } }
+        data = { 'id' => 1, 'title' => '18OE', 'actions' => [], 'loaded' => true,
+                 'status' => 'active', 'user' => user, 'players' => game.players.map { |p| { 'id' => p.id, 'name' => p.name } } }
+        html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1', tile_selector: selector)
+        hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0'))
+        game.graph.clear
+        auto_actions = step.auto_actions(entity)
+        unless auto_actions&.map { |action| [action.type, action.entity] } == [['pass', entity]]
+          raise 'Expected one automatic Pass for E when no zero-point candidate remains'
+        end
+        html
+      RUBY
+      html = subject.context(['18OE']).eval(Opal.compile(script))
+
+      expect(html).to include('Lay Track', '0 track points + 1 blue-terrain point (yellow lays only)',
+                              'Skip (Track)', '✔', '✖')
+      expect(html).not_to include('cannot be continued')
+    end
+
+    it 'renders Minor F track controls and independent E/F points on an acquiring major' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        game = Engine::Game::G18OE::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 1, seed: 1)
+        entity = game.corporation_by_id('F')
+        entity.owner = game.players.first
+        game.bank.spend(120, entity)
+        game.minor_floated_regions['F'] = 'UK'
+        city = game.hex_by_id('J27').tile.cities.first
+        city.remove_all_reservations!
+        city.place_token(entity, entity.tokens.first, free: true)
+        round = Engine::Round::Operating.new(game, [Engine::Game::G18OE::Step::Track], round_num: 1)
+        round.entities = [entity]
+        round.instance_variable_set(:@current_operator, entity)
+        game.instance_variable_set(:@round, round)
+        step = round.steps.last
+        step.instance_variable_set(:@points_used, 3)
+        hex = game.hex_by_id('J29')
+        hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0;upgrade=cost:45,terrain:mountain'))
+        game.graph.clear
+        raise 'Eligible green zero-point hex should keep Track active' unless step.auto_actions(entity).nil?
+        tile = step.upgradeable_tiles(entity, hex).first
+        selector = Lib::TileSelector.new(hex, tile, [0, 0], nil, entity, :map)
+        user = { 'id' => 1, 'name' => 'Player 1', 'settings' => { 'consent' => true } }
+        data = { 'id' => 1, 'title' => '18OE', 'actions' => [], 'loaded' => true,
+                 'status' => 'active', 'user' => user, 'players' => game.players.map { |p| { 'id' => p.id, 'name' => p.name } } }
+        minor_html = View::GamePage.html(game: game, game_data: data, user: user,
+                                        app_route: '/game/1', tile_selector: selector)
+        major = game.corporation_by_id('LNWR')
+        major.type = :major
+        major.owner = game.players.first
+        game.add_minor_charter!(game.corporation_by_id('E'), major)
+        game.add_minor_charter!(entity, major)
+        city.remove_tokens!
+        city.place_token(major, major.tokens.first, free: true)
+        game.graph.clear
+        round = Engine::Round::Operating.new(game, [Engine::Game::G18OE::Step::Track], round_num: 1)
+        round.entities = [major]
+        round.instance_variable_set(:@current_operator, major)
+        game.instance_variable_set(:@round, round)
+        round.steps.last.instance_variable_set(:@points_used, 6)
+        major_html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1')
+        [minor_html, major_html]
+      RUBY
+      minor_html, major_html = subject.context(['18OE']).eval(Opal.compile(script))
+
+      expect(minor_html).to include('Lay Track', '0 track points + 1 green-terrain point (yellow lays only)',
+                                    'Skip (Track)', '✔', '✖')
+      expect(major_html).to include('0 track points + 1 blue-terrain point + 1 green-terrain point (yellow lays only)',
+                                    'Skip (Track)')
+      expect(minor_html + major_html).not_to include('cannot be continued')
+    end
+
     def render_game_at_action(data, action_count, string, suffix = '')
       data['actions'] = data['actions'].take(action_count) if action_count
       data[:loaded] = true

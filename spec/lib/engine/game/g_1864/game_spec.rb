@@ -42,23 +42,23 @@ describe Engine::Game::G1864::Game do
     end
 
     it 'drops a minor once it is regionalized' do
-      n = game.corporation_by_id('N')
-      start!(n)
+      femv = game.corporation_by_id('FE&MV')
+      start!(femv)
 
-      expect(legend_minors).to include('N')
+      expect(legend_minors).to include('FE&MV')
 
-      game.nationalize!(n)
+      game.nationalize!(femv)
 
-      expect(legend_minors).not_to include('N')
+      expect(legend_minors).not_to include('FE&MV')
       expect(legend_minors.size).to eq(15)
     end
 
     it 'drops a minor once it merges or converts into a major' do
-      ro = game.corporation_by_id('RO')
-      start!(ro)
-      game.close_corporation(ro)
+      rfcc = game.corporation_by_id('RF&CC')
+      start!(rfcc)
+      game.close_corporation(rfcc)
 
-      expect(legend_minors).not_to include('RO')
+      expect(legend_minors).not_to include('RF&CC')
     end
   end
 
@@ -73,30 +73,52 @@ describe Engine::Game::G1864::Game do
     end
 
     it 'has the player starting the auction choose where the minor starts, before any other bid' do
-      n = game.corporation_by_id('N')
-      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: n, price: 100))
+      femv = game.corporation_by_id('FE&MV')
+      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: femv, price: 100))
 
       expect(game.active_step).to be_a(Engine::Game::G1867::Step::HomeToken)
       expect(game.round.active_entities).to eq([game.player_by_id('alice')])
       expect(game.round.pending_tokens.first[:hexes].map(&:id)).not_to include('F27')
 
       city = game.hex_by_id('G2').tile.cities.first
-      game.process_action(Engine::Action::PlaceToken.new(n, city: city, slot: 0))
+      game.process_action(Engine::Action::PlaceToken.new(femv, city: city, slot: 0))
 
       expect(game.exception).to be_nil
-      expect(city.tokened_by?(n)).to be(true)
+      expect(city.tokened_by?(femv)).to be(true)
     end
 
     it 'fills in the ability card legend Home column once a minor places its home station' do
-      n = game.corporation_by_id('N')
-      legend_home = -> { game.minor_ability_legend('black')[2..].find { |row| row[0][:text] == 'N' }[1][:text] }
+      femv = game.corporation_by_id('FE&MV')
+      legend_home = -> { game.minor_ability_legend('black')[2..].find { |row| row[0][:text] == 'FE&MV' }[1][:text] }
       expect(legend_home.call).to eq('')
 
-      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: n, price: 100))
-      game.process_action(Engine::Action::PlaceToken.new(n, city: game.hex_by_id('G2').tile.cities.first, slot: 0))
+      game.process_action(Engine::Action::Bid.new(game.player_by_id('alice'), corporation: femv, price: 100))
+      game.process_action(Engine::Action::PlaceToken.new(femv, city: game.hex_by_id('G2').tile.cities.first, slot: 0))
 
       expect(game.exception).to be_nil
       expect(legend_home.call).to eq('San Francisco')
+    end
+  end
+
+  describe 'Train Trade-in' do
+    let(:game) { described_class.new(players, seed: 1, optional_rules: [:train_trade_in]) }
+    let(:major) { (game.corporations + game.future_corporations).find { |c| c.type == :major } }
+
+    it 'lets a major at its train limit exchange a train in phase 8' do
+      game.phase.next! until game.phase.name == '8'
+      game.depot.upcoming.select { |t| t.name == '6' }.first(game.train_limit(major)).each do |train|
+        game.buy_train(major, train, :free)
+      end
+      major.owner = game.players.first
+      game.bank.spend(1200, major)
+      round = game.operating_round(1)
+      step = round.steps.find { |st| st.is_a?(Engine::Game::G1864::Step::BuyTrain) }
+      allow(step).to receive(:current_entity).and_return(major)
+      old_train, new_train, _, price = game.discountable_trains_for(major).find { |_, t, _, _| t.name == '5+5E' }
+
+      step.process_buy_train(Engine::Action::BuyTrain.new(major, train: new_train, price: price, exchange: old_train))
+
+      expect(major.trains.map(&:name)).to eq(%w[6 5+5E])
     end
   end
 end

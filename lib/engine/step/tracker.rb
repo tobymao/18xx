@@ -326,13 +326,14 @@ module Engine
       def check_track_restrictions!(entity, old_tile, new_tile)
         return if @game.loading || !entity.operator?
 
-        graph = @game.graph_for_entity(entity)
-
         raise GameError, 'New track must override old one' if !@game.class::ALLOW_REMOVING_TOWNS &&
             old_tile.city_towns.any? do |old_city|
               new_tile.city_towns.none? { |new_city| (old_city.exits - new_city.exits).empty? }
             end
 
+        return if @game.class::TRACK_RESTRICTION == :permissive # permissive track doesn't need to check everything below
+
+        graph = @game.graph_for_entity(entity)
         old_paths = old_tile.paths
         changed_city = false
         used_new_track = old_paths.empty?
@@ -348,8 +349,6 @@ module Engine
         end
 
         case @game.class::TRACK_RESTRICTION
-        when :permissive
-          true
         when :city_permissive
           raise GameError, 'Must be city tile or use new track' if new_tile.cities.none? && !used_new_track
         when :restrictive

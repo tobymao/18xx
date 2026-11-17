@@ -10,9 +10,9 @@ module Engine
           def ipo_type(entity)
             return 'No home token locations are available' if entity.type == :major && @game.home_token_locations(entity).empty?
 
-            nikolaev = @game.corporation_by_id('N')
-            if entity.type == :minor && entity.id != 'N' && !(nikolaev.ipoed || nikolaev.closed?)
-              return 'Nikolaev must be the first corporation'
+            first_minor = @game.first_minor
+            if entity.type == :minor && entity != first_minor && !(first_minor.ipoed || first_minor.closed?)
+              return "#{first_minor.full_name} must be the first corporation"
             end
 
             super

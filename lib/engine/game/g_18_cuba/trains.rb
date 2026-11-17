@@ -24,6 +24,10 @@ module Engine
           !wagon?(train) && !NON_WAGON_TRAINS.include?(train.name) && train.track_type == :broad
         end
 
+        def plus_train?(train)
+          train.name.end_with?('+')
+        end
+
         def num_wagons(entity)
           entity.trains.count { |t| wagon?(t) }
         end

@@ -730,6 +730,17 @@ module Engine
           entity.player? && entity.companies.any? { |c| zoo_ticket?(c) }
         end
 
+        def company_by_id(id)
+          super || zoo_ticket_by_player_name(id)
+        end
+
+        def zoo_ticket_by_player_name(id)
+          return unless (match = id.to_s.match(/^ZOOTicket (\d+) - (.+)$/))
+          return unless (player = @players.find { |p| p.name == match[2] })
+
+          @_companies["ZOOTicket #{match[1]} - #{player.id}"]
+        end
+
         def check_distance(route, visits)
           name = route.train.name
           check_town = %w[4J 2J].include?(name)
@@ -1152,7 +1163,7 @@ module Engine
           num_ticket_zoo = players.size == 5 ? 2 : 3
           players.each do |player|
             (1..num_ticket_zoo).each do |i|
-              ticket = Company.new(sym: "ZOOTicket #{i} - #{player.name}",
+              ticket = Company.new(sym: "ZOOTicket #{i} - #{player.id}",
                                    name: "ZOOTicket #{i}",
                                    value: 4,
                                    desc: 'Exchange it for money')

@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require_relative 'helpers'
 
 module Engine
   module Game
     module G18Cuba
       describe Game do
+        include G18CubaSpecHelpers
+
         let(:players) { %w[a b c] }
         let(:game) { Engine::Game::G18Cuba::Game.new(players) }
 
@@ -48,10 +51,347 @@ module Engine
           end
         end
 
+        describe 'FC share price' do
+          it 'starts at 50 on the first market space' do
+            expect(game.fc.share_price.price).to eq(50)
+            expect(game.stock_market.market.first.first.corporations).to include(game.fc)
+          end
+        end
+
+        describe 'FC operating turn' do
+          it 'operates last without floating and without asking for an action' do
+            ms = game.corporation_by_id('MS')
+            float_major!(ms)
+            expect(game.fc.floated?).to be(false)
+            expect(game.operating_order.last).to eq(game.fc)
+
+            act(Action::Pass) until game.round.is_a?(Engine::Round::Operating)
+            act(Action::Pass) until game.round.active_step.is_a?(G18Cuba::Step::BuyTrain)
+            train = game.round.active_step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
+            act(Action::BuyTrain, train: train, price: train.price)
+            or_key = [game.turn, game.round.round_num]
+            fc_revenue = game.fc_revenue
+            bank_cash = game.bank.cash
+            act(Action::Pass) while game.round.is_a?(Engine::Round::Operating) && game.current_entity != game.fc
+
+            expect(game.round).to be_a(Engine::Round::Stock)
+            expect(game.fc.operating_history).not_to be_empty
+            expect(game.fc.operating_history[or_key].revenue).to eq(fc_revenue)
+            expect(game.bank.cash).to eq(bank_cash)
+            expect(game.fc.share_price.price).to eq(55)
+            expect(game.log.map(&:message)).not_to include(a_string_matching(/\AFC .*skips/))
+          end
+        end
+
+        describe 'FC shares' do
+          let(:ms) { game.corporation_by_id('MS') }
+          let(:fc) { game.fc }
+
+          def buy_fc_shares(count)
+            count.times { act(Action::BuyShares, shares: fc.ipo_shares.first, share_price: fc.share_price.price) }
+          end
+
+          def play_until
+            until yield
+              step = game.round.active_step
+              actions = step.actions(game.current_entity)
+              if actions.include?('buy_train') && ms.trains.empty?
+                train = step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
+                act(Action::BuyTrain, train: train, price: train.price)
+              elsif actions.include?('run_routes')
+                act(Action::RunRoutes, routes: [])
+              else
+                act(Action::Pass)
+              end
+            end
+          end
+
+          def on_turn(entity, klass, **args)
+            play_until { game.current_entity == entity }
+            act(klass, entity, **args)
+          end
+
+          def fc_dividend
+            or_key = nil
+            play_until { (or_key ||= game.round.operating? && [game.turn, game.round.round_num]) && fc.operating_history[or_key] }
+            fc.operating_history[or_key].revenue
+          end
+
+          before do
+            float_major!(ms)
+          end
+
+          it 'sells IPO shares for the bank, without float, president, double listing or sold-out bump' do
+            bank_cash = game.bank.cash
+            buy_fc_shares(10)
+
+            expect(game.bank.cash).to eq(bank_cash + 500)
+            expect([fc.cash, fc.owner]).to eq([0, nil])
+            expect(game.log.map(&:message)).not_to include(a_string_matching(/president of FC|FC floats/))
+            expect(game.operating_order.count(fc)).to eq(1)
+            expect(game.operating_order.last).to eq(fc)
+            play_until { game.round.operating? }
+            expect([game.sold_out?(fc), fc.share_price.price]).to eq([true, 50])
+          end
+
+          it 'moves a sold-out FC one space straight to the right when it pays' do
+            buy_fc_shares(10)
+            fc_dividend
+
+            expect(fc.share_price.price).to eq(60)
+          end
+
+          it 'pays 10% per share, lets the sole holder sell share 0 at an unchanged price and pays nothing for it in the pool' do
+            holder = game.current_entity
+            buy_fc_shares(1)
+            holder_cash = holder.cash
+            revenue = fc_dividend
+            expect(revenue).to be_positive
+            expect(holder.cash).to eq(holder_cash + (revenue * holder.percent_of(fc) / 100))
+
+            price = fc.share_price
+            expect(game.value_for_dumpable(holder, fc)).to eq(price.price)
+            on_turn(holder, Action::SellShares, shares: holder.shares_of(fc), share_price: price.price, percent: 10)
+            expect([fc.share_price, fc.owner, game.share_pool.shares_of(fc).map(&:index)]).to eq([price, nil, [0]])
+
+            bank_cash = game.bank.cash
+            fc_dividend
+            expect([fc.cash, game.bank.cash]).to eq([0, bank_cash])
+          end
+
+          it 'keeps the FC without president when share 0 is sold next to another holder' do
+            holder = game.current_entity
+            buy_fc_shares(2)
+            play_until { game.turn == 2 && game.round.stock? }
+            price = fc.share_price
+            on_turn(holder, Action::SellShares, shares: holder.shares_of(fc), share_price: price.price, percent: 10)
+
+            expect([fc.share_price, fc.owner]).to eq([price, nil])
+            expect(game.log.map(&:message)).not_to include(a_string_matching(/president of FC/))
+          end
+
+          it 'lets a major president in emergency sell share 0 of the FC' do
+            president = ms.owner
+            major = game.corporations.find { |c| c != ms && c.type == :major && game.can_par?(c, president) }
+            on_turn(president, Action::BuyShares, shares: fc.ipo_shares.first, share_price: fc.share_price.price)
+            on_turn(president, Action::Par, corporation: major, share_price: game.stock_market.par_prices.max_by(&:price))
+            on_turn(president, Action::BuyShares, shares: major.ipo_shares.first, share_price: 100) while president.cash >= 100
+            game.export_train_to_fc! until top_broad_train.name == '8+'
+            play_until { game.round.active_step.is_a?(G18Cuba::Step::BuyTrain) }
+
+            act(Action::SellShares, president, shares: president.shares_of(fc), share_price: fc.share_price.price, percent: 10)
+            expect(game.share_pool.shares_of(fc).map(&:index)).to eq([0])
+          end
+        end
+
         describe '#crowded_corps' do
           it 'never includes the FC (no train limit, never discards)' do
             # the FC holds its preprinted train and its train limit is 0 — flagged without the exemption
             expect(game.crowded_corps).not_to include(game.fc)
+          end
+        end
+
+        describe 'FC station markers' do
+          let(:ms) { game.corporation_by_id('MS') }
+
+          def advance
+            step = game.round.active_step
+            actions = step.actions(game.current_entity)
+            if actions.include?('buy_train') && ms.trains.empty?
+              train = step.buyable_trains(ms).find { |t| t.track_type == :broad && !game.wagon?(t) }
+              act(Action::BuyTrain, train: train, price: train.price)
+            elsif actions.include?('run_routes')
+              act(Action::RunRoutes, routes: [])
+            elsif actions.include?('dividend')
+              act(Action::Dividend, kind: 'withhold')
+            else
+              act(Action::Pass)
+            end
+          end
+
+          def lay(hex_id, color, exit = nil)
+            advance until game.current_entity == ms && game.round.active_step.is_a?(G18Cuba::Step::Track)
+            step = game.round.active_step
+            hex = game.hex_by_id(hex_id)
+            tile, rotation = step.potential_tiles(ms, hex).select { |t| t.color == color }
+                                 .flat_map { |t| step.legal_tile_rotations(ms, hex, t).map { |r| [t, r] } }
+                                 .find { |t, r| exit.nil? || t.rotate!(r).exits.include?(exit) }
+            act(Action::LayTile, tile: tile, hex: hex, rotation: rotation)
+          end
+
+          it 'places the first FC marker in Havana city 1 at setup and keeps seven unplaced' do
+            havana = game.hex_by_id('B7').tile.cities
+            expect(havana.last.tokens.compact.map(&:corporation)).to eq([game.fc])
+            expect(havana.first.tokened_by?(game.fc)).to be(false)
+            expect(game.fc.tokens.size).to eq(8)
+            expect(game.fc.tokens.count { |t| !t.used }).to eq(7)
+          end
+
+          it 'places an FC marker on green FC hexes only, not on yellow or outside FC hexes' do
+            float_major!(ms)
+            game.export_train_to_fc! while game.phase.name == '2'
+
+            lay('B9', :yellow, 4)
+            lay('B11', :yellow, 5)
+            expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7])
+            lay('B11', :green)
+            expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7 B11])
+            expect(game.hex_by_id('B11').tile.icons.map(&:name)).not_to include('FC')
+            expect(game.hex_by_id('B9').tile.icons.map(&:name)).to include('FC')
+            lay('C12', :yellow, 5)
+            lay('D13', :yellow)
+            lay('D13', :green)
+            expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7 B11])
+            expect(game.fc.tokens.count { |t| !t.used }).to eq(6)
+          end
+
+          it 'sums the FC best city revenues up to the reach of its top train' do
+            float_major!(ms)
+            game.phase.next!
+
+            lay('B9', :yellow)
+            lay('B9', :green)
+            expect(game.fc.tokens.filter_map { |t| t.hex&.id }).to match_array(%w[B7 B9])
+            expect(game.fc_city_revenue).to eq(30)
+
+            game.export_train_to_fc!
+            expect(game.fc_city_revenue).to eq(60)
+          end
+
+          describe 'FC station rent' do
+            let(:cvc) { game.corporation_by_id('CVC') }
+
+            def city(hex_id)
+              game.hex_by_id(hex_id).tile.cities.first
+            end
+
+            def place_cvc(hex_id)
+              city(hex_id).place_token(cvc, cvc.next_token, free: true)
+            end
+
+            def route(train, *hex_ids)
+              route = Engine::Route.new(game, game.phase, train, routes: [])
+              route.routes = [route]
+              hex_ids.each { |hex_id| route.touch_node(city(hex_id)) }
+              route
+            end
+
+            def advance_to_route_step
+              advance until game.current_entity == ms && game.round.active_step.is_a?(G18Cuba::Step::Route)
+            end
+
+            before do
+              float_major!(ms)
+              game.export_train_to_fc! while game.phase.name == '2'
+              lay('B9', :yellow, 4)
+              lay('B11', :yellow, 5)
+              lay('C12', :yellow, 4)
+              lay('C14', :yellow, 5)
+              lay('D15', :yellow)
+            end
+
+            context 'with the FC station B11 full' do
+              let(:train) { ms.trains.first }
+
+              before do
+                place_cvc('B11')
+                lay('B11', :green)
+                advance_to_route_step
+              end
+
+              it 'lets a plus train run through it and counts its revenue' do
+                train.variant = '3+'
+                plus_route = route(train, 'B9', 'B11', 'C14')
+                expect(plus_route.visited_stops[1..-2]).to eq([city('B11')])
+
+                cash = ms.cash
+                act(Action::RunRoutes, routes: [plus_route])
+                expect(game.round.routes).to eq([plus_route])
+                expect(plus_route.stops).to include(city('B11'))
+                expect(plus_route.revenue).to eq(70)
+                expect(ms.cash).to eq(cash)
+                expect(game.fc_rent_revenue).to eq(0)
+              end
+
+              it 'charges a train without plus 20 to run through it' do
+                cash = ms.cash
+                bank_cash = game.bank.cash
+                act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')])
+
+                expect(ms.cash).to eq(cash - 20)
+                expect(game.bank.cash).to eq(bank_cash + 20)
+                expect(game.fc_rent_revenue).to eq(10)
+                expect(game.log.map(&:message)).to include('MS pays $20 FC station rent')
+              end
+
+              it 'offers the hex behind it in the route step to any major train' do
+                step = game.round.active_step
+                expect(step.available_hex(ms, game.hex_by_id('C14'))).to be_truthy
+              end
+
+              it 'rejects the run when the treasury cannot pay the rent' do
+                ms.spend(ms.cash - 10, game.bank)
+
+                expect { act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')]) }
+                  .to raise_error(GameError, 'Cannot afford the FC station rent')
+                expect(ms.cash).to eq(10)
+              end
+
+              it 'adds the rent to the FC payout of the same OR and starts the next OR at 0' do
+                fc = game.fc
+                or_key = [game.turn, game.round.round_num]
+                act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')])
+                fc_revenue = game.fc_city_revenue + game.unshipped_cubes_revenue + 10
+                advance until fc.operating_history[or_key]
+
+                expect(fc.operating_history[or_key].revenue).to eq(fc_revenue)
+                expect(game.log.map(&:message)).to include(a_string_matching(/from station rent/))
+                expect(game.round).to be_a(Engine::Round::Stock)
+                expect(game.fc_rent_revenue).to eq(0)
+              end
+            end
+
+            it 'charges two trains through the same FC station twice' do
+              place_cvc('B11')
+              lay('B11', :green, 0)
+              lay('B9', :green, 5)
+              lay('C10', :yellow, 3)
+              advance_to_route_step
+              first = route(ms.trains.first, 'B9', 'B11', 'C14')
+              second = Engine::Route.new(game, game.phase, give_train(ms, '4'), routes: [])
+              first.routes = second.routes = [first, second]
+              %w[B9 B11 A12].each { |hex_id| second.touch_node(game.hex_by_id(hex_id).tile.nodes.first) }
+              cash = ms.cash
+
+              act(Action::RunRoutes, routes: [first, second])
+              expect(second.ordered_hexes.map(&:id)).to eq(%w[A12 B11 C10 B9])
+              expect(ms.cash).to eq(cash - 40)
+              expect(game.fc_rent_revenue).to eq(20)
+            end
+
+            it 'keeps a plus train blocked by a city full of other majors only' do
+              advance_to_route_step
+              place_cvc('B11')
+              train = ms.trains.first
+              train.variant = '3+'
+
+              expect { act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14')]) }
+                .to raise_error(GameError, 'Route is not connected')
+            end
+
+            it 'charges a plus train 20 from the second FC station on' do
+              place_cvc('C14')
+              lay('C14', :green)
+              place_cvc('B11')
+              lay('B11', :green)
+              advance_to_route_step
+              train = give_train(ms, '4')
+              train.variant = '4+'
+              cash = ms.cash
+
+              act(Action::RunRoutes, routes: [route(train, 'B9', 'B11', 'C14', 'D15')])
+              expect(ms.cash).to eq(cash - 20)
+            end
           end
         end
       end

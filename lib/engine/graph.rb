@@ -142,7 +142,19 @@ module Engine
       end
     end
 
-    # Called from #compute when @home_is_token is true.
+    def extra_root_hexes(corporation)
+      return {} if !@home_as_token || !corporation.coordinates
+
+      home_hexes(corporation)
+    end
+
+    def extra_root_nodes(corporation)
+      return {} if !@home_as_token || !corporation.coordinates
+
+      home_hex_nodes(corporation)
+    end
+
+    # Called from #extra_root_hexes when @home_as_token is true.
     # Returns a hash whose keys are the Engine::Hex objects for each hex in the
     # entity's coordinates list. The values are hashes with keys that are the
     # edge numbers of all adjacent hexes and values of +true+.
@@ -155,7 +167,7 @@ module Engine
       home_hexes
     end
 
-    # Called from #compute when @home_is_token is true.
+    # Called from #extra_root_nodes when @home_as_token is true.
     # Returns a hash whose keys are the nodes (either Engine::Part::City or
     # Engine::Part::Town objects) for nodes in the hexes that are in the
     # entity's coordinates list. The value for each item is +true+.
@@ -211,10 +223,8 @@ module Engine
         end
       end
 
-      if @home_as_token && corporation.coordinates
-        hexes.merge!(home_hexes(corporation))
-        nodes.merge!(home_hex_nodes(corporation))
-      end
+      hexes.merge!(extra_root_hexes(corporation)) { |_, a, b| a.merge(b) }
+      nodes.merge!(extra_root_nodes(corporation))
 
       tokens = nodes.dup
 
@@ -261,9 +271,9 @@ module Engine
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
-        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
-                  skip_paths: skip_paths, converging_path: false, walk_calls: @walk_calls[corporation],
-                  backtracking: @backtracking, pruner: pruner) do |path, _, _|
+        walk_token(node, visited: visited, corporation: walk_corporation, skip_track: @skip_track,
+                         skip_paths: skip_paths, converging_path: false, walk_calls: @walk_calls[corporation],
+                         backtracking: @backtracking, pruner: pruner) do |path, _, _|
           next if paths[path]
 
           paths[path] = true
@@ -327,6 +337,10 @@ module Engine
         "    Graph computed with #{walk_calls(corporation)[:not_skipped]} "\
           "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
       end
+    end
+
+    def walk_token(node, links: false, **opts, &block)
+      node.walk(**opts, &block)
     end
 
     class Pruner

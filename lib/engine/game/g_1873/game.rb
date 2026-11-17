@@ -1677,7 +1677,7 @@ module Engine
         def check_connected(route, corporation)
           # special case: don't check on concession route(s)
           con_route = @corporation_info[train_owner(route.train)][:concession_routes].any? do |c_r|
-            (route.connection_hexes.flatten & c_r).size == c_r.size
+            (route.connection_hex_ids & c_r).size == c_r.size
           end
 
           super unless con_route
@@ -1860,7 +1860,7 @@ module Engine
 
           @corporation_info[entity][:concession_routes].all? do |con_route|
             routes.any? do |r|
-              ((route_hexes = r.connection_hexes.flatten.uniq) & con_route).size == con_route.size &&
+              ((route_hexes = r.connection_hex_ids.uniq) & con_route).size == con_route.size &&
                 route_hexes.size == con_route.size
             end
           end
@@ -1871,7 +1871,7 @@ module Engine
           return false unless @corporation_info[corporation][:concession_routes]
           return false unless route
 
-          route_hexes = route.connection_hexes.flatten.uniq
+          route_hexes = route.connection_hex_ids.uniq
 
           @corporation_info[corporation][:concession_routes].any? do |con_route|
             (route_hexes & con_route).size == con_route.size && route_hexes.size == con_route.size

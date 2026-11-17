@@ -39,7 +39,7 @@ module Engine
           end
 
           def process_run_routes(action)
-            hexes = action.routes[0].connection_hexes.flatten.uniq.map { |h| @game.hex_by_id(h) }
+            hexes = action.routes[0].connection_hex_ids.uniq.map { |h| @game.hex_by_id(h) }
             hexes_to_flip = hexes.select { |h| h.tile.paths.any? { |p| p.track != @game.final_gauge } }
             target_track = @game.final_gauge == :broad ? 'Southern' : 'Standard'
             raise GameError, "No tiles with #{target_track} Track submitted" if hexes_to_flip.empty?

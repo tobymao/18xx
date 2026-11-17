@@ -469,5 +469,38 @@ module Engine
         expect(game.timeline).not_to include(/NEARBY FAMILY/)
       end
     end
+
+    describe 'ZOOTickets' do
+      let(:players) { { 1 => 'Alice', 2 => 'Bob', 3 => 'Carol' } }
+      let(:game) { Engine::Game::G18ZOOMapA::Game.new(players) }
+
+      before do
+        3.times { game.process_action(Action::Pass.new(game.current_entity)) }
+      end
+
+      def sell_ticket(ticket_id)
+        game.process_action({
+                              'type' => 'choose_ability',
+                              'entity' => ticket_id,
+                              'entity_type' => 'company',
+                              'choice' => { 'type' => 'sell' },
+                            })
+      end
+
+      it 'still finds a ticket after its owner renames' do
+        sell_ticket(game.player_by_id(1).companies.first.id)
+        renamed = Engine::Game::G18ZOOMapA::Game.new(players.merge(1 => 'Alicia'), actions: game.raw_actions)
+
+        expect(renamed.exception).to be_nil
+        expect(renamed.player_by_id(1).companies.count { |c| renamed.zoo_ticket?(c) }).to eq(2)
+      end
+
+      it 'finds a ticket by its owner name' do
+        sell_ticket('ZOOTicket 1 - Alice')
+
+        expect(game.exception).to be_nil
+        expect(game.player_by_id(1).companies.map(&:name)).to eq(['ZOOTicket 2', 'ZOOTicket 3'])
+      end
+    end
   end
 end

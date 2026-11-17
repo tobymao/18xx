@@ -24,7 +24,7 @@ describe 'G1864 UP share purchase' do
 
   it 'offers a share to the owner of a regionalized minor' do
     alice = game.players.first
-    minor = start_minor!(game, game.corporation_by_id('N'), alice)
+    minor = start_minor!(game, game.corporation_by_id('FE&MV'), alice)
 
     game.nationalize!(minor)
 
@@ -49,7 +49,7 @@ describe 'G1864 UP share purchase' do
 
   it 'buys a share for the bank at the UP price, leaving the UP without cash' do
     alice = game.players.first
-    game.nationalize!(start_minor!(game, game.corporation_by_id('N'), alice))
+    game.nationalize!(start_minor!(game, game.corporation_by_id('FE&MV'), alice))
     cash_before = alice.cash
     bank_before = game.bank.cash
 
@@ -93,7 +93,7 @@ describe 'G1864 UP share purchase' do
 
   it 'finishes one minor\'s regionalization before regionalizing the next' do
     alice, bob = game.players
-    first = start_minor!(game, game.corporation_by_id('N'), alice)
+    first = start_minor!(game, game.corporation_by_id('FE&MV'), alice)
     second = start_minor!(game, game.corporations.find { |c| c.type == :minor && c != first }, bob)
     bob_cash = bob.cash
 
@@ -113,7 +113,7 @@ describe 'G1864 UP share purchase' do
 
   it 'regionalizes every queued minor when the IPO is empty' do
     alice, bob = game.players
-    first = start_minor!(game, game.corporation_by_id('N'), alice)
+    first = start_minor!(game, game.corporation_by_id('FE&MV'), alice)
     second = start_minor!(game, game.corporations.find { |c| c.type == :minor && c != first }, bob)
     game.nationalize!(first)
     game.nationalize!(second)
@@ -127,7 +127,7 @@ describe 'G1864 UP share purchase' do
 
   it 'rejects a purchase by a player who is not next in line' do
     alice, bob = game.players
-    game.nationalize!(start_minor!(game, game.corporation_by_id('N'), alice))
+    game.nationalize!(start_minor!(game, game.corporation_by_id('FE&MV'), alice))
 
     expect { step.process_choose(Engine::Action::Choose.new(bob, choice: '1')) }
       .to raise_error(Engine::GameError)
@@ -135,7 +135,7 @@ describe 'G1864 UP share purchase' do
 
   it 'does not offer the purchase when it would exceed the certificate limit' do
     alice = game.players.first
-    game.nationalize!(start_minor!(game, game.corporation_by_id('N'), alice))
+    game.nationalize!(start_minor!(game, game.corporation_by_id('FE&MV'), alice))
     allow(game).to receive(:num_certs).with(alice).and_return(game.cert_limit(alice))
 
     expect(step.choices.keys).to eq(%w[pass])
@@ -159,7 +159,7 @@ describe 'G1864 UP share purchase' do
 
   it 'releases the reservation on UP shares bought after regionalization' do
     alice = game.players.first
-    game.nationalize!(start_minor!(game, game.corporation_by_id('N'), alice))
+    game.nationalize!(start_minor!(game, game.corporation_by_id('FE&MV'), alice))
 
     step.process_choose(Engine::Action::Choose.new(alice, choice: '1'))
 

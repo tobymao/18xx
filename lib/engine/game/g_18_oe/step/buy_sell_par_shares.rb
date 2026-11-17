@@ -1,13 +1,22 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_sell_par_shares'
+require_relative '../../../action/buy_corporation'
 require_relative '../../../action/convert'
+require_relative '../../../action/choose'
+require_relative '../../../action/skip'
 
 module Engine
   module Game
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
+          PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose, Action::BuyCorporation]
+
+          def round_state
+            super.merge(merge_minor: nil, merged_majors: [])
+          end
+
           def setup
             super
 
@@ -15,12 +24,13 @@ module Engine
             @converted = nil
 
             @sold = false
+            @private_action_used = false
           end
 
           def actions(entity)
             return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
-            return ['sell_shares'] if must_sell?(entity)
+            return must_sell_actions(entity) if must_sell?(entity) || must_reduce_privates?(entity)
             return converting_actions(entity) if @converting
             return converted_actions(entity) if @converted
 
@@ -28,9 +38,297 @@ module Engine
             actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
+            actions << 'buy_corporation' if can_buy_any_corporation?(entity)
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
+            actions << 'choose' if choose_available?(entity)
+            actions << 'pass' if !can_float_minor?(entity) && (!actions.empty? || can_convert_any?(entity))
+            actions << 'skip' if (actions.empty? || @game.loading) && needs_skip_action?(entity)
             actions
+          end
+
+          def purchasable_companies(player)
+            return [] unless can_trade?(player)
+
+            @game.purchasable_companies(player).reject { |company| @game.face_down_private?(company) }
+          end
+
+          def can_trade?(player)
+            @game.turn == 1 && @round.current_actions.empty? &&
+              @game.num_certs(player) < @game.cert_limit(player)
+          end
+
+          def can_buy_any_corporation?(player)
+            return false unless can_trade?(player)
+
+            merged = @game.merged_minors.values.flatten
+            @game.corporations.any? { |corporation| tradable_minor?(player, corporation, merged) }
+          end
+
+          def can_buy_corporation?(player, corporation)
+            can_trade?(player) && tradable_minor?(player, corporation, @game.merged_minors.values.flatten)
+          end
+
+          def price_range(player, _target)
+            [0, player.cash]
+          end
+
+          def validate_trade_price!(price, range)
+            min, max = range
+            return if price.is_a?(Integer) && price >= min && price <= max
+
+            raise GameError, "Price must be a whole amount from #{@game.format_currency(min)} " \
+                             "to #{@game.format_currency(max)}"
+          end
+
+          def process_buy_company(action)
+            company = action.company
+            seller = company.owner
+            player = action.entity
+
+            if seller == @game.bank
+              raise GameError, "Cannot buy #{company.name}" unless buyable_bank_owned_companies(player).include?(company)
+              if action.price != company.value
+                raise GameError, "#{company.name} must be bought for #{@game.format_currency(company.value)}"
+              end
+
+              return super
+            end
+
+            raise GameError, "Cannot buy #{company.name}" unless purchasable_companies(player).include?(company)
+
+            price = action.price
+            validate_trade_price!(price, price_range(player, company))
+
+            company.owner = player
+            seller.companies.delete(company)
+            player.companies << company
+            player.spend(price, seller) if price.positive?
+            track_action(action, company)
+            @log << "#{player.name} buys #{company.name} from #{seller.name} for #{@game.format_currency(price)}"
+            @game.after_buy_company(player, company, price)
+            pass!
+          end
+
+          def process_buy_corporation(action)
+            player = action.entity
+            corporation = action.corporation
+            raise GameError, "Cannot buy #{corporation&.name || 'that corporation'}" unless
+              can_buy_corporation?(player, corporation)
+
+            price = action.price
+            validate_trade_price!(price, price_range(player, corporation))
+
+            seller = corporation.owner
+            @log << "#{player.name} buys #{corporation.name} from #{seller.name} for #{@game.format_currency(price)}"
+            @game.share_pool.transfer_shares(
+              corporation.presidents_share.to_bundle, player,
+              spender: player, receiver: seller, price: price
+            )
+            track_action(action, corporation)
+            pass!
+          end
+
+          def tradable_minor?(player, corporation, merged)
+            return false unless corporation&.corporation?
+            return false if corporation.type != :minor || corporation.closed? || !corporation.floated?
+            return false if merged.include?(corporation)
+
+            seller = corporation.owner
+            return false unless seller&.player?
+
+            seller != player && corporation.presidents_share&.owner == seller
+          end
+
+          def must_sell_actions(entity)
+            actions = []
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'choose' if can_act_on_any_private?(entity)
+            actions
+          end
+
+          def must_reduce_privates?(entity)
+            return false unless over_certificate_limit?(entity)
+
+            entity.companies.any? { |company| can_act_on_private?(entity, company) && !@game.face_down_private?(company) }
+          end
+
+          def choose_available?(entity)
+            return can_act_on_any_private?(entity) unless non_private_choices_allowed?(entity)
+
+            can_merge_any?(entity) || can_remove_any_corporation?(entity) || can_reserve_any?(entity) ||
+              can_act_on_any_private?(entity)
+          end
+
+          def can_act_on_any_private?(player)
+            player.companies.any? { |company| can_act_on_private?(player, company) }
+          end
+
+          def can_act_on_private?(player, company)
+            return false if @game.face_down_private?(company)
+
+            @game.private_company?(company) && company.owner == player && player == current_entity &&
+              !@private_action_used && @round.current_actions.empty?
+          end
+
+          def auto_actions(entity)
+            return [Engine::Action::Skip.new(entity)] if skip_only_action?(entity)
+
+            super
+          end
+
+          def skip_only_action?(entity)
+            entity == current_entity && actions(entity) == ['skip']
+          end
+
+          def process_skip(action)
+            log_skip(action.entity)
+            pass!
+          end
+
+          def needs_skip_action?(player)
+            # Fully held majors can only merge a connected minor; skip avoids the graph check while loading.
+            @round.current_actions.empty? &&
+              @game.corporations.any? { |c| c.type == :major && c.president?(player) && !@game.merge_share(c) } &&
+              @game.corporations.any? { |c| c.type == :minor && c.owner == player }
+          end
+
+          def can_merge_any?(player)
+            @game.corporations.any? { |corporation| corporation.type == :minor && can_merge?(player, corporation) }
+          end
+
+          def over_certificate_limit?(player)
+            @game.num_certs(player) > @game.cert_limit(player)
+          end
+
+          def non_private_choices_allowed?(player)
+            !over_certificate_limit?(player)
+          end
+
+          def can_merge?(player, minor)
+            @round.current_actions.empty? && !@game.merge_targets(player, minor).empty?
+          end
+
+          def can_remove_any_corporation?(player)
+            @game.corporations.any? { |corporation| can_remove_corporation?(player, corporation) }
+          end
+
+          def can_remove_corporation?(_player, corporation)
+            @round.current_actions.empty? && @game.removable_regional?(corporation)
+          end
+
+          def can_reserve_any?(player)
+            @game.corporations.any? { |corporation| can_reserve?(player, corporation) }
+          end
+
+          def can_reserve?(player, corporation)
+            @game.can_reserve_regional?(player, corporation)
+          end
+
+          def pass_description
+            return super if @round.current_actions.empty?
+            return super unless (actions(current_entity) - %w[choose pass]).empty?
+
+            'Pass (Reserve Share)'
+          end
+
+          def choice_available?(entity)
+            (entity.corporation? || entity.company?) && !entity_choices(entity).empty?
+          end
+
+          def choice_companies(player)
+            return [] unless player.player?
+
+            @game.companies_sort(player.companies).select { |company| choice_available?(company) }
+          end
+
+          def choice_name
+            nil
+          end
+
+          def entity_choices(target)
+            return private_choices(target) if target.company?
+            return {} unless non_private_choices_allowed?(current_entity)
+
+            corporation = target
+            choices = {}
+            choices['remove'] = 'Remove from game' if can_remove_corporation?(current_entity, corporation)
+            choices['reserve'] = 'Reserve share' if can_reserve?(current_entity, corporation)
+            choices
+          end
+
+          def private_choices(company)
+            return {} unless can_act_on_private?(current_entity, company)
+
+            choices = { 'remove_private' => 'Remove from game' }
+            choices['flip_private'] = 'Flip face down' unless @game.face_down_private?(company)
+            choices
+          end
+
+          def process_choose(action)
+            return process_private_choice(action) if action.target&.company?
+            raise GameError, "Cannot choose #{action.choice} while above the certificate limit" unless
+              non_private_choices_allowed?(action.entity)
+
+            return remove_regional(action) if action.target && action.choice == 'remove'
+            return reserve_regional(action) if action.target && action.choice == 'reserve'
+
+            minor = @game.corporation_by_id(action.choice)
+            raise GameError, "Cannot merge #{action.choice}" if !minor || !can_merge?(action.entity, minor)
+
+            @round.merge_minor = minor
+            track_action(action, minor)
+          end
+
+          def process_private_choice(action)
+            player = action.entity
+            company = action.target
+            raise GameError, "Cannot #{action.choice} #{company.name}" unless private_choices(company).key?(action.choice)
+
+            if action.choice == 'flip_private'
+              @log << "#{player.name} turns #{company.name} face down"
+              @game.flip_private!(company)
+            else
+              @log << "#{player.name} removes #{company.name} from the game"
+              @game.remove_private!(company)
+            end
+            @private_action_used = true
+          end
+
+          def remove_regional(action)
+            regional = action.target
+            raise GameError, "Cannot remove #{regional.id}" unless can_remove_corporation?(action.entity, regional)
+
+            @log << "#{action.entity.name} removes #{regional.name} from the game"
+            @game.remove_regional!(regional)
+            track_action(action, regional)
+          end
+
+          def reserve_regional(action)
+            regional = action.target
+            player = action.entity
+            raise GameError, "Cannot reserve #{regional.name}" unless can_reserve?(player, regional)
+
+            @log << "#{player.name} reserves a share of #{regional.name}"
+            @game.reserve_share!(regional)
+          end
+
+          def reservation_prompt?(action)
+            return false unless @game.reserved_shares?
+            return false if @game.turn != 1 || @converting || @round.pending_share_buy
+
+            bundle = action.bundle
+            corporation = bundle.corporation
+            return false if corporation.type != :regional || bundle.presidents_share
+            return false if bundle.owner != corporation.ipo_owner || corporation.owner == action.entity
+
+            @game.can_reserve_regional?(corporation.owner, corporation)
+          end
+
+          def process_buy_shares(action)
+            return super unless reservation_prompt?(action)
+
+            check_legal_buy(action.entity, action.bundle, swap: action.swap)
+            @round.pending_share_buy = action
           end
 
           def corporation_actions(corporation)
@@ -40,12 +338,17 @@ module Engine
           end
 
           def can_buy_any_from_ipo?(entity)
-            return false unless @game.major_phase?
+            return super if @game.major_phase?
 
-            super
+            @game.corporations.any? do |corporation|
+              @game.parred_regional?(corporation) && can_buy?(entity, corporation.presidents_share.to_bundle)
+            end
           end
 
           def can_buy?(entity, bundle)
+            return false if treasury_share_off_sale?(bundle)
+            return false if reserved_for_another?(entity, bundle)
+
             # During conversion lock-in: only the new major's IPO is available.
             return false if @converted && bundle.corporation != @converted
 
@@ -78,7 +381,7 @@ module Engine
 
           def can_sell?(entity, bundle)
             return false unless bundle
-            return false if bundle.corporation.type == :regional
+            return false if %i[regional minor].include?(bundle.corporation.type)
             return false if bundle.corporation == @converted
 
             super
@@ -143,6 +446,7 @@ module Engine
             # Step 5: Promote to major (do this after price moves so move logic
             # doesn't see a half-converted corporation)
             corporation.type = :major
+            @game.place_major_par_marker!(corporation)
 
             # Step 6: Issue the 6 new 10% IPO shares.
             # add_new_share registers each share in @_shares immediately, keeping
@@ -172,6 +476,7 @@ module Engine
             corporation = action.corporation
             entity = action.entity
             company = find_minor_company(corporation)
+            raise GameError, "#{entity.name} does not own #{company.name}" unless company.owner == entity
 
             @log << "#{entity.name} floats #{company.sym}"
 
@@ -198,7 +503,8 @@ module Engine
           end
 
           def visible_corporations
-            @game.sorted_corporations.reject { |c| (c.type == :minor && c.ipoed) }
+            minors, others = @game.sorted_corporations.partition { |corporation| corporation.type == :minor }
+            others + minors
           end
 
           def process_sell_shares(action)
@@ -217,19 +523,20 @@ module Engine
               float_minor(action)
             else
               super
-              @game.regional_corps_floated += 1
             end
 
             @game.minor_regional_order << action.corporation
 
-            return unless @game.regional_corps_floated == @game.class::MAX_FLOATED_REGIONALS
+            close_unfloated_regionals_at_maximum!
+          end
 
-            corps = @game.corporations.dup
-            corps.each do |corp|
-              next if corp.ipoed || corp.type == :minor
+          def close_unfloated_regionals_at_maximum!
+            return unless @game.regionals_in_play >= @game.class::MAX_FLOATED_REGIONALS
 
-              @game.close_corporation(corp)
-            end
+            leftovers = @game.corporations.reject { |corp| corp.ipoed || corp.type == :minor }
+            return if leftovers.empty?
+
+            leftovers.each { |corp| @game.close_corporation(corp) }
 
             pass!
           end
@@ -240,10 +547,14 @@ module Engine
             when :minor
               prices
             when :regional
-              prices.select { |p| p.price * 2 <= available_cash(entity) }
+              affordable_regional_par_prices(entity)
             else
               super
             end
+          end
+
+          def affordable_regional_par_prices(entity)
+            @game.stock_market.par_prices.select { |price| price.price * 2 <= available_cash(entity) }
           end
 
           def check_legal_buy(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
@@ -257,14 +568,7 @@ module Engine
               return
             end
 
-            if @converted
-              # Clear current_actions before calling super so the base pass! logic
-              # sees an "empty turn" and calls entity.pass! (marking the player as
-              # done) rather than entity.unpass! (which would give them another
-              # full SR turn for having done Convert+BuyShares this turn).
-              @round.current_actions.clear
-              @converted = nil
-            end
+            @converted = nil
 
             super
           end
@@ -304,6 +608,22 @@ module Engine
             @round.current_actions.find { |x| x.is_a?(Action::BuyShares) }&.bundle&.corporation
           end
 
+          def reserved_for_another?(entity, bundle)
+            return false unless bundle
+
+            corporation = bundle.corporation
+            bundle.shares.include?(@game.reserved_share(corporation)) && entity != corporation.owner
+          end
+
+          def treasury_share_off_sale?(bundle)
+            return false if @game.major_phase? || !bundle
+
+            corporation = bundle.corporation
+            return false if bundle.owner != corporation.ipo_owner || !corporation.ipoed
+
+            !(@game.parred_regional?(corporation) && bundle.presidents_share && bundle.percent == corporation.presidents_percent)
+          end
+
           def president_pool_overcap_buy?(entity, bundle)
             return false unless bundle&.owner&.share_pool?
 
@@ -311,7 +631,7 @@ module Engine
             return false unless %i[major national].include?(corp.type)
             return false unless corp.president?(entity)
 
-            entity.common_percent_of(corp) >= 60
+            entity.common_percent_of(corp) >= @game.major_max_ownership_percent
           end
 
           def complete_conversion

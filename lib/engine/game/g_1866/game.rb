@@ -840,10 +840,10 @@ module Engine
 
         def check_distance(route, visits)
           entity = route.corporation
-          if national_corporation?(entity) && !visits_within_national_region?(entity, visits)
+          if national_corporation?(entity) && !route_within_national_region?(entity, route)
             raise GameError, 'Nationals can only run within its region'
           end
-          if corporation?(entity) && !visits_operating_rights?(entity, visits)
+          if corporation?(entity) && !route_operating_rights?(entity, route)
             raise GameError, 'The director need operating rights to operate in the selected regions'
           end
 
@@ -2280,19 +2280,12 @@ module Engine
           end
         end
 
-        def visits_operating_rights?(entity, visits)
-          nationals = operating_rights(entity)
-
-          count = visits.count do |v|
-            nationals.any? { |national| national_hexes(national).include?(v.hex.name) }
-          end
-
-          count == visits.size
+        def route_operating_rights?(entity, route)
+          route.all_hexes.all? { |hex| hex_operating_rights?(entity, hex) }
         end
 
-        def visits_within_national_region?(entity, visits)
-          hexes = national_hexes(entity.id)
-          visits.count { |v| hexes.include?(v.hex.name) } == visits.size
+        def route_within_national_region?(entity, route)
+          route.all_hexes.all? { |hex| hex_within_national_region?(entity, hex) }
         end
       end
     end

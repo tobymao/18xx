@@ -34,6 +34,7 @@ module Engine
 
           def may_purchase?(company)
             return false unless company
+            return true if @game.option_clemens?
 
             # in the vanilla draft a company can only be purchased if it is either in the top-most row or furthest to
             # the left in the second top-most row if the top-most row only has one company
@@ -80,6 +81,9 @@ module Engine
             player = action.entity
             price = action.price
 
+            raise GameError, "#{company.name} is not purchasable" unless may_purchase?(company)
+            raise GameError, "#{player.name} does not have enough money to buy #{company.name}" if price > player.cash
+
             assign_company(company, player)
             player.spend(price, @game.bank)
             remove_company(company)
@@ -96,7 +100,10 @@ module Engine
             float_minor(company, minor, player, price) if minor
 
             entities.each(&:unpass!)
-            @round.last_to_act = player
+
+            # In the rare case of no one buying anything in the first round taking place in proper player order in a
+            # Clemens variant game, the PD remains with the first player
+            @round.last_to_act = player unless @round.very_first_round_with_clemens?
             @round.next_entity!
           end
 
@@ -163,7 +170,10 @@ module Engine
             # allow president change for SX when LD is being sold, but for BY only if the BY director has been sold,
             # which might be during the current or any earlier action
             allow_president_change = share.president || !share.corporation.shares.first.president
+            corporation = share.corporation
+            floated = corporation.floated?
             @game.share_pool.transfer_shares(ShareBundle.new(share), player, allow_president_change: allow_president_change)
+            @game.float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
 
             @game.place_home_token(share.corporation) if share.corporation.floated?
           end

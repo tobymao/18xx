@@ -2196,7 +2196,7 @@ module Engine
         end
 
         def fort_bonuses(route)
-          forts = route.connection_hexes.flatten.uniq.count { |id| @forts[id] }
+          forts = route.connection_hex_ids.uniq.count { |id| @forts[id] }
 
           if forts.positive?
             revenue = forts * (route.corporation == trabing_bros.owner ? 20 : 10)

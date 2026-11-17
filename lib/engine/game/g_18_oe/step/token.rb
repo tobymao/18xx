@@ -1,27 +1,45 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/token'
+require_relative 'skip_abbreviated_round'
+require_relative 'track_rights_tokener'
 
 module Engine
   module Game
     module G18OE
       module Step
         class Token < Engine::Step::Token
-          def available_hex(entity, hex)
-            return nil unless @game.hex_within_national_region?(entity, hex)
+          include SkipAbbreviatedRound
+          include TrackRightsTokener
+
+          def actions(entity)
+            return [] if skip?
+            return ACTIONS if entity == current_entity && !@round.tokened && unconnected_token_ability?(entity)
 
             super
           end
 
-          def check_connected(entity, city, hex)
-            city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
-            unless @game.hex_within_national_region?(entity, hex)
-              raise GameError, "Cannot place token on #{hex.name} because it is outside #{entity.name}'s track rights zone"
-            end
+          def available_hex(entity, hex)
+            track_rights_available_hex(entity, hex)
+          end
 
-            return if @game.loading || @game.token_graph_for_entity(entity).connected_nodes(entity)[city]
+          def process_place_token(action)
+            action.cost = token_cost(action) unless @game.loading
+            action.token.price = action.cost
+            super
+          end
 
-            raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
+          private
+
+          def unconnected_token_ability?(entity)
+            return false unless entity.next_token
+
+            @game.abilities(entity, :token) { |ability| return true unless ability.connected }
+            false
+          end
+
+          def token_cost(action)
+            validated_token_cost(action, action.token.price + @game.cross_water_token_fee(action.entity, action.city))
           end
         end
       end

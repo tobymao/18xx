@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../g_18_oe/entities'
+
 module Engine
   module Game
     module G18OEUKFR
@@ -31,6 +33,7 @@ module Engine
             sym: 'WCF',
             value: 60,
             revenue: 15,
+            abilities: G18OE::Entities::COMPANIES.find { |company| company[:sym] == 'WCF' }[:abilities],
             auction_row: 4,
           },
           {
@@ -93,141 +96,17 @@ module Engine
               },
             ],
           },
+          G18OE::Entities::COMPANIES.find { |company| company[:sym] == 'MAIL' },
         ].freeze
 
-        CORPORATIONS = [
-          {
-            name: 'Golden Bell Marketplace',
-            logo: '18_oe/C',
-            sym: 'C',
-            tokens: [0, 20],
-            type: 'minor',
-            shares: [100],
-            float_percent: 100,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Great Western Steamship Company',
-            logo: '18_oe/H',
-            sym: 'H',
-            tokens: [0, 20],
-            type: 'minor',
-            shares: [100],
-            float_percent: 100,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Vermilion Seal Couriers',
-            logo: '18_oe/K',
-            sym: 'K',
-            tokens: [0, 20],
-            type: 'minor',
-            shares: [100],
-            float_percent: 100,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Compagnie Internationale des Wagons-Lits',
-            logo: '18_oe/M',
-            sym: 'M',
-            tokens: [0, 20],
-            type: 'minor',
-            shares: [100],
-            float_percent: 100,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'SNCF Belges',
-            logo: '18_oe/BEL',
-            sym: 'BEL',
-            tokens: [20, 20],
-            type: 'regional',
-            shares: [50, 25, 25],
-            float_percent: 50,
-            max_ownership_percent: 100,
-            coordinates: 'N35',
-            color: :green,
-            always_market_price: true,
-          },
-          {
-            name: 'Great Southern and Western Railway',
-            logo: '18_oe/GSWR',
-            sym: 'GSWR',
-            tokens: [40, 20],
-            type: 'regional',
-            shares: [50, 25, 25],
-            float_percent: 50,
-            max_ownership_percent: 100,
-            coordinates: 'I20',
-            color: :blue,
-            always_market_price: true,
-          },
-          {
-            name: 'Great Western Railway',
-            logo: '18_oe/GWR',
-            sym: 'GWR',
-            tokens: [40, 20],
-            type: 'regional',
-            shares: [50, 25, 25],
-            float_percent: 50,
-            max_ownership_percent: 100,
-            coordinates: 'L25',
-            color: :red,
-            always_market_price: true,
-          },
-          {
-            name: 'London and North Western Railway',
-            logo: '18_oe/LNWR',
-            sym: 'LNWR',
-            tokens: [40, 20],
-            type: 'regional',
-            shares: [50, 25, 25],
-            float_percent: 50,
-            max_ownership_percent: 100,
-            coordinates: 'J27',
-            color: :black,
-            always_market_price: true,
-          },
-          {
-            name: 'CF du Midi',
-            logo: '18_oe/MIDI',
-            sym: 'MIDI',
-            tokens: [20, 20],
-            type: 'regional',
-            shares: [50, 25, 25],
-            float_percent: 50,
-            max_ownership_percent: 100,
-            coordinates: 'U24',
-            color: :blue,
-            always_market_price: true,
-          },
-          {
-            name: 'CF de l\'Ouest',
-            logo: '18_oe/OU',
-            sym: 'OU',
-            tokens: [20, 20],
-            type: 'regional',
-            shares: [50, 25, 25],
-            float_percent: 50,
-            max_ownership_percent: 100,
-            coordinates: 'Q26',
-            color: :orange,
-            always_market_price: true,
-          },
-          {
-            name: 'CF Paris a Lyon et a la Mediterranee',
-            logo: '18_oe/PLM',
-            sym: 'PLM',
-            tokens: [20, 20],
-            type: 'regional',
-            shares: [50, 25, 25],
-            float_percent: 50,
-            max_ownership_percent: 100,
-            coordinates: 'U34',
-            color: :purple,
-            always_market_price: true,
-          },
-        ].freeze
+        CORPORATIONS = %w[C H K M BEL GSWR GWR LNWR MIDI OU PLM].map do |sym|
+          corporation = G18OE::Entities::CORPORATIONS.find { |entity| entity[:sym] == sym }
+          next corporation unless sym == 'M'
+
+          corporation.merge(abilities: corporation[:abilities].map do |ability|
+            ability.merge(description: ability[:description].sub('10 Pullman cars', '3 Pullman cars'))
+          end)
+        end.freeze
       end
     end
   end

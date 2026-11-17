@@ -300,6 +300,17 @@ module Engine
           @p7 ||= company_by_id('P7')
         end
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['One or more shares sold', '1 ↓'],
+            ['One or more shares in market at end of SR', '1 ←'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
+        end
+
         def setup
           setup_destinations
           setup_offboard_bonuses

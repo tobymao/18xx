@@ -14,7 +14,7 @@ module Engine
     next if game_meta == Engine::Game::G18ZOO::Meta
 
     describe game_meta.title do
-      let(:min_players) { players.take(game_meta::PLAYER_RANGE.min) }
+      let(:min_players) { players.take(game_meta.min_players([], nil) || game_meta::PLAYER_RANGE.min) }
       let(:max_players) { players.take(game_meta::PLAYER_RANGE.max) }
 
       it 'can be initialized with min players' do

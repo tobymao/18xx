@@ -5,6 +5,7 @@ require '../lib/settings'
 require 'view/game/axis'
 require 'view/game/hex'
 require 'view/game/map_legend'
+require 'view/game/sea_crossings'
 require 'view/game/tile_confirmation'
 require 'view/game/tile_selector'
 require 'view/game/token_selector'
@@ -82,7 +83,7 @@ module View
         end
         @hexes.compact!
 
-        children = [render_map]
+        children = [render_map(routes)]
 
         if current_entity && @tile_selector
           left = (@tile_selector.x + map_x) * @scale
@@ -174,7 +175,7 @@ module View
         end
       end
 
-      def render_map
+      def render_map(routes)
         width, height = map_size
 
         props = {
@@ -188,6 +189,8 @@ module View
         h(:svg, props, [
           h(:g, { attrs: { transform: "scale(#{@scale})" } }, [
             h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{map_x} #{map_y})" } }, @hexes),
+            h(:g, { attrs: { id: 'map-sea-routes', transform: "translate(#{map_x} #{map_y})" } },
+              [h(SeaCrossings, routes: routes, start_pos: @start_pos)]),
             h(Axis,
               cols: @cols,
               rows: @rows,

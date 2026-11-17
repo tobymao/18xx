@@ -12,7 +12,7 @@ module Engine
   module Game
     module G18Cuba
       class Game < Game::Base
-        attr_reader :fc
+        attr_reader :fc, :fc_bypass_graph, :fc_rent_revenue
 
         include_meta(G18Cuba::Meta)
         include Entities
@@ -33,6 +33,8 @@ module Engine
 
         BANK_CASH = 10_000
 
+        FC_STATION_RENT = 20
+
         GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, second_eight_plus: :immediate }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
@@ -48,8 +50,8 @@ module Engine
         STARTING_CASH = { 2 => 950, 3 => 900, 4 => 680, 5 => 650, 6 => 650 }.freeze
 
         MARKET = [
-          %w[50 55 60 65 70p 75p 80p 85p 90p 95p 100p 105 110 115 120 126 192 198 144
-             151 158 172 180 188 196 204 013 222 231 240 250 260 275 290 300],
+          %w[50 55 60 65 70p 75p 80p 85p 90p 95p 100p 105 110 115 120 126 132 138 144
+             151 158 165 172 180 188 196 204 213 222 231 240 250 260 275 290 300],
         ].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -102,29 +104,29 @@ module Engine
           # Minors operate before majors per game rules.
           floated = @corporations.select(&:floated?)
           minors, majors = floated.partition { |c| c.type == :minor }
-          minors.sort_by { |c| minor_operating_sort_key(c) } + majors.sort
+          minors.sort_by { |c| minor_operating_sort_key(c) } + majors.sort + [@fc]
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
-            Engine::Step::BuyCompany,
+            G18Cuba::Step::BuyCompany,
             Engine::Step::HomeToken,
             G18Cuba::Step::Track,
-            Engine::Step::Token,
+            G18Cuba::Step::Token,
             G18Cuba::Step::Route,
             G18Cuba::Step::Dividend,
             G18Cuba::Step::DiscardTrain,
             G18Cuba::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G18Cuba::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
         def init_stock_market
-          StockMarket.new(self.class::MARKET, [], zigzag: :flip)
+          StockMarket.new(self.class::MARKET, [], zigzag: :flip, ledge_movement: true)
         end
 
         def multiple_buy_only_from_market?
@@ -209,6 +211,16 @@ module Engine
           @phase.status.include?('can_buy_trains')
         end
 
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
+          return super unless bundle.corporation == @fc
+
+          @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
+        end
+
+        def can_dump?(entity, bundle)
+          bundle.corporation == @fc || super
+        end
+
         def setup
           super
           @tile_groups = init_tile_groups
@@ -217,19 +229,29 @@ module Engine
           sugar_setup
           fc_setup
           @minor_graph = Graph.new(self, skip_track: :broad)
+          @fc_bypass_graph = Graph.new(self, skip_track: :narrow, no_blocking: true)
         end
 
         def fc_setup
           @fc = @corporations.find { |c| c.type == :national }
-          # Never parred or floated, so mark as ipoed to keep it out of the unstarted corporations.
           @fc.ipoed = true
-          # TODO: unbuyable until the FC has a price/dividend/M4 mechanic; re-enable then or it can't sell out (VII.15/VIII.2).
-          @fc.shares.each { |s| s.buyable = false }
+          par_corporation(@fc, @stock_market.market.first.first)
           @fc_exported_8plus = 0
+          @fc_rent_revenue = 0
           train = train_by_id('1-0')
           buy_train(@fc, train, :free)
           # Never bought back (rule VII.16).
           train.buyable = false
+          place_home_token(@fc)
+        end
+
+        def after_lay_tile(hex, tile)
+          return unless tile.color == :green
+          return unless tile.icons.any? { |icon| icon.name == @fc.id }
+
+          @log << "#{@fc.name} places a token on #{hex.name}"
+          tile.cities.first.place_token(@fc, @fc.next_token, free: true)
+          tile.icons.reject! { |icon| icon.name == @fc.id }
         end
 
         def init_graph
@@ -244,6 +266,7 @@ module Engine
 
         def clear_graph
           @minor_graph.clear
+          @fc_bypass_graph.clear
           super
         end
 
@@ -252,7 +275,37 @@ module Engine
             @minor_graph.clear
           else
             super
+            @fc_bypass_graph.clear
           end
+        end
+
+        def check_connected(route, corporation)
+          return super if fc_rented_cities(route, corporation).empty?
+
+          super(route, nil)
+        end
+
+        def fc_rented_cities(route, corporation)
+          visits = route.visited_stops
+          return [] if corporation.type == :minor || visits.size <= 2
+
+          blocked = visits[1..-2].select { |stop| stop.city? && stop.blocks?(corporation) }
+          blocked.all? { |city| city.tokened_by?(@fc) } ? blocked : []
+        end
+
+        def fc_rent(route)
+          rented = fc_rented_cities(route, route.corporation).size
+          rented -= 1 if plus_train?(route.train)
+          [rented, 0].max * self.class::FC_STATION_RENT
+        end
+
+        def pay_fc_rent!(entity, routes)
+          rent = routes.sum { |route| fc_rent(route) }
+          return unless rent.positive?
+
+          entity.spend(rent, @bank)
+          @fc_rent_revenue += rent / 2
+          @log << "#{entity.name} pays #{format_currency(rent)} FC station rent"
         end
 
         def init_tile_groups
@@ -268,7 +321,7 @@ module Engine
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             Engine::Step::HomeToken,
             G18Cuba::Step::BuySellParShares,
           ])
@@ -292,14 +345,14 @@ module Engine
           # After Init -> Auction Commissions -> Draft Concessions -> Stock Round -> Operating Rounds
           @round =
             case @round
-            when Round::Draft
+            when Engine::Round::Draft
               new_stock_round
-            when Round::Stock
+            when Engine::Round::Stock
               close_unopened_minors if @turn == 1
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -370,13 +423,8 @@ module Engine
         end
 
         def or_round_finished
-          # For the moment reset sugar cubes, handling for FC to be implemented later
           reset_cubes_on_train
-          return if @sugar_cubes.values.none?(&:positive?)
-
-          @sugar_cubes.each { |corp, cubes| update_sugar_cube_icons(corp, 0) if cubes.positive? }
-          @sugar_cubes.clear
-          @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
+          @fc_rent_revenue = 0
         end
 
         def or_set_finished
@@ -402,6 +450,17 @@ module Engine
           end_game!(:second_eight_plus) if @fc_exported_8plus >= 2
         end
 
+        def fc_city_revenue
+          train = @fc.trains.last
+          @fc.placed_tokens
+             .map { |t| t.city.route_base_revenue(@phase, train) }
+             .sort.reverse.first(train.distance).sum
+        end
+
+        def fc_revenue
+          fc_city_revenue + unshipped_cubes_revenue + @fc_rent_revenue
+        end
+
         def game_end_check_second_eight_plus?
           @fc_exported_8plus >= 2
         end
@@ -412,6 +471,9 @@ module Engine
           # Legal as long as the delivering routes can be matched to distinct harbors;
           # a route with harbors at both ends contributes both as candidates, not just the first.
           super
+          rent = routes.sum { |route| fc_rent(route) }
+          raise GameError, 'Cannot afford the FC station rent' if rent.positive? && rent > routes.first.corporation.cash
+
           delivering_routes = routes.select { |r| train_with_cubes?(r.train) }
           return if delivering_routes.size <= 1
 

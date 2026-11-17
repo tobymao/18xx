@@ -10,6 +10,8 @@ module Engine
           end
 
           def can_place_token?(entity)
+            return true if @game.abilities(entity, :token)
+
             # Cheaper to do the graph first, then check affordability
             current_entity == entity &&
               !(token = entity.next_token).nil? &&
@@ -39,6 +41,13 @@ module Engine
             # case, it's much easier to implement it hard-coded than to have logic that checks
             # for the board boundaries
             token_cost + 20
+          end
+
+          def tokener_available_hex(entity, hex)
+            # Baden must be the first to token in its home hex
+            return false if hex.id == 'L6' && !@game.corporation_by_id('BA').floated?
+
+            super
           end
 
           def bayern_tokens_dresden(hex, token)

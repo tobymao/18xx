@@ -571,6 +571,10 @@ module Engine
           Array.new(20) { |id| Loan.new(id, @loan_value) }
         end
 
+        def loan_value(_entity = nil)
+          @loan_value
+        end
+
         def can_pay_interest?(_entity, _extra_cash = 0)
           false
         end

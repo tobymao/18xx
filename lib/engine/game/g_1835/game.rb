@@ -136,13 +136,23 @@ module Engine
         LAYOUT = :pointy
 
         SELL_MOVEMENT = :down_block
+        SELL_BUY_ORDER = :sell_buy_sell
+        SELL_AFTER = :operate
 
         HOME_TOKEN_TIMING = :float
+        STOCK_MARKET_TOKEN_TIMING = :float
+
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: "Par values (#{PAR_PRICES
+          .group_by { |_, price| price }
+          .map { |price, corporations| "#{price} → #{corporations.map(&:first).join(', ')}" }
+          .join('; ')})")
 
         CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
 
         LAY_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
         TWO_LAYS = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
+
+        ALSACE_HEXES = %w[N4 M5].freeze
 
         def setup
           prussian.shares.last(7).each { |s| s.buyable = false }
@@ -156,7 +166,7 @@ module Engine
           @preussen_may_float = false
 
           @corporations.select { |corp| major?(corp) }.each do |corp|
-            par_corporation(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
+            corp.par_price = @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] }
           end
 
           corporation_by_id('BY').ipoed = true
@@ -168,6 +178,10 @@ module Engine
 
           # PR does not need a reservation, since its home token is put where 2's token was
           hex_by_id('E19').tile.remove_reservation!(prussian)
+        end
+
+        def option_clemens?
+          @optional_rules&.include?(:clemens)
         end
 
         def company_header(company)
@@ -182,8 +196,11 @@ module Engine
         end
 
         def init_round
-          G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft])
+          round_num = @draft_round_num || 1
+          G1835::Round::Draft.new(self, [
+            G1835::Step::SwapChoice, # we don't actually swap during Draft, but need the round state to be set
+            G1835::Step::Draft,
+            ], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
         end
 
         def new_draft_round
@@ -211,10 +228,10 @@ module Engine
             Engine::Step::Bankrupt,
             G1835::Step::MinorExchange,
             Engine::Step::DiscardTrain,
-            Engine::Step::SpecialTrack,
-            G1835::Step::SpecialToken,
-            Engine::Step::Track,
             Engine::Step::HomeToken,
+            Engine::Step::SpecialTrack,
+            Engine::Step::Track,
+            Engine::Step::SpecialToken,
             G1835::Step::Token,
             Engine::Step::Route,
             G1835::Step::Dividend,
@@ -223,8 +240,10 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1835::Round::Stock.new(self, [
+            Engine::Step::HomeToken,
             G1835::Step::MinorExchange,
+            G1835::Step::SwapChoice,
             G1835::Step::BuySellParShares,
           ])
         end
@@ -239,6 +258,24 @@ module Engine
           []
         end
 
+        def shares_for_presidency_swap(shares, num_shares)
+          shares_taken = []
+          num_shares_taken = 0
+
+          shares.each do |share|
+            break if num_shares_taken >= num_shares
+
+            shares_taken << share
+            num_shares_taken += share.num_shares(ceil: false)
+          end
+
+          if num_shares_taken != num_shares
+            raise GameError, "Could not find exactly #{num_shares} while searching for shares to swap. Found #{num_shares_taken}."
+          end
+
+          shares_taken
+        end
+
         def maybe_ipo_next_block(corporation)
           block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corporation) }
           all_in_block_sold = block.all? { |corp| corp.shares.select(&:buyable).empty? }
@@ -251,10 +288,20 @@ module Engine
           next_block.each { |corp_to_ipo| corp_to_ipo.ipoed = true }
         end
 
+        def num_certs(entity)
+          super + owned_minors(entity).size
+        end
+
         def cert_limit(player = nil)
           return @cert_limit unless player
 
           @cert_limit + @corporations.count { |corporation| major?(corporation) && player.percent_of(corporation) >= 80 }
+        end
+
+        def check_sale_timing(entity, bundle)
+          return super unless bundle.corporation == prussian
+
+          prussian.floated?
         end
 
         def corporation_available?(corp)
@@ -309,8 +356,62 @@ module Engine
         def upgrades_to?(from, to, special = nil, selected_company: nil)
           # green double cities cannot be upgraded any further
           return false if %w[14 15].include?(from.name)
+          return true if EXTRA_UPGRADES[from.name]&.include?(to.name)
 
           super
+        end
+
+        def entity_can_use_company?(entity, _company)
+          return false if entity.minor?
+
+          super
+        end
+
+        # Modified to select operator if company is player owned
+        def token_owner(entity)
+          return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
+
+          super
+        end
+
+        def ability_usable?(ability)
+          # L6 cannot get tokened using the Pfalzbahnen as long as Baden has not placed its home token
+          return false if pfalzbahnen_token_ability?(ability) && !pfalzbahnen_usable_to_token?
+          if @round.respond_to?(:current_operator) && ability.type == :token
+            return token_ability_usable?(ability, @round.current_operator)
+          end
+
+          super
+        end
+
+        def pfalzbahnen_token_ability?(ability)
+          ability.type == :token && ability.owner == company_by_id('PB')
+        end
+
+        def pfalzbahnen_usable_to_token?
+          corporation_by_id('BA').floated? && hex_by_id('L6').tile.color == :green
+        end
+
+        def token_ability_usable?(ability, corporation)
+          ability.hexes&.any? do |hex_id|
+            hex_by_id(hex_id)&.tile&.cities&.any? { |city| city.tokenable?(corporation, free: true) }
+          end
+        end
+
+        def check_other(route)
+          check_alsace(route)
+        end
+
+        def check_alsace(route)
+          return if phase.name.to_i == 2
+          return unless intersects_alsace_hexes?(route)
+
+          raise GameError, 'Cannot visit Elsaß-Lothringen in yellow or brown phase'
+        end
+
+        def intersects_alsace_hexes?(route)
+          @alsace_hexes ||= ALSACE_HEXES.map { |coord| hex_by_id(coord) }
+          route.stops.map(&:hex).intersect?(@alsace_hexes)
         end
 
         def payout_companies
@@ -378,6 +479,7 @@ module Engine
           @log << "#{prussian.id} forms"
           prussian.floatable = true
           prussian.floated = true
+          float_corporation(prussian)
 
           merge_minor!(berlin_potsdamer_bahn)
         end
@@ -410,10 +512,14 @@ module Engine
           unless minor.id == '5'
             token = minor.tokens.first
 
-            # make sure the first token (= home token) gets used or other methods might behave unexpectedly later, e.g.
-            # "maybe_place_home_token" called when buying shares
-            new_token = minor.id == '2' ? prussian.tokens.first : Token.new(prussian)
-            prussian.tokens << new_token
+            # make sure the first token (= home token) gets used during formation or other methods might behave
+            # unexpectedly later, e.g. "maybe_place_home_token" called when buying shares
+            if minor == berlin_potsdamer_bahn
+              new_token = prussian.tokens.first
+            else
+              new_token = Token.new(prussian)
+              prussian.tokens << new_token
+            end
 
             token.swap!(new_token, check_tokenable: false)
 
@@ -447,6 +553,19 @@ module Engine
 
         def share_flags(shares)
           'h' * shares.count { |share| share.percent == 5 }
+        end
+
+        def player_card_minors(player)
+          owned_minors(player)
+        end
+
+        # Show minors in spreadsheet
+        def all_corporations
+          @minors + @corporations
+        end
+
+        def owned_minors(entity)
+          @minors.select { |m| m.owner == entity }
         end
       end
     end

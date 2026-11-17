@@ -154,7 +154,9 @@ module Engine
           @reissued = {}
           @coal_token_counter = 5
           @miami_has_been_run = false
+          @miami_first_run_round = nil
           @p4_invested_in = nil
+          @final_merger_triggered = false
 
           coal_company.max_price = coal_company.value
 
@@ -246,6 +248,15 @@ module Engine
           return super if visits.none? { |v| v.hex == coal_hex } || route.train.owner.coal_token
 
           raise GameError, 'Corporation must own coal token to enter West Virginia Coalfields'
+        end
+
+        def event_final_merger_chance!
+          @log << '-- Event: Final merger and takeover opportunity --'
+          @final_merger_triggered = true
+        end
+
+        def final_merger_triggered?
+          @final_merger_triggered
         end
 
         def event_remove_tokens!
@@ -348,9 +359,17 @@ module Engine
           found ? revenue : 0
         end
 
-        # Miami first-run rule: worth $0 the first time any corporation runs there prior to phase 5
+        # Miami first-run rule: before phase 5, Miami is worth $0 to every corporation for the whole
+        # operating round in which it is first reached.
         def miami_scores_zero?
-          phase.status.include?('first_miami_run_is_zero') && !@miami_has_been_run
+          return false unless phase.status.include?('first_miami_run_is_zero')
+
+          @miami_first_run_round.nil? || @miami_first_run_round == @round_counter
+        end
+
+        def record_miami_run!
+          @miami_has_been_run = true
+          @miami_first_run_round ||= @round_counter
         end
 
         def miami_revenue(route, stops)
@@ -394,12 +413,32 @@ module Engine
           @share_pool.sell_shares(bundle)
         end
 
-        def num_certs(entity)
+        # A vice-president certificate is bought and sold as one certificate, not as two 5% shares. Offer it
+        # as a bundle of its own, and together with 5% shares, rather than letting it fall in by size.
+        def all_bundles_for_corporation(share_holder, corporation, shares: nil)
+          return super if !system?(corporation) || corporation.vice_president_certs.empty?
+
+          shares ||= share_holder.shares_of(corporation)
+          vp_certs = shares.select { |s| corporation.vice_president_certs.include?(s) }
+          return super if vp_certs.empty?
+
+          regular = shares - vp_certs
+          bundles = regular.empty? ? [] : super(share_holder, corporation, shares: regular)
+          without_president = bundles.reject { |bundle| bundle.shares.any?(&:president) }
+          (1..vp_certs.size).flat_map { |n| vp_certs.combination(n).to_a }.each do |group|
+            bundles << Engine::ShareBundle.new(group)
+            without_president.each { |bundle| bundles << Engine::ShareBundle.new(group + bundle.shares) }
+          end
+          bundles.sort_by { |bundle| [bundle.percent, bundle.shares.size] }
+        end
+
+        def num_certs(entity, price_protecting: false)
           entity.shares.sum do |s|
             next 0 unless s.corporation.counts_for_limit
             next 0 unless s.counts_for_limit
-            # Don't count shares that have been sold and will go to yellow unless protected
-            next 0 if @sell_queue.any? do |bundle, _|
+            # Don't count shares that have been sold and will go to yellow unless protected.
+            # While price protecting, DO count them, since protecting keeps them white.
+            next 0 if !price_protecting && @sell_queue.any? do |bundle, _|
               bundle.corporation == s.corporation &&
                 !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :down)).counts_for_limit
             end
@@ -466,6 +505,362 @@ module Engine
           end
 
           @skip_paths
+        end
+
+        def merge_corporations
+          @corporations.select { |c| !system?(c) && c.floated? }
+        end
+
+        # ── Merger helpers ────────────────────────────────────────────
+
+        def available_systems
+          @corporations.select { |c| system?(c) && !c.floated? }
+        end
+
+        def can_form_system?(corp1, corp2)
+          return false if available_systems.empty?
+
+          system_formation_qualifier?(corp1, corp2)
+        end
+
+        def system_formation_qualifier?(corp1, corp2)
+          @players.any? do |p|
+            p.shares_of(corp1).sum(&:percent) + p.shares_of(corp2).sum(&:percent) >= 40
+          end
+        end
+
+        def corps_connected?(corp_a, corp_b)
+          hexes_b = network_hexes(corp_b)
+          return false if hexes_b.empty?
+
+          hexes_a = network_hexes(corp_a)
+          return false if hexes_a.empty?
+
+          hexes_b_lookup = hexes_b.each_with_object({}) { |h, acc| acc[h] = true }
+
+          visited = {}
+          queue = hexes_a
+          until queue.empty?
+            hex = queue.shift
+            next if visited[hex]
+
+            visited[hex] = true
+            return true if hexes_b_lookup.key?(hex)
+
+            hex.neighbors.each do |edge, neighbor|
+              next if visited[neighbor]
+              next unless hex_is_connected(hex, edge, neighbor)
+
+              queue << neighbor
+            end
+          end
+          false
+        end
+
+        def hex_is_connected(hex, edge, neighbor)
+          hex.tile.paths.any? { |p| p.exits.include?(edge) } &&
+            neighbor.tile.paths.any? { |p| p.exits.include?(hex.invert(edge)) }
+        end
+
+        def takeover_cost(target)
+          target_par = target.par_price&.price || target.share_price.price
+          target_mkt = target.share_price.price
+
+          cost = 0
+          target.shares.select { |s| s.owner == target }.each do |s|
+            cost += (s.percent.to_f / 10 * target_par).round
+          end
+
+          @share_pool.shares_of(target).each do |s|
+            cost += (s.percent.to_f / 10 * target_mkt).round
+          end
+
+          @players.each do |player|
+            player.shares_of(target).each do |s|
+              cost += (s.percent.to_f / 10 * target_mkt).round
+            end
+          end
+
+          cost
+        end
+
+        def can_afford_takeover?(buyer, target)
+          president = buyer.owner
+          cost = takeover_cost(target)
+
+          # Compute president's max liquidity directly: avoids sellable_bundles →
+          # active_step recursion that occurs during merger-round blocking? checks.
+          president_liquidity = president.cash + president.shares.sum do |s|
+            next 0 unless (price = s.corporation.share_price&.price)
+
+            (s.percent.to_f / 10.0 * price).floor
+          end
+          buyer.cash + president_liquidity >= cost
+        end
+
+        # ── System formation (§11.6) ──────────────────────────────────
+
+        def perform_system_formation(corp1, corp2, system)
+          unless system_formation_qualifier?(corp1, corp2)
+            raise GameError, "No player holds 40% of #{corp1.name} and #{corp2.name} combined"
+          end
+
+          @log << "#{corp1.name} and #{corp2.name} form #{system.name}"
+
+          # 1. Set par & share price (average of two, rounded to nearest, capped at $275 per §11.6.3)
+          # TODO(beta): implement full diagonal-placement algorithm per §11.6.3
+          new_sp = merger_determine_merged_share_price(corp1, corp2)
+          raise GameError, 'Cannot determine system share price' unless new_sp
+
+          par_corporation(system, new_sp)
+          system.ipoed = true
+
+          # corp1 is the initiator. Capture its president before the presidencies are converted;
+          # the initiating player breaks ties for the system presidency.
+          initiating_player = corp1.owner
+
+          # 2. Convert both component president certs into 10% VP certs of the system.
+          # Each stays with whoever held the component presidency.
+          merger_convert_presidencies_to_vp_certs(corp1, corp2, system)
+
+          # 3. Exchange all remaining outstanding component shares 1:1 for system 5% shares
+          merger_convert_regular_shares(corp1, corp2, system)
+
+          # 4. President = player holding the largest system share percentage
+          president = merger_find_president(system, initiating_player)
+
+          # 5. Form the 20% president cert: president surrenders VP certs first, then regular
+          # shares, until 20% is covered. Surrendered shares go to the bank.
+          merger_form_president_cert(system, president)
+
+          # 6. Transfer cash, trains, companies to system
+          transfer_all_assets(corp1, system)
+          transfer_all_assets(corp2, system)
+
+          # 7. Replace map tokens (remove duplicates, assign remainder to system)
+          system.tokens.clear
+          transfer_tokens(corp1, system)
+          transfer_tokens(corp2, system)
+
+          # 8. Close component companies (force_next_entity! suppressed in merger round)
+          system.system_shells = [corp1.id, corp2.id]
+          [corp1, corp2].each { |corp| close_corporation(corp) }
+
+          system.floated = true
+          clear_graph_for_entity(system)
+          @log << "#{system.name} formed at #{format_currency(new_sp.price)}"
+        end
+
+        # ── Takeover (§11.7) ─────────────────────────────────────────
+
+        def perform_takeover(buyer, target)
+          @log << "#{buyer.name} takes over #{target.name}"
+
+          target_mkt = target.share_price.price
+          total_cost = takeover_cost(target)
+
+          player_payments = Hash.new(0)
+          @players.each do |player|
+            player.shares_of(target).each do |s|
+              player_payments[player] += (s.percent.to_f / 10 * target_mkt).round
+            end
+          end
+
+          if buyer.cash < total_cost
+            needed    = total_cost - buyer.cash
+            president = buyer.owner
+            if president.cash < needed
+              raise GameError, "#{president.name} cannot fund the takeover (needs #{format_currency(needed)})"
+            end
+
+            president.spend(needed, buyer)
+            @log << "#{president.name} contributes #{format_currency(needed)} to fund takeover"
+          end
+
+          player_payments.each do |player, amount|
+            buyer.spend(amount, player) if amount.positive?
+          end
+
+          bank_cost = total_cost - player_payments.values.sum
+          buyer.spend(bank_cost, @bank) if bank_cost.positive?
+
+          @log << "#{buyer.name} pays #{format_currency(total_cost)} to acquire #{target.name}"
+
+          transfer_all_assets(target, buyer)
+
+          transfer_tokens(target, buyer)
+
+          close_corporation(target)
+
+          # §11.7: cert limit moves one column right per shell removed.
+          # close_corporation already applied one step; systems (2 shells) need a second.
+          tighten_cert_limit_by_one if system?(target)
+          clear_graph_for_entity(buyer)
+        end
+
+        private
+
+        def merger_determine_merged_share_price(corp1, corp2)
+          avg = [(corp1.share_price.price + corp2.share_price.price) / 2.0, 275].min
+          all_prices = stock_market.market.flatten.compact.map(&:price).sort.uniq
+          nearest = all_prices.min_by { |p| [(p - avg).abs, -p] }
+          stock_market.market.flatten.compact.find { |sp| sp.price == nearest }
+        end
+
+        def merger_convert_presidencies_to_vp_certs(corp1, corp2, system)
+          [corp1, corp2].each do |corp|
+            holder = corp.share_holders.keys.find { |h| h.player? && h.shares_of(corp).any?(&:president) }
+            next unless holder
+
+            share = holder.shares_of(corp).find(&:president)
+            holder.shares_by_corporation[corp].delete(share)
+            corp.share_holders[holder] -= share.percent
+
+            share.percent /= 2 # 20% → 10%
+            share.instance_variable_set(:@corporation, system)
+            share.instance_variable_set(:@president, false)
+
+            system.share_holders[holder] += share.percent
+            holder.shares_by_corporation[system] << share
+
+            # the sell buttons mark a double certificate, which tells it apart from two 5% shares
+            share.double_cert = true
+            system.vice_president_certs << share
+            @log << "#{holder.name} receives VP certificate (10%) in #{system.name}"
+          end
+        end
+
+        def merger_convert_regular_shares(corp1, corp2, system)
+          system_reg = system.shares.reject(&:president).select { |s| s.owner == system }
+          @log << "There are #{system_reg.count} system shares available"
+          sys_idx = 0
+          [corp1, corp2].each do |corp|
+            corp.share_holders.dup.each do |holder, _|
+              next if holder == corp
+
+              holder.shares_of(corp).dup.each do |share|
+                next if system.vice_president_certs.include?(share)
+                next unless sys_idx < system_reg.size
+
+                share.transfer(@bank)
+                @log << "#{holder.name} receives a regular #{system_reg[sys_idx].percent}% share in exchange for a component one"
+                system_reg[sys_idx].transfer(holder)
+                sys_idx += 1
+              end
+            end
+          end
+        end
+
+        # The player with the highest percentage wins outright; ties go to the first tied
+        # player clockwise from the initiating player (inclusive).
+        def merger_find_president(system, initiating_player)
+          order = @players.rotate(@players.index(initiating_player))
+          top = order.map { |p| p.percent_of(system) }.max
+          system.owner = order.find { |p| p.percent_of(system) == top }
+          @log << "#{system.owner.name} is the system owner with #{system.owner.percent_of(system)}%"
+
+          system.owner
+        end
+
+        def merger_form_president_cert(system, president)
+          system_pres = system.shares.find(&:president)
+          pct_needed = system_pres.percent
+          to_surrender = []
+
+          system.vice_president_certs.select { |v| v.owner == president }.each do |vp|
+            break unless pct_needed.positive?
+
+            to_surrender << vp
+            pct_needed -= vp.percent
+            @log << "#{vp.owner.name} is surrendering a VP cert and needs to surrender an additional #{pct_needed}%"
+          end
+
+          if pct_needed.positive?
+            president.shares_of(system).reject(&:president).sort_by(&:percent).each do |share|
+              break unless pct_needed.positive?
+
+              to_surrender << share
+              pct_needed -= share.percent
+              @log << "#{share.owner.name} surrenders a #{share.percent}% cert; #{pct_needed}% still needed"
+            end
+          end
+
+          to_surrender.each do |s|
+            system.vice_president_certs.delete(s)
+            s.transfer(@bank)
+          end
+          system_pres.transfer(president)
+
+          @log << "#{president.name} becomes president of #{system.name}"
+        end
+
+        def transfer_all_assets(from_corp, to_corp)
+          from_corp.spend(from_corp.cash, to_corp) if from_corp.cash.positive?
+          transfer(:trains, from_corp, to_corp)
+          transfer(:companies, from_corp, to_corp)
+          transfer_coal_token(from_corp, to_corp)
+          transfer_assignments(from_corp, to_corp)
+        end
+
+        # Cotton and port tokens are tracked by assignment on the owning corporation as well as on the
+        # hex; carry the corporation side over so the new owner keeps the revenue bonus.
+        def transfer_assignments(from_corp, to_corp)
+          from_corp.assignments.keys.each do |key|
+            next unless ASSIGNMENT_TOKENS[key]
+
+            to_corp.assign!(key, from_corp.assignments[key])
+            from_corp.remove_assignment!(key)
+          end
+        end
+
+        def transfer_coal_token(from_corp, to_corp)
+          coal_count = [from_corp.coal_token, to_corp.coal_token].count(&:itself)
+          return if coal_count.zero?
+
+          if coal_count == 2
+            @coal_token_counter += 1
+            from_corp.coal_token = false
+            @log << "#{to_corp.name} has duplicate Coal tokens; one returned. #{@coal_token_counter} Coal tokens remaining."
+          end
+
+          to_corp.coal_token = true
+        end
+
+        # to_corp inherits every token of from_corp, on the map or in supply, in addition to its own.
+        # Tokens on the map replace from_corp's, using to_corp's supply; a token in a city where to_corp
+        # already has one comes off the map and stays in to_corp's supply.
+        def transfer_tokens(from_corp, to_corp)
+          from_corp.tokens.size.times { to_corp.tokens << Engine::Token.new(to_corp, price: 100) }
+
+          to_corp_cities = to_corp.tokens.select(&:city).each_with_object({}) { |t, h| h[t.city] = true }
+          from_corp.tokens.select(&:city).each do |token|
+            city = token.city
+            if to_corp_cities.key?(city)
+              token.remove!
+              @log << "Duplicate token in #{city.hex.id} returned to #{to_corp.name}'s supply"
+            else
+              to_corp_cities[city] = true
+              token.swap!(to_corp.next_token, check_tokenable: false)
+            end
+          end
+        end
+
+        def tighten_cert_limit_by_one
+          player_count = @players.size
+          limit_table = self.class::CERT_LIMIT[player_count]
+          return unless limit_table.is_a?(Hash)
+
+          virtual_size = @corporations.size - 1
+          tighter = limit_table.reject { |k, _| k.to_i < virtual_size }.min_by(&:first)&.last
+          @cert_limit = tighter if tighter
+        end
+
+        # Falls back to the home hex(es) while no tokens are on the map.
+        def network_hexes(corp)
+          placed = corp.placed_tokens.map(&:hex).compact.uniq
+          return placed unless placed.empty?
+
+          Array(corp.coordinates).map { |coord| hex_by_id(coord) }.compact
         end
       end
     end
