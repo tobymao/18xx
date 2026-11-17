@@ -56,8 +56,6 @@ module Engine
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
-          'green_machines' => ['Green machines', 'Minors can buy green machines'],
-          'brown_machines' => ['Brown machines', 'Minors can buy brown machines'],
         ).freeze
 
         PHASES = [{ name: '2', train_limit: { minor: 2, major: 4 }, tiles: [:yellow], operating_rounds: 1 },
@@ -66,7 +64,7 @@ module Engine
                     on: '3',
                     train_limit: { minor: 2, major: 4 },
                     tiles: %i[yellow green],
-                    status: %w[can_buy_trains green_machines],
+                    status: ['can_buy_trains'],
                     operating_rounds: 2,
                   },
                   {
@@ -74,7 +72,7 @@ module Engine
                     on: '4',
                     train_limit: { minor: 2, major: 3 },
                     tiles: %i[yellow green],
-                    status: %w[can_buy_trains green_machines],
+                    status: ['can_buy_trains'],
                     operating_rounds: 2,
                   },
                   {
@@ -82,7 +80,7 @@ module Engine
                     on: '5',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown],
-                    status: %w[can_buy_trains green_machines brown_machines],
+                    status: ['can_buy_trains'],
                     operating_rounds: 3,
                   },
                   {
@@ -90,7 +88,7 @@ module Engine
                     on: '6',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown],
-                    status: %w[can_buy_trains green_machines brown_machines],
+                    status: ['can_buy_trains'],
                     operating_rounds: 3,
                   },
                   {
@@ -98,7 +96,7 @@ module Engine
                     on: '8+',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown gray],
-                    status: %w[can_buy_trains green_machines brown_machines],
+                    status: ['can_buy_trains'],
                     operating_rounds: 3,
                   }].freeze
 

@@ -6,8 +6,8 @@ module Engine
       module Machines
         MACHINES = {
           yellow: { bonus: 10, prices: [25, 30, 35, 40, 40, 40, 40, 40, 40, 40] },
-          green: { bonus: 20, status: 'green_machines', prices: [45, 50, 55, 60, 60, 60, 60, 60] },
-          brown: { bonus: 40, status: 'brown_machines', prices: [65, 70, 75, 80] },
+          green: { bonus: 20, prices: [45, 50, 55, 60, 60, 60, 60, 60] },
+          brown: { bonus: 40, prices: [65, 70, 75, 80] },
         }.freeze
         MACHINE_LIMIT = 3
 
@@ -33,8 +33,7 @@ module Engine
           return [] if machines(corporation).size >= self.class::MACHINE_LIMIT
 
           self.class::MACHINES.keys.select do |generation|
-            status = self.class::MACHINES[generation][:status]
-            (!status || @phase.status.include?(status)) &&
+            @phase.tiles.include?(generation) &&
               !@machine_charter[generation].empty? &&
               corporation.cash >= machine_price(generation)
           end
