@@ -3,7 +3,11 @@
 module Engine
   module Game
     module G18OE
-      FerryLeg = Struct.new(:units, :nodes)
+      FerryLeg = Struct.new(:units, :nodes) do
+        def areas
+          nil
+        end
+      end
 
       class SeaCrossing
         attr_reader :kind, :from, :to, :nodes, :units, :hexes
@@ -16,6 +20,12 @@ module Engine
           @units = units
           @hexes = hexes
           @game = game
+        end
+
+        def areas
+          return if @kind == :ferry
+
+          @areas ||= @game.sea_crossing_areas(@from, @to, @units)
         end
 
         def sea_hex?(hex)

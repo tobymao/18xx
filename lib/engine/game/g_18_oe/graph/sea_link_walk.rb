@@ -13,7 +13,7 @@ module Engine
             opts: opts,
             block: block,
             network: sea_connectivity(corporation),
-            level: @game.largest_train_level(corporation),
+            level: @game.largest_train_level(corporation) + @game.sea_pool_total(corporation, @game.phase),
             ports: ports,
             usable: ports.to_h { |anchor| [anchor, true] },
             walkers: {},

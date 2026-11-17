@@ -54,12 +54,12 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
     end
   end
 
-  describe 'port token distance (§11.3.4)' do
+  describe 'sea reduction (§11.3.4)' do
     it 'reduces by one through Phase 6 and by two from Phase 7' do
-      expect(game.port_token_distance(double('phase', name: '2'))).to eq(1)
-      expect(game.port_token_distance(double('phase', name: '6'))).to eq(1)
-      expect(game.port_token_distance(double('phase', name: '7'))).to eq(2)
-      expect(game.port_token_distance(double('phase', name: '8'))).to eq(2)
+      expect(game.sea_reduction(double('phase', name: '2'))).to eq(1)
+      expect(game.sea_reduction(double('phase', name: '6'))).to eq(1)
+      expect(game.sea_reduction(double('phase', name: '7'))).to eq(2)
+      expect(game.sea_reduction(double('phase', name: '8'))).to eq(2)
     end
   end
 
@@ -337,6 +337,300 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
     end
   end
 
+  describe 'port authorities and Minor H (§11.3.4, §11.3.5, §15.8)' do
+    include_context 'with 18OE route helpers'
+
+    let(:corp) { game.corporation_by_id('DSJ') }
+    let(:two_plus_two) { buy_train!('2+2') }
+    let(:four) { buy_train!('4') }
+    let(:minor_h) { game.corporation_by_id('H') }
+
+    def phase_named(name) = double('phase', name: name, tiles: %i[yellow green])
+
+    def crossing_route(train, phase = game.phase)
+      route = Engine::Route.new(game, phase, train, routes: [])
+      route.routes = [route]
+      route.connection_data << route.segment(route.select(city('I50'), town('K60')).first, left: city('I50'))
+      route.connection_data << route.segment(route.select(town('K60'), city('J63')).first, left: town('K60'))
+      route
+    end
+
+    def ferry_route(train)
+      explicit_route(train, city('AE72'), town('AE74'), city('AD79'))
+    end
+
+    def buy_pa!(sea)
+      fund!(game, corp, 125)
+      game.buy_port_authority!(corp, sea)
+    end
+
+    before do
+      baltic!
+      token!('J63', corp)
+    end
+
+    it 'lets a port authority carry a crossing two zones further' do
+      expect { crossing_route(two_plus_two).revenue }.to raise_error(Engine::RouteTooLong)
+      buy_pa!(:north_sea)
+      route = crossing_route(two_plus_two)
+
+      expect(game.sea_distance(route)).to eq(0)
+      expect(route.distance_str).to eq('2')
+      expect(route.revenue).to eq(70)
+    end
+
+    it 'ignores a port authority for the other sea' do
+      buy_pa!(:mediterranean)
+
+      expect { crossing_route(two_plus_two).revenue }.to raise_error(Engine::RouteTooLong)
+    end
+
+    it 'does not reduce a ferry with a port authority' do
+      fund!(game, corp, 250)
+      game.buy_port_authority!(corp, :north_sea)
+      game.buy_port_authority!(corp, :mediterranean)
+
+      route = ferry_route(two_plus_two)
+
+      expect(game.sea_distance(route)).to eq(1)
+      expect { game.check_distance(route, route.visited_stops) }.to raise_error(Engine::RouteTooLong)
+    end
+
+    it 'reduces with Minor H on ferries' do
+      two_plus_two.owner = minor_h
+
+      expect(game.sea_distance(ferry_route(two_plus_two))).to eq(0)
+    end
+
+    it 'reduces with Minor H by one through Phase 6 and by two from Phase 7' do
+      four.owner = minor_h
+      route = lambda do |phase|
+        built = Engine::Route.new(game, phase, four, routes: [])
+        built.routes = [built]
+        built.connection_data << built.segment(built.select(city('I50'), offboard('N1')).first, left: city('I50'))
+        built
+      end
+
+      expect(game.sea_distance(route.call(phase_named('6')))).to eq(4)
+      expect(game.sea_distance(route.call(phase_named('7')))).to eq(2)
+    end
+
+    it 'gives the Minor H reduction to the major it merges into and not to H' do
+      major = start_major!(game, 'LNWR', game.players[0])
+      major_train = two_plus_two
+      major_train.owner = major
+      h_train = buy_train!('3')
+      h_train.owner = minor_h
+      game.add_minor_charter!(minor_h, major)
+
+      expect(game.minor_h_reduction?(major)).to be(true)
+      expect(game.minor_h_reduction?(minor_h)).to be(false)
+      expect(game.sea_distance(ferry_route(major_train))).to eq(0)
+      expect(game.sea_distance(ferry_route(h_train))).to eq(1)
+    end
+
+    it "splits a Gibraltar crossing's zones by area" do
+      silver_coast = %w[U6 1]
+      balearic = ['AA20', 5]
+      forward = game.sea_crossing(:crossing, [silver_coast[0], silver_coast[1].to_i], balearic, [])
+      backward = game.sea_crossing(:crossing, balearic, [silver_coast[0], silver_coast[1].to_i], [])
+
+      expect(game.port_sea_zone('U6', 1)).to eq('North Atlantic (Silver Coast)')
+      expect(game.port_sea_zone('AA20', 5)).to eq('Balearic Sea')
+      expect(forward.areas).to eq(%i[north_sea mediterranean mediterranean])
+      expect(backward.areas).to eq(%i[mediterranean mediterranean north_sea])
+      expect(forward.areas.size).to eq(forward.units)
+    end
+
+    it 'has no areas for a ferry crossing' do
+      chain = game.sea_links(city('B41'), city('G26'), corp).first
+
+      expect(chain[:crossing].areas).to be_nil
+    end
+
+    it 'needs no pool when port tokens already cover the crossing' do
+      token!('I50', corp)
+      token!('I52', corp)
+      route = route_through(four, city('I50'), city('I52'), town('H55'), town('K60'), city('J63'))
+      need = game.sea_pool_need(route)
+
+      expect(need.cost).to eq(1)
+      expect(need.need).to eq(0)
+    end
+
+    it 'builds the pool from the owned markers and Minor H' do
+      buy_pa!(:north_sea)
+
+      expect(game.sea_pool(corp, game.phase)).to eq(north_sea: 2, mediterranean: 0, h: 0)
+      expect(game.sea_pool(minor_h, phase_named('7'))).to eq(north_sea: 0, mediterranean: 0, h: 2)
+    end
+
+    it 'checks whether needs can be split over the pool' do
+      pool = { north_sea: 2, mediterranean: 0, h: 1 }
+      fits = Engine::Game::G18OE::SeaPoolNeed.new(3, 3, { north_sea: 2, mediterranean: 0 }, 1)
+      short = Engine::Game::G18OE::SeaPoolNeed.new(3, 3, { north_sea: 1, mediterranean: 0 }, 1)
+      two = Engine::Game::G18OE::SeaPoolNeed.new(2, 2, { north_sea: 2, mediterranean: 0 }, 1)
+
+      expect(game.sea_pool_coverable?([fits], pool)).to be(true)
+      expect(game.sea_pool_coverable?([short], pool)).to be(false)
+      expect(game.sea_pool_coverable?([two, two], pool)).to be(false)
+    end
+
+    it 'covers two needs by splitting them between a port authority and Minor H' do
+      pool = { north_sea: 2, mediterranean: 0, h: 1 }
+      first = Engine::Game::G18OE::SeaPoolNeed.new(2, 2, { north_sea: 2, mediterranean: 0 }, 1)
+      second = Engine::Game::G18OE::SeaPoolNeed.new(1, 1, { north_sea: 1, mediterranean: 0 }, 1)
+
+      expect(game.sea_pool_coverable?([first, second], pool)).to be(true)
+    end
+
+    it 'does not let a port authority and Minor H cover more zones than the crossing has' do
+      pool = { north_sea: 2, mediterranean: 0, h: 1 }
+      over = Engine::Game::G18OE::SeaPoolNeed.new(1, 2, { north_sea: 1, mediterranean: 0 }, 1)
+
+      expect(game.sea_pool_coverable?([over], pool)).to be(false)
+    end
+
+    it 'keeps a route with more cities than its level too long with a port authority and Minor H' do
+      buy_pa!(:north_sea)
+      ability = minor_h.abilities.first
+      minor_h.remove_ability(ability)
+      corp.add_ability(ability)
+      token!('I50', corp)
+      token!('I52', corp)
+      route = route_through(two_plus_two, city('I50'), city('I52'), town('H55'), town('K60'), city('J63'))
+      need = game.sea_pool_need(route)
+
+      expect(need.need).to be > need.cost
+      expect(game.sea_distance(route)).to eq(need.cost)
+      expect { game.check_distance(route, route.visited_stops) }.to raise_error(Engine::RouteTooLong)
+    end
+
+    it 'caps a Mediterranean port authority at the crossing’s Mediterranean zones' do
+      major = start_major!(game, 'LNWR', game.players[0])
+      fund!(game, major, 125)
+      game.buy_port_authority!(major, :mediterranean)
+      lay_code!('U6', 'city=revenue:30;path=a:1,b:_0')
+      lay_code!('AA20', 'city=revenue:30;path=a:5,b:_0')
+      token!('AA20', major)
+      two_plus_two.owner = major
+      route = explicit_route(two_plus_two, city('U6'), city('AA20'))
+      need = game.sea_pool_need(route)
+
+      expect(game.sea_legs(route).first.areas).to eq(%i[north_sea mediterranean mediterranean])
+      expect(need.cost).to eq(2)
+      expect(need.pa_eligible).to eq(north_sea: 0, mediterranean: 1)
+    end
+  end
+
+  describe 'sharing the pool across the railroad’s trains (§11.3.4)' do
+    include_context 'with 18OE route helpers'
+
+    let(:corp) { game.corporation_by_id('DSJ') }
+    let(:first_train) { buy_train!('2+2') }
+    let(:second_train) { buy_train!('2+2') }
+
+    def share(*routes)
+      routes.each { |route| route.routes = routes }
+      routes
+    end
+
+    def long_crossing(train)
+      explicit_route(train, city('I50'), town('K60'), city('J63'))
+    end
+
+    def land_then_crossing(train)
+      explicit_route(train, city('I52'), town('H55'), city('I50'))
+    end
+
+    before do
+      baltic!
+      lay_code!('I52', 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0')
+      token!('I52', corp)
+      token!('J63', corp)
+      fund!(game, corp, 125)
+      game.buy_port_authority!(corp, :north_sea)
+    end
+
+    it 'splits the port authority across two trains' do
+      token!('I50', corp)
+      first, second = share(land_then_crossing(first_train), long_crossing(second_train))
+
+      expect(game.sea_pool_need(first).need).to eq(1)
+      expect(game.sea_pool_need(second).need).to eq(1)
+      expect { game.routes_revenue([first, second]) }.not_to raise_error
+      expect(first.revenue).to eq(50)
+      expect(second.revenue).to eq(70)
+    end
+
+    it 'gives the pool to the train earning more and makes the other too long' do
+      rich, poor = share(long_crossing(first_train), land_then_crossing(second_train))
+
+      expect(rich.revenue).to eq(70)
+      expect { poor.revenue }.to raise_error(Engine::RouteTooLong)
+    end
+
+    it 'gives the pool to the train earning more whichever train is listed first' do
+      poor, rich = share(land_then_crossing(second_train), long_crossing(first_train))
+
+      expect(rich.revenue).to eq(70)
+      expect { poor.revenue }.to raise_error(Engine::RouteTooLong)
+    end
+
+    it 'rejects a run whose trains need more than the railroad’s pool' do
+      routes = share(long_crossing(first_train), land_then_crossing(second_train))
+
+      expect { game.routes_revenue(routes) }.to raise_error(Engine::GameError, /do not cover every train/)
+    end
+
+    it 'recomputes coverage when another train’s route changes' do
+      rich, poor = share(long_crossing(first_train), land_then_crossing(second_train))
+      rich.revenue
+      expect { poor.revenue }.to raise_error(Engine::RouteTooLong)
+
+      land = Engine::Route.new(game, game.phase, first_train, routes: [])
+      land.connection_data << land.segment(land.select(town('K60'), city('J63')).first, left: town('K60'))
+      routes = share(land, poor)
+      routes.each { |route| route.clear_cache!(all: true) }
+
+      expect { poor.revenue }.not_to raise_error
+      expect(game.sea_distance(poor)).to eq(0)
+    end
+
+    it 'covers a freshly built identical route set' do
+      rich, poor = share(long_crossing(first_train), land_then_crossing(second_train))
+      rich.revenue
+      expect { poor.revenue }.to raise_error(Engine::RouteTooLong)
+
+      again = share(long_crossing(first_train), land_then_crossing(second_train))
+
+      expect(again.first.revenue).to eq(70)
+      expect { again.last.revenue }.to raise_error(Engine::RouteTooLong)
+    end
+
+    it 'updates coverage when a port token is placed' do
+      rich, poor = share(long_crossing(first_train), land_then_crossing(second_train))
+      expect { poor.revenue }.to raise_error(Engine::RouteTooLong)
+
+      token!('I50', corp)
+      [rich, poor].each { |route| route.clear_cache!(all: true) }
+
+      expect(rich.revenue).to eq(70)
+      expect(poor.revenue).to eq(50)
+    end
+
+    it 'pools Minor H and a port authority for one train' do
+      minor_h = game.corporation_by_id('H')
+      ability = minor_h.abilities.first
+      minor_h.remove_ability(ability)
+      corp.add_ability(ability)
+      route = share(long_crossing(first_train)).first
+
+      expect(game.sea_pool_total(corp, game.phase)).to eq(3)
+      expect(route.revenue).to eq(70)
+    end
+  end
+
   describe 'connection and legality (§11.3.4, §11.3.6, §11.3.7)' do
     include_context 'with 18OE route helpers'
 
@@ -447,6 +741,14 @@ describe 'G18OE sea routes (§11.3.4, §11.3.6, §11.3.7, §11.3.8)' do
       expect(Array(step.help).join).not_to include('across the sea')
       token!('I50', corp)
       expect(Array(step.help).join).to include('Click a city or town across the sea to add a crossing')
+    end
+
+    it 'explains the shared pool only for a railroad with a port authority or Minor H' do
+      token!('I50', corp)
+      expect(Array(step.help).join).not_to include('shared by its trains')
+      fund!(game, corp, 125)
+      game.buy_port_authority!(corp, :north_sea)
+      expect(Array(step.help).join).to include('shared by its trains; the trains earning most use it first.')
     end
   end
 

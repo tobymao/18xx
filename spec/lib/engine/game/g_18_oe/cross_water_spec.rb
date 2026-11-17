@@ -168,6 +168,39 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       token!('I20', gswr)
       expect(game.cross_water_tile_fee(gswr, game.hex_by_id('J23'), tile('4', 2))).to eq(5)
     end
+
+    it 'cuts the tile fee by two zones with a port authority (§11.1.6)' do
+      game.instance_variable_get(:@port_authorities)[dsj] = [:north_sea]
+      token!('I50', dsj)
+      game.clear_graph
+      expect(game.cross_water_tile_fee(dsj, game.hex_by_id('D41'), tile('4', 0))).to eq(0)
+    end
+
+    describe 'ferries with a port authority (§11.1.6)' do
+      let(:gswr) { game.corporation_by_id('GSWR') }
+
+      before do
+        token!('I20', gswr)
+        allow(game).to receive(:ferry_links).and_wrap_original do |original, hex_id, exit|
+          original.call(hex_id, exit).map { |other, distance| [other, distance + 1] }
+        end
+      end
+
+      def fee = game.cross_water_tile_fee(gswr, game.hex_by_id('J23'), tile('4', 2))
+
+      it 'cuts ferry distance by two within the matching sea' do
+        expect(fee).to eq(10)
+        game.instance_variable_get(:@port_authorities)[gswr] = [:north_sea]
+        game.clear_graph
+        expect(fee).to eq(0)
+      end
+
+      it 'leaves ferry distance alone for the other sea' do
+        game.instance_variable_get(:@port_authorities)[gswr] = [:mediterranean]
+        game.clear_graph
+        expect(fee).to eq(10)
+      end
+    end
   end
 
   describe 'tokens across water (§11.2.1)' do
@@ -182,6 +215,24 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     it 'charges £40 per sea zone for three zones (§11.2.1 example)' do
       lnwr = game.corporation_by_id('LNWR')
       token!('M28', lnwr)
+      expect(game.cross_water_token_fee(lnwr, christiania)).to eq(120)
+    end
+
+    it 'cuts the token fee by two zones with a port authority (§11.2.1)' do
+      lnwr = game.corporation_by_id('LNWR')
+      game.instance_variable_get(:@port_authorities)[lnwr] = [:north_sea]
+      token!('M28', lnwr)
+      expect(game.cross_water_token_fee(lnwr, christiania)).to eq(40)
+    end
+
+    it 'ignores Minor H and the other sea for fees' do
+      lnwr = start_major!(game, 'LNWR', game.players.first)
+      game.instance_variable_get(:@port_authorities)[lnwr] = [:mediterranean]
+      token!('M28', lnwr)
+      expect(game.cross_water_token_fee(lnwr, christiania)).to eq(120)
+      game.add_minor_charter!(game.corporation_by_id('H'), lnwr)
+      game.clear_graph
+      expect(game.minor_h_reduction?(lnwr)).to be(true)
       expect(game.cross_water_token_fee(lnwr, christiania)).to eq(120)
     end
 

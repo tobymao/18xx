@@ -5,6 +5,8 @@ require_relative 'sea_crossing'
 module Engine
   module Game
     module G18OE
+      SeaPoolNeed = Struct.new(:cost, :need, :pa_eligible, :h_eligible)
+
       module SeaRoutes
         def ferry_track?(path)
           path.color == self.class::FERRY_TRACK_COLOR
@@ -23,8 +25,8 @@ module Engine
           sea_traffic?(path)
         end
 
-        def port_token_distance(phase)
-          self.class::PORT_TOKEN_DISTANCE_BY_PHASE[phase.name]
+        def sea_reduction(phase)
+          self.class::SEA_REDUCTION_BY_PHASE[phase.name]
         end
 
         def sea_channel_passage_cost
@@ -108,16 +110,79 @@ module Engine
           route.connection_data.filter_map { |connection| connection[:chain][:crossing] } + ferry_legs(route)
         end
 
+        def sea_pool(corporation, phase)
+          owned = port_authorities(corporation)
+          pool = port_authority_seas.to_h { |sea| [sea, owned.include?(sea) ? port_authority_reduction : 0] }
+          pool[:h] = minor_h_reduction?(corporation) ? (sea_reduction(phase) || 0) : 0
+          pool
+        end
+
+        def sea_pool_need(route, legs = sea_legs(route))
+          pool = sea_pool(route.corporation, route.phase)
+          reduction = sea_reduction(route.phase) || 0
+          needs = sea_leg_assignments(route, legs).map do |assignment, tokens|
+            assigned_sea_pool_need(route, legs, tokens, assignment, reduction, pool)
+          end
+          coverable = needs.select { |need| sea_pool_coverable?([need], pool) }
+          (coverable.empty? ? needs : coverable).each_with_index.min_by { |need, index| [need.cost, index] }.first
+        end
+
+        def sea_pool_coverable?(needs, pool)
+          return true if needs.empty?
+          return false if needs.any? { |need| need.need > need.cost }
+
+          first = needs.first
+          rest = needs[1..]
+          seas = port_authority_seas
+          options = seas.map { |sea| (0..[first.pa_eligible[sea], pool[sea]].min).to_a }
+          options << (0..[first.h_eligible, pool[:h]].min).to_a
+          options.first.product(*options[1..]).any? do |split|
+            next false unless split.sum == first.need
+
+            remaining = pool.dup
+            seas.each_with_index { |sea, index| remaining[sea] -= split[index] }
+            remaining[:h] -= split.last
+            sea_pool_coverable?(rest, remaining)
+          end
+        end
+
+        def sea_pool_total(corporation, phase)
+          sea_pool(corporation, phase).values.sum
+        end
+
+        def sea_pool_allocation(routes)
+          legs = routes.to_h { |route| [route, route.corporation ? sea_legs(route) : []] }
+          needs = routes.reject { |route| legs[route].empty? }.to_h { |route| [route, sea_pool_need(route, legs[route])] }
+          needy = needs.keys.select { |route| needs[route].need.positive? }
+          return routes.to_h { |route| [route, true] } if needy.empty?
+
+          pool = sea_pool(needy.first.corporation, needy.first.phase)
+          return routes.to_h { |route| [route, true] } if sea_pool_coverable?(needy.map { |route| needs[route] }, pool)
+
+          values = needy.to_h { |route| [route, covered_sea_pool_revenue(route, needs[route])] }
+          best = (0..needy.size).flat_map { |size| needy.combination(size).to_a }
+            .select { |subset| sea_pool_coverable?(subset.map { |route| needs[route] }, pool) }
+            .min_by { |subset| [-subset.sum { |route| values[route] }, -subset.size, subset.map { |route| needy.index(route) }] }
+          routes.to_h { |route| [route, !needy.include?(route) || best.include?(route)] }
+        end
+
         def sea_distance(route)
-          corporation = route.corporation
-          return 0 unless corporation
+          return 0 unless route.corporation
 
           legs = sea_legs(route)
           return 0 if legs.empty?
 
-          tokens = legs.flat_map(&:nodes).uniq.select { |node| node.city? && city_tokened_by?(node, corporation) }
-          token_legs = tokens.map { |token| legs.each_index.select { |index| legs[index].nodes.include?(token) } }
-          cheapest_sea_distance(legs, token_legs, port_token_distance(route.phase) || 0, Array.new(legs.size, 0))
+          if @sea_pool_covered&.key?(route)
+            need = sea_pool_need(route, legs)
+            return need.cost - need.need
+          end
+          return cheapest_sea_cost(route, legs) if sea_pool_total(route.corporation, route.phase).zero?
+
+          need = sea_pool_need(route, legs)
+          return need.cost unless need.need.positive?
+
+          routes = route.routes.include?(route) ? route.routes : [route]
+          sea_pool_allocation(routes)[route] ? need.cost - need.need : need.cost
         end
 
         def route_train_distance(route, train)
@@ -151,22 +216,97 @@ module Engine
           route_trains(corporation).map { |train| distance(train).first }.max || 0
         end
 
+        def sea_boundary_zones(from_sea, to_sea)
+          @sea_boundary_zones ||= {}
+          @sea_boundary_zones[[from_sea, to_sea]] ||= self.class::SEA_ZONES.keys.select do |zone|
+            sea(zone) == from_sea && sea_zone_neighbors[zone].any? { |other| sea(other) == to_sea }
+          end
+        end
+
+        def sea_crossing_areas(from_port, to_port, units)
+          from_zone = port_sea_zone(*from_port)
+          to_zone = port_sea_zone(*to_port)
+          from_sea = sea(from_zone)
+          to_sea = sea(to_zone)
+          return [from_sea] * units if from_sea == to_sea
+
+          boundary = sea_boundary_zones(from_sea, to_sea).min_by do |zone|
+            sea_zone_distance(from_zone, zone) + sea_zone_distance(zone, to_zone)
+          end
+          from_count = [[boundary ? sea_zone_distance(from_zone, boundary) : units, units].min, 0].max
+          ([from_sea] * from_count) + ([to_sea] * (units - from_count))
+        end
+
+        def check_sea_pool_coverage!(routes)
+          first = routes.first
+          return if !first&.corporation || sea_pool_total(first.corporation, first.phase).zero?
+          return unless sea_pool_allocation(routes).value?(false)
+
+          raise GameError, 'Port authority and Minor H reductions do not cover every train'
+        end
+
         def sea_connectivityable?(corporation)
           !graph_for_entity(corporation).sea_connectivity(corporation).landings.empty?
         end
 
         private
 
-        def cheapest_sea_distance(legs, token_legs, reduction, counts)
-          return legs.each_index.sum { |index| [legs[index].units - (reduction * counts[index]), 0].max } if token_legs.empty?
+        def covered_sea_pool_revenue(route, need)
+          previous = @sea_pool_covered
+          @sea_pool_covered = { route => need }
+          revenue_for(route, compute_stops(route))
+        rescue GameError
+          0
+        ensure
+          @sea_pool_covered = previous
+        end
 
-          rest = token_legs[1..]
-          options = [nil] + token_legs.first
-          options.map do |index|
-            assigned = counts.dup
-            assigned[index] += 1 if index
-            cheapest_sea_distance(legs, rest, reduction, assigned)
+        def sea_leg_assignments(route, legs)
+          tokens = legs.flat_map(&:nodes).uniq.select { |node| node.city? && city_tokened_by?(node, route.corporation) }
+          choices = tokens.map { |token| [nil] + legs.each_index.select { |index| legs[index].nodes.include?(token) } }
+          assignments = choices.empty? ? [[]] : choices.first.product(*choices[1..])
+          assignments.map { |assignment| [assignment, tokens] }
+        end
+
+        def cheapest_sea_cost(route, legs)
+          reduction = sea_reduction(route.phase) || 0
+          sea_leg_assignments(route, legs).map do |assignment, tokens|
+            legs.each_with_index.sum do |leg, index|
+              at_leg = tokens.each_index.select { |token_index| assignment[token_index] == index }.map { |i| tokens[i] }
+              zones = remaining_leg_zones(leg, at_leg, reduction)
+              zones.is_a?(Array) ? zones.size : zones
+            end
           end.min
+        end
+
+        def assigned_sea_pool_need(route, legs, tokens, assignment, reduction, pool)
+          remaining = legs.each_with_index.map do |leg, index|
+            at_leg = tokens.each_index.select { |token_index| assignment[token_index] == index }.map { |i| tokens[i] }
+            remaining_leg_zones(leg, at_leg, reduction)
+          end
+          cost = remaining.sum { |zones| zones.is_a?(Array) ? zones.size : zones }
+          crossing_zones = remaining.select { |zones| zones.is_a?(Array) }.flatten
+          pa_eligible = port_authority_seas.to_h { |sea| [sea, [pool[sea], crossing_zones.count(sea)].min] }
+          h_eligible = [pool[:h], cost].min
+          stops = route.visited_stops.count { |stop| !stop.town? }
+          SeaPoolNeed.new(cost, [stops + cost - city_limit_level(route.train), 0].max, pa_eligible, h_eligible)
+        end
+
+        def remaining_leg_zones(leg, tokens_at_leg, reduction)
+          areas = leg.areas
+          return [leg.units - (reduction * tokens_at_leg.size), 0].max unless areas
+
+          front = tokens_at_leg.include?(leg.nodes[0]) ? reduction : 0
+          back = tokens_at_leg.include?(leg.nodes[1]) ? reduction : 0
+          trimmed = areas.drop(front)
+          trimmed.first([trimmed.size - back, 0].max)
+        end
+
+        def city_limit_level(train)
+          distance = train.distance
+          return distance if distance.is_a?(Numeric)
+
+          (distance.find { |row| row['nodes'].include?('city') } || distance.first)['pay']
         end
 
         def check_sea_crossing_separation(route)
