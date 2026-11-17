@@ -2,6 +2,7 @@
 
 require_relative '../../../step/token'
 require_relative 'skip_abbreviated_round'
+require_relative 'track_rights_tokener'
 
 module Engine
   module Game
@@ -9,18 +10,17 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           include SkipAbbreviatedRound
+          include TrackRightsTokener
 
           def actions(entity)
             return [] if skip?
-            return ACTIONS if entity == current_entity && !@round.tokened && @game.abilities(entity, :token)
+            return ACTIONS if entity == current_entity && !@round.tokened && unconnected_token_ability?(entity)
 
             super
           end
 
           def available_hex(entity, hex)
-            return nil unless @game.city_in_track_rights?(entity, hex)
-
-            super
+            track_rights_available_hex(entity, hex)
           end
 
           def process_place_token(action)
@@ -29,24 +29,17 @@ module Engine
             super
           end
 
-          def check_connected(entity, city, hex)
-            city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
-            unless @game.city_in_track_rights?(entity, hex)
-              raise GameError, "Cannot place token on #{hex.name} because it is outside #{entity.name}'s track rights zone"
-            end
-
-            return if @game.loading || @game.token_graph_for_entity(entity).connected_nodes(entity)[city]
-
-            raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
-          end
-
           private
 
-          def token_cost(action)
-            cost = action.token.price + @game.cross_water_token_fee(action.entity, action.city)
-            return cost if !action.cost || action.cost == cost
+          def unconnected_token_ability?(entity)
+            return false unless entity.next_token
 
-            raise GameError, "Token costs #{@game.format_currency(cost)}, not #{@game.format_currency(action.cost)}"
+            @game.abilities(entity, :token) { |ability| return true unless ability.connected }
+            false
+          end
+
+          def token_cost(action)
+            validated_token_cost(action, action.token.price + @game.cross_water_token_fee(action.entity, action.city))
           end
         end
       end
