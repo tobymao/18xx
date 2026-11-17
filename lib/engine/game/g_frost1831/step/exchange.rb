@@ -7,7 +7,6 @@ module Engine
   module Game
     module GFrost1831
       module Step
-        # Affiliate: exchanged in a Stock Round for a Faction certificate
         class Exchange < Engine::Step::Exchange
           include FactionCertificates
 

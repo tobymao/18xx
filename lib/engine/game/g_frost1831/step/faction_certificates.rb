@@ -4,12 +4,9 @@ module Engine
   module Game
     module GFrost1831
       module Step
-        # Buying a Faction certificate (rules 8.2.2, 8.2.4, 8.4.2), shared by the
-        # Stock Round and the Affiliate exchange.
         module FactionCertificates
           MAX_FACTION_PERCENT = 60
 
-          # Shown for the Affiliate exchange buttons; the views pass a Share
           def can_gain?(entity, bundle, exchange: false)
             faction = bundle&.corporation
             return super if faction&.type != :faction
@@ -26,11 +23,9 @@ module Engine
               player.percent_of(faction) + faction.presidents_share.percent <= MAX_FACTION_PERCENT
           end
 
-          # Each certificate gives the Faction 1 Influence Cube, which moves the Government
           def gain_faction_certificate(player, faction, price = 0, bundle: nil)
             was_founded = faction.floated?
             player.spend(price, @game.bank) if price.positive?
-            # The first certificate of a Faction is the President's
             bundle = faction.presidents_share.to_bundle if faction.presidents_share.owner == faction.ipo_owner
             @game.share_pool.transfer_shares(bundle || faction.ipo_shares.find(&:buyable).to_bundle, player)
 
@@ -44,7 +39,6 @@ module Engine
             player.percent_of(opposite).positive?
           end
 
-          # The President chooses a reserved city for the home base
           def found_faction(faction)
             @log << "#{faction.name} is founded"
             @round.pending_tokens << {
