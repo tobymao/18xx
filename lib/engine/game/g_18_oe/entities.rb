@@ -35,6 +35,20 @@ module Engine
             desc: 'During any RR\'s Place Token step, the owner may place one station token from any '\
                   'controlled RR on the map for free (sea-zone crossing costs still apply). '\
                   'If also owning the White Cliffs Ferry, this private may pay for that token\'s placement cost.',
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'player',
+                when: 'owning_player_token',
+                hexes: [],
+                from_owner: true,
+                connected: true,
+                discount: 1,
+                count: 1,
+                closed_when_used_up: true,
+                special_only: true,
+              },
+            ],
             auction_row: 2,
           },
           {
