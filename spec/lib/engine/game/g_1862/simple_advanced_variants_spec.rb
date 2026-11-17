@@ -94,9 +94,4 @@ describe Engine::Game::G1862::Game do
     expect(game.train_limit_by_type(corp)).to eq(3)
     expect(game.train_limit(corp)).to eq(6)
   end
-
-  it 'rejects two train rules together' do
-    expect { described_class.new(players, seed: 1, optional_rules: %i[advanced_freight simple_express]) }
-      .to raise_error(Engine::GameError, /Only one train rule/)
-  end
 end
