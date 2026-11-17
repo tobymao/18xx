@@ -907,6 +907,10 @@ module Engine
           @log << '-- Event: Consolidation phase triggered --'
         end
 
+        def consolidation_round_finished!
+          @consolidation_complete = true
+        end
+
         def next_round!
           @round =
             case @round
@@ -934,10 +938,6 @@ module Engine
             when Round::G18OE::Concession
               reorder_players_after_concessions!
               new_stock_round
-            when Round::G18OE::Consolidation
-              @consolidation_complete = true
-              remove_major_par_markers!
-              super
             when Engine::Round::Stock
               @reserved_shares = []
               remove_major_par_markers!

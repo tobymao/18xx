@@ -13,6 +13,13 @@ module Engine
         def name
           'Consolidation Round'
         end
+
+        protected
+
+        def finish_round
+          super
+          @game.consolidation_round_finished!
+        end
       end
     end
   end

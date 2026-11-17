@@ -93,8 +93,16 @@ describe 'G18OE consolidation (§5.1.5, §10.6)' do
   end
 
   it 'is followed by operating rounds in the same turn' do
-    consolidation!([%w[LNWR], %w[PLM], %w[SFAI]])
+    round = consolidation!([[], [], []])
+    start_major!(game, 'LNWR', game.players.first)
     turn = game.turn
+    expect(game.consolidation_complete).to be_falsey
+    game.players.each(&:pass!)
+    round.next_entity!
+
+    expect(game.consolidation_complete).to be(true)
+    expect(game.round).to eq(round)
+
     game.next_round!
 
     expect(game.round).to be_a(Engine::Round::G18OE::Operating)
