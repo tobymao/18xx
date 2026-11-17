@@ -253,9 +253,29 @@ module Engine
         end
 
         def bundles_for_corporation(share_holder, corporation, shares: nil)
-          return super if share_holder.player? && major?(corporation)
+          return [] unless corporation.ipoed
 
-          []
+          shares ||= share_holder.shares_of(corporation)
+          return [] if shares.empty?
+
+          regular_shares, other_shares = shares
+                                           .sort_by { |h| [h.president ? 1 : 0] }
+                                           .partition { |share| share.percent == corporation.share_percent }
+
+          bundles = []
+          prefixes(regular_shares).product(prefixes(other_shares)).each do |regular_bundle, other_bundle|
+            bundle_shares = regular_bundle + other_bundle
+            next if bundle_shares.empty?
+
+            bundles << Engine::ShareBundle.new(bundle_shares, bundle_shares.sum(&:percent))
+          end
+
+          # Put bundles with "other" shares further back in the array
+          bundles.sort_by { |b| [b.percent, b.shares.map { |s| s.percent != corporation.share_percent ? 1 : 0 }] }
+        end
+
+        def prefixes(array)
+          (0..array.size).map { |i| array.take(i) }
         end
 
         def shares_for_presidency_swap(shares, num_shares)
