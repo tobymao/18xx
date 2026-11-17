@@ -63,6 +63,89 @@ describe 'G18OE ending the game (§13)' do
     expect(Engine::Game::G18OE::Game::GAME_END_CHECK).to eq(bank: :current_or, final_phase: :one_more_full_or_set)
   end
 
+  [
+    [Engine::Game::G18OE::Game, []],
+    [Engine::Game::G18OEUKFR::Game, []],
+    [Engine::Game::G18OE::Game, [:medium_start]],
+  ].each do |klass, options|
+    context "after Consolidation in #{klass::GAME_TITLE} with #{options}" do
+      let(:optional_rules) { options }
+      let(:game) { new_game(klass: klass, optional_rules: optional_rules) }
+
+      def enter_final_consolidation!(or_num)
+        start_major!(game, 'LNWR', game.players.first)
+        game.instance_variable_set(:@operating_rounds, 2)
+        enter_round!(game, game.operating_round(or_num))
+        game.after_phase_change('8')
+        game.event_consolidation_triggered!
+        (3 - or_num).times { game.next_round! }
+        expect(game.round).to be_a(Engine::Round::G18OE::Consolidation)
+        game.instance_variable_set(:@final_turn, game.turn)
+        expect(game.consolidation_complete).to be_falsey
+        game.players.each(&:pass!)
+        game.round.next_entity!
+        expect(game.consolidation_complete).to be(true)
+      end
+
+      it 'schedules three final ORs when level 8 arrives in OR2 (§13)' do
+        enter_final_consolidation!(2)
+
+        game.next_round!
+
+        expect(game.operating_rounds).to eq(3)
+      end
+
+      it 'retains two final ORs when level 8 arrives in OR1 (§13)' do
+        enter_final_consolidation!(1)
+
+        game.next_round!
+
+        expect(game.operating_rounds).to eq(2)
+      end
+
+      it 'plays three final ORs and abbreviates only OR3 after level 8 in OR2 (§13)' do
+        enter_final_consolidation!(2)
+
+        rounds = Array.new(3) do
+          game.next_round!
+          expect(game.round).to be_a(Engine::Round::G18OE::Operating)
+          [game.round.round_num, game.abbreviated_operating_round?]
+        end
+
+        expect(rounds).to eq([[1, false], [2, false], [3, true]])
+      end
+
+      it 'completes Consolidation and immediately begins OR1 (§5.1.5)' do
+        enter_final_consolidation!(2)
+        turn = game.turn
+
+        game.next_round!
+
+        expect(game.consolidation_complete).to be(true)
+        expect(game.round).to be_a(Engine::Round::G18OE::Operating)
+        expect(game.round.round_num).to eq(1)
+        expect(game.turn).to eq(turn)
+      end
+
+      context 'with Long Endgame' do
+        let(:optional_rules) { options + [:long_endgame] }
+
+        it 'plays all three final ORs in full after level 8 in OR2 (PB5.3)' do
+          enter_final_consolidation!(2)
+
+          rounds = Array.new(3) do
+            game.next_round!
+            expect(game.round).to be_a(Engine::Round::G18OE::Operating)
+            [game.round.round_num, game.abbreviated_operating_round?]
+          end
+
+          expect(game.operating_rounds).to eq(3)
+          expect(rounds).to eq([[1, false], [2, false], [3, false]])
+        end
+      end
+    end
+  end
+
   describe 'the abbreviated final OR' do
     let(:president) { game.players.first }
     let(:major) { start_major!(game, 'LNWR', president) }
