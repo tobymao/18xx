@@ -15,6 +15,10 @@ module Engine
       @trains.each { |train| train.owner = self }
       @upcoming = @trains.dup
       @discarded = []
+      # Next index to hand out for each train type. Seeded above the highest
+      # index at setup and only ever increases, so clone ids never repeat.
+      @next_index = Hash.new(0)
+      @trains.select(&:unlimited).each { |t| @next_index[t.sym] = [@next_index[t.sym], t.index + 1].max }
     end
 
     def export!
@@ -86,8 +90,14 @@ module Engine
       deleted = @upcoming.delete(train)
       return if !index || !deleted&.unlimited || (@upcoming[index]&.name == train.name)
 
-      insert_train(train.clone_unlimited, index)
+      insert_train(train.clone_unlimited(index: next_clone_index(train)), index)
       @game.update_trains_cache
+    end
+
+    def next_clone_index(train)
+      index = @next_index[train.sym]
+      @next_index[train.sym] = index + 1
+      index
     end
 
     def add_train(train)
