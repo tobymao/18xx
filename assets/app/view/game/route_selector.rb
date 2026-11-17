@@ -268,7 +268,8 @@ module View
         end
 
         auto = lambda do
-          router = Engine::AutoRouter.new(@game, flash)
+          router_class = @game.respond_to?(:auto_router_class) ? @game.auto_router_class : Engine::AutoRouter
+          router = router_class.new(@game, flash)
           store(:autorouter_running, true, skip: true)
           store(:autorouter, router)
           router.compute(

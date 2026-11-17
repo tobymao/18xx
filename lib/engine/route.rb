@@ -59,6 +59,7 @@ module Engine
 
       @halts = nil
       @connection_data = nil
+      @loop_end = nil
       @last_node = nil
       @last_offboard = []
     end
@@ -147,7 +148,45 @@ module Engine
       { left: left, right: right, chain: chain }
     end
 
+    # A game can let a route end at a stop it already visits (1833NE: an
+    # interconnection extension back to a city on the train's own run).
+    # Clicking the route's first or last stop then joins the other end of the
+    # route to it, and clicking that stop again removes the join.
+    def toggle_loop(node)
+      return false if !@game.respond_to?(:route_may_revisit?) || connection_data.size < 2
+
+      if @loop_end && head[:left] == tail[:right]
+        return false unless node == head[:left]
+
+        @loop_end == :tail ? connection_data.pop : connection_data.shift
+        @loop_end = nil
+        return true
+      end
+
+      if node == head[:left] && (chain = select(tail[:right], node)[0])
+        connection_data << segment(chain, left: tail[:right])
+        @loop_end = :tail
+      elsif node == tail[:right] && (chain = select(head[:left], node)[0])
+        connection_data.unshift(segment(chain, right: head[:left]))
+        @loop_end = :head
+      else
+        return false
+      end
+      return true if @game.route_may_revisit?(self, node)
+
+      # the game does not allow returning to this stop: undo the join
+      @loop_end == :tail ? connection_data.pop : connection_data.shift
+      @loop_end = nil
+      false
+    end
+
     def touch_node(node)
+      if !connection_data.empty? && !local_connection? && toggle_loop(node)
+        @halts = nil
+        @routes.each { |r| r.clear_cache!(all: true) }
+        return
+      end
+
       if !connection_data.empty? && !local_connection?
         revisited = node.revisitable? && extend!(node)
         unless revisited
@@ -275,7 +314,10 @@ module Engine
       connection_data.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
-        raise ReusesCity, "Cannot use #{right.hex.name} twice" if cycles[right] && !right.revisitable?
+        if cycles[right] && !right.revisitable? &&
+           !(@game.respond_to?(:route_may_revisit?) && @game.route_may_revisit?(self, right))
+          raise ReusesCity, "Cannot use #{right.hex.name} twice"
+        end
 
         cycles[right] = true
       end

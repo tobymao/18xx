@@ -7,6 +7,7 @@ require_relative 'meta'
 require_relative '../company_price_up_to_face'
 require_relative '../base'
 require_relative 'graph'
+require_relative 'auto_router'
 
 module Engine
   module Game
@@ -260,13 +261,14 @@ module Engine
           @extension_graph ||= G1833NE::Graph.new(self)
         end
 
-        def autorouter_graph(_entity)
-          extension_graph
+        def auto_router_class
+          G1833NE::AutoRouter
         end
 
         def clear_graph_for_entity(entity)
           super
           @extension_graph&.clear
+          @route_memos = nil
         end
 
         def for_graph_city_tokened_by?(city, corporation, graph)
@@ -387,12 +389,37 @@ module Engine
           extension_track(route).to_h { |p| [p, '12 6'] }
         end
 
-        def main_range(route, stops = route.visited_stops, train = route.train)
+        # A route's main range is asked for many times while its paid stops are
+        # chosen, so it is kept until the route's connections or train change.
+        def route_memo(route)
+          connections = route.connection_data
+          @route_memos ||= {}
+          @route_memos.clear if @route_memos.size > 20_000
+          memo = @route_memos[route]
+          same = memo && memo[:train] == route.train && memo[:connections].size == connections.size &&
+                 memo[:connections].each_with_index.all? { |c, i| c.equal?(connections[i]) }
+          same ? memo : (@route_memos[route] = { train: route.train, connections: connections.dup })
+        end
+
+        # The route's stops in running order. A stop the route returns to appears twice.
+        def running_stops(route)
+          connections = route.connection_data.select { |c| c[:left] && c[:right] }
+          return [] if connections.empty?
+
+          first, second = connections
+          stop = second && [second[:left], second[:right]].include?(first[:left]) ? first[:right] : first[:left]
+          [stop] + connections.map { |c| stop = (c[:left] == stop ? c[:right] : c[:left]) }
+        end
+
+        def main_range(route, stops = nil, train = route.train)
+          return route_memo(route)[:main] ||= main_range(route, running_stops(route), train) unless stops
+
           main = train.distance.reject { |h| h['extension'] }
           [stops, stops.reverse].filter_map do |ordered|
             longest = (1..ordered.size).select do |n|
               prefix = ordered.first(n)
-              within_main_range?(main, prefix, train) &&
+              prefix.uniq.size == n &&
+                within_main_range?(main, prefix, train) &&
                 prefix[1..-2].none? { |s| s.city? && blocked_for?(s, route.corporation) }
             end.max || 0
             range = ordered.first(longest)
@@ -401,16 +428,29 @@ module Engine
         end
 
         def extension_stops(route)
-          route.visited_stops - main_range(route, route.visited_stops)
+          route_memo(route)[:extension] ||= begin
+            stops = running_stops(route)
+            main = main_range(route)
+            (stops.first(main.size) == main ? stops : stops.reverse).drop(main.size)
+          end
         end
 
         def extension_track(route)
-          extension = extension_stops(route)
-          return [] if extension.empty?
+          count = extension_stops(route).size
+          return [] if count.zero?
 
-          route.connection_data
-            .select { |c| c[:chain] && (extension.include?(c[:left]) || extension.include?(c[:right])) }
-            .flat_map { |c| c[:chain][:paths] }
+          main = main_range(route)
+          connections = route.connection_data.select { |c| c[:left] && c[:right] }
+          connections = connections.reverse unless running_stops(route).first(main.size) == main
+          connections.last(count).flat_map { |c| c[:chain][:paths] }
+        end
+
+        # A route may return to a stop it already visits only as the last stop
+        # of its extension, and only at an interconnection destination.
+        def route_may_revisit?(route, node)
+          extension = extension_stops(route)
+          extension.last == node && extension.count(node) == 1 && main_range(route).include?(node) &&
+            INTERCONNECTION_BONUSES.any? { |bonus| stop_in_group?(node, bonus[:destination]) }
         end
 
         def connection_bonus_tier
@@ -456,16 +496,18 @@ module Engine
           interconnection_bonus_entries(route, stops).sum { |_label, value| value }
         end
 
-        def interconnection_bonus_entries(route, _stops)
-          range = main_range(route, route.visited_stops)
-          return [] if range.empty?
+        # The extension earns an interconnection when it ends in the destination
+        # and the origin is a paid stop of the train's own run, at least one stop
+        # back from where the extension leaves it. The destination may also be on
+        # the train's own run, but not between the origin and the extension.
+        def interconnection_bonus_entries(route, stops)
+          range = main_range(route)
+          far = extension_stops(route).last
+          return [] if range.size < 2 || far.nil?
 
-          ends = [route.connection_data.first[:left], route.connection_data.last[:right]]
-          far = ends.find { |n| range.none? { |s| s.hex.id == n.hex.id } }
-          return [] if far.nil? || extension_stops(route).empty?
-
+          paid = stops || route.stops
           claims = INTERCONNECTION_BONUSES.map do |bonus|
-            next nil unless any_stop_matches?(range, bonus[:origin])
+            next nil unless interconnection_origin?(range, paid, bonus)
             next nil unless any_stop_matches?([far], bonus[:destination])
 
             value = bonus_value(bonus, route)
@@ -474,6 +516,13 @@ module Engine
 
           best = claims.max_by { |_label, value| value }
           best ? [best] : []
+        end
+
+        def interconnection_origin?(range, paid, bonus)
+          range[0..-2].each_with_index.any? do |origin, index|
+            paid.include?(origin) && any_stop_matches?([origin], bonus[:origin]) &&
+              !any_stop_matches?(range[index..-1], bonus[:destination])
+          end
         end
 
         INTERCONNECTION_BONUSES = [
@@ -527,7 +576,7 @@ module Engine
         end
 
         def direct_bonus_entries(route, _stops)
-          range = main_range(route, route.visited_stops)
+          range = main_range(route)
           return [] if range.size < 2
 
           DIRECT_CONNECTION_BONUSES.map do |bonus|
@@ -580,16 +629,13 @@ module Engine
         def revenue_stops(route)
           return super unless route.connection_hexes
 
-          main_range(route, route.visited_stops)
+          main_range(route)
         end
 
         def revenue_str(route)
-          range = main_range(route, route.visited_stops)
-          ordered = route.visited_stops
-          ordered = ordered.reverse if range.any? && ordered.last == range.first
-          base = ordered.map do |stop|
-            range.include?(stop) ? stop.hex.name : "(#{stop.hex.name})"
-          end.join('-')
+          names = main_range(route).map { |stop| stop.hex.name }
+          names += extension_stops(route).map { |stop| "(#{stop.hex.name})" }
+          base = names.join('-')
 
           entries = direct_bonus_entries(route, nil) + interconnection_bonus_entries(route, nil)
           return base if entries.empty?

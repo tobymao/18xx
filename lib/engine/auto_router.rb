@@ -31,6 +31,13 @@ module Engine
       }
     end
 
+    # The most a route can add to the company's revenue. The search prunes on
+    # this, so a game-specific router whose combinations can pay more than the
+    # sum of their routes overrides it.
+    def estimate_revenue(route)
+      route.revenue
+    end
+
     def real_revenue(routes)
       routes.each do |route|
         route.clear_cache!(only_routes: true)
@@ -49,11 +56,7 @@ module Engine
 
       connections = {}
 
-      graph = if @game.respond_to?(:autorouter_graph)
-                @game.autorouter_graph(corporation)
-              else
-                @game.graph_for_entity(corporation)
-              end
+      graph = @game.graph_for_entity(corporation)
       nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = trains
           .map { |train| node.route_revenue(@game.phase, train) }
@@ -216,7 +219,7 @@ module Engine
       end
 
       train_routes.each do |train, routes|
-        train_routes[train] = routes.sort_by(&:revenue).reverse.take(route_limit)
+        train_routes[train] = routes.sort_by { |route| estimate_revenue(route) }.reverse.take(route_limit)
       end
 
       [train_routes, path_walk_timed_out]
@@ -392,7 +395,7 @@ module Engine
           for (let i = 0; i < trains_to_routes.length; ++i) {
             // the last route is the null route so skip it
             for (let j = 0; j < trains_to_routes[i].length - 1; ++j) {
-              trains_to_routes[i][j].estimate_revenue = trains_to_routes[i][j].revenue;
+              trains_to_routes[i][j].estimate_revenue = this.router.$estimate_revenue(trains_to_routes[i][j]);
             }
           }
           let train_data = null;
