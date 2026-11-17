@@ -35,6 +35,13 @@ module Engine
           TOKENS - @bases_lost
         end
 
+        # The views offer the first certificate in Parliament; the President's
+        # goes last so they show a plain "Parliament Share" (the President's
+        # certificate is still the first one handed out)
+        def ipo_shares
+          super.partition { |share| !share.president }.flatten
+        end
+
         def find_token_by_type(type = nil)
           super || next_base
         end
