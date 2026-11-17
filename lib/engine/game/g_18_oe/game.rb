@@ -9,7 +9,9 @@ require_relative 'sea_routes'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
+require_relative 'round/fast_start'
 require_relative 'step/consolidate'
+require_relative 'step/fast_start_capital'
 require_relative 'step/merge_discard_train'
 require_relative 'step/merge_minor'
 require_relative 'step/merge_offer'
@@ -31,7 +33,7 @@ module Engine
         include G18OE::SeaRoutes
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
-        attr_reader :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability
+        attr_reader :fast_start_minors, :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -430,6 +432,44 @@ module Engine
         TWO_PLAYER_MAX_OWNERSHIP_PERCENT = 70
         EXTENDED_FINAL_OPERATING_ROUNDS = 3
 
+        FAST_START_PACKETS = {
+          3 => [
+            { companies: %w[RSC WS SHTC HMLC A D H J], cash: 920 },
+            { companies: %w[BBBT CCTC BBE B E G K], cash: 920 },
+            { companies: %w[PeC WCF SML C F L M], cash: 920 },
+          ],
+          4 => [
+            { companies: %w[BBBT CCTC WCF A H J], cash: 680 },
+            { companies: %w[WS BBE C G K], cash: 700 },
+            { companies: %w[SHTC HMLC B F L], cash: 700 },
+            { companies: %w[RSC PeC SML D E M], cash: 680 },
+          ],
+          5 => [
+            { companies: %w[SHTC C J K], cash: 540 },
+            { companies: %w[PeC WS BBE G M], cash: 560 },
+            { companies: %w[RSC BBBT HMLC A H], cash: 580 },
+            { companies: %w[WCF B F L], cash: 540 },
+            { companies: %w[CCTC SML D E], cash: 540 },
+          ],
+          6 => [
+            { companies: %w[BBE C K], cash: 460 },
+            { companies: %w[HMLC G M], cash: 480 },
+            { companies: %w[BBBT WCF A H], cash: 460 },
+            { companies: %w[WS CCTC B L], cash: 460 },
+            { companies: %w[RSC PeC SHTC F J], cash: 460 },
+            { companies: %w[SML D E], cash: 440 },
+          ],
+          7 => [
+            { companies: %w[WS BBE K], cash: 425 },
+            { companies: %w[HMLC SML G], cash: 365 },
+            { companies: %w[RSC PeC A H], cash: 405 },
+            { companies: %w[BBBT L M], cash: 405 },
+            { companies: %w[SHTC F J], cash: 385 },
+            { companies: %w[CCTC D E], cash: 385 },
+            { companies: %w[WCF B C], cash: 385 },
+          ],
+        }.freeze
+
         def setup
           super
           @minor_regional_order = []
@@ -449,6 +489,7 @@ module Engine
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
           end
 
+          setup_fast_start! if fast_start?
           setup_patronage_tiles!
           setup_wcf_placeholder!
           setup_minor_k!
@@ -480,6 +521,43 @@ module Engine
         def setup_wcf_placeholder!
           @wcf_placeholder = Engine::Token.new(nil, price: 0, logo: '/logos/18_oe/wcf_reserved.svg', type: :neutral)
           lille_city.exchange_token(@wcf_placeholder, extra_slot: true)
+        end
+
+        def setup_fast_start!
+          @fast_start_minors = []
+          fast_start_packets.sort_by { rand }.zip(@players).each do |packet, player|
+            @bank.spend(packet[:cash], player)
+            packet[:companies].each do |sym|
+              company = company_by_id(sym)
+              company.owner = player
+              player.companies << company
+              next unless company_becomes_minor?(company)
+
+              minor = corporation_by_id(company.sym)
+              @bank.spend(company.value, minor)
+              @fast_start_minors << minor
+            end
+            names = packet[:companies].map { |sym| company_by_id(sym).name }.join('; ')
+            @log << "#{player.name} receives #{names} and #{format_currency(packet[:cash])}"
+          end
+        end
+
+        def fast_start_extra_cash_limit(minor)
+          self.class::MINOR_MAX_TREASURY - company_by_id(minor.id).value
+        end
+
+        def add_fast_start_cash!(minor, amount)
+          player = company_by_id(minor.id).owner
+          if amount.positive?
+            player.spend(amount, minor)
+            @log << "#{player.name} adds #{format_currency(amount)} to #{minor.name}'s treasury"
+          else
+            @log << "#{player.name} adds nothing to #{minor.name}'s treasury"
+          end
+        end
+
+        def fast_start_packets
+          self.class::FAST_START_PACKETS[players.size]
         end
 
         def setup_patronage_tiles!
@@ -524,12 +602,16 @@ module Engine
           @optional_rules.include?(:medium_start)
         end
 
+        def fast_start?
+          @optional_rules.include?(:fast_start)
+        end
+
         def long_endgame?
           @optional_rules.include?(:long_endgame)
         end
 
         def concessions?
-          !medium_start? && players.size > 2
+          !medium_start? && !fast_start? && players.size > 2
         end
 
         def concession?(company)
@@ -537,8 +619,20 @@ module Engine
         end
 
         def init_starting_cash(players, bank)
+          return if fast_start?
+
           cash = medium_start? ? self.class::STARTING_CASH_NO_CONCESSIONS : self.class::STARTING_CASH
           players.each { |player| bank.spend(cash[players.size], player) }
+        end
+
+        def init_round
+          fast_start? ? new_fast_start_round : super
+        end
+
+        def round_description(name, round_number = nil)
+          return @round.name if name == 'FastStart'
+
+          super
         end
 
         def init_companies(players)
@@ -938,6 +1032,8 @@ module Engine
             when Round::G18OE::Concession
               reorder_players_after_concessions!
               new_stock_round
+            when Round::G18OE::FastStart
+              new_stock_round
             when Engine::Round::Stock
               @reserved_shares = []
               remove_major_par_markers!
@@ -1057,6 +1153,10 @@ module Engine
           return unless corporation.type == :regional
 
           pay_home_token_cost!(corporation)
+        end
+
+        def new_fast_start_round
+          Round::G18OE::FastStart.new(self, [G18OE::Step::FastStartCapital])
         end
 
         def new_concession_round
