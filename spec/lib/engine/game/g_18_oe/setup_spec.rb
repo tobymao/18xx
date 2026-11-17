@@ -10,6 +10,15 @@ describe 'G18OE setup' do
   let(:cards) { game.depot.upcoming.uniq(&:name).to_h { |t| [t.name, t] } }
   let(:market_cells) { game.stock_market.market.flatten.compact }
 
+  it 'makes Fast Start exclusive with Medium Start for 3–7 players (PB 5.1)' do
+    meta = Engine::Game::G18OE::Meta
+    rule = meta::OPTIONAL_RULES.find { |r| r[:sym] == :fast_start }
+
+    expect(meta::MUTEX_RULES).to include(%i[fast_start medium_start])
+    expect(rule[:players]).to eq([3, 4, 5, 6, 7])
+    expect(Engine::Game::G18OEUKFR::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).not_to include(:fast_start)
+  end
+
   it 'splits £5,400 starting capital per player, rounded up to £5 (§3.3, PB 5.4)' do
     cash = (2..7).to_h { |n| [n, new_game(Array.new(n) { |i| "p#{i}" }).players.first.cash] }
 
@@ -51,8 +60,8 @@ describe 'G18OE setup' do
     expect(rule[:players]).to eq([3, 4, 5, 6, 7])
   end
 
-  it 'offers Medium Start in the base game but not UK-France, and Long Endgame in both' do
-    expect(Engine::Game::G18OE::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq(%i[medium_start long_endgame])
+  it 'offers Fast and Medium Start in the base game but not UK-France, and Long Endgame in both' do
+    expect(Engine::Game::G18OE::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq(%i[fast_start medium_start long_endgame])
     expect(Engine::Game::G18OEUKFR::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq([:long_endgame])
   end
 

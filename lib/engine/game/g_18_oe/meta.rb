@@ -29,6 +29,12 @@ module Engine
 
         OPTIONAL_RULES = [
           {
+            sym: :fast_start,
+            short_name: 'Fast Start',
+            desc: 'Fixed opening packets of privates and minors; no auction or concessions (PB 5.1)',
+            players: [3, 4, 5, 6, 7],
+          },
+          {
             sym: :medium_start,
             short_name: 'Medium Start',
             desc: 'No concessions; £5,200 starting capital (PB 5.2)',
@@ -40,6 +46,8 @@ module Engine
             desc: 'Play the final two ORs as regular ORs',
           },
         ].freeze
+
+        MUTEX_RULES = [%i[fast_start medium_start]].freeze
       end
     end
   end
