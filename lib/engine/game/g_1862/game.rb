@@ -223,24 +223,26 @@ module Engine
           simple_express: %i[express],
           advanced_freight: %i[freight local],
           advanced_express: %i[express local],
+          standard: %i[freight express local],
         }.freeze
 
-        def train_types
-          rule = TRAIN_RULE_TYPES.keys.find { |name| @optional_rules&.include?(name) }
-          rule ? TRAIN_RULE_TYPES[rule] : %i[freight express local]
+        def train_type_by_name(name)
+          case name
+          when /F\**$/
+            :freight
+          when /L\**$/
+            :local
+          when /E\**$/
+            :express
+          end
         end
 
-        def permit_deck
-          case train_types.size
-          when 1
-            Array.new(@players.size < 7 ? 16 : 18, train_types.first)
-          when 2
-            train_types.flat_map { |type| Array.new(8, type) }
-          else
-            permits = 6.times.flat_map { %i[freight express local] }
-            permits.pop(2) if @players.size < 7
-            permits
-          end
+        def train_type(train)
+          train_type_by_name(train.name)
+        end
+
+        def train_types
+          @train_types ||= TRAIN_RULE_TYPES[train_rule]
         end
 
         def train_type_offered?(name)
@@ -250,6 +252,22 @@ module Engine
 
         def single_train_type?
           train_types.size == 1
+        end
+
+        def train_rule
+          TRAIN_RULE_TYPES.keys.find { |rule| @optional_rules&.include?(rule) } || :standard
+        end
+
+        def permit_deck
+          return train_types.flat_map { |type| Array.new(8, type) } if train_types.size == 2
+
+          deck = train_types.cycle.first(18)
+          deck.pop(2) if @players.size < 7
+          deck
+        end
+
+        def num_train_types
+          @num_train_types ||= train_types.size
         end
 
         def all_game_trains
@@ -589,10 +607,6 @@ module Engine
         end
 
         def setup
-          if (Array(@optional_rules) & TRAIN_RULE_TYPES.keys).size > 1
-            raise GameError, 'Only one train rule (simple or advanced) can be used'
-          end
-
           @cached_freight_sets = nil
           @global_stops = nil
           @deferred_rust = []
@@ -1237,21 +1251,6 @@ module Engine
           check_bankruptcy!(corporation)
         end
 
-        def train_type_by_name(name)
-          case name
-          when /F\**$/
-            :freight
-          when /L\**$/
-            :local
-          when /E\**$/
-            :express
-          end
-        end
-
-        def train_type(train)
-          train_type_by_name(train.name)
-        end
-
         def legal_route?(entity)
           @graph.route_info(entity)&.dig(:route_train_purchase)
         end
@@ -1762,7 +1761,7 @@ module Engine
         def train_limit(entity)
           return train_limit_by_type(entity) if single_train_type?
 
-          @phase.train_limit(entity) * (@phase.available?('G') ? 1 : train_types.size)
+          @phase.train_limit(entity) * (@phase.available?('G') ? 1 : num_train_types)
         end
 
         def train_limit_by_type(entity)
