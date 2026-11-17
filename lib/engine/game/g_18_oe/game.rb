@@ -64,6 +64,7 @@ module Engine
         HOME_TOKEN_TIMING = :float
         TILE_RESERVATION_BLOCKS_OTHERS = :always
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
+        REVISITABLE_NODES = %w[town double_town].freeze
         # bank-break ends current OR; first level-8 purchase ends after one more full OR set
         GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
         # Physical game includes 20×£5,000 notes set aside at setup; injected when first level-8 bought
@@ -1457,10 +1458,6 @@ module Engine
         def revenue_str(route)
           str = super
           orient_express_bonus_route?(route) ? "#{str} + Orient Express" : str
-        end
-
-        def route_node_revisitable?(node)
-          node.town?
         end
 
         def check_connected(route, corporation)

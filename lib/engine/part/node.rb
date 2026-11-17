@@ -32,6 +32,10 @@ module Engine
         false
       end
 
+      def revisitable?
+        false
+      end
+
       # Explore the paths and nodes reachable from this node
       #
       # visited: a hashset of visited Nodes
@@ -55,11 +59,13 @@ module Engine
         walk_calls: Hash.new(0),
         backtracking: false,
         pruner: nil,
+        revisit: false,
         &block
       )
         walk_calls[:all] += 1
 
-        return if visited[self]
+        revisiting = visited[self]
+        return if revisiting && !(revisit && revisitable?)
 
         walk_calls[:not_skipped] += 1
 
@@ -98,13 +104,14 @@ module Engine
                 walk_calls: walk_calls,
                 backtracking: backtracking,
                 pruner: pruner,
+                revisit: revisit,
                 &block
               )
             end
           end
         end
 
-        visited.delete(self) if converging_path
+        visited.delete(self) if converging_path && !revisiting
       end
     end
   end

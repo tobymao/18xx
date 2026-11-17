@@ -356,5 +356,41 @@ module Engine
         expect(Tile.for('57').revenue_overridden?).to be(false)
       end
     end
+
+    describe 'revisitable nodes' do
+      let(:code) { 'city=revenue:20;town=revenue:10;double_town=revenue:10;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2' }
+      let(:tile) { Tile.from_code('rt', :white, code, revisitable_nodes: %w[town double_town]) }
+
+      it 'makes only the listed node types revisitable' do
+        expect(tile.towns.map(&:revisitable?)).to all(be(true))
+        expect(tile.cities.map(&:revisitable?)).to all(be(false))
+      end
+
+      it 'makes a listed city revisitable' do
+        listed = Tile.from_code('rt', :white, code, revisitable_nodes: %w[city])
+
+        expect(listed.cities.map(&:revisitable?)).to all(be(true))
+        expect(listed.towns.map(&:revisitable?)).to all(be(false))
+      end
+
+      it 'leaves every node not revisitable by default' do
+        expect(Tile.from_code('rt', :white, code).nodes.map(&:revisitable?)).to all(be(false))
+      end
+
+      it 'keeps the revisitable node types on a duplicated tile' do
+        copy = tile.dup
+
+        expect(copy.revisitable_nodes).to eq(%w[town double_town])
+        expect(copy.towns.map(&:revisitable?)).to all(be(true))
+      end
+
+      it 'marks the nodes of game tiles and preprinted hexes from the game constant' do
+        game = Engine.game_by_title('18OE').new(%w[a b c])
+        tiles = game.tiles + game.hexes.map(&:tile)
+
+        expect(tiles.flat_map(&:towns).map(&:revisitable?)).to all(be(true))
+        expect(tiles.flat_map(&:cities).map(&:revisitable?)).to all(be(false))
+      end
+    end
   end
 end

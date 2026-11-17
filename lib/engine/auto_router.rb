@@ -94,7 +94,8 @@ module Engine
         end
 
         walk_corporation = graph.no_blocking? ? nil : corporation
-        graph.walk_token(node, corporation: walk_corporation, skip_paths: skip_paths, links: true) do |_, vp|
+        graph.walk_token(node, corporation: walk_corporation, skip_paths: skip_paths, links: true,
+                               revisit: true) do |_, vp|
           paths = vp.keys
           chains = []
           chain = []

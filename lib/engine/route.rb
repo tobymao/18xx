@@ -148,7 +148,7 @@ module Engine
 
     def touch_node(node)
       if !connection_data.empty? && !local_connection?
-        revisited = @game.route_node_revisitable?(node) && extend!(node)
+        revisited = node.revisitable? && extend!(node)
         unless revisited
           case node
           when head[:left]
@@ -269,7 +269,7 @@ module Engine
       connection_data.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
-        raise ReusesCity, "Cannot use #{right.hex.name} twice" if cycles[right] && !@game.route_node_revisitable?(right)
+        raise ReusesCity, "Cannot use #{right.hex.name} twice" if cycles[right] && !right.revisitable?
 
         cycles[right] = true
       end

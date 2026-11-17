@@ -252,6 +252,8 @@ module Engine
       # :single_slot_cities -- token cannot be placed if tile contains any single slot cities
       TILE_RESERVATION_BLOCKS_OTHERS = :never
 
+      REVISITABLE_NODES = [].freeze
+
       COMPANIES = [].freeze
       COMPANY_CLASS = Company
 
@@ -1587,10 +1589,6 @@ module Engine
         train.distance
       end
 
-      def route_node_revisitable?(_node)
-        false
-      end
-
       def route_links(_start_node, _end_node, _corporation)
         []
       end
@@ -2839,9 +2837,10 @@ module Engine
 
               tile =
                 begin
-                  Tile.for(tile_string, preprinted: true, index: index)
+                  Tile.for(tile_string, preprinted: true, index: index, revisitable_nodes: self.class::REVISITABLE_NODES)
                 rescue Engine::GameError
-                  Tile.from_code(coord, color, tile_string, preprinted: true, index: index)
+                  Tile.from_code(coord, color, tile_string, preprinted: true, index: index,
+                                                            revisitable_nodes: self.class::REVISITABLE_NODES)
                 end
 
               # name the location (city/town)
@@ -2896,6 +2895,7 @@ module Engine
               name,
               index: i,
               reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+              revisitable_nodes: self.class::REVISITABLE_NODES,
               unlimited: val == 'unlimited'
             )
           end
@@ -2911,6 +2911,7 @@ module Engine
               code,
               index: i,
               reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+              revisitable_nodes: self.class::REVISITABLE_NODES,
               unlimited: val['count'] == 'unlimited',
               hidden: hidden
             )
