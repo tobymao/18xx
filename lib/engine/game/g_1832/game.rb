@@ -413,6 +413,25 @@ module Engine
           @share_pool.sell_shares(bundle)
         end
 
+        # A vice-president certificate is bought and sold as one certificate, not as two 5% shares. Offer it
+        # as a bundle of its own, and together with 5% shares, rather than letting it fall in by size.
+        def all_bundles_for_corporation(share_holder, corporation, shares: nil)
+          return super if !system?(corporation) || corporation.vice_president_certs.empty?
+
+          shares ||= share_holder.shares_of(corporation)
+          vp_certs = shares.select { |s| corporation.vice_president_certs.include?(s) }
+          return super if vp_certs.empty?
+
+          regular = shares - vp_certs
+          bundles = regular.empty? ? [] : super(share_holder, corporation, shares: regular)
+          without_president = bundles.reject { |bundle| bundle.shares.any?(&:president) }
+          (1..vp_certs.size).flat_map { |n| vp_certs.combination(n).to_a }.each do |group|
+            bundles << Engine::ShareBundle.new(group)
+            without_president.each { |bundle| bundles << Engine::ShareBundle.new(group + bundle.shares) }
+          end
+          bundles.sort_by { |bundle| [bundle.percent, bundle.shares.size] }
+        end
+
         def num_certs(entity, price_protecting: false)
           entity.shares.sum do |s|
             next 0 unless s.corporation.counts_for_limit
@@ -561,6 +580,8 @@ module Engine
             system.share_holders[holder] += share.percent
             holder.shares_by_corporation[system] << share
 
+            # the sell buttons mark a double certificate, which tells it apart from two 5% shares
+            share.double_cert = true
             system.vice_president_certs << share
             @log << "#{holder.name} receives VP certificate (10%) in #{system.name}"
           end
