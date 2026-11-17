@@ -11,6 +11,8 @@ module Engine
                                 'A combined train must run an Orient Express route; use Undo to cancel a combination.'
           SEA_HELP = 'Click a city or town across the sea to add a crossing; each sea zone and ferry distance counts '\
                      "against the train's city limit, less 1 per port token on the route (2 from Phase 7)."
+          POOL_HELP = " Port authorities and Minor H reduce the railroad's total, shared by its trains; "\
+                      'the trains earning most use it first.'
 
           def actions(entity)
             return [] if @game.repeat_last_revenue?(entity)
@@ -30,10 +32,15 @@ module Engine
             base_help = super
             extra = []
             extra << ORIENT_EXPRESS_HELP if current_entity.type == :major && @game.non_permanent_trains?
-            extra << SEA_HELP if @game.sea_connectivityable?(current_entity)
+            extra << sea_help if @game.sea_connectivityable?(current_entity)
             return base_help if extra.empty?
 
             Array(base_help).reject(&:empty?) + extra
+          end
+
+          def sea_help
+            pool = !@game.port_authorities(current_entity).empty? || @game.minor_h_reduction?(current_entity)
+            pool ? SEA_HELP + POOL_HELP : SEA_HELP
           end
 
           def round_state

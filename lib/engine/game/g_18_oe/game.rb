@@ -22,6 +22,7 @@ require_relative 'step/reserve_share'
 require_relative 'step/orient_express_bonus'
 require_relative 'step/route'
 require_relative 'step/special_token'
+require_relative 'step/buy_port_authority'
 
 module Engine
   module Game
@@ -284,7 +285,13 @@ module Engine
         MINOR_E_TERRAIN = %i[water river lake].freeze
         MINOR_F_TERRAIN = %i[mountain hill].freeze
         SEA_CHANNEL_PASSAGE_COST = 20
-        PORT_TOKEN_DISTANCE_BY_PHASE = { '2' => 1, '3' => 1, '4' => 1, '5' => 1, '6' => 1, '7' => 2, '8' => 2 }.freeze
+        SEA_REDUCTION_BY_PHASE = { '2' => 1, '3' => 1, '4' => 1, '5' => 1, '6' => 1, '7' => 2, '8' => 2 }.freeze
+
+        PORT_AUTHORITY_COST = 125
+        PORT_AUTHORITY_REDUCTION = 2
+        PORT_AUTHORITIES = { north_sea: 8, mediterranean: 8 }.freeze
+        PORT_AUTHORITY_NAMES = { north_sea: 'North Sea', mediterranean: 'Mediterranean' }.freeze
+        PORT_AUTHORITY_LIMIT = 1
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -479,6 +486,7 @@ module Engine
           @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
           @removed_regional_zones = []
           @orient_express_markers = []
+          @port_authorities = Hash.new { |hash, corporation| hash[corporation] = [] }
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
@@ -498,6 +506,7 @@ module Engine
           @minor_b_ability = corporation_by_id('B')&.abilities&.first
           @minor_e_ability = corporation_by_id('E')&.abilities&.first
           @minor_f_ability = corporation_by_id('F')&.abilities&.first
+          @minor_h_ability = corporation_by_id('H')&.abilities&.first
         end
 
         def setup_minor_k!
@@ -810,6 +819,10 @@ module Engine
           { blue: @minor_e_ability, green: @minor_f_ability }.select do |_, ability|
             ability && entity.abilities.include?(ability) && ability_usable_this_or?(ability)
           end
+        end
+
+        def minor_h_reduction?(corporation)
+          !@minor_h_ability.nil? && corporation.abilities.include?(@minor_h_ability)
         end
 
         def terrain_point_ability(entity, tile)
@@ -1137,7 +1150,66 @@ module Engine
         end
 
         def status_array(corporation)
-          [['Orient Express marker']] if orient_express_marker?(corporation)
+          lines = []
+          lines << ['Orient Express marker'] if orient_express_marker?(corporation)
+          port_authorities(corporation).each { |sea| lines << [port_authority_name(sea)] }
+          lines unless lines.empty?
+        end
+
+        def port_authority_cost
+          self.class::PORT_AUTHORITY_COST
+        end
+
+        def port_authority_count(sea)
+          self.class::PORT_AUTHORITIES[sea]
+        end
+
+        def port_authority_reduction
+          self.class::PORT_AUTHORITY_REDUCTION
+        end
+
+        def port_authority_limit
+          self.class::PORT_AUTHORITY_LIMIT
+        end
+
+        def port_authority_seas
+          self.class::PORT_AUTHORITIES.keys
+        end
+
+        def port_authority_sea_name(sea)
+          self.class::PORT_AUTHORITY_NAMES[sea]
+        end
+
+        def port_authority_name(sea)
+          "#{port_authority_sea_name(sea)} port authority"
+        end
+
+        def port_authorities(corporation)
+          @port_authorities.fetch(corporation, [])
+        end
+
+        def port_authorities_left(sea)
+          port_authority_count(sea) - @port_authorities.values.count { |seas| seas.include?(sea) }
+        end
+
+        def timeline
+          left = port_authority_seas.map { |sea| "#{port_authority_sea_name(sea)} #{port_authorities_left(sea)}" }
+          ["Port authorities left: #{left.join(', ')}"]
+        end
+
+        def can_buy_port_authority?(corporation, sea)
+          corporation.type == :major &&
+            port_authorities(corporation).size < port_authority_limit &&
+            !port_authorities(corporation).include?(sea) &&
+            port_authorities_left(sea).positive? &&
+            corporation.cash >= port_authority_cost
+        end
+
+        def buy_port_authority!(corporation, sea)
+          @log << "#{corporation.name} buys a #{port_authority_name(sea)} for #{format_currency(port_authority_cost)}"
+          corporation.spend(port_authority_cost, @bank)
+          @port_authorities[corporation] << sea
+          clear_graph_for_entity(corporation)
         end
 
         def orient_express_marker?(corporation)
@@ -1270,6 +1342,7 @@ module Engine
         def operating_round(round_num)
           Round::G18OE::Operating.new(self, [
             G18OE::Step::ChooseOperatingPosition,
+            G18OE::Step::BuyPortAuthority,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
@@ -1374,6 +1447,11 @@ module Engine
           revenue = super
           revenue += self.class::ORIENT_EXPRESS_BONUS[route.phase.name] if orient_express_bonus_route?(route)
           revenue
+        end
+
+        def routes_revenue(routes)
+          check_sea_pool_coverage!(routes)
+          super
         end
 
         def revenue_str(route)

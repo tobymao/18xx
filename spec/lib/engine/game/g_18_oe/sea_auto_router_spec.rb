@@ -100,6 +100,34 @@ describe 'G18OE auto-router over sea (§11.3.4, §11.3.8)' do
     expect(adjacent).to be(false)
   end
 
+  describe 'with a port authority' do
+    let(:two_plus_two) { buy_train!('2+2') }
+    let(:other_train) { buy_train!('2+2') }
+
+    before do
+      token!('I52', corp)
+      fund!(game, corp, 125)
+      game.buy_port_authority!(corp, :north_sea)
+    end
+
+    it 'finds a crossing longer than the train with a port authority' do
+      token!('I50', corp)
+      stops = routes_for(two_plus_two).map(&:visited_stops)
+
+      expect(stops).to include(contain_exactly(city('I50'), city('M28')))
+    end
+
+    it 'does not pick two trains that together need more than the pool' do
+      token!('J63', corp)
+      long = explicit_route(two_plus_two, city('I50'), town('K60'), city('J63'))
+      other = explicit_route(other_train, city('I52'), town('H55'), city('I50'))
+      routes = [long, other]
+      routes.each { |route| route.routes = routes }
+
+      expect(Engine::AutoRouter.new(game).real_revenue(routes)).to eq(-1)
+    end
+  end
+
   it 'finishes the path walk within the timeout on a busy coast (row 20)' do
     city('I20').reservations.clear
     %w[I50 I52 J63 C48 B41 M28 AE72 AA20 I20 N31].each { |hex_id| token!(hex_id, corp) }
