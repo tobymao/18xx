@@ -308,5 +308,29 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       expect { act!(round, Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0, cost: 20)) }
         .to raise_error(Engine::GameError, /Token costs £60, not £20/)
     end
+
+    describe 'a selected charter token across a ferry' do
+      let(:gswr) { start_major!(game, 'GSWR', game.players.first) }
+      let(:round) { station_token_round!(game, gswr) }
+      let(:liverpool) { game.hex_by_id('J25').tile.cities.first }
+
+      it 'charges the selected £60 token price plus the £20 ferry fee' do
+        action = Engine::Action::PlaceToken.new(gswr, city: liverpool, slot: 0, token_index: 3, cost: 80)
+        cash = gswr.cash
+
+        act!(round, action)
+
+        expect(action.cost).to eq(80)
+        expect(gswr.cash).to eq(cash - 80)
+        expect(liverpool.tokens).to include(gswr.tokens[3])
+      end
+
+      it 'rejects a quote that omits the ferry fee' do
+        action = Engine::Action::PlaceToken.new(gswr, city: liverpool, slot: 0, token_index: 3, cost: 60)
+
+        expect { act!(round, action) }.to raise_error(Engine::GameError, /Token costs £80, not £60/)
+        expect(gswr.tokens[3]).to have_attributes(price: 60, used: false)
+      end
+    end
   end
 end
