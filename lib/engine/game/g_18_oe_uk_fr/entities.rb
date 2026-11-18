@@ -19,6 +19,8 @@ module Engine
             sym: 'SHTC',
             value: 60,
             revenue: 15,
+            desc: G18OE::Entities::COMPANIES.find { |company| company[:sym] == 'SHTC' }[:desc],
+            abilities: G18OE::Entities::COMPANIES.find { |company| company[:sym] == 'SHTC' }[:abilities],
             auction_row: 2,
           },
           {
@@ -26,6 +28,8 @@ module Engine
             sym: 'CCTC',
             value: 60,
             revenue: 15,
+            desc: G18OE::Entities::COMPANIES.find { |company| company[:sym] == 'CCTC' }[:desc],
+            abilities: G18OE::Entities::COMPANIES.find { |company| company[:sym] == 'CCTC' }[:abilities],
             auction_row: 3,
           },
           {

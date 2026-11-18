@@ -50,6 +50,11 @@ module Engine
           %w[50 60 65 70],
         ].freeze
 
+        PASS_THROUGH_TOKENS = {
+          'SHTC' => { logo: '/logos/18_oe/shtc.svg', port: true },
+          'CCTC' => { logo: '/logos/18_oe/cctc.svg', port: false },
+        }.freeze
+
         CERT_LIMIT = { 2 => 99, 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20 }.freeze
         # Standard game: £5,400 total / num_players, rounded up to nearest £5.
         # 2-player variant uses without-concessions formula (£5,200 / 2 = £2,600).
@@ -501,6 +506,7 @@ module Engine
           setup_fast_start! if fast_start?
           setup_patronage_tiles!
           setup_wcf_placeholder!
+          @pass_through_tokens = {}
           setup_minor_k!
           @minor_c_ability = corporation_by_id('C')&.abilities&.first
           @minor_g_ability = corporation_by_id('G')&.abilities&.first
@@ -531,6 +537,91 @@ module Engine
         def setup_wcf_placeholder!
           @wcf_placeholder = Engine::Token.new(nil, price: 0, logo: '/logos/18_oe/wcf_reserved.svg', type: :neutral)
           lille_city.exchange_token(@wcf_placeholder, extra_slot: true)
+        end
+
+        def pass_through_token_definitions
+          self.class::PASS_THROUGH_TOKENS
+        end
+
+        def port_hex?(hex)
+          (self.class::PORTS[hex.id] || {}).values.any? { |entry| entry[:port] }
+        end
+
+        def pass_through_token_company?(company)
+          !!company&.company? && pass_through_token_definitions.key?(company.sym)
+        end
+
+        def pass_through_token_logo(company)
+          pass_through_token_definitions[company.sym][:logo]
+        end
+
+        def pass_through_hex?(company, hex)
+          !hex.tile.cities.empty? && port_hex?(hex) == pass_through_token_definitions[company.sym][:port]
+        end
+
+        def pass_through_cities(corporation)
+          @pass_through_tokens.values.filter_map { |token| token.city if token.corporation == corporation }
+        end
+
+        def pass_through_city?(city, corporation)
+          pass_through_cities(corporation).include?(city)
+        end
+
+        def port_token_city?(city, corporation)
+          return false unless city_tokened_by?(city, corporation)
+
+          @pass_through_tokens.none? do |company, token|
+            token.city == city && token.corporation == corporation && !pass_through_token_definitions[company.sym][:port]
+          end
+        end
+
+        def skip_token?(_graph, corporation, city)
+          pass_through_city?(city, corporation)
+        end
+
+        def counted_stops(route)
+          without_pass_through_cities(visited_stops(route), route.corporation)
+        end
+
+        def without_pass_through_cities(stops, corporation)
+          cities = pass_through_cities(corporation)
+          cities.empty? ? stops : stops.reject { |stop| cities.include?(stop) }
+        end
+
+        def revenue_stops(route)
+          counted_stops(route)
+        end
+
+        def check_distance(route, visits, train = nil)
+          super(route, without_pass_through_cities(visits, route.corporation), train)
+        end
+
+        def check_route_token(route, _token)
+          super(route, counted_stops(route).find { |stop| city_tokened_by?(stop, route.corporation) })
+        end
+
+        def place_pass_through_token!(company, corporation, city)
+          token = Engine::Token.new(
+            corporation,
+            price: 0,
+            logo: pass_through_token_logo(company),
+            type: :pass_through,
+          )
+          city.exchange_token(token, extra_slot: true)
+          @pass_through_tokens[company] = token
+          hex = city.hex
+          @log << "#{corporation.name} (#{company.sym}) places the #{company.name} token on "\
+                  "#{hex.name} (#{hex.location_name})"
+          clear_graph_for_entity(corporation)
+        end
+
+        def pass_through_token_lines(corporation)
+          @pass_through_tokens.filter_map do |company, token|
+            next unless token.corporation == corporation
+
+            hex = token.city.hex
+            ["#{company.name} token: #{hex.name} (#{hex.location_name})"]
+          end
         end
 
         def setup_fast_start!
@@ -904,7 +995,7 @@ module Engine
         end
 
         def merge_graph
-          @merge_graph ||= Engine::Graph.new(self, no_blocking: true)
+          @merge_graph ||= Engine::Graph.new(self, no_blocking: true, check_tokens: true)
         end
 
         def merge_connected?(minor, major)
@@ -1154,6 +1245,7 @@ module Engine
           lines = []
           lines << ['Orient Express marker'] if orient_express_marker?(corporation)
           port_authorities(corporation).each { |sea| lines << [port_authority_name(sea)] }
+          lines.concat(pass_through_token_lines(corporation))
           lines unless lines.empty?
         end
 
@@ -1375,11 +1467,15 @@ module Engine
         end
 
         def init_graph
-          G18OE::Graph.new(self)
+          G18OE::Graph.new(self, check_tokens: true)
         end
 
         def check_other(route)
           super
+
+          if counted_stops(route).size < 2 && !route.connection_data.empty? && !route.train.local?
+            raise RouteTooShort, 'Route must have at least 2 stops'
+          end
 
           hexes = route.visited_stops.reject(&:town?).map(&:hex)
           raise GameError, 'Route visits same city hex twice' if hexes.size != hexes.uniq.size

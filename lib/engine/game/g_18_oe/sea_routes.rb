@@ -203,11 +203,11 @@ module Engine
         end
 
         def route_distance(route)
-          route.visited_stops.count { |stop| !stop.town? } + sea_distance(route)
+          counted_stops(route).count { |stop| !stop.town? } + sea_distance(route)
         end
 
         def route_distance_str(route)
-          stops = route.visited_stops.count { |stop| !stop.town? }
+          stops = counted_stops(route).count { |stop| !stop.town? }
           cost = sea_distance(route)
           cost.positive? ? "#{stops} + #{cost} sea" : stops.to_s
         end
@@ -262,7 +262,7 @@ module Engine
         end
 
         def sea_leg_assignments(route, legs)
-          tokens = legs.flat_map(&:nodes).uniq.select { |node| node.city? && city_tokened_by?(node, route.corporation) }
+          tokens = legs.flat_map(&:nodes).uniq.select { |node| node.city? && port_token_city?(node, route.corporation) }
           choices = tokens.map { |token| [nil] + legs.each_index.select { |index| legs[index].nodes.include?(token) } }
           assignments = choices.empty? ? [[]] : choices.first.product(*choices[1..])
           assignments.map { |assignment| [assignment, tokens] }
@@ -288,7 +288,7 @@ module Engine
           crossing_zones = remaining.select { |zones| zones.is_a?(Array) }.flatten
           pa_eligible = port_authority_seas.to_h { |sea| [sea, [pool[sea], crossing_zones.count(sea)].min] }
           h_eligible = [pool[:h], cost].min
-          stops = route.visited_stops.count { |stop| !stop.town? }
+          stops = counted_stops(route).count { |stop| !stop.town? }
           SeaPoolNeed.new(cost, [stops + cost - city_limit_level(route.train), 0].max, pa_eligible, h_eligible)
         end
 

@@ -13,6 +13,7 @@ module Engine
           @corporation = corporation
           @token_cities = game.hexes.flat_map { |hex| hex.tile.cities }
             .select { |city| game.city_tokened_by?(city, corporation) }
+            .reject { |city| game.pass_through_city?(city, corporation) }
           @token_hex_ids = @token_cities.map { |city| city.hex.id }.uniq
           @parent = {}
           @island_ids = {}
