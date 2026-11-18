@@ -36,10 +36,6 @@ module Engine
             @game.phase.buying_train!(action.entity, train_check, train.owner)
           end
 
-          def room?(entity, _shell = nil)
-            entity.trains.count { |t| !@game.extra_train?(t) } < @game.train_limit(entity)
-          end
-
           def check_e_train(action)
             return if !action.variant || (action.variant && action.variant != @game.class::E_TRAIN)
 

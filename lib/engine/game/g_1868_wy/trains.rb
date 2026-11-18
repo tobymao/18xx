@@ -90,7 +90,7 @@ module Engine
                     ]),
 
           # LHP train
-          { name: '2+1', distance: distance(2, 1), price: 0, num: 1 },
+          { name: '2+1', distance: distance(2, 1), price: 0, num: 1, extra: true },
         ].freeze
       end
     end
