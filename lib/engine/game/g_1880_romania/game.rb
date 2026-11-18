@@ -171,6 +171,10 @@ module Engine
           final_train: 'Last 6E train sold',
         }.freeze
 
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
+          final_train: 'Last 6E train was purchased',
+        }.freeze
+
         def self.min_players(optional_rules, num_players)
           meta.min_players(optional_rules, num_players)
         end
