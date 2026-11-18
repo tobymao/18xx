@@ -52,42 +52,42 @@ module Engine
       end
 
       it 'resumes with the entities that had not operated' do
-        allow(game).to receive(:operating_round) # keep the saved entities for inspection
         round = start_or
         game.event_final_merger_chance!
         round.next_entity!
 
-        game.send(:resume_operating_round)
+        round.setup
 
-        expect(game.mid_or_resume_entities).to eq(corporations[1..])
-        expect(Game::G1832::Round::Operating.new(game, [Engine::Step::DiscardTrain], round_num: 1).entities)
-          .to eq(corporations[1..])
-        expect(game.mid_or_resume_entities).to be_nil
+        expect(round.entities).to eq(corporations[1..])
+        expect(round.current_operator).to eq(corporations[1])
+        expect(round).not_to be_finished
+        expect(game.saved_or_round).to be_nil
       end
 
-      it 'starts the next operating round when the last entity bought the 6-train' do
+      it 'has nothing left to resume when the last entity bought the 6-train' do
         round = start_or
         round.instance_variable_set(:@entity_index, 2)
         game.event_final_merger_chance!
         round.next_entity!
 
-        next_round = game.send(:resume_operating_round)
+        round.setup
 
-        expect(next_round).to be_a(Engine::Round::Operating)
-        expect(next_round.round_num).to eq(2)
+        expect(round.entities).to be_empty
+        expect(round).to be_finished
       end
 
-      it 'starts a stock round when the last entity of the last operating round bought the 6-train' do
-        round = start_or(2)
-        round.instance_variable_set(:@entity_index, 2)
+      it 'does not resume the entities of a corporation closed in the meantime' do
+        round = start_or
         game.event_final_merger_chance!
         round.next_entity!
+        corporations[1].close!
 
-        expect(game.send(:resume_operating_round)).to be_a(Engine::Round::Stock)
+        round.setup
+
+        expect(round.entities).to eq([corporations[2]])
       end
 
       it 'slots a system formed in the meantime into the rest of the round' do
-        allow(game).to receive(:operating_round) # keep the saved entities for inspection
         acl = game.corporation_by_id('ACL')
         salr = game.corporation_by_id('SALR')
         system = game.corporation_by_id('AMTK')
@@ -110,9 +110,10 @@ module Engine
         game.event_final_merger_chance!
         round.next_entity!
         game.perform_system_formation(acl, salr, system)
-        game.send(:resume_operating_round)
+        allow(game).to receive(:operating_order).and_return([grr, system, other])
+        round.setup
 
-        expect(game.mid_or_resume_entities).to eq([system, other])
+        expect(round.entities).to eq([system, other])
       end
     end
   end

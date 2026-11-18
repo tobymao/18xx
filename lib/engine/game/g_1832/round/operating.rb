@@ -7,28 +7,48 @@ module Engine
     module G1832
       module Round
         class Operating < Engine::Round::Operating
-          def select_entities
-            if @game.mid_or_resume_entities
-              entities = @game.mid_or_resume_entities
-              @game.mid_or_resume_entities = nil
-              return entities
-            end
+          def setup
+            return super unless self == @game.saved_or_round
 
-            super
+            @game.saved_or_round = nil
+            @entities = resumed_entities
+            @entity_index = 0
+            @steps.each(&:unpass!)
+            @steps.each(&:setup)
+            clear_cache!
+            start_operating if any_to_act?
+          end
+
+          def finished?
+            return super unless self == @game.saved_or_round
+
+            @current_operator = nil
+            true
           end
 
           # The first 6-train interrupts the round after the current entity, instead of advancing to the next.
           def next_entity!
-            if @game.final_merger_triggered?
-              remaining = @entities[(@entity_index + 1)..].reject(&:closed?)
-              operated = @entities[0..@entity_index]
-              @game.save_mid_or_state(remaining, operated, round_num)
-              @entity_index = @entities.size
-              clear_cache!
-              return
-            end
+            return @game.interrupt_operating_round!(self) if @game.final_merger_triggered?
 
             super
+          end
+
+          private
+
+          def resumed_entities
+            operated = @entities[0..@entity_index]
+            operated_ids = operated.map(&:id)
+            remaining = (@entities - operated).reject(&:closed?)
+
+            formed_systems = (@game.operating_order - @entities).select do |entity|
+              @game.system?(entity) && entity.system_shells.none? { |id| operated_ids.include?(id) }
+            end
+            formed_systems.sort_by { |system| [-system.share_price.price, system.id] }.each do |system|
+              idx = remaining.find_index { |entity| (entity.share_price&.price || 0) < system.share_price.price }
+              remaining.insert(idx || remaining.size, system)
+            end
+
+            remaining
           end
         end
       end

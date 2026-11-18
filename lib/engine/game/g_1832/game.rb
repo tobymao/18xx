@@ -21,7 +21,7 @@ module Engine
         include G1832::Trains
 
         attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :p4_invested_in,
-                      :miami_has_been_run, :mid_or_resume_entities
+                      :miami_has_been_run, :saved_or_round
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -157,11 +157,7 @@ module Engine
           @miami_first_run_round = nil
           @p4_invested_in = nil
           @final_merger_triggered = false
-          @mid_or_remaining_entities = nil
-          @mid_or_operated_corps = nil
-          @mid_or_formed_systems = {}
-          @mid_or_original_round_num = nil
-          @mid_or_resume_entities = nil
+          @saved_or_round = nil
 
           coal_company.max_price = coal_company.value
 
@@ -264,10 +260,8 @@ module Engine
           @final_merger_triggered
         end
 
-        def save_mid_or_state(remaining, operated, round_num)
-          @mid_or_remaining_entities = remaining
-          @mid_or_original_round_num = round_num
-          @mid_or_operated_corps = operated.map(&:id)
+        def interrupt_operating_round!(round)
+          @saved_or_round = round
           @final_merger_triggered = false
         end
 
@@ -660,7 +654,6 @@ module Engine
 
           system.floated = true
           clear_graph_for_entity(system)
-          @mid_or_formed_systems[system.id] = system
           @log << "#{system.name} formed at #{format_currency(new_sp.price)}"
         end
 
@@ -874,43 +867,6 @@ module Engine
           return placed unless placed.empty?
 
           Array(corp.coordinates).map { |coord| hex_by_id(coord) }.compact
-        end
-
-        # Systems formed during the interruption (§11.6) take their place in the rest of the round,
-        # ordered by share price, unless a component corporation has already operated.
-        def resume_operating_round
-          operated_ids = @mid_or_operated_corps || []
-          remaining = @mid_or_remaining_entities.reject(&:closed?)
-
-          new_systems = @mid_or_formed_systems.values.select do |sys|
-            !sys.closed? && sys.system_shells.none? { |id| operated_ids.include?(id) }
-          end
-          new_systems.sort_by { |s| [-s.share_price.price, s.id] }.each do |system|
-            idx = remaining.find_index { |e| (e.share_price&.price || 0) < system.share_price.price }
-            remaining.insert(idx || remaining.size, system)
-          end
-
-          round_num = @mid_or_original_round_num
-          @mid_or_remaining_entities = nil
-          @mid_or_operated_corps = nil
-          @mid_or_formed_systems = {}
-          @mid_or_original_round_num = nil
-
-          if remaining.empty?
-
-            # The 6-train was bought by the last entity, so the OR was already complete.
-            or_round_finished
-            if round_num < @operating_rounds
-              new_operating_round(round_num + 1)
-            else
-              @turn += 1
-              or_set_finished
-              new_stock_round
-            end
-          else
-            @mid_or_resume_entities = remaining
-            operating_round(round_num)
-          end
         end
       end
     end
