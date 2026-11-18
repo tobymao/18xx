@@ -263,11 +263,7 @@ class Api
   end
 
   def set_game_state(game, engine, users)
-    acting = acting_users(engine, users)
-
-    game.round = engine.round.name
-    game.turn = engine.turn
-    game.acting = acting.map(&:id)
+    acting = game.update_state_from_engine(engine, users)
 
     if engine.finished
       game.result = engine.result
