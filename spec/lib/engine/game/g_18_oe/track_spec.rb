@@ -91,6 +91,153 @@ describe 'G18OE lay track (§11.1)' do
     expect(round.active_step.help).to eq('6 track points')
   end
 
+  describe 'upgrading to all legally usable sides (§11.1.7)' do
+    let!(:operator) { start_major!(game, 'LNWR', player) }
+    let(:round) { operating! }
+
+    def tile_named(name)
+      game.tiles.find { |tile| tile.name == name }
+    end
+
+    def put_tile!(hex, name, rotation)
+      tile = tile_named(name)
+      tile.rotate!(rotation)
+      game.update_tile_lists(tile, hex.tile)
+      hex.lay(tile)
+      tile
+    end
+
+    def place_track_token!(hex)
+      hex.tile.cities.first.place_token(operator, operator.next_token, free: true, check_tokenable: false)
+    end
+
+    def advance_to_tile_color!(color)
+      game.phase.next! until game.phase.tiles.include?(color)
+    end
+
+    def offered_tiles(hex, operating_round = round)
+      operating_round.active_step.upgradeable_tiles(operator, hex)
+    end
+
+    def upgrade_action(hex, name, rotation)
+      Engine::Action::LayTile.new(operator, tile: tile_named(name), hex: hex, rotation: rotation)
+    end
+
+    context 'at the double town on J77' do
+      let(:hex) { game.hex_by_id('J77') }
+
+      before do
+        city_hex = game.hex_by_id('I76')
+        put_tile!(city_hex, '57', 5)
+        place_track_token!(city_hex)
+      end
+
+      it 'offers only the brown double town that reaches all six usable sides and rejects a partial lay', :aggregate_failures do
+        advance_to_tile_color!(:brown)
+        old_tile = put_tile!(hex, 'OE9', 0)
+
+        expect(offered_tiles(hex).map(&:name)).to eq(['OE22'])
+        expect { round.process_action(upgrade_action(hex, 'OE21', 0)) }
+          .to raise_error(Engine::GameError, /not legally rotated/)
+        expect(hex.tile).to equal(old_tile)
+      end
+
+      it 'disallows the brown upgrade when the tile that reaches all six sides is unavailable' do
+        advance_to_tile_color!(:brown)
+        put_tile!(hex, 'OE9', 0)
+        game.tiles.reject! { |tile| tile.name == 'OE22' }
+
+        expect(offered_tiles(hex)).to be_empty
+      end
+
+      it 'allows a green double town with fewer exits than usable sides' do
+        advance_to_tile_color!(:green)
+        put_tile!(hex, 'OE1', 2)
+
+        expect(offered_tiles(hex).map(&:name)).to include('OE9')
+      end
+    end
+
+    it 'requires the brown grand city tile that reaches all six usable sides' do
+      advance_to_tile_color!(:brown)
+      hex = game.hex_by_id('N35')
+      put_tile!(hex, '208', 0)
+      place_track_token!(hex)
+
+      expect(offered_tiles(hex).map(&:name)).to eq(['OE33'])
+
+      game.tiles.reject! { |tile| tile.name == 'OE33' }
+
+      expect(offered_tiles(hex)).to be_empty
+    end
+
+    it 'rejects a partial gray upgrade at a normal city and accepts the six-sided upgrade' do
+      advance_to_tile_color!(:gray)
+      hex = game.hex_by_id('J27')
+      old_tile = put_tile!(hex, 'OE24', 0)
+
+      expect(offered_tiles(hex).map(&:name)).to eq(['OE36'])
+      expect { round.process_action(upgrade_action(hex, 'OE34', 0)) }
+        .to raise_error(Engine::GameError, /not legally rotated/)
+      expect(hex.tile).to equal(old_tile)
+
+      round.process_action(upgrade_action(hex, 'OE36', 0))
+
+      expect(hex.tile.name).to eq('OE36')
+      expect(hex.tile.cities.first.tokened_by?(operator)).to be(true)
+    end
+
+    it 'allows brown normal city upgrades with fewer exits than usable sides' do
+      advance_to_tile_color!(:brown)
+      hex = game.hex_by_id('J27')
+      put_tile!(hex, '205', 1)
+
+      expect(offered_tiles(hex).map(&:name)).to include('OE24')
+    end
+
+    it 'uses Birmingham’s labeled brown and gray tiles to reach all six sides' do
+      advance_to_tile_color!(:brown)
+      hex = game.hex_by_id('K26')
+      put_tile!(hex, 'OE12', 0)
+      place_track_token!(hex)
+
+      expect(offered_tiles(hex).map(&:name)).to eq(['OE26'])
+      round.process_action(upgrade_action(hex, 'OE26', 0))
+      expect(hex.tile.exits).to match_array(Engine::Tile::ALL_EDGES)
+
+      advance_to_tile_color!(:gray)
+      next_round = operating!
+
+      expect(offered_tiles(hex, next_round).map(&:name)).to eq(['OE37'])
+      next_round.process_action(upgrade_action(hex, 'OE37', 0))
+      expect(hex.tile.exits).to match_array(Engine::Tile::ALL_EDGES)
+    end
+
+    { '18OE' => Engine::Game::G18OE::Game, 'UK–France' => Engine::Game::G18OEUKFR::Game }.each do |title, klass|
+      context "in #{title}" do
+        let(:game) { new_game(klass: klass) }
+
+        it 'preserves the ferry exit when Lille upgrades to brown and gray with four usable sides' do
+          advance_to_tile_color!(:brown)
+          hex = game.hex_by_id('N31')
+          put_tile!(hex, '207', 4)
+          place_track_token!(hex)
+
+          expect(offered_tiles(hex).map(&:name)).to eq(['OE31'])
+          round.process_action(upgrade_action(hex, 'OE31', 5))
+          expect(hex.tile.exits).to match_array([0, 1, 4, 5])
+
+          advance_to_tile_color!(:gray)
+          next_round = operating!
+
+          expect(offered_tiles(hex, next_round).map(&:name)).to eq(['OE42'])
+          next_round.process_action(upgrade_action(hex, 'OE42', 5))
+          expect(hex.tile.exits).to match_array([0, 1, 4, 5])
+        end
+      end
+    end
+  end
+
   it 'keeps a regional inside its track rights zone (§11.1.4)' do
     lnwr = start_regional!(game, 'LNWR', player)
     round = operating!
