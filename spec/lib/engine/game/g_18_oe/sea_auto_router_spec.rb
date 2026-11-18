@@ -128,18 +128,29 @@ describe 'G18OE auto-router over sea (§11.3.4, §11.3.8)' do
     end
   end
 
-  it 'finishes the path walk within the timeout on a busy coast (row 20)' do
+  it 'bounds the number of paths explored on a busy coast (row 20)' do
     city('I20').reservations.clear
     %w[I50 I52 J63 C48 B41 M28 AE72 AA20 I20 N31].each { |hex_id| token!(hex_id, corp) }
     lay_code!('AA20', 'city=revenue:30;path=a:5,b:_0')
     lay_code!('AB27', 'city=revenue:20;path=a:1,b:_0;path=a:0,b:_0')
     lay_code!('D41', 'town=revenue:10;path=a:0,b:_0;path=a:3,b:_0')
     five = buy_train!('5')
-    started = Time.now
-    _routes, timed_out = Engine::AutoRouter.new(game).path([three, four, five], corp, path_timeout: 5)
-    warn "sea auto-router path walk: #{(Time.now - started).round(1)}s"
+    paths = 0
+    path_budget = 25_000
+    allow(game.graph).to receive(:walk_token).and_wrap_original do |original, node, **opts, &block|
+      next original.call(node, **opts, &block) unless opts[:links]
 
-    expect(timed_out).to be(false)
+      original.call(node, **opts) do |*args|
+        paths += 1
+        raise "Sea auto-router exceeded #{path_budget} path visits" if paths > path_budget
+
+        block.call(*args)
+      end
+    end
+
+    routes, = Engine::AutoRouter.new(game).path([three, four, five], corp, path_timeout: Float::INFINITY)
+
+    expect(routes.keys).to contain_exactly(three, four, five)
   end
 
   it 'departs by the Edinburgh ferry from the hex a crossing landed on (§11.3.7)' do
