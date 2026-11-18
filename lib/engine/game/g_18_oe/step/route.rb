@@ -18,10 +18,44 @@ module Engine
             return [] if @game.repeat_last_revenue?(entity)
 
             actions = super
-            return actions if actions.empty? || @game.double_head_candidates(entity).size < 2
-            return actions if !@game.loading && !@game.orient_express_reachable?(entity)
+            return actions if actions.empty?
 
-            actions + %w[double_head_trains]
+            actions += %w[double_head_trains] if combining_offered?(entity)
+            actions += %w[choose] unless pullman_train_choices(entity).empty?
+            actions
+          end
+
+          def combining_offered?(entity)
+            return false if @game.double_head_candidates(entity).size < 2
+
+            @game.loading || @game.orient_express_reachable?(entity)
+          end
+
+          def choice_name
+            'Attach the Pullman to a train'
+          end
+
+          def choices
+            pullman_train_choices(current_entity).to_h { |train| [train.id, "#{train.name} train"] }
+          end
+
+          def pullman_train_choices(entity)
+            return [] unless @game.pullman(entity)
+
+            @game.route_trains(entity).reject { |train| train.operated || train == @round.pullman_train }
+          end
+
+          def process_choose(action)
+            entity = action.entity
+            train = pullman_train_choices(entity).find { |t| t.id == action.choice }
+            raise GameError, 'Cannot attach the Pullman to that train' unless train
+
+            @round.pullman_train = train
+            @log << "#{entity.name} attaches the Pullman to the #{train.name} train"
+          end
+
+          def train_name(_corporation, train)
+            @round.pullman_train == train ? "#{train.name} + Pullman" : train.name
           end
 
           def log_skip(entity)
@@ -44,7 +78,7 @@ module Engine
           end
 
           def round_state
-            super.merge(combined_trains: {}, orient_express_revenue: nil)
+            super.merge(combined_trains: {}, orient_express_revenue: nil, pullman_train: nil)
           end
 
           def double_head_trains_title
@@ -60,6 +94,7 @@ module Engine
             super
             @round.combined_trains = {}
             @round.orient_express_revenue = nil
+            @round.pullman_train = nil
           end
 
           def process_run_routes(action)
@@ -86,6 +121,7 @@ module Engine
             train.owner = corporation
             corporation.trains << train
             @round.combined_trains[train] = trains
+            @round.pullman_train = train if trains.include?(@round.pullman_train)
 
             @log << "#{corporation.name} combines #{trains.map(&:name).sort.join(', ')} into "\
                     "#{an(train.distance[1]['pay'])} #{train.name} train for the Orient Express"
@@ -121,7 +157,8 @@ module Engine
                 { 'nodes' => ['town'], 'pay' => towns, 'visit' => 99 },
                 { 'nodes' => %w[city offboard town], 'pay' => cities, 'visit' => cities },
               ]
-              train = Engine::Train.new(name: sym, distance: distance, price: 0)
+              level = trains.map(&:level).max
+              train = G18OE::Train.new(name: sym, distance: distance, price: 0, level: level)
               train.name = "#{cities}+#{towns}C"
 
               @game.depot.add_train(train)

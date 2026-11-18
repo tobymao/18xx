@@ -212,7 +212,7 @@ module Engine
           cost.positive? ? "#{stops} + #{cost} sea" : stops.to_s
         end
 
-        def largest_train_level(corporation)
+        def largest_city_limit(corporation)
           route_trains(corporation).map { |train| distance(train).first }.max || 0
         end
 

@@ -56,7 +56,9 @@ module Engine
           end
 
           def trains(corporation)
-            corporation == @round.merge_trains&.dig(:corporation) ? corporation.trains.dup : []
+            return [] unless corporation == @round.merge_trains&.dig(:corporation)
+
+            corporation.trains.reject { |train| @game.pullman?(train) }
           end
 
           private
@@ -65,7 +67,7 @@ module Engine
             merge_trains = @round.merge_trains
             return [] unless merge_trains
 
-            merge_trains[:trains].select { |train| train.owner == merge_trains[:corporation] }
+            merge_trains[:trains].select { |train| train.owner == merge_trains[:corporation] && !@game.pullman?(train) }
           end
         end
       end

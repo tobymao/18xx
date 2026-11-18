@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative 'stock_market'
 require_relative 'graph'
 require_relative 'sea_routes'
+require_relative 'train'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
@@ -75,6 +76,11 @@ module Engine
         # Physical game includes 20×£5,000 notes set aside at setup; injected when first level-8 bought
         REMAINDER_CASH = 100_000
         ABANDONED_MINOR_PRICE = 60
+        TRAIN_CLASS = G18OE::Train
+        PULLMAN = 'Pullman'
+        PULLMAN_BONUS_PER_LEVEL = 10
+        PULLMAN_ROYALTY = 15
+        PULLMAN_TRANSFER_PRICE = 75
 
         STOCKMARKET_COLORS = {
           par: :blue,
@@ -82,6 +88,7 @@ module Engine
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'pullmans_available' => ['Pullmans Available', 'Pullman cars may be bought; Minor M receives one free'],
           'level_8_available' => ['Level 8 Trains Available', 'Level 8 trains may be bought'],
           'consolidation_triggered' => [
             'Consolidation Round',
@@ -160,6 +167,7 @@ module Engine
           # Level 2 — yellow; rusts when first Level 4 train is bought
           {
             name: '2+2',
+            level: 2,
             distance: [{ 'nodes' => ['town'], 'pay' => 2, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
             price: 100,
@@ -169,6 +177,7 @@ module Engine
           # Level 3 — green double-sided (3 / 3+3); rust at Level 6
           {
             name: '3',
+            level: 3,
             distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
             price: 200,
@@ -185,10 +194,12 @@ module Engine
           # Level 4 — green double-sided (4 / 4+4); rust at Level 8
           {
             name: '4',
+            level: 4,
             distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 }],
             price: 300,
             rusts_on: '8+8',
+            events: [{ 'type' => 'pullmans_available' }],
             variants: [{
               name: '4+4',
               distance: [{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 99 },
@@ -201,6 +212,7 @@ module Engine
           # Level 5 — brown double-sided (5 / 5+5); permanent
           {
             name: '5',
+            level: 5,
             distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
             price: 400,
@@ -216,6 +228,7 @@ module Engine
           # Level 6 — brown double-sided (6 / 6+6); permanent
           {
             name: '6',
+            level: 6,
             distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
             price: 525,
@@ -231,6 +244,7 @@ module Engine
           # NOTE: Level 8 trains become available only after the 4th Level 7 purchase
           {
             name: '7+7',
+            level: 7,
             distance: [{ 'nodes' => ['town'], 'pay' => 7, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 7, 'visit' => 7 }],
             price: 750,
@@ -248,6 +262,7 @@ module Engine
           # NOTE: purchase of the FIRST level-8 triggers game end
           {
             name: '8+8',
+            level: 8,
             distance: [{ 'nodes' => ['town'], 'pay' => 8, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 8 }],
             price: 900,
@@ -262,6 +277,7 @@ module Engine
             available_on: '7',
             events: [{ 'type' => 'remainder_cash_added' }],
           },
+          { name: PULLMAN, distance: 0, price: 150, num: 10, available_on: '4', extra: true },
         ].freeze
 
         # 2 chits per zone; 16 total for 12 minors.
@@ -1028,7 +1044,7 @@ module Engine
 
         def abandon_minor!(minor)
           @log << "#{minor.name} is abandoned"
-          minor.trains.dup.each { |train| @depot.reclaim_train(train) }
+          minor.trains.reject { |train| pullman?(train) }.each { |train| @depot.reclaim_train(train) }
           minor.placed_tokens.each(&:remove!)
           minor.spend(minor.cash, @bank) if minor.cash.positive?
           @share_pool.transfer_shares(minor.presidents_share.to_bundle, minor.ipo_owner, allow_president_change: false)
@@ -1053,6 +1069,11 @@ module Engine
 
         def add_minor_charter!(minor, major)
           @merged_minors[major] << minor
+          unless minor.trains.empty?
+            trains = transfer(:trains, minor, major)
+            @log << "#{major.name} takes #{trains.map(&:name).join(', ')} from #{minor.name}"
+          end
+          discard_pullman!(major) if major.trains.count { |train| pullman?(train) } > 1
           return unless major.type == :major
 
           pay_minor_a_bonus!(minor, major) if minor.id == 'A'
@@ -1075,6 +1096,66 @@ module Engine
           @bank.spend(amount, major)
           ability.use!
           @log << "#{major.name} receives #{format_currency(amount)} from the bank for #{minor.name}"
+        end
+
+        def pullman?(train)
+          train.name == self.class::PULLMAN
+        end
+
+        def pullman(corporation)
+          corporation.trains.find { |train| pullman?(train) }
+        end
+
+        def discard_pullman!(corporation)
+          @depot.reclaim_train(pullman(corporation))
+          @log << "#{corporation.name} discards its #{self.class::PULLMAN} to the Open Market"
+        end
+
+        def trainless?(corporation)
+          corporation.trains.all? { |train| extra_train?(train) }
+        end
+
+        def route_trains(entity)
+          super.reject { |train| pullman?(train) }
+        end
+
+        def pullman_royalty
+          self.class::PULLMAN_ROYALTY
+        end
+
+        def pullman_transfer_price
+          self.class::PULLMAN_TRANSFER_PRICE
+        end
+
+        def pay_pullman_royalty!
+          holder = minor_m_holder
+          return unless holder
+
+          @bank.spend(pullman_royalty, holder)
+          @log << "#{holder.name} receives #{format_currency(pullman_royalty)} #{self.class::PULLMAN} royalty"
+        end
+
+        def minor_m
+          corporation_by_id('M')
+        end
+
+        def minor_m_holder
+          m = minor_m
+          merged_into = @merged_minors.find { |_major, minors| minors.include?(m) }&.first
+          return merged_into if merged_into
+
+          m if m.floated? && m.owner
+        end
+
+        def event_pullmans_available!
+          holder = minor_m_holder
+          return unless holder
+
+          pullman_card = @depot.upcoming.find { |train| pullman?(train) }
+          return unless pullman_card
+
+          buy_train(holder, pullman_card, :free)
+          @log << "#{holder.name} receives a free #{self.class::PULLMAN}"
         end
 
         def level8_train_available?
@@ -1170,7 +1251,7 @@ module Engine
           return false unless (info = last_revenue_info(entity))
 
           ran = info.routes.keys.flat_map { |train| component_trains(train) }
-          ran.map(&:id).sort == entity.trains.map(&:id).sort
+          ran.map(&:id).sort == entity.trains.reject { |train| extra_train?(train) }.map(&:id).sort
         end
 
         def last_revenue_info(entity)
@@ -1543,7 +1624,17 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue += self.class::ORIENT_EXPRESS_BONUS[route.phase.name] if orient_express_bonus_route?(route)
-          revenue
+          revenue + pullman_bonus(route)
+        end
+
+        def pullman_attached?(route)
+          @round.respond_to?(:pullman_train) && @round.pullman_train == route.train
+        end
+
+        def pullman_bonus(route)
+          return 0 unless pullman_attached?(route)
+
+          route.train.level * self.class::PULLMAN_BONUS_PER_LEVEL
         end
 
         def routes_revenue(routes)
@@ -1553,7 +1644,8 @@ module Engine
 
         def revenue_str(route)
           str = super
-          orient_express_bonus_route?(route) ? "#{str} + Orient Express" : str
+          str = "#{str} + Orient Express" if orient_express_bonus_route?(route)
+          pullman_attached?(route) ? "#{str} + Pullman" : str
         end
 
         def check_connected(route, corporation)

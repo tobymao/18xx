@@ -364,5 +364,15 @@ describe 'G18OE ending the game (§13)' do
 
       expect(game.repeat_last_revenue?(major)).to be(true)
     end
+
+    it 'repeats for a RR that owns a Pullman alongside the train that ran' do
+      give_train!(game, major)
+      game.buy_train(major, game.depot.upcoming.find { |t| game.pullman?(t) }, :free)
+      final_turn!
+      record_revenue!(major, 100, 'payout', trains: major.trains.reject { |t| game.pullman?(t) })
+      operate!(game, 2)
+
+      expect(game.repeat_last_revenue?(major)).to be(true)
+    end
   end
 end
