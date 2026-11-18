@@ -24,6 +24,8 @@ module Engine
         end.freeze
 
         MAX_FLOATED_REGIONALS = 6
+        PORT_AUTHORITIES = { north_sea: 4, mediterranean: 6 }.freeze
+        PORT_AUTHORITY_LIMIT = 2
 
         PATRONAGE_DRAWS = [{ group: :yellow, zone: 'F', count: 2 }, { group: :pink, zone: 'U', count: 2 }].freeze
 
