@@ -2152,6 +2152,10 @@ module Engine
         nil
       end
 
+      def bundle_annotation(bundle)
+        bundle.shares.any? { |s| s.last_cert || s.double_cert } ? '[d]' : ''
+      end
+
       def corporation_show_loans?(_corporation)
         true
       end
