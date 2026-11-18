@@ -195,6 +195,16 @@ module Engine
           G1835::SharePool.new(self)
         end
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['Any number of shares sold', '1 ↓ per sell action'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
+        end
+
         def init_round
           round_num = @draft_round_num || 1
           G1835::Round::Draft.new(self, [
