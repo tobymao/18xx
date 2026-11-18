@@ -78,6 +78,7 @@ module Engine
         TRAIN_CLASS = G18OE::Train
         PULLMAN = 'Pullman'
         PULLMAN_BONUS_PER_LEVEL = 10
+        TRAIN_ADD_ONS = { pullman: 'Pullman', one_plus_one_marker: '+1+1 marker' }.freeze
         PULLMAN_ROYALTY = 15
         PULLMAN_TRANSFER_PRICE = 75
 
@@ -529,6 +530,7 @@ module Engine
           @minor_e_ability = corporation_by_id('E')&.abilities&.first
           @minor_f_ability = corporation_by_id('F')&.abilities&.first
           @minor_h_ability = corporation_by_id('H')&.abilities&.first
+          @minor_l_ability = corporation_by_id('L')&.abilities&.first
         end
 
         def setup_minor_k!
@@ -1631,17 +1633,83 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          revenue = super
+          revenue = super - one_plus_one_marker_undoubled_revenue(route, stops)
           revenue += self.class::ORIENT_EXPRESS_BONUS[route.phase.name] if orient_express_bonus_route?(route)
           revenue + pullman_bonus(route)
         end
 
-        def pullman_attached?(route)
-          @round.respond_to?(:pullman_train) && @round.pullman_train == route.train
+        def compute_stops(route, train = nil)
+          train ||= route.train
+          previous = @one_plus_one_city_limit
+          marked = add_on_train?(:one_plus_one_marker, train) && (train.multiplier || 1) > 1
+          @one_plus_one_city_limit = marked ? one_plus_one_city_limit(route, train) : nil
+          super
+        ensure
+          @one_plus_one_city_limit = previous
+        end
+
+        def one_plus_one_marker?(corporation)
+          !@minor_l_ability.nil? && corporation.abilities.include?(@minor_l_ability)
+        end
+
+        def train_add_ons(entity)
+          add_ons = []
+          add_ons << :pullman if pullman(entity)
+          add_ons << :one_plus_one_marker if one_plus_one_marker?(entity)
+          add_ons
+        end
+
+        def train_add_on_name(type)
+          self.class::TRAIN_ADD_ONS[type]
+        end
+
+        def train_add_on_names(train)
+          self.class::TRAIN_ADD_ONS.keys.select { |type| add_on_train?(type, train) }.map { |type| train_add_on_name(type) }
+        end
+
+        def add_on_train(type)
+          @round.add_on_trains[type] if @round.respond_to?(:add_on_trains)
+        end
+
+        def add_on_train?(type, train)
+          !train.nil? && add_on_train(type) == train
+        end
+
+        def train_distance(train)
+          distance = train.distance
+          return distance if distance.is_a?(Numeric) || !add_on_train?(:one_plus_one_marker, train)
+
+          distance.map do |row|
+            extended = row.dup
+            if row['nodes'].include?('city')
+              extended['visit'] = (row['visit'] || row['pay']) + 1
+              extended['pay'] = row['pay'] + 1
+            elsif row['nodes'] == ['town']
+              extended['pay'] = row['pay'] + 1
+            end
+            extended
+          end
+        end
+
+        def one_plus_one_marker_undoubled_revenue(route, stops)
+          train = route.train
+          multiplier = train.multiplier || 1
+          return 0 if multiplier <= 1 || !add_on_train?(:one_plus_one_marker, train)
+
+          towns, cities = stops.partition(&:town?)
+          limit = @one_plus_one_city_limit || one_plus_one_city_limit(route, train)
+          single = towns.map { |stop| stop.route_base_revenue(route.phase, train) }
+          single << cities.map { |stop| stop.route_base_revenue(route.phase, train) }.min if !cities.empty? && cities.size > limit
+          (multiplier - 1) * single.sum
+        end
+
+        def one_plus_one_city_limit(route, train)
+          city_row = route_train_distance(route, train).find { |row| row['nodes'].include?('city') }
+          city_row['pay'] - 1
         end
 
         def pullman_bonus(route)
-          return 0 unless pullman_attached?(route)
+          return 0 unless add_on_train?(:pullman, route.train)
 
           route.train.level * self.class::PULLMAN_BONUS_PER_LEVEL
         end
@@ -1654,7 +1722,7 @@ module Engine
         def revenue_str(route)
           str = super
           str = "#{str} + Orient Express" if orient_express_bonus_route?(route)
-          pullman_attached?(route) ? "#{str} + Pullman" : str
+          add_on_train?(:pullman, route.train) ? "#{str} + Pullman" : str
         end
 
         def check_connected(route, corporation)
