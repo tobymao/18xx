@@ -11,8 +11,7 @@ module Engine
         DEV_STAGE = :prealpha
 
         GAME_TITLE = 'Frost 1831'.freeze
-        GAME_ISSUE_LABEL = 'frost1831'
-        FIXTURE_DIR_NAME = 'frost1831'
+        FIXTURE_DIR_NAME = 'frost_1831'
 
         GAME_DESIGNER = 'Alexandre Madu'.freeze
         GAME_IMPLEMENTER = 'Lucas Leite'.freeze
@@ -32,6 +31,10 @@ module Engine
             desc: "A player's 2nd corporation must support at least 1 faction not supported by their 1st",
           },
         ].freeze
+
+        def self.fs_name
+          @fs_name ||= 'g_frost_1831'
+        end
       end
     end
   end
