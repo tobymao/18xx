@@ -69,7 +69,6 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_RESERVATION_BLOCKS_OTHERS = :always
-        TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
         REVISITABLE_NODES = %w[town double_town].freeze
         # bank-break ends current OR; first level-8 purchase ends after one more full OR set
         GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
@@ -1448,6 +1447,16 @@ module Engine
           when 'C74'
             to.label.to_s.include?('S')
           end
+        end
+
+        def legal_tile_rotation?(_entity, hex, tile)
+          return false unless super
+          return true unless %i[brown gray].include?(tile.color)
+
+          old_tile = hex.tile
+          requires_all_exits = !old_tile.double_towns.empty? || old_tile.label.to_s == 'Y' ||
+                               (tile.color == :gray && !old_tile.cities.empty? && !old_tile.label)
+          !requires_all_exits || (hex.neighbors.keys - tile.exits).empty?
         end
 
         def company_becomes_minor?(company)
