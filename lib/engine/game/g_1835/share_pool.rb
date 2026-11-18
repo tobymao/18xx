@@ -32,6 +32,32 @@ module Engine
 
           super
         end
+
+        def num_presentation(bundle)
+          return "a #{bundle.percent}% share" if bundle.shares.size == 1
+          return "#{bundle.shares.size} #{bundle.shares.first.percent}% shares" if bundle.shares.map(&:percent).uniq.size == 1
+
+          low, high = bundle.shares.map(&:percent).tally.sort_by { |p, _| p }
+
+          "#{to_words(low[1])} #{low[0]}% and #{to_words(high[1])} #{high[0]}% share(s)"
+        end
+
+        def to_words(i)
+          case i
+          when 1
+            'one'
+          when 2
+            'two'
+          when 3
+            'three'
+          when 4
+            'four'
+          when 5
+            'five'
+          else
+            '' + i
+          end
+        end
       end
     end
   end
