@@ -7,7 +7,6 @@ module Engine
     module GFrost1831
       module Round
         class Stock < Engine::Round::Stock
-          # Faction prices only move with Favors and bases
           def corporations_to_move_price
             super.reject { |c| c.type == :faction }
           end

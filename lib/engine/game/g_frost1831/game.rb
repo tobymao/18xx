@@ -458,7 +458,6 @@ module Engine
           @parliament_open
         end
 
-        # Factions start on their Parliament track at £70
         def event_parliament_opens!
           @log << "-- Event: New London's Parliament opens! --"
           @parliament_open = true

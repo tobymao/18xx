@@ -10,13 +10,14 @@ module Engine
         class BuySellParShares < Engine::Step::BuySellParShares
           include FactionCertificates
 
-          # Faction certificates are bought from Parliament at the Faction's price
           def can_buy?(entity, bundle)
             faction = bundle.corporation
             return super unless faction.type == :faction
 
             can_gain_faction_certificate?(entity, faction) &&
               bundle.owner == faction.ipo_owner &&
+              !@round.players_sold[entity][faction] &&
+              @game.num_certs(entity) < @game.cert_limit(entity) &&
               entity.cash >= @game.faction_share_price(faction)
           end
 
@@ -32,8 +33,6 @@ module Engine
             gain_faction_certificate(entity, faction, price)
           end
 
-          # Sold Faction certificates return to Parliament at the Faction's price, which
-          # does not fall; the Faction loses 1 Influence Cube per certificate (8.2.2)
           def can_sell?(entity, bundle)
             faction = bundle.corporation
             return super unless faction.type == :faction
@@ -64,7 +63,6 @@ module Engine
 
           private
 
-          # A President's certificate may be sold only if another player can take over (8.3.1)
           def keeps_president?(entity, faction, bundle)
             return true unless faction.owner == entity
 
