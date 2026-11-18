@@ -247,12 +247,21 @@ AUTO_ACTIONS_TEST_CASES = [
 ].freeze
 
 describe 'Assets' do
-  before(:all) { @subject = Assets.new }
+  before(:all) do
+    @subject = Assets.new
+    @assets_by_titles = {}
+  end
 
   subject { @subject }
 
-  def render(**needs)
-    subject.html('assets/app/app.rb', **needs)
+  def assets_for(titles)
+    return subject if @assets_by_titles.key?(:all)
+
+    @assets_by_titles[titles] ||= titles == :all ? subject : Assets.new
+  end
+
+  def render(titles: :all, **needs)
+    assets_for(titles).html('assets/app/app.rb', titles: titles, **needs)
   end
 
   describe '#html' do
@@ -346,7 +355,7 @@ describe 'Assets' do
       }.each do |game_title, expected_strings|
         context game_title do
           it 'renders map' do
-            rendered = render(app_route: "/map/#{game_title}")
+            rendered = render(titles: [game_title], app_route: "/map/#{game_title}")
 
             aggregate_failures 'expected strings' do
               expected_strings.each { |s| expect(rendered).to include(s) }
@@ -492,7 +501,7 @@ describe 'Assets' do
         user: data['user'].merge(settings: { consent: true }),
       }
 
-      html = render(app_route: "/game/#{needs[:game_data]['id']}#{suffix}", **needs)
+      html = render(titles: [data['title']], app_route: "/game/#{needs[:game_data]['id']}#{suffix}", **needs)
       strings = Array(string)
       strings.each do |str|
         if /^!!/.match?(str)
