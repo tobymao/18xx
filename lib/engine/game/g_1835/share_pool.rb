@@ -17,11 +17,14 @@ module Engine
           shares.sort_by(&:percent)
         end
 
-        def change_president(presidents_share, swap_to, president, previous_president)
+        def change_president(presidents_share, _, president, previous_president)
+          swap_to = presidents_share.owner.player? ? previous_president : self
           president_percent = presidents_share.percent
           presidents_percentages = president.shares_of(presidents_share.corporation).map(&:percent)
           choice_available = presidents_percentages.count(president_percent / 2) >= 2 &&
-                             presidents_percentages.count(president_percent) >= 1
+                             presidents_percentages.count(president_percent) >= 1 &&
+            presidents_share.owner.player?
+
           if @game.round.swap_choice_player.nil? && choice_available
             @game.round.swap_presidents_share = presidents_share
             @game.round.swap_choice_player = previous_president
@@ -30,7 +33,7 @@ module Engine
             return
           end
 
-          super
+          super(presidents_share, swap_to, president, previous_president)
         end
       end
     end

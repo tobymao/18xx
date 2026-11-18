@@ -133,4 +133,35 @@ describe Engine::Game::G1835::Game do
       expect(player_3.certs_of(baden).size).to be 3
     end
   end
+
+  describe 'swap_choice2' do
+    it 'should not offer a choice if the old president sold their president share' do
+      game = fixture_at_action(924)
+
+      player_1 = game.players.find { |player| player.id == 0 }
+      player_2 = game.players.find { |player| player.id == 1 }
+      player_3 = game.players.find { |player| player.id == 2 }
+      preussen = game.corporation_by_id('PR')
+
+      # assert the situation: Player 3 (director) has 30%
+      expect(game.round).to be_a(Engine::Round::Stock)
+      expect(preussen.owner).to eq(player_3)
+      expect(player_1.percent_of(preussen)).to be 10
+      expect(player_2.percent_of(preussen)).to be 30
+      expect(player_3.percent_of(preussen)).to be 30
+      expect(game.share_pool.percent_of(preussen)).to be 0
+
+      bundle = game.sellable_bundles(player_3, preussen).find { |b| b.percent == 30 }
+      game.process_action(Engine::Action::SellShares.new(player_3, shares: bundle.shares)).maybe_raise!
+
+      expect(game.round.active_step).to_not be_a(Engine::Game::G1835::Step::SwapChoice)
+      expect(game.current_entity).to eq(player_3)
+
+      expect(preussen.owner).to eq(player_2)
+      expect(player_1.percent_of(preussen)).to be 10
+      expect(player_2.percent_of(preussen)).to be 30
+      expect(player_3.percent_of(preussen)).to be 0
+      expect(game.share_pool.percent_of(preussen)).to be 30
+    end
+  end
 end
