@@ -79,22 +79,41 @@ module Engine
           end
 
           def available_factions
+            compliant = compliant_factions(first_corporation_factions)
+            compliant.empty? ? unrestricted_factions : compliant
+          end
+
+          def compliant_factions(supported)
+            return compliant_first_choices(supported) if first?
+
+            compliant_second_choices(pending_choice[:first_choice], supported)
+          end
+
+          def unrestricted_factions
             return @game.faction_support_available if first?
 
-            available = @game.faction_support_available_for_second(pending_choice[:first_choice])
-            return available unless @game.parliamentary_intervention?
+            @game.faction_support_available_for_second(pending_choice[:first_choice])
+          end
+
+          def compliant_first_choices(supported)
+            @game.faction_support_available.reject { |faction| compliant_second_choices(faction, supported).empty? }
+          end
+
+          def compliant_second_choices(first_choice, supported)
+            available = @game.faction_support_available_for_second(first_choice)
+            return available unless supported.include?(first_choice)
+
+            available - supported
+          end
+
+          def first_corporation_factions
+            return [] unless @game.parliamentary_intervention?
 
             corporation = pending_choice[:corporation]
             others = @game.corporations.select do |c|
               c.type != :faction && c.owner == corporation.owner && c.floated? && c != corporation
             end
-            return available unless others.size == 1
-
-            supported = @game.corporation_factions(others.first)
-            return available unless supported.include?(pending_choice[:first_choice])
-
-            different = available - supported
-            different.empty? ? available : different
+            others.size == 1 ? @game.corporation_factions(others.first) : []
           end
 
           def pending_choice

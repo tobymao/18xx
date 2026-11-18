@@ -101,6 +101,30 @@ module Engine
 
             expect(step.choices.keys).to eq(%w[LOR EXP])
           end
+
+          it 'only offers 1st choices that leave a different Faction for the 2nd' do
+            float(game.corporation_by_id('CM'))
+            choose(p1, 'TEC')
+            choose(p1, 'LOR')
+            game.instance_variable_set(:@faction_support_pool, %w[TEC TEC LOR EXP])
+
+            float(game.corporation_by_id('DL'))
+
+            expect(step.choices.keys).to match_array(%w[TEC EXP])
+          end
+
+          it 'allows the same Factions when no different pair is available' do
+            float(game.corporation_by_id('CM'))
+            choose(p1, 'TEC')
+            choose(p1, 'LOR')
+            game.instance_variable_set(:@faction_support_pool, %w[TEC TEC LOR LOR])
+
+            float(game.corporation_by_id('DL'))
+            expect(step.choices.keys).to match_array(%w[TEC LOR])
+
+            choose(p1, 'LOR')
+            expect(step.choices.keys).to eq(%w[TEC])
+          end
         end
       end
     end
