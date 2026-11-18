@@ -484,7 +484,7 @@ describe 'G18OE Pullman cars (§11.6.2)' do
     end
 
     def attach!(train)
-      step.process_choose(Engine::Action::Choose.new(major, choice: train.id))
+      step.process_choose(Engine::Action::Choose.new(major, choice: "pullman:#{train.id}"))
     end
 
     def combine!(*trains)
@@ -500,8 +500,8 @@ describe 'G18OE Pullman cars (§11.6.2)' do
         three = run_train('3')
 
         expect(step.actions(major)).to include('choose')
-        expect(step.choices.keys).to contain_exactly(two.id, three.id)
-        expect(step.choice_name).to eq('Attach the Pullman to a train')
+        expect(step.choices.keys).to contain_exactly("pullman:#{two.id}", "pullman:#{three.id}")
+        expect(step.choice_name).to eq('Attach to a train')
       end
 
       it 'adds £30 to a 3+3' do
@@ -559,7 +559,7 @@ describe 'G18OE Pullman cars (§11.6.2)' do
 
         expect(game.revenue_str(route_for(three))).to end_with(' + Pullman')
         expect(game.revenue_str(route_for(run_train('2+2')))).not_to include('Pullman')
-        expect(step.train_name(major, three)).to eq('3 + Pullman')
+        expect(step.train_name(major, three)).to eq('3 (Pullman)')
         expect(step.train_name(major, run_train('2+2'))).to eq('2+2')
       end
 
@@ -568,7 +568,7 @@ describe 'G18OE Pullman cars (§11.6.2)' do
         three = run_train('3')
         attach!(two)
 
-        expect(step.choices.keys).to eq([three.id])
+        expect(step.choices.keys).to eq(["pullman:#{three.id}"])
         attach!(three)
 
         expect(game.pullman_bonus(route_for(two))).to eq(0)
@@ -589,7 +589,7 @@ describe 'G18OE Pullman cars (§11.6.2)' do
         three = run_train('3')
         combined = combine!(two, three)
 
-        expect(step.choices.keys).to eq([combined.id])
+        expect(step.choices.keys).to eq(["pullman:#{combined.id}"])
       end
 
       it 'carries the Pullman over to the combined train with the highest component level' do

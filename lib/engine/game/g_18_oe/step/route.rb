@@ -14,6 +14,8 @@ module Engine
           POOL_HELP = " Port authorities and Minor H reduce the railroad's total, shared by its trains; "\
                       'the trains earning most use it first.'
 
+          ADD_ON_CHOICE_SEPARATOR = ':'
+
           def actions(entity)
             return [] if @game.repeat_last_revenue?(entity)
 
@@ -21,7 +23,7 @@ module Engine
             return actions if actions.empty?
 
             actions += %w[double_head_trains] if combining_offered?(entity)
-            actions += %w[choose] unless pullman_train_choices(entity).empty?
+            actions += %w[choose] if @game.train_add_ons(entity).any? { |type| !add_on_choices(entity, type).empty? }
             actions
           end
 
@@ -32,30 +34,40 @@ module Engine
           end
 
           def choice_name
-            'Attach the Pullman to a train'
+            'Attach to a train'
           end
 
           def choices
-            pullman_train_choices(current_entity).to_h { |train| [train.id, "#{train.name} train"] }
+            @game.train_add_ons(current_entity).flat_map do |type|
+              name = @game.train_add_on_name(type)
+              add_on_choices(current_entity, type).map do |train|
+                ["#{type}#{ADD_ON_CHOICE_SEPARATOR}#{train.id}", "#{name} on #{train.name} train"]
+              end
+            end.to_h
           end
 
-          def pullman_train_choices(entity)
-            return [] unless @game.pullman(entity)
-
-            @game.route_trains(entity).reject { |train| train.operated || train == @round.pullman_train }
+          def add_on_choices(entity, type)
+            current = @game.add_on_train(type)
+            @game.route_trains(entity).reject { |train| train.operated || train == current }
           end
 
           def process_choose(action)
             entity = action.entity
-            train = pullman_train_choices(entity).find { |t| t.id == action.choice }
-            raise GameError, 'Cannot attach the Pullman to that train' unless train
+            type_key, train_id = action.choice.split(ADD_ON_CHOICE_SEPARATOR, 2)
+            type = @game.train_add_ons(entity).find { |t| t.to_s == type_key }
+            raise GameError, 'Cannot attach that' unless type
 
-            @round.pullman_train = train
-            @log << "#{entity.name} attaches the Pullman to the #{train.name} train"
+            name = @game.train_add_on_name(type)
+            train = add_on_choices(entity, type).find { |t| t.id == train_id }
+            raise GameError, "Cannot attach the #{name} to that train" unless train
+
+            @round.add_on_trains[type] = train
+            @log << "#{entity.name} attaches the #{name} to the #{train.name} train"
           end
 
           def train_name(_corporation, train)
-            @round.pullman_train == train ? "#{train.name} + Pullman" : train.name
+            names = @game.train_add_on_names(train)
+            names.empty? ? train.name : "#{train.name} (#{names.join(', ')})"
           end
 
           def log_skip(entity)
@@ -78,7 +90,7 @@ module Engine
           end
 
           def round_state
-            super.merge(combined_trains: {}, orient_express_revenue: nil, pullman_train: nil)
+            super.merge(combined_trains: {}, orient_express_revenue: nil, add_on_trains: {})
           end
 
           def double_head_trains_title
@@ -94,7 +106,7 @@ module Engine
             super
             @round.combined_trains = {}
             @round.orient_express_revenue = nil
-            @round.pullman_train = nil
+            @round.add_on_trains = {}
           end
 
           def process_run_routes(action)
@@ -121,7 +133,7 @@ module Engine
             train.owner = corporation
             corporation.trains << train
             @round.combined_trains[train] = trains
-            @round.pullman_train = train if trains.include?(@round.pullman_train)
+            @round.add_on_trains.each { |type, add_on_train| @round.add_on_trains[type] = train if trains.include?(add_on_train) }
 
             @log << "#{corporation.name} combines #{trains.map(&:name).sort.join(', ')} into "\
                     "#{an(train.distance[1]['pay'])} #{train.name} train for the Orient Express"

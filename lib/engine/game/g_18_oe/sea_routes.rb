@@ -186,7 +186,7 @@ module Engine
         end
 
         def route_train_distance(route, train)
-          distance = train.distance
+          distance = train_distance(train)
           return distance if distance.is_a?(Numeric)
 
           cost = sea_distance(route)
@@ -213,7 +213,8 @@ module Engine
         end
 
         def largest_city_limit(corporation)
-          route_trains(corporation).map { |train| distance(train).first }.max || 0
+          limit = route_trains(corporation).map { |train| distance(train).first }.max || 0
+          one_plus_one_marker?(corporation) ? limit + 1 : limit
         end
 
         def sea_boundary_zones(from_sea, to_sea)
@@ -303,7 +304,7 @@ module Engine
         end
 
         def city_limit_level(train)
-          distance = train.distance
+          distance = train_distance(train)
           return distance if distance.is_a?(Numeric)
 
           (distance.find { |row| row['nodes'].include?('city') } || distance.first)['pay']
