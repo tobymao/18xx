@@ -107,6 +107,47 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     expect(game.graph.sea_connectivity(dsj)).not_to equal(before)
   end
 
+  describe 'crossing both seas with port authorities (§11.1.6, §11.2.1)' do
+    let(:connectivity) { Engine::Game::G18OE::SeaConnectivity.allocate }
+    let(:edges) do
+      {
+        departure: [[:first_zone, 2, :north_sea]],
+        first_zone: [[:second_zone, 2, :north_sea]],
+        second_zone: [[:third_zone, 2, :north_sea]],
+        third_zone: [[:fourth_zone, 2, :mediterranean]],
+        fourth_zone: [[:arrival, 2, :mediterranean]],
+        arrival: [],
+      }
+    end
+
+    def crossing_cost(seas, graph = edges)
+      connectivity.instance_variable_set(:@game, game)
+      connectivity.instance_variable_set(:@corporation, dsj)
+      connectivity.instance_variable_set(:@edges, graph)
+      game.instance_variable_get(:@port_authorities)[dsj] = seas
+      connectivity.send(:reduced_costs, [:departure]).fetch(:arrival)
+    end
+
+    it 'uses up to two zones from each owned sea' do
+      expect(crossing_cost(%i[north_sea mediterranean])).to eq(2)
+    end
+
+    it 'charges for the unowned sea in full' do
+      expect(crossing_cost([:north_sea])).to eq(6)
+    end
+
+    it 'discounts the North Sea ferry and Mediterranean zone and charges the unclassified ferry' do
+      mixed_crossing = {
+        departure: [[:ferry_landing, 3, :north_sea, true]],
+        ferry_landing: [[:sea_zone, 2, :mediterranean]],
+        sea_zone: [[:arrival, 2, nil, true]],
+        arrival: [],
+      }
+
+      expect(crossing_cost(%i[north_sea mediterranean], mixed_crossing)).to eq(3)
+    end
+  end
+
   describe 'laying across water (§11.1.3, §11.1.6)' do
     let(:player) { game.players.first }
 
