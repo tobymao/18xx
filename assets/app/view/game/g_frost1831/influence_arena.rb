@@ -15,17 +15,17 @@ module View
         BASE_PANEL_WIDTH = 130
 
         ARENA_COLORS = {
-          exp_3: '#e8940a',
+          tec_3: '#e8940a',
           lor_3: '#e07868',
-          tec_3: '#e8c517',
+          exp_3: '#e8c517',
           gua_3: '#c0392b',
-          exp_2: '#f0a830',
+          tec_2: '#f0a830',
           lor_2: '#e89080',
-          tec_2: '#f0d020',
+          exp_2: '#f0d020',
           gua_2: '#d04438',
-          exp_1: '#f0b840',
+          tec_1: '#f0b840',
           lor_1: '#f0a898',
-          tec_1: '#f8e030',
+          exp_1: '#f8e030',
           gua_1: '#e05048',
           crown: '#3a3a3a',
         }.freeze
@@ -264,24 +264,24 @@ module View
 
         def arena_grid_data
           grid = Array.new(8) { Array.new(8) }
-          set_cell(grid, 0, 0, :exp_3, 3, :exp_tl_a, true)
-          set_cell(grid, 1, 0, :exp_3, 3, :exp_tl_a, false)
-          set_cell(grid, 2, 0, :exp_3, 3, :exp_tl_b, true)
-          set_cell(grid, 3, 0, :exp_3, 3, :exp_tl_b, false)
+          set_cell(grid, 0, 0, :tec_3, 3, :tec_tl_a, true)
+          set_cell(grid, 1, 0, :tec_3, 3, :tec_tl_a, false)
+          set_cell(grid, 2, 0, :tec_3, 3, :tec_tl_b, true)
+          set_cell(grid, 3, 0, :tec_3, 3, :tec_tl_b, false)
 
-          set_cell(grid, 0, 1, :exp_3, 3, :exp_tl_a, false)
-          set_cell(grid, 1, 1, :exp_2, 2, :exp_ml_a, true)
-          set_cell(grid, 2, 1, :exp_2, 2, :exp_ml_a, false)
-          set_cell(grid, 3, 1, :exp_2, 2, :exp_ml_b, true)
+          set_cell(grid, 0, 1, :tec_3, 3, :tec_tl_a, false)
+          set_cell(grid, 1, 1, :tec_2, 2, :tec_ml_a, true)
+          set_cell(grid, 2, 1, :tec_2, 2, :tec_ml_a, false)
+          set_cell(grid, 3, 1, :tec_2, 2, :tec_ml_b, true)
 
-          set_cell(grid, 0, 2, :exp_3, 3, :exp_bl_a, true)
-          set_cell(grid, 1, 2, :exp_2, 2, :exp_ml_a, false)
-          set_cell(grid, 2, 2, :exp_1, 1, :exp_in_a, true)
-          set_cell(grid, 3, 2, :exp_1, 1, :exp_in_a, false)
+          set_cell(grid, 0, 2, :tec_3, 3, :tec_bl_a, true)
+          set_cell(grid, 1, 2, :tec_2, 2, :tec_ml_a, false)
+          set_cell(grid, 2, 2, :tec_1, 1, :tec_in_a, true)
+          set_cell(grid, 3, 2, :tec_1, 1, :tec_in_a, false)
 
-          set_cell(grid, 0, 3, :exp_3, 3, :exp_bl_a, false)
-          set_cell(grid, 1, 3, :exp_2, 2, :exp_ml_c, true)
-          set_cell(grid, 2, 3, :exp_1, 1, :exp_in_a, false)
+          set_cell(grid, 0, 3, :tec_3, 3, :tec_bl_a, false)
+          set_cell(grid, 1, 3, :tec_2, 2, :tec_ml_c, true)
+          set_cell(grid, 2, 3, :tec_1, 1, :tec_in_a, false)
           set_cell(grid, 3, 3, :crown, 0, :crown_block, false)
           set_cell(grid, 4, 0, :lor_3, 3, :lor_tr_b, false)
           set_cell(grid, 5, 0, :lor_3, 3, :lor_tr_b, true)
@@ -302,25 +302,25 @@ module View
           set_cell(grid, 5, 3, :lor_1, 1, :lor_in_a, false)
           set_cell(grid, 6, 3, :lor_2, 2, :lor_mr_c, true)
           set_cell(grid, 7, 3, :lor_3, 3, :lor_br_a, false)
-          set_cell(grid, 0, 4, :tec_3, 3, :tec_bl_a, false)
-          set_cell(grid, 1, 4, :tec_2, 2, :tec_ml_c, true)
-          set_cell(grid, 2, 4, :tec_1, 1, :tec_in_a, false)
+          set_cell(grid, 0, 4, :exp_3, 3, :exp_bl_a, false)
+          set_cell(grid, 1, 4, :exp_2, 2, :exp_ml_c, true)
+          set_cell(grid, 2, 4, :exp_1, 1, :exp_in_a, false)
           set_cell(grid, 3, 4, :crown, 0, :crown_block, true)
 
-          set_cell(grid, 0, 5, :tec_3, 3, :tec_bl_a, true)
-          set_cell(grid, 1, 5, :tec_2, 2, :tec_ml_a, false)
-          set_cell(grid, 2, 5, :tec_1, 1, :tec_in_a, true)
-          set_cell(grid, 3, 5, :tec_1, 1, :tec_in_a, false)
+          set_cell(grid, 0, 5, :exp_3, 3, :exp_bl_a, true)
+          set_cell(grid, 1, 5, :exp_2, 2, :exp_ml_a, false)
+          set_cell(grid, 2, 5, :exp_1, 1, :exp_in_a, true)
+          set_cell(grid, 3, 5, :exp_1, 1, :exp_in_a, false)
 
-          set_cell(grid, 0, 6, :tec_3, 3, :tec_tl_a, false)
-          set_cell(grid, 1, 6, :tec_2, 2, :tec_ml_a, true)
-          set_cell(grid, 2, 6, :tec_2, 2, :tec_ml_a, false)
-          set_cell(grid, 3, 6, :tec_2, 2, :tec_ml_b, true)
+          set_cell(grid, 0, 6, :exp_3, 3, :exp_tl_a, false)
+          set_cell(grid, 1, 6, :exp_2, 2, :exp_ml_a, true)
+          set_cell(grid, 2, 6, :exp_2, 2, :exp_ml_a, false)
+          set_cell(grid, 3, 6, :exp_2, 2, :exp_ml_b, true)
 
-          set_cell(grid, 0, 7, :tec_3, 3, :tec_tl_a, true)
-          set_cell(grid, 1, 7, :tec_3, 3, :tec_tl_a, false)
-          set_cell(grid, 2, 7, :tec_3, 3, :tec_tl_b, true)
-          set_cell(grid, 3, 7, :tec_3, 3, :tec_tl_b, false)
+          set_cell(grid, 0, 7, :exp_3, 3, :exp_tl_a, true)
+          set_cell(grid, 1, 7, :exp_3, 3, :exp_tl_a, false)
+          set_cell(grid, 2, 7, :exp_3, 3, :exp_tl_b, true)
+          set_cell(grid, 3, 7, :exp_3, 3, :exp_tl_b, false)
           set_cell(grid, 4, 4, :crown, 0, :crown_block, false)
           set_cell(grid, 5, 4, :gua_1, 1, :gua_in_a, false)
           set_cell(grid, 6, 4, :gua_2, 2, :gua_mr_c, true)
