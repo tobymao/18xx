@@ -95,14 +95,14 @@ describe 'G18OE setup' do
 
   it 'stocks the Locomotive Works (§3.1)' do
     expect(game.depot.upcoming.map(&:name).tally)
-      .to eq('2+2' => 30, '3' => 20, '4' => 10, '5' => 8, '6' => 6, '7+7' => 14, '8+8' => 8)
+      .to eq('2+2' => 30, '3' => 20, '4' => 10, '5' => 8, '6' => 6, '7+7' => 14, '8+8' => 8, 'Pullman' => 10)
   end
 
   it 'pairs local and express sides on each card (§11.3.2)' do
     sides = cards.transform_values { |t| t.variants.keys }
 
     expect(sides).to eq('2+2' => ['2+2'], '3' => %w[3 3+3], '4' => %w[4 4+4], '5' => %w[5 5+5],
-                        '6' => %w[6 6+6], '7+7' => %w[7+7 4D], '8+8' => %w[8+8 5D])
+                        '6' => %w[6 6+6], '7+7' => %w[7+7 4D], '8+8' => %w[8+8 5D], 'Pullman' => ['Pullman'])
   end
 
   it 'prices the 3 at £200 and the 3+3 at £225 (§11.6.4)' do
@@ -206,6 +206,6 @@ describe 'G18OE setup' do
     rusts = cards.transform_values { |t| t.variants.values.map { |v| v[:rusts_on] }.uniq }
 
     expect(rusts).to eq('2+2' => ['4'], '3' => ['6'], '4' => ['8+8'], '5' => [nil], '6' => [nil],
-                        '7+7' => [nil], '8+8' => [nil])
+                        '7+7' => [nil], '8+8' => [nil], 'Pullman' => [nil])
   end
 end

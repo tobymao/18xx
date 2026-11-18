@@ -37,7 +37,7 @@ module Engine
       end
 
       def trains(corporation)
-        corporation.trains
+        corporation.trains.reject { |train| @game.extra_train?(train) }
       end
     end
   end

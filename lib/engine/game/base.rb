@@ -1421,7 +1421,7 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        entity.trains.empty? &&
+        entity.trains.all? { |train| extra_train?(train) } &&
           !depot.depot_trains.empty? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
@@ -2271,8 +2271,13 @@ module Engine
         train.owner = nil
       end
 
+      def extra_train?(train)
+        train.extra
+      end
+
       def num_corp_trains(entity)
-        self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? entity.trains.size : entity.trains.count { |t| !t.obsolete }
+        trains = entity.trains.reject { |train| extra_train?(train) }
+        self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? trains.size : trains.count { |t| !t.obsolete }
       end
 
       def crowded_corps

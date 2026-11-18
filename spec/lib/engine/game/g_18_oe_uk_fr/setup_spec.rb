@@ -61,13 +61,13 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
 
   it 'deals ten level 2, seven level 3, three each of levels 4 and 5, two level 6, four level 7 and three level 8 trains' do
     expect(game.depot.upcoming.map(&:name).tally)
-      .to eq('2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3)
+      .to eq('2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3, 'Pullman' => 10)
   end
 
   it 'gives each train card its variants' do
     expect(cards.transform_values { |train| train.variants.keys })
       .to eq('2+2' => ['2+2'], '3' => %w[3 3+3], '4' => %w[4 4+4], '5' => %w[5 5+5], '6' => %w[6 6+6],
-             '7+7' => %w[7+7 4D], '8+8' => %w[8+8 5D])
+             '7+7' => %w[7+7 4D], '8+8' => %w[8+8 5D], 'Pullman' => ['Pullman'])
   end
 
   it 'rusts level 3 trains on 6 and level 4 trains on 8+8' do

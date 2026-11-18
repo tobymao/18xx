@@ -8,7 +8,7 @@ module Engine
     include Ownable
 
     attr_accessor :obsolete, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
-                  :distance, :reserved, :no_local, :multiplier, :track_type
+                  :distance, :reserved, :extra, :no_local, :multiplier, :track_type
     attr_reader :available_on, :discount, :sym, :variant, :requires_token, :ever_operated, :operated, :salvage, :unlimited
 
     attr_writer :buyable
@@ -34,6 +34,7 @@ module Engine
       @track_type = opts[:track_type] || :broad
       @events = (opts[:events] || []).select { |e| @index == (e['when'] || 1) - 1 }
       @reserved = opts[:reserved] || false
+      @extra = opts[:extra] || false
       @requires_token = opts[:requires_token].nil? ? true : opts[:requires_token]
       @unlimited = opts[:num] == 'unlimited'
       @opts = opts
