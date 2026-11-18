@@ -14,7 +14,7 @@ module Engine
 
           def actions(entity)
             return [] if skip?
-            return ACTIONS if entity == current_entity && !@round.tokened && unconnected_token_ability?(entity)
+            return ACTIONS if entity == current_entity && !@round.tokened && token_ability?(entity)
 
             super
           end
@@ -30,6 +30,15 @@ module Engine
           end
 
           private
+
+          def token_ability?(entity)
+            pass_through_ability?(entity) || unconnected_token_ability?(entity)
+          end
+
+          def pass_through_ability?(entity)
+            @game.abilities(entity, :token) { |ability| return true if @game.pass_through_token_company?(ability.owner) }
+            false
+          end
 
           def unconnected_token_ability?(entity)
             return false unless entity.next_token

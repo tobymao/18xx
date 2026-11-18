@@ -81,6 +81,19 @@ module Engine
                   'and other RRs\' tokens in the city do not block them. '\
                   'The token city need not be reachable but may not serve as the sole token on a route, '\
                   'nor be used to place further tokens.',
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'player',
+                when: 'owning_player_token',
+                hexes: [],
+                extra_slot: true,
+                connected: false,
+                count: 1,
+                special_only: true,
+                price: 0,
+              },
+            ],
             auction_row: 3,
           },
           {
@@ -94,6 +107,19 @@ module Engine
                   'and other RRs\' tokens in the city do not block them. '\
                   'The token city need not be reachable but may not serve as the sole token on a route, '\
                   'nor be used to place further tokens.',
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'player',
+                when: 'owning_player_token',
+                hexes: [],
+                extra_slot: true,
+                connected: false,
+                count: 1,
+                special_only: true,
+                price: 0,
+              },
+            ],
             auction_row: 3,
           },
           {
