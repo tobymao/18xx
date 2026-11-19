@@ -486,7 +486,7 @@ module Engine
         # ending at a transshipment point with an EMPTY hold earns its
         # printed value instead (§7.1). Note that trace.size == 1 means
         # the ship has launched but not left the starting hex yet.
-        def trace_revenue(entity, ship, trace, cargo)
+        def trace_revenue(_entity, ship, trace, cargo)
           return 0 if ship.name == 'Probe' || trace.size < 2
           return 0 unless deliverable_destination?(trace.last)
 
@@ -515,7 +515,7 @@ module Engine
           TRANSSHIPMENT_HEXES.include?(hex_id)
         end
 
-        def ship_distance(entity, ship)
+        def ship_distance(_entity, ship)
           ship.distance
         end
 

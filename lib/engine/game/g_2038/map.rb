@@ -32,51 +32,51 @@ module Engine
             'count' => 12,
             'color' => 'gray',
             # unclaimed 10 / claimed 50
-            'code' => "city=revenue:10",
+            'code' => 'city=revenue:10',
           },
           '2002' => {
             'count' => 12,
             'color' => 'gray',
             # unclaimed 20 / claimed 60
-            'code' => "city=revenue:20",
+            'code' => 'city=revenue:20',
           },
           # Single-mine I tiles
           '2003' => {
             'count' => 2,
             'color' => 'gray',
             # unclaimed 30 / claimed 40
-            'code' => "city=revenue:30",
+            'code' => 'city=revenue:30',
           },
           '2004' => {
             'count' => 4,
             'color' => 'gray',
             # unclaimed 40 / claimed 50
-            'code' => "city=revenue:40",
+            'code' => 'city=revenue:40',
           },
           '2005' => {
             'count' => 8,
             'color' => 'gray',
             # unclaimed 50 / claimed 60
-            'code' => "city=revenue:50",
+            'code' => 'city=revenue:50',
           },
           # Single-mine R tiles
           '2006' => {
             'count' => 2,
             'color' => 'gray',
             # unclaimed 20 / claimed 50
-            'code' => "city=revenue:20",
+            'code' => 'city=revenue:20',
           },
           '2007' => {
             'count' => 4,
             'color' => 'gray',
             # unclaimed 30 / claimed 60
-            'code' => "city=revenue:30",
+            'code' => 'city=revenue:30',
           },
           '2008' => {
             'count' => 6,
             'color' => 'gray',
             # unclaimed 40 / claimed 70
-            'code' => "city=revenue:40",
+            'code' => 'city=revenue:40',
           },
           # N/N double-mine tiles (NdNm first, then NdNd)
           '2009' => {
@@ -171,7 +171,7 @@ module Engine
           '2023' => {
             'count' => 'unlimited',
             'color' => 'gray',
-            'code' => "city=revenue:0",
+            'code' => 'city=revenue:0',
           },
         }.freeze
 
