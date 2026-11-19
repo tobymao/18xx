@@ -80,4 +80,32 @@ describe View::Game::Choose do
       button[1][:on][:click].call
     end
   end
+
+  context 'with national formation' do
+    let(:game) { new_game }
+    let(:player) { game.players.first }
+
+    it 'renders each convertible major and Done for the forming player, submitted as the player' do
+      lnwr = start_major!(game, 'LNWR', player)
+      start_major!(game, 'GWR', player)
+      round = enter_round!(game, game.operating_round(1)).tap(&:setup)
+      round.instance_variable_set(:@current_operator, lnwr)
+      game.start_national_formation!(player)
+      round.send(:clear_cache!)
+      nodes = []
+      component = described_class.new(nil, game: game)
+      allow(component).to receive(:h) do |tag, props = {}, children = nil|
+        nodes << [tag, props, children]
+        [tag, props, children]
+      end
+      allow(component).to receive(:process_action) { |action| round.process_action(action) }
+
+      component.render
+      buttons = nodes.select { |tag, _, _| tag == 'button' }
+      expect(buttons.map(&:last)).to eq(['Convert LNWR', 'Convert GWR', 'Done'])
+
+      buttons.first[1][:on][:click].call
+      expect(lnwr.type).to eq(:national)
+    end
+  end
 end

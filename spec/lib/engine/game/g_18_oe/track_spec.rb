@@ -113,6 +113,7 @@ describe 'G18OE lay track (§11.1)' do
 
     def advance_to_tile_color!(color)
       game.phase.next! until game.phase.tiles.include?(color)
+      game.national_formation_done!(game.national_formation_player) while game.national_formation_player
     end
 
     def offered_tiles(hex, operating_round = round)

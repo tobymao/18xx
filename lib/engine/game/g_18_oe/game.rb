@@ -8,11 +8,13 @@ require_relative 'graph'
 require_relative 'sea_routes'
 require_relative 'train'
 require_relative '../base'
+require_relative 'depot'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
 require_relative 'round/fast_start'
 require_relative 'step/consolidate'
 require_relative 'step/fast_start_capital'
+require_relative 'step/form_national'
 require_relative 'step/merge_discard_train'
 require_relative 'step/merge_minor'
 require_relative 'step/merge_offer'
@@ -77,6 +79,7 @@ module Engine
         REMAINDER_CASH = 100_000
         ABANDONED_MINOR_PRICE = 60
         TRAIN_CLASS = G18OE::Train
+        DEPOT_CLASS = G18OE::Depot
         PULLMAN = 'Pullman'
         PULLMAN_BONUS_PER_LEVEL = 10
         TRAIN_ADD_ONS = { pullman: 'Pullman', one_plus_one_marker: '+1+1 marker' }.freeze
@@ -301,6 +304,7 @@ module Engine
         ZONE_DISCOUNT_RATE          = 0.2 # 20% §11.1.5
         ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
         TERRAIN_COST_MULTIPLIER = 0.67
+        NATIONAL_FORMATION_PHASES = %w[4 6 8].freeze
         TILE_POINT_BUDGET = { minor: 3, regional: 3, major: 6, national: 9 }.freeze
         MINOR_MAX_TREASURY = 180
         TILE_FEE_PER_WATER_DISTANCE = 5
@@ -509,14 +513,18 @@ module Engine
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
+          @minor_charter_assets = {}
           @removed_regional_zones = []
           @orient_express_markers = []
           @port_authorities = Hash.new { |hash, corporation| hash[corporation] = [] }
+          @removed_port_authorities = Hash.new(0)
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
           @reserved_shares = []
           @face_down_privates = []
+          @rusted_at_phase_change = Hash.new { |hash, owner| hash[owner] = [] }
+          @national_formation_queue = []
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -907,7 +915,7 @@ module Engine
 
         def tile_point_budget(entity)
           budget = self.class::TILE_POINT_BUDGET[entity.type] || 0
-          return budget if entity.type == :national
+          return budget if national?(entity)
 
           entity.abilities.include?(@minor_g_ability) ? budget + 2 : budget
         end
@@ -1081,6 +1089,7 @@ module Engine
           return unless major.type == :major
 
           pay_minor_a_bonus!(minor, major) if minor.id == 'A'
+          @minor_charter_assets[minor] = { abilities: minor.abilities.dup, companies: minor.companies.dup }
           minor.abilities.dup.each do |ability|
             minor.remove_ability(ability)
             major.add_ability(ability)
@@ -1092,6 +1101,35 @@ module Engine
           end
         end
 
+        def abandon_corporation_merged_minors!(corporation)
+          minors = @merged_minors.delete(corporation) || []
+          minors.each { |minor| abandon_merged_minor!(minor, corporation) }
+          return if minors.empty?
+
+          order = game_corporations.map { |definition| definition[:sym] }
+          @corporations.sort_by! { |corp| order.index(corp.id) || order.size }
+        end
+
+        def abandon_merged_minor!(minor, corporation)
+          assets = @minor_charter_assets.delete(minor)
+          assets[:abilities].each do |ability|
+            corporation.remove_ability(ability)
+            minor.add_ability(ability)
+          end
+          assets[:companies].each do |company|
+            corporation.companies.delete(company)
+            company.owner = minor
+            minor.companies << company
+          end
+          minor.reopen!
+          @corporations << minor
+          share = minor.presidents_share
+          share.owner.shares_by_corporation[minor] << share
+          minor.ipoed = true
+          minor.floated = true
+          abandon_minor!(minor)
+        end
+
         def pay_minor_a_bonus!(minor, major)
           ability = minor.abilities.first
           return if !ability || ability.used?
@@ -1100,6 +1138,110 @@ module Engine
           @bank.spend(amount, major)
           ability.use!
           @log << "#{major.name} receives #{format_currency(amount)} from the bank for #{minor.name}"
+        end
+
+        def rust(train)
+          owner = train.owner
+          if owner&.corporation? && national?(owner)
+            train.rusted = true
+            return
+          end
+
+          @rusted_at_phase_change[owner] << train if owner&.corporation?
+          train.rusted = true
+          @depot.reclaim_train(train)
+        end
+
+        def rusted_trains
+          @depot.rusted_trains
+        end
+
+        def rusted_at_phase_change(owner)
+          @rusted_at_phase_change.fetch(owner, [])
+        end
+
+        def clear_rusted_at_phase_change!
+          @rusted_at_phase_change.clear
+        end
+
+        def return_corporation_rusted_trains!(corporation)
+          @rusted_at_phase_change.delete(corporation)&.each do |train|
+            @depot.remove_train(train)
+            train.owner = corporation
+            corporation.trains << train
+          end
+          @crowded_corps = nil
+        end
+
+        def national?(corporation)
+          corporation.type == :national
+        end
+
+        def national_candidates(player)
+          corporations.select { |corporation| corporation.floated? && corporation.type == :major && corporation.owner == player }
+        end
+
+        def national_formation_phase?(name)
+          self.class::NATIONAL_FORMATION_PHASES.include?(name)
+        end
+
+        def start_national_formation!(buyer)
+          clear_rusted_at_phase_change!
+          order = @players.include?(buyer) ? @players.rotate(@players.index(buyer)) : @players
+          @national_formation_queue = order.reject { |player| national_candidates(player).empty? }
+        end
+
+        def national_formation_player
+          @national_formation_queue.first
+        end
+
+        def national_formation_done!(player)
+          @national_formation_queue.delete(player)
+          clear_rusted_at_phase_change! if @national_formation_queue.empty?
+        end
+
+        def form_national!(major)
+          @log << "#{major.name} forms a national (#{entity_track_rights_zone(major)})"
+          major.spend(major.cash, @bank) if major.cash.positive?
+          move_corporation_treasury_shares_to_open_market!(major)
+          discard_pullman!(major) if pullman(major)
+          remove_corporation_tokens!(major)
+          remove_corporation_port_authorities!(major)
+          remove_corporation_orient_express_marker!(major)
+          remove_corporation_pass_through_tokens!(major)
+          abandon_corporation_merged_minors!(major)
+          major.type = :national
+          return_corporation_rusted_trains!(major)
+          clear_graph
+        end
+
+        def move_corporation_treasury_shares_to_open_market!(corporation)
+          shares = corporation.treasury_shares.dup
+          return if shares.empty?
+
+          bundle = Engine::ShareBundle.new(shares)
+          @share_pool.transfer_shares(bundle, @share_pool, allow_president_change: false)
+          @log << "#{corporation.name} moves #{shares.sum(&:percent)}% of its treasury shares to the Open Market"
+        end
+
+        def remove_corporation_tokens!(corporation)
+          corporation.tokens.each(&:remove!)
+          corporation.tokens.clear
+        end
+
+        def remove_corporation_port_authorities!(corporation)
+          @port_authorities.delete(corporation)&.each { |sea| @removed_port_authorities[sea] += 1 }
+        end
+
+        def remove_corporation_orient_express_marker!(corporation)
+          @orient_express_markers.delete(corporation)
+        end
+
+        def remove_corporation_pass_through_tokens!(corporation)
+          @pass_through_tokens.select { |_company, token| token.corporation == corporation }.each do |company, token|
+            token.remove!
+            @pass_through_tokens.delete(company)
+          end
         end
 
         def pullman?(train)
@@ -1237,6 +1379,7 @@ module Engine
 
         def after_phase_change(name)
           super
+          start_national_formation!(@round.current_operator&.owner) if national_formation_phase?(name) && @round.operating?
           return unless name == self.class::PHASES.last[:name]
 
           @final_set_extended = @round.is_a?(Engine::Round::Operating) && final_or_in_set?(@round)
@@ -1328,6 +1471,7 @@ module Engine
 
         def status_array(corporation)
           lines = []
+          lines << ["National (#{entity_track_rights_zone(corporation)})"] if national?(corporation)
           lines << ['Orient Express marker'] if orient_express_marker?(corporation)
           port_authorities(corporation).each { |sea| lines << [port_authority_name(sea)] }
           lines.concat(pass_through_token_lines(corporation))
@@ -1367,7 +1511,8 @@ module Engine
         end
 
         def port_authorities_left(sea)
-          port_authority_count(sea) - @port_authorities.values.count { |seas| seas.include?(sea) }
+          port_authority_count(sea) - @port_authorities.values.count { |seas| seas.include?(sea) } -
+            @removed_port_authorities[sea]
         end
 
         def timeline
@@ -1621,6 +1766,7 @@ module Engine
             G18OE::Step::BuyPortAuthority,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
+            G18OE::Step::FormNational,
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18OE::Step::Track,
@@ -1631,7 +1777,6 @@ module Engine
             G18OE::Step::OrientExpressBonus,
             G18OE::Step::TransferTokens,
             G18OE::Step::BuyTrain,
-            # Convert step to do national conversions at 4/6/8?
             G18OE::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -1935,7 +2080,7 @@ module Engine
 
         def terrain_discount_minor(entity, tile)
           corp = owning_corporation(entity)
-          return if !corp || corp.type == :national
+          return if !corp || national?(corp)
 
           return corporation_by_id('E') if corp.abilities.include?(@minor_e_ability) &&
                                           tile.terrain.intersect?(self.class::MINOR_E_TERRAIN)
