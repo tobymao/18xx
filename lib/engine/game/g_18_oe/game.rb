@@ -11,6 +11,7 @@ require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'round/concession'
 require_relative 'round/fast_start'
+require_relative 'step/assign'
 require_relative 'step/consolidate'
 require_relative 'step/fast_start_capital'
 require_relative 'step/merge_discard_train'
@@ -90,6 +91,7 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'pullmans_available' => ['Pullmans Available', 'Pullman cars may be bought; Minor M receives one free'],
+          'minor_d_token' => ['Minor D +£40 Token', 'Minor D\'s +£20 token is removed; its +£40 token may be placed'],
           'level_8_available' => ['Level 8 Trains Available', 'Level 8 trains may be bought'],
           'consolidation_triggered' => [
             'Consolidation Round',
@@ -224,7 +226,7 @@ module Engine
               price: 475,
             }],
             num: 8,
-            events: [{ 'type' => 'consolidation_triggered' }],
+            events: [{ 'type' => 'consolidation_triggered' }, { 'type' => 'minor_d_token' }],
           },
           # Level 6 — brown double-sided (6 / 6+6); permanent
           {
@@ -458,6 +460,13 @@ module Engine
         MAX_FLOATED_REGIONALS = 18
         ORIENT_EXPRESS_ORIGINS = %w[Paris London Berlin Madrid Sankt-Peterburg].freeze
         ORIENT_EXPRESS_DESTINATIONS = %w[Constantinople].freeze
+        MINOR_D_20_TOKEN = 'D+20'
+        MINOR_D_40_TOKEN = 'D+40'
+        MINOR_D_BONUS = { MINOR_D_20_TOKEN => 20, MINOR_D_40_TOKEN => 40 }.freeze
+        ASSIGNMENT_TOKENS = {
+          MINOR_D_20_TOKEN => '/icons/18_oe/plus_twenty.svg',
+          MINOR_D_40_TOKEN => '/icons/18_oe/plus_forty.svg',
+        }.freeze
         ORIENT_EXPRESS_BONUS = { '2' => 30, '3' => 30, '4' => 30, '5' => 60, '6' => 60, '7' => 100, '8' => 100 }.freeze
         CONVERSION_NEW_SHARES = 6
         MAJOR_MAX_OWNERSHIP_PERCENT = 60
@@ -534,6 +543,8 @@ module Engine
           @minor_f_ability = corporation_by_id('F')&.abilities&.first
           @minor_h_ability = corporation_by_id('H')&.abilities&.first
           @minor_l_ability = corporation_by_id('L')&.abilities&.first
+          @minor_d_ability = minor_d_private&.abilities&.first
+          @minor_d_token = self.class::MINOR_D_20_TOKEN
         end
 
         def setup_minor_k!
@@ -1050,6 +1061,7 @@ module Engine
           @log << "#{minor.name} is abandoned"
           minor.trains.reject { |train| pullman?(train) }.each { |train| @depot.reclaim_train(train) }
           minor.placed_tokens.each(&:remove!)
+          return_minor_d_token!(minor)
           minor.spend(minor.cash, @bank) if minor.cash.positive?
           @share_pool.transfer_shares(minor.presidents_share.to_bundle, minor.ipo_owner, allow_president_change: false)
           minor.presidents_share.buyable = false
@@ -1623,6 +1635,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
+            G18OE::Step::Assign,
             G18OE::Step::Track,
             G18OE::Step::SpecialToken,
             G18OE::Step::Token,
@@ -1727,7 +1740,70 @@ module Engine
         def revenue_for(route, stops)
           revenue = super - one_plus_one_marker_undoubled_revenue(route, stops)
           revenue += self.class::ORIENT_EXPRESS_BONUS[route.phase.name] if orient_express_bonus_route?(route)
-          revenue + pullman_bonus(route)
+          revenue + pullman_bonus(route) + minor_d_bonus(route)
+        end
+
+        def minor_d_private
+          company_by_id('D')
+        end
+
+        def minor_d_city?(hex)
+          !hex.tile.cities.empty? && !metropolis_hex?(hex)
+        end
+
+        def minor_d_token_placeable?(entity)
+          minor_d_private&.owner == entity && !abilities(minor_d_private, :assign_hexes, time: 'any').nil?
+        end
+
+        def minor_d_token_hex
+          hexes.find { |hex| hex.assigned?(@minor_d_token) }
+        end
+
+        def minor_d_token_name
+          "+#{format_currency(self.class::MINOR_D_BONUS[@minor_d_token])}"
+        end
+
+        def place_minor_d_token!(hex)
+          hex.assign!(@minor_d_token)
+          @minor_d_ability.use!
+          @log << "#{minor_d_private.owner.name} places Minor D's #{minor_d_token_name} token in #{hex.name}"
+        end
+
+        def minor_d_bonus(route)
+          return 0 if minor_d_private&.owner != route.train.owner
+          return 0 unless route.visited_stops.any? { |stop| stop.hex.assigned?(@minor_d_token) }
+
+          self.class::MINOR_D_BONUS[@minor_d_token] * (route.train.multiplier || 1)
+        end
+
+        def add_minor_d_ability!
+          @minor_d_ability = Engine::Ability::AssignHexes.new(type: 'assign_hexes', hexes: [], count: 1, when: 'track',
+                                                              owner_type: 'corporation')
+          minor_d_private.add_ability(@minor_d_ability)
+        end
+
+        def remove_minor_d_token!
+          hex = minor_d_token_hex
+          return unless hex
+
+          hex.remove_assignment!(@minor_d_token)
+          @log << "Minor D's #{minor_d_token_name} token is removed from #{hex.name}"
+        end
+
+        def event_minor_d_token!
+          return if !minor_d_private || minor_d_private.closed?
+
+          remove_minor_d_token!
+          minor_d_private.remove_ability(@minor_d_ability)
+          @minor_d_token = self.class::MINOR_D_40_TOKEN
+          add_minor_d_ability!
+        end
+
+        def return_minor_d_token!(minor)
+          return if minor_d_private&.owner != minor || !minor_d_token_hex
+
+          remove_minor_d_token!
+          add_minor_d_ability!
         end
 
         def compute_stops(route, train = nil)

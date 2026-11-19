@@ -81,4 +81,8 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
 
     expect(level_7s.map { |t| t.events.map { |e| e['type'] } }).to eq(expected)
   end
+
+  it 'has no Minor D token event on the level 5 train' do
+    expect(cards['5'].events.map { |e| e['type'] }).to eq(['consolidation_triggered'])
+  end
 end

@@ -22,7 +22,7 @@ describe 'G18OE consolidation (§5.1.5, §10.6)' do
   end
 
   it 'is triggered by the first level 5 train' do
-    expect(game.depot.upcoming.find { |t| t.name == '5' }.events).to eq([{ 'type' => 'consolidation_triggered' }])
+    expect(game.depot.upcoming.find { |t| t.name == '5' }.events).to include({ 'type' => 'consolidation_triggered' })
   end
 
   it 'replaces the stock round after the operating round set ends' do

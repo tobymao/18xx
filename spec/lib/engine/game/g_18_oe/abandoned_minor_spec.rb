@@ -8,7 +8,7 @@ describe 'G18OE abandoning a minor (§9.5)' do
 
   let(:game) { new_game }
   let(:player) { game.players.first }
-  let(:minor) { start_minor!(game, 'D', player, 'UK') }
+  let(:minor) { start_minor!(game, 'G', player, 'UK') }
   let(:city) { game.hex_by_id('Q38').tile.cities.first }
   let(:train) { game.depot.upcoming.first }
 
@@ -173,7 +173,7 @@ describe 'G18OE abandoning a minor (§9.5)' do
 
   describe 'buying an abandoned minor (§11.7)' do
     let(:former_owner) { game.players[1] }
-    let(:minor_id) { 'D' }
+    let(:minor_id) { 'G' }
     let(:zone) { 'UK' }
     let(:minor) { start_minor!(game, minor_id, former_owner, zone) }
     let(:charter) { minor }
@@ -224,7 +224,7 @@ describe 'G18OE abandoning a minor (§9.5)' do
       expect(game.abandoned_minors).to be_empty
     end
 
-    { 'D' => 'UK', 'L' => 'RU', 'M' => 'IT' }.each do |id, region|
+    { 'G' => 'UK', 'L' => 'RU', 'M' => 'IT' }.each do |id, region|
       context "with minor #{id}" do
         let(:minor_id) { id }
         let(:zone) { region }
