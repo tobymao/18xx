@@ -10,7 +10,13 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           include SkipAbbreviatedRound
 
+          def can_entity_buy_train?(entity)
+            super && !@game.national?(entity)
+          end
+
           def must_buy_train?(entity)
+            return false if @game.national?(entity)
+
             entity.floated? && @game.trainless?(entity) && (!@game.fulfilled_train_obligation?(entity) || entity.type == :major)
           end
 
@@ -19,10 +25,13 @@ module Engine
           end
 
           def buyable_trains(entity)
-            trains = super
+            return [] if @game.national?(entity)
+
+            trains = super.reject(&:rusted)
             trains = trains.reject { |t| @game.pullman?(t) && t.owned_by_corporation? } if cannot_afford_transfer?(entity)
             trains = trains.reject { |t| @game.pullman?(t) } if @game.pullman(entity)
             trains = trains.reject { |t| abandoned_minor_train?(t) }
+            trains = trains.reject { |t| t.owned_by_corporation? && @game.national?(t.owner) }
             trains = trains.select { |t| @game.pullman?(t) } if at_train_limit?(entity)
 
             # Level 8 trains visible via available_on:'7+7' but gated until 4th L7 purchase (§11.6)
