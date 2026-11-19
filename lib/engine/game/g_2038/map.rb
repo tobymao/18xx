@@ -4,161 +4,174 @@ module Engine
   module Game
     module G2038
       module Map
-        # Shared path segments for tile code strings.
-        # SP6: all 6 edges - junction(_0) + city(_1); used by single-mine tiles.
-        # DP6: all 6 edges - junction(_0) + city1(_1) + city2(_2); used by double-mine tiles.
-        SP6 = 'path=a:0,b:_0;path=a:0,b:_1;path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;'\
-              'path=a:3,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1'
-        DP6 = 'path=a:0,b:_0;path=a:0,b:_1;path=a:0,b:_2;path=a:1,b:_0;path=a:1,b:_1;path=a:1,b:_2;'\
-              'path=a:2,b:_0;path=a:2,b:_1;path=a:2,b:_2;path=a:3,b:_0;path=a:3,b:_1;path=a:3,b:_2;'\
-              'path=a:4,b:_0;path=a:4,b:_1;path=a:4,b:_2;path=a:5,b:_0;path=a:5,b:_1;path=a:5,b:_2'
+        # Our tiles carry no functional track: hex-to-hex adjacency is purely
+        # geometric (`Game::Base#connect_hexes` builds `hex.neighbors` from
+        # grid coordinates alone; see `Game#hexes_in_range`/`Step::Route`,
+        # which never inspect a tile's paths). A single-city tile centers
+        # itself automatically with no path at all (`Tile#compute_city_town_edges`).
+        #
+        # The one exception: a double-mine tile's two cities need a cosmetic-
+        # only link between them (no edge connection) so each city's `loc:`
+        # -- and therefore the random rotation `Game#explore_hex!` applies for
+        # visual variety -- is actually respected. Without any path at all,
+        # the engine's default path-less-multi-city placement kicks in
+        # instead, which ignores rotation entirely.
+        MINE_LINK = 'path=a:_0,b:_1,track:thin'
 
+        # Note that many elements here have defined color attributes, but those
+        # attributes are not actually displayed on the screen.  Instead, we have
+        # custom rendering logic in /18xx/assets/app/view/game/hex_g2038.rb which
+        # renders the custom starfield and icon images used in this game.
+
+        # Mine city revenue: displayed value is the UNCLAIMED value; the claimed
+        # value (paid only to the claim owner) lives in MINE_DATA and is applied
+        # by the pickup logic, not by the tile.
         TILES = {
           # Single-mine N tiles
           '2001' => {
             'count' => 12,
             'color' => 'gray',
-            # real revenue: unclaimed 10, claimed 50
-            'code' => "junction;city=revenue:42;#{SP6};label=N",
+            # unclaimed 10 / claimed 50
+            'code' => "city=revenue:10",
           },
           '2002' => {
             'count' => 12,
             'color' => 'gray',
-            # real revenue: unclaimed 20, claimed 60
-            'code' => "junction;city=revenue:42;#{SP6};label=N",
+            # unclaimed 20 / claimed 60
+            'code' => "city=revenue:20",
           },
           # Single-mine I tiles
           '2003' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: unclaimed 30, claimed 40
-            'code' => "junction;city=revenue:42;#{SP6};label=I",
+            # unclaimed 30 / claimed 40
+            'code' => "city=revenue:30",
           },
           '2004' => {
             'count' => 4,
             'color' => 'gray',
-            # real revenue: unclaimed 40, claimed 50
-            'code' => "junction;city=revenue:42;#{SP6};label=I",
+            # unclaimed 40 / claimed 50
+            'code' => "city=revenue:40",
           },
           '2005' => {
             'count' => 8,
             'color' => 'gray',
-            # real revenue: unclaimed 50, claimed 60
-            'code' => "junction;city=revenue:42;#{SP6};label=I",
+            # unclaimed 50 / claimed 60
+            'code' => "city=revenue:50",
           },
           # Single-mine R tiles
           '2006' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: unclaimed 20, claimed 50
-            'code' => "junction;city=revenue:42;#{SP6};label=R",
+            # unclaimed 20 / claimed 50
+            'code' => "city=revenue:20",
           },
           '2007' => {
             'count' => 4,
             'color' => 'gray',
-            # real revenue: unclaimed 30, claimed 60
-            'code' => "junction;city=revenue:42;#{SP6};label=R",
+            # unclaimed 30 / claimed 60
+            'code' => "city=revenue:30",
           },
           '2008' => {
             'count' => 6,
             'color' => 'gray',
-            # real revenue: unclaimed 40, claimed 70
-            'code' => "junction;city=revenue:42;#{SP6};label=R",
+            # unclaimed 40 / claimed 70
+            'code' => "city=revenue:40",
           },
           # N/N double-mine tiles (NdNm first, then NdNd)
           '2009' => {
             'count' => 12,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 20/claimed 60, city2 unclaimed 10/claimed 50
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=N/N",
+            # city1 unclaimed 20/claimed 60, city2 unclaimed 10/claimed 50
+            'code' => "city=revenue:20,loc:0;city=revenue:10,loc:3;#{MINE_LINK}",
           },
           '2010' => {
             'count' => 8,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 20/claimed 60, city2 unclaimed 20/claimed 60
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=N/N",
+            # city1 unclaimed 20/claimed 60, city2 unclaimed 20/claimed 60
+            'code' => "city=revenue:20,loc:0;city=revenue:20,loc:3;#{MINE_LINK}",
           },
           # I/N double-mine tiles
           '2011' => {
             'count' => 6,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 30/claimed 40, city2 unclaimed 10/claimed 50
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=I/N",
+            # city1 unclaimed 30/claimed 40, city2 unclaimed 10/claimed 50
+            'code' => "city=revenue:30,loc:0;city=revenue:10,loc:3;#{MINE_LINK}",
           },
           '2012' => {
             'count' => 4,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 30/claimed 40, city2 unclaimed 20/claimed 60
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=I/N",
+            # city1 unclaimed 30/claimed 40, city2 unclaimed 20/claimed 60
+            'code' => "city=revenue:30,loc:0;city=revenue:20,loc:3;#{MINE_LINK}",
           },
           '2013' => {
             'count' => 4,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 40/claimed 50, city2 unclaimed 10/claimed 50
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=I/N",
+            # city1 unclaimed 40/claimed 50, city2 unclaimed 10/claimed 50
+            'code' => "city=revenue:40,loc:0;city=revenue:10,loc:3;#{MINE_LINK}",
           },
           '2014' => {
             'count' => 4,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 40/claimed 50, city2 unclaimed 20/claimed 60
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=I/N",
+            # city1 unclaimed 40/claimed 50, city2 unclaimed 20/claimed 60
+            'code' => "city=revenue:40,loc:0;city=revenue:20,loc:3;#{MINE_LINK}",
           },
           # R/N double-mine tiles
           '2015' => {
             'count' => 4,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 20/claimed 50, city2 unclaimed 10/claimed 50
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/N",
+            # city1 unclaimed 20/claimed 50, city2 unclaimed 10/claimed 50
+            'code' => "city=revenue:20,loc:0;city=revenue:10,loc:3;#{MINE_LINK}",
           },
           '2016' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 20/claimed 50, city2 unclaimed 20/claimed 60
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/N",
+            # city1 unclaimed 20/claimed 50, city2 unclaimed 20/claimed 60
+            'code' => "city=revenue:20,loc:0;city=revenue:20,loc:3;#{MINE_LINK}",
           },
           '2017' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 30/claimed 60, city2 unclaimed 10/claimed 50
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/N",
+            # city1 unclaimed 30/claimed 60, city2 unclaimed 10/claimed 50
+            'code' => "city=revenue:30,loc:0;city=revenue:10,loc:3;#{MINE_LINK}",
           },
           '2018' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 30/claimed 60, city2 unclaimed 20/claimed 60
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/N",
+            # city1 unclaimed 30/claimed 60, city2 unclaimed 20/claimed 60
+            'code' => "city=revenue:30,loc:0;city=revenue:20,loc:3;#{MINE_LINK}",
           },
           # R/I double-mine tiles
           '2019' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 20/claimed 50, city2 unclaimed 30/claimed 40
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/I",
+            # city1 unclaimed 20/claimed 50, city2 unclaimed 30/claimed 40
+            'code' => "city=revenue:20,loc:0;city=revenue:30,loc:3;#{MINE_LINK}",
           },
           '2020' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 20/claimed 50, city2 unclaimed 40/claimed 50
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/I",
+            # city1 unclaimed 20/claimed 50, city2 unclaimed 40/claimed 50
+            'code' => "city=revenue:20,loc:0;city=revenue:40,loc:3;#{MINE_LINK}",
           },
           '2021' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 30/claimed 60, city2 unclaimed 30/claimed 40
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/I",
+            # city1 unclaimed 30/claimed 60, city2 unclaimed 30/claimed 40
+            'code' => "city=revenue:30,loc:0;city=revenue:30,loc:3;#{MINE_LINK}",
           },
           '2022' => {
             'count' => 2,
             'color' => 'gray',
-            # real revenue: city1 unclaimed 30/claimed 60, city2 unclaimed 40/claimed 50
-            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/I",
+            # city1 unclaimed 30/claimed 60, city2 unclaimed 40/claimed 50
+            'code' => "city=revenue:30,loc:0;city=revenue:40,loc:3;#{MINE_LINK}",
           },
           # Gray base tile - placed when a corporation establishes a base on an explored asteroid.
           # The city slot holds the base token; revenue is tracked via corporation base mechanics.
           '2023' => {
             'count' => 'unlimited',
             'color' => 'gray',
-            'code' => "junction;city=revenue:0;#{SP6}",
+            'code' => "city=revenue:0",
           },
         }.freeze
 
@@ -180,13 +193,39 @@ module Engine
 
         HEXES = {
           gray40: {
-            %w[A13 D2 H10
-               O11] => 'city=revenue:yellow_30|gray_60;'\
-                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            %w[H18] => 'city=revenue:yellow_20|gray_70;'\
-                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            # Transshipment points -- phase-scaled dual-value revenue
+            # (§8: A13/D2/O11 go $30 -> $60, H18 goes $20 -> $70 once gray
+            # tiles unlock) rendered as a standard off-board box, one
+            # colored box per phase value, same convention every other
+            # 18xx game uses for red off-board areas -- rather than a
+            # single mine-style circle showing only the current value.
+            # H10 also doubles as the Asteroid League's home hex, so it
+            # keeps its own zero-revenue city (for AL's home token) on the
+            # same hex, alongside the offboard part that actually carries
+            # the transshipment value; the other four have no city at all.
+            # H10 pays a flat $30 that drops to $0 once gray tiles unlock
+            # at Phase 4.
+
+            # The AL is always formed by Phase 4 (asteroid_league_must_form is a
+            # Phase 4 event), and its own base replaces this transshipment
+            # point the moment AL forms (Game#transshipment_hex?'s
+            # existing @asteroid_league_formed check already stops paying
+            # it out in the revenue logic regardless of what the tile
+            # displays). Ideally this would show no gray box at all rather than a $0 one, but
+            # a bare integer (no phase-color key at all) renders through a
+            # different view component (Part::SingleRevenue, generic
+            # small-item placement) instead of Part::MultiRevenue's
+            # dedicated off-board box position, which collided with (and
+            # rendered behind) H10's own city part for AL's home token --
+            # found live in browser as the $30 box vanishing entirely. A
+            # zero-value gray key keeps the working MultiRevenue rendering
+            # path while still being accurate (nothing is ever actually
+            # paid there once gray phase arrives).
+            %w[A13 D2 O11] => 'offboard=revenue:yellow_30|gray_60',
+            %w[H18] => 'offboard=revenue:yellow_20|gray_70',
+            %w[H10] => 'city=revenue:0;offboard=revenue:yellow_30|gray_0',
           },
-          gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => '' },
+          gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => 'city=revenue:0' },
           blue: {
             %w[
                 A3 A5 A7 A9 A11 B2 B4 B8 B10 B12 B14 C1 C3 C5 C7 C9
@@ -201,6 +240,42 @@ module Engine
         }.freeze
 
         LAYOUT = :pointy
+
+        # Gray hexes that serve as delivery destinations (transshipment points).
+        TRANSSHIPMENT_HEXES = %w[A13 D2 H10 O11 H18].freeze
+
+        # Maps each asteroid tile number to its mine definitions.
+        # Each entry is an array of hashes (one per mine), ordered to match
+        # the city= declarations in the tile code (city 0, city 1, ...).
+        # `claimed:` is data for the claims feature (bases/refueling/claims
+        # infrastructure), not yet implemented in this PR -- it's defined
+        # here alongside `unclaimed:` now rather than added piecemeal later,
+        # since both values are fixed game data from the same rules table,
+        # but nothing reads `claimed:` until that follow-up PR lands.
+        MINE_DATA = {
+          '2001' => [{ ore: :n, unclaimed: 10, claimed: 50 }],
+          '2002' => [{ ore: :n, unclaimed: 20, claimed: 60 }],
+          '2003' => [{ ore: :i, unclaimed: 30, claimed: 40 }],
+          '2004' => [{ ore: :i, unclaimed: 40, claimed: 50 }],
+          '2005' => [{ ore: :i, unclaimed: 50, claimed: 60 }],
+          '2006' => [{ ore: :r, unclaimed: 20, claimed: 50 }],
+          '2007' => [{ ore: :r, unclaimed: 30, claimed: 60 }],
+          '2008' => [{ ore: :r, unclaimed: 40, claimed: 70 }],
+          '2009' => [{ ore: :n, unclaimed: 20, claimed: 60 }, { ore: :n, unclaimed: 10, claimed: 50 }],
+          '2010' => [{ ore: :n, unclaimed: 20, claimed: 60 }, { ore: :n, unclaimed: 20, claimed: 60 }],
+          '2011' => [{ ore: :i, unclaimed: 30, claimed: 40 }, { ore: :n, unclaimed: 10, claimed: 50 }],
+          '2012' => [{ ore: :i, unclaimed: 30, claimed: 40 }, { ore: :n, unclaimed: 20, claimed: 60 }],
+          '2013' => [{ ore: :i, unclaimed: 40, claimed: 50 }, { ore: :n, unclaimed: 10, claimed: 50 }],
+          '2014' => [{ ore: :i, unclaimed: 40, claimed: 50 }, { ore: :n, unclaimed: 20, claimed: 60 }],
+          '2015' => [{ ore: :r, unclaimed: 20, claimed: 50 }, { ore: :n, unclaimed: 10, claimed: 50 }],
+          '2016' => [{ ore: :r, unclaimed: 20, claimed: 50 }, { ore: :n, unclaimed: 20, claimed: 60 }],
+          '2017' => [{ ore: :r, unclaimed: 30, claimed: 60 }, { ore: :n, unclaimed: 10, claimed: 50 }],
+          '2018' => [{ ore: :r, unclaimed: 30, claimed: 60 }, { ore: :n, unclaimed: 20, claimed: 60 }],
+          '2019' => [{ ore: :r, unclaimed: 20, claimed: 50 }, { ore: :i, unclaimed: 30, claimed: 40 }],
+          '2020' => [{ ore: :r, unclaimed: 20, claimed: 50 }, { ore: :i, unclaimed: 40, claimed: 50 }],
+          '2021' => [{ ore: :r, unclaimed: 30, claimed: 60 }, { ore: :i, unclaimed: 30, claimed: 40 }],
+          '2022' => [{ ore: :r, unclaimed: 30, claimed: 60 }, { ore: :i, unclaimed: 40, claimed: 50 }],
+        }.freeze
       end
     end
   end
