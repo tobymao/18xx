@@ -152,8 +152,12 @@ module Engine
           # ---------------------------------------------------------------------------
 
           # Split: owner gets half, treasury retains half. No price movement.
+          # Same "round up for the player" convention as `half` above --
+          # Integer#/ is Opal/browser float division (7 / 2 == 3.5 there,
+          # not Ruby's 3), so a plain `revenue / 2` silently produces a
+          # fractional dollar in the browser on any odd revenue.
           def split(entity, revenue)
-            player_share = revenue / 2
+            player_share = (revenue / 2.0).ceil
             { corporation: revenue - player_share, per_share: payout_per_share(entity, player_share) }
           end
 
