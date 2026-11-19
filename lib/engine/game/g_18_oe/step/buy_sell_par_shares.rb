@@ -484,7 +484,13 @@ module Engine
             share = corporation.ipo_shares.first
             @round.players_bought[entity][corporation] += share.percent
             buy_shares(entity, share.to_bundle, exchange: company, silent: true)
-            company.close!
+            if company == @game.minor_d_private
+              entity.companies.delete(company)
+              company.owner = corporation
+              corporation.companies << company
+            else
+              company.close!
+            end
             track_action(action, action.corporation)
           end
 

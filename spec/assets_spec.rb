@@ -484,6 +484,29 @@ describe 'Assets' do
       expect(minor_html + major_html).not_to include('cannot be continued')
     end
 
+    it 'renders the 18OE Minor D bonus tokens on the map' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        game = Engine::Game::G18OE::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 1, seed: 1)
+        game.minor_d_private.owner = game.corporation_by_id('D')
+        hex = game.hex_by_id('N31')
+        user = { 'id' => 1, 'name' => 'Player 1', 'settings' => { 'consent' => true } }
+        data = { 'id' => 1, 'title' => '18OE', 'actions' => [], 'loaded' => true,
+                 'status' => 'active', 'user' => user, 'players' => game.players.map { |p| { 'id' => p.id, 'name' => p.name } } }
+        game.place_minor_d_token!(hex)
+        early_html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1#map')
+        game.event_minor_d_token!
+        game.place_minor_d_token!(hex)
+        late_html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1#map')
+        [early_html, late_html]
+      RUBY
+      early_html, late_html = subject.context(['18OE']).eval(Opal.compile(script))
+
+      expect(early_html).to include('href="/icons/18_oe/plus_twenty.svg"')
+      expect(late_html).to include('href="/icons/18_oe/plus_forty.svg"')
+      expect(late_html).not_to include('href="/icons/18_oe/plus_twenty.svg"')
+    end
+
     def render_game_at_action(data, action_count, string, suffix = '')
       data['actions'] = data['actions'].take(action_count) if action_count
       data[:loaded] = true

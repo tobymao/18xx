@@ -307,9 +307,21 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor D charter. '\
-                  'Exchange this private during a Stock Round to float Minor D.',
+                  'Exchange this private during a Stock Round to float Minor D; it then stays with the minor, '\
+                  'and with the major the minor merges into. The president may place its token in any '\
+                  'non-metropolis, non-red-zone city on the map (even unreachable) during the RR\'s lay track '\
+                  'step. Trains run to or through that city earn a +£20 bonus (Phase 2–4). At Phase 5 start, '\
+                  'the +£20 token is removed; the president may place a new token in the same or a different '\
+                  'eligible city for a +£40 bonus (Phase 5+).',
             auction_row: 6,
             abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: [],
+                count: 1,
+                when: 'track',
+                owner_type: 'corporation',
+              },
               {
                 type: 'exchange',
                 corporations: %w[D],
@@ -592,16 +604,6 @@ module Engine
             max_ownership_percent: 100,
             color: '#3CB371',
             text_color: 'black',
-            abilities: [
-              {
-                type: 'description',
-                description: 'The president may place this minor\'s token in any non-metropolis, '\
-                             'non-red-zone city on the map (even unreachable). Trains run to or through '\
-                             'that city earn a +£20 bonus (Phase 2–4). At Phase 5 start, the +£20 token '\
-                             'is removed; the president may place a new token in the same or a different '\
-                             'eligible city for a +£40 bonus (Phase 5+). Placed during the lay track step.',
-              },
-            ],
           },
           {
             name: 'Blue Coast Bridge Construction Company',
