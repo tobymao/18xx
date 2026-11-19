@@ -37,7 +37,7 @@ module Engine
 
         # Standard config
         ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = true
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
         CAPITALIZATION = :full
         CERT_LIMIT = { 3 => 20, 4 => 16 }.freeze
         CURRENCY_FORMAT_STR = '$%s'
@@ -118,8 +118,8 @@ module Engine
           mainline.full_name = mainline.full_name[0..-2] + 'ML'
           mainline.float_percent = 50
           shortline.full_name = shortline.full_name[0..-2] + 'SL'
-          stock_market.set_par(mainline, stock_market.share_price([1, 1]))
-          stock_market.set_par(shortline, stock_market.share_price([2, 1]))
+          par_corporation(mainline, stock_market.share_price([1, 1]))
+          par_corporation(shortline, stock_market.share_price([2, 1]))
 
           # Mainline and Shortline tokens start on the board
           @hexes.each do |hex|
@@ -372,31 +372,29 @@ module Engine
           max_owners.map { |p| lowest_peir_share(p) }.min_by(&:index).owner
         end
 
-        # After default caches are made, override the share_by_id and
-        # corporation_by_id method to recognize mainline and shortline
-        def cache_objects
-          super
-
-          self.class.define_method(:share_by_id) do |id|
-            if id&.start_with?('mainline')
-              id = id.sub('mainline', mainline.id)
-            elsif id&.start_with?('shortline')
-              id = id.sub('shortline', shortline.id)
-            end
-
-            instance_variable_get(:@_shares)[id]
+        # Override the base lookups to recognize mainline and shortline. Defined
+        # on the class, not per instance from cache_objects: a block defined per
+        # game closes over that game, and YJIT pins it, so the game never dies.
+        # mainline/shortline still resolve against the receiving game.
+        def share_by_id(id)
+          if id&.start_with?('mainline')
+            id = id.sub('mainline', mainline.id)
+          elsif id&.start_with?('shortline')
+            id = id.sub('shortline', shortline.id)
           end
 
-          self.class.define_method(:corporation_by_id) do |id|
-            case id
-            when 'mainline'
-              id = mainline.id
-            when 'shortline'
-              id = shortline.id
-            end
+          @_shares[id]
+        end
 
-            instance_variable_get(:@_corporations)[id]
+        def corporation_by_id(id)
+          case id
+          when 'mainline'
+            id = mainline.id
+          when 'shortline'
+            id = shortline.id
           end
+
+          @_corporations[id]
         end
 
         # Override default rust behavior for 4+ trains so that we only rust them
@@ -497,33 +495,21 @@ module Engine
           super
         end
 
-        def ub_owner
-          company_by_id('UB')&.owner
-        end
-
-        def acting_as_union_bank?(player)
-          player == @union_bank || player == ub_owner
-        end
-
-        def can_go_bankrupt?(player, corporation)
-          return super unless acting_as_union_bank?(player)
-
-          acting = player == @union_bank ? ub_owner : player
-          player_power = liquidity(acting, emergency: true)
-          ub_power = liquidity(@union_bank, emergency: true)
-          corp_power = corporation.cash + emergency_issuable_cash(corporation)
-          player_power + ub_power + corp_power < @depot.min_depot_price
+        def value_for_dumpable(player, corporation)
+          max_bundle = bundles_for_corporation(player, corporation)
+            .select do |bundle|
+              bundle.percent <= self.class::TURN_SELL_LIMIT &&
+                can_dump?(player, bundle) &&
+                @share_pool&.fit_in_bank?(bundle)
+            end
+            .max_by(&:price)
+          max_bundle&.price || 0
         end
 
         def total_emr_buying_power(player, corporation)
-          # When UB is the acting entity, combine UB + owner liquidity
-          if player == @union_bank
-            owner_power = ub_owner ? liquidity(ub_owner, emergency: true) : 0
-            ub_power = liquidity(@union_bank, emergency: true)
-            corp_power = corporation ? corporation.cash + emergency_issuable_cash(corporation) : 0
-            return owner_power + ub_power + corp_power
-          end
-          super
+          return super unless corporation&.owner == @union_bank
+
+          super(@union_bank, corporation) + liquidity(company_by_id('UB').owner, emergency: true)
         end
 
         def purchasable_companies(entity = nil)

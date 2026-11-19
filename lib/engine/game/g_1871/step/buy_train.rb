@@ -9,7 +9,7 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
             return [] unless can_entity_buy_train?(entity)
-            return ['sell_shares'] if (entity == current_entity&.owner || entity == @game.acting_for_entity(current_entity)) &&
+            return ['sell_shares'] if (entity == current_entity&.owner || ub_owner_must_help?(entity)) &&
                                       can_ebuy_sell_shares?(current_entity)
             return [] if entity != current_entity
             return %w[sell_shares buy_train] if president_may_contribute?(entity)
@@ -30,11 +30,23 @@ module Engine
             acting = @game.acting_for_entity(entity.owner)
             borrow_from = if entity.owner != acting &&
                              entity.owner.cash < action.price &&
-                             @game.liquidity(entity.owner, emergency: true) == entity.owner.cash
+                             ub_cant_afford_after_selling?(entity.owner)
                             acting
                           end
 
             super(action, entity, borrow_from: borrow_from)
+          end
+
+          def ub_owner_must_help?(entity)
+            ub = @game.union_bank
+            current_entity&.owner == ub &&
+              entity == @game.acting_for_entity(current_entity) &&
+              ub_cant_afford_after_selling?(ub) &&
+              current_entity.cash + ub.cash < needed_cash(current_entity)
+          end
+
+          def ub_cant_afford_after_selling?(ub)
+            @game.liquidity(ub, emergency: true) == ub.cash
           end
 
           def process_buy_train(action)
@@ -57,6 +69,7 @@ module Engine
             return false unless @game.check_sale_timing(entity, bundle)
             return false unless sellable_bundle?(bundle)
             return false if @game.class::MUST_SELL_IN_BLOCKS && @corporations_sold.include?(bundle.corporation)
+            return false if entity != current_entity && must_issue_before_ebuy?(current_entity)
 
             # This is our new clause for 1871, if this is the corporation
             # selling, we can sell all of them
