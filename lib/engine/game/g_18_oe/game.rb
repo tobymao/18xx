@@ -21,6 +21,7 @@ require_relative 'step/concession'
 require_relative 'step/choose_operating_position'
 require_relative 'step/reserve_share'
 require_relative 'step/orient_express_bonus'
+require_relative 'step/transfer_tokens'
 require_relative 'step/route'
 require_relative 'step/special_token'
 require_relative 'step/buy_port_authority'
@@ -314,6 +315,8 @@ module Engine
         PORT_AUTHORITIES = { north_sea: 8, mediterranean: 8 }.freeze
         PORT_AUTHORITY_NAMES = { north_sea: 'North Sea', mediterranean: 'Mediterranean' }.freeze
         PORT_AUTHORITY_LIMIT = 1
+
+        TOKEN_TRANSFER_FEES = { normal: 20, grand: 40, metropolis: 60 }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -1387,6 +1390,47 @@ module Engine
           clear_graph_for_entity(corporation)
         end
 
+        def port_authority_sales(buyer)
+          return [] if !buyer.corporation? || buyer.type != :major
+          return [] if port_authorities(buyer).size >= port_authority_limit
+          return [] if buyer.cash < port_authority_cost
+
+          sales = []
+          corporations.each do |seller|
+            next if seller == buyer || seller.type != :major
+
+            port_authorities(seller).each do |sea|
+              sales << [seller, sea] unless port_authorities(buyer).include?(sea)
+            end
+          end
+          sales
+        end
+
+        def port_authority_sale_key(seller, sea)
+          "#{seller.id}:#{sea}"
+        end
+
+        def transfer_port_authority!(buyer, seller, sea)
+          price = format_currency(port_authority_cost)
+          @log << "#{buyer.name} buys a #{port_authority_name(sea)} from #{seller.name} for #{price}"
+          buyer.spend(port_authority_cost, seller)
+          @port_authorities[seller].delete(sea)
+          @port_authorities[buyer] << sea
+          clear_graph_for_entity(buyer)
+        end
+
+        def port_authority_sale(buyer, choice)
+          port_authority_sales(buyer).find { |seller, sea| port_authority_sale_key(seller, sea) == choice }
+        end
+
+        def consenter_for_choice(entity, choice, _label)
+          sale = port_authority_sale(entity, choice)
+          return super unless sale
+
+          seller_owner = sale.first.owner
+          seller_owner if seller_owner != entity.owner
+        end
+
         def orient_express_marker?(corporation)
           @orient_express_markers.include?(corporation)
         end
@@ -1472,6 +1516,53 @@ module Engine
           'Float'
         end
 
+        def token_transfer_fees
+          self.class::TOKEN_TRANSFER_FEES
+        end
+
+        def token_transfer_fee(city)
+          hex = city.hex
+          return token_transfer_fees[:metropolis] if metropolis_hex?(hex)
+
+          token_transfer_fees[hex.tile.label.to_s == 'Y' ? :grand : :normal]
+        end
+
+        def transferable_token?(buyer, token)
+          return false if !token.used || !token.city || token.type != :normal
+
+          seller = token.corporation
+          return false if buyer.type != :major || seller.type != :major
+          return false if seller == buyer || seller.owner != buyer.owner || token == seller.tokens.first
+
+          hex = token.city.hex
+          hex.tile.cities.none? { |city| city.tokened_by?(buyer) } && city_in_track_rights?(buyer, hex)
+        end
+
+        def transfer_token!(buyer, new_token, old_token, fee)
+          seller = old_token.corporation
+          city = old_token.city
+          extra_slot = city.extra_tokens.include?(old_token)
+          slot = city.tokens.index(old_token)
+          old_token.remove!
+          new_token.place(city, extra: extra_slot)
+          extra_slot ? city.extra_tokens << new_token : city.tokens[slot] = new_token
+          buyer.spend(new_token.price, @bank)
+          buyer.spend(fee, seller)
+          return_token_to_charter!(seller, old_token)
+          clear_graph_for_entity(buyer)
+          hex = city.hex
+          @log << "#{buyer.name} buys #{seller.name}'s token in #{hex.location_name} (#{hex.name}) for "\
+                  "#{format_currency(new_token.price)} (bank) + #{format_currency(fee)} (#{seller.name})"
+        end
+
+        def return_token_to_charter!(seller, returned)
+          placed = seller.tokens.select { |token| token.used && token != seller.tokens.first }
+          highest = placed.max_by(&:price)
+          return if highest.nil? || highest.price <= returned.price
+
+          highest.price, returned.price = returned.price, highest.price
+        end
+
         def pay_home_token_cost!(corporation)
           cost = TRACK_RIGHTS_COST[CORPORATIONS_TRACK_RIGHTS[corporation.id]]
           corporation.spend(cost, @bank) if cost&.positive?
@@ -1538,6 +1629,7 @@ module Engine
             G18OE::Step::Route,
             G18OE::Step::Dividend,
             G18OE::Step::OrientExpressBonus,
+            G18OE::Step::TransferTokens,
             G18OE::Step::BuyTrain,
             # Convert step to do national conversions at 4/6/8?
             G18OE::Step::IssueShares,

@@ -91,8 +91,8 @@ module G18OESpecHelpers
     round
   end
 
-  def station_token_round!(game, corporation, round_num: 1)
-    round = Engine::Round::Operating.new(game, [Engine::Game::G18OE::Step::Token], round_num: round_num)
+  def station_token_round!(game, corporation, round_num: 1, step_class: Engine::Game::G18OE::Step::Token)
+    round = Engine::Round::Operating.new(game, [step_class], round_num: round_num)
     round.entities = [corporation]
     round.instance_variable_set(:@current_operator, corporation)
     enter_round!(game, round)
