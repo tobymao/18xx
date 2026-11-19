@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_token'
+require_relative 'half_price_token'
 
 module Engine
   module Game
     module G18MO
       module Step
         class SpecialToken < Engine::Step::SpecialToken
+          include HalfPriceToken
+
           def process_place_token(action)
             entity = action.entity
 
