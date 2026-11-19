@@ -448,17 +448,15 @@ module View
     WEBHOOK_CHECKS = {
       # Slack member IDs start with U (or W), never a username.
       # https://docs.slack.dev/messaging/formatting-message-text/
-      slack: { match: 'slack', id_regexp: /\A[UW][A-Z0-9]{7,}\z/ },
-      # Discord IDs are numeric, currently 17-19 digits.
+      slack: { hosts: %w[hooks.slack.com], id_regexp: /\A[UW][A-Z0-9]{7,}\z/, upcase: true },
+      # Discord IDs are 64-bit snowflakes: 17-19 digits today, up to 20 eventually.
       # https://discord.com/developers/docs/reference#snowflakes
-      discord: { match: 'discord', id_regexp: /\A\d{17,19}\z/ },
+      discord: { hosts: %w[discord.com discordapp.com], id_regexp: /\A\d{17,20}\z/ },
     }.freeze
 
     def submit
       case @type
       when :signup
-        return unless webhook_credentials_valid?
-
         create_user(params)
       when :login
         login(params)
@@ -541,31 +539,38 @@ module View
     private
 
     def webhook_credentials_valid?
-      WEBHOOK_CHECKS.each do |service, check|
-        next if webhook_id_valid?(service, check)
+      return true if @notifications.to_s != 'webhook' || !@inputs[:webhook_user_id]
 
-        store(:flash_opts, "Your #{service.to_s.capitalize} User ID looks incorrect. See the Learn About Notifications link.")
-        return false
-      end
+      service = webhook_service
+      check = WEBHOOK_CHECKS[service]
+      id = normalize_webhook_user_id(input_elm(:webhook_user_id).value, upcase: check&.dig(:upcase))
+      input_elm(:webhook_user_id).value = id
 
-      true
+      return webhook_error('Please enter your Webhook User ID.') if id.empty?
+      return true if !check || id.match?(check[:id_regexp])
+
+      webhook_error("Your #{service.to_s.capitalize} User ID looks incorrect. See the Learn about Notifications link.")
     end
 
-    def webhook_id_valid?(service, check)
-      return true unless webhook?(service, check[:match])
-
-      id = input_elm(:webhook_user_id).value.to_s
-      id.empty? || id.match?(check[:id_regexp])
+    def webhook_error(message)
+      store(:flash_opts, message)
+      false
     end
 
-    def webhook?(service, match)
-      @webhook.to_s == service.to_s || custom_webhook_url.include?(match)
+    def normalize_webhook_user_id(raw, upcase: false)
+      id = raw.to_s.strip.sub(/\A<?@/, '').delete_suffix('>').strip
+      upcase ? id.upcase : id
     end
 
-    def custom_webhook_url
-      return '' if @webhook.to_s != 'custom' || !@inputs[:webhook_url]
+    def webhook_service
+      return if @webhook.to_s != 'custom' || !@inputs[:webhook_url]
 
-      input_elm(:webhook_url).value.to_s
+      webhook_service_for_url(input_elm(:webhook_url).value)
+    end
+
+    def webhook_service_for_url(url)
+      host = url.to_s.strip[%r{\Ahttps?://([^/:?#]+)}i, 1].to_s.downcase
+      WEBHOOK_CHECKS.find { |_, check| check[:hosts].include?(host) }&.first
     end
   end
 end
