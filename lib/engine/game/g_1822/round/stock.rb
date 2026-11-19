@@ -124,7 +124,7 @@ module Engine
             presidency_price = share_price.price * 2
 
             # Set the par price of the minor, player buys presidency
-            @game.stock_market.set_par(minor, share_price)
+            @game.par_corporation(minor, share_price)
             share = minor.shares.first
             @game.share_pool.buy_shares(player, share.to_bundle)
             @game.after_par(minor)

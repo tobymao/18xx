@@ -17,7 +17,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%s K'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 2 => 14, 3 => 14, 4 => 12, 5 => 10, 6 => 9 }.freeze
 
@@ -187,7 +187,7 @@ module Engine
 
           par_value = PAR_RANGE[new_corporation.type].first
           price = @stock_market.par_prices.find { |p| p.price == par_value }
-          @stock_market.set_par(new_corporation, price)
+          par_corporation(new_corporation, price)
 
           index = 0
           until new_corporation.floated?

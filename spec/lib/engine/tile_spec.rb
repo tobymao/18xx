@@ -270,5 +270,127 @@ module Engine
         end
       end
     end
+
+    describe 'routable option' do
+      it 'makes a pathless city a node of the tile' do
+        tile = Tile.from_code('X1', :white, 'city=revenue:10,routable:1')
+        expect(tile.nodes).to eq(tile.cities)
+      end
+
+      it 'leaves a pathless city out of the nodes without the option' do
+        expect(Tile.from_code('X1', :white, 'city=revenue:10').nodes).to be_empty
+      end
+
+      it 'makes a pathless town a node of the tile' do
+        tile = Tile.from_code('X1', :white, 'town=revenue:10,routable:1')
+        expect(tile.nodes).to eq(tile.towns)
+      end
+
+      it 'does not duplicate a routable city that has track' do
+        tile = Tile.from_code('X1', :white, 'city=revenue:10,routable:1;path=a:0,b:_0')
+        expect(tile.nodes).to eq(tile.cities)
+      end
+    end
+
+    describe 'double_town' do
+      let(:code) { 'double_town=revenue:10,axis:2,revenue_loc:2|5;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0' }
+      let(:tile) { Tile.from_code('dt', 'green', code) }
+      let(:double_town) { tile.double_towns.first }
+
+      it 'is the only node and takes every exit path once' do
+        expect(tile.double_towns).to eq([double_town])
+        expect(tile.towns).to eq([double_town])
+        expect(tile.city_towns).to eq([double_town])
+        expect(tile.nodes).to eq([double_town])
+        expect(double_town).to be_a(Part::Town)
+        expect(tile.paths.size).to eq(4)
+        expect(tile.paths.map(&:exits)).to match_array([[0], [1], [3], [4]])
+        expect(tile.paths.map(&:nodes)).to all(eq([double_town]))
+      end
+
+      it 'carries two town stops that are not tile parts' do
+        expect(double_town.stops.size).to eq(2)
+        expect(double_town.stops).to all(be_a(Part::Town))
+        expect(double_town.stops.map(&:max_revenue)).to eq([10, 10])
+        expect(double_town.stops.map(&:tile)).to eq([tile, tile])
+        expect(tile.parts).not_to include(*double_town.stops)
+        expect(double_town.towns).to eq(double_town.stops)
+      end
+
+      it 'keeps the pill and revenue positions' do
+        expect(double_town.axis).to eq(2.0)
+        expect(double_town.revenue_locs).to eq([2.0, 5.0])
+      end
+
+      it 'defaults the pill to loc 0 and the revenues to the side corners' do
+        blank = Tile.from_code('dt', 'white', 'double_town=revenue:0').double_towns.first
+        expect(blank.axis).to eq(0.0)
+        expect(blank.revenue_locs).to eq([1.5, 4.5])
+      end
+
+      it 'hides itself so the pill draws it, and sits in the centre' do
+        expect(double_town.hidden?).to be(true)
+        expect(double_town.rect?).to be(false)
+        expect(tile.preferred_city_town_edges[double_town]).to be_nil
+      end
+
+      it 'gives a plain town one stop' do
+        town = Tile.for('3').towns.first
+        expect(town.stops).to eq([town])
+      end
+
+      it 'leaves plain towns alone' do
+        expect(Tile.for('3').double_towns).to be_empty
+        expect(Tile.for('3').towns.first.double_town?).to be(false)
+      end
+
+      it 'lets the double town override the tile-wide revenue' do
+        expect(tile.revenue_overridden?).to be(true)
+      end
+
+      it 'leaves the revenue of a plain town to the tile view' do
+        expect(Tile.for('3').revenue_overridden?).to be(false)
+      end
+
+      it 'leaves the revenue of a city to the tile view' do
+        expect(Tile.for('57').revenue_overridden?).to be(false)
+      end
+    end
+
+    describe 'revisitable nodes' do
+      let(:code) { 'city=revenue:20;town=revenue:10;double_town=revenue:10;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2' }
+      let(:tile) { Tile.from_code('rt', :white, code, revisitable_nodes: %w[town double_town]) }
+
+      it 'makes only the listed node types revisitable' do
+        expect(tile.towns.map(&:revisitable?)).to all(be(true))
+        expect(tile.cities.map(&:revisitable?)).to all(be(false))
+      end
+
+      it 'makes a listed city revisitable' do
+        listed = Tile.from_code('rt', :white, code, revisitable_nodes: %w[city])
+
+        expect(listed.cities.map(&:revisitable?)).to all(be(true))
+        expect(listed.towns.map(&:revisitable?)).to all(be(false))
+      end
+
+      it 'leaves every node not revisitable by default' do
+        expect(Tile.from_code('rt', :white, code).nodes.map(&:revisitable?)).to all(be(false))
+      end
+
+      it 'keeps the revisitable node types on a duplicated tile' do
+        copy = tile.dup
+
+        expect(copy.revisitable_nodes).to eq(%w[town double_town])
+        expect(copy.towns.map(&:revisitable?)).to all(be(true))
+      end
+
+      it 'marks the nodes of game tiles and preprinted hexes from the game constant' do
+        game = Engine.game_by_title('18OE').new(%w[a b c])
+        tiles = game.tiles + game.hexes.map(&:tile)
+
+        expect(tiles.flat_map(&:towns).map(&:revisitable?)).to all(be(true))
+        expect(tiles.flat_map(&:cities).map(&:revisitable?)).to all(be(false))
+      end
+    end
   end
 end

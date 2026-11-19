@@ -126,7 +126,7 @@ module Engine
             raise GameError, 'Cannot par on behalf of other entities' if action.purchase_for
             raise GameError, "#{corporation.name} cannot be parred" unless companies_pending_par.find(corporation)
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             @game.share_pool.buy_shares(action.entity, corporation.shares.first, exchange: :free)
             @game.after_par(corporation)
             @round.companies_pending_par.shift

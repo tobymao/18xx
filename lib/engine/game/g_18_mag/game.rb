@@ -15,7 +15,7 @@ module Engine
         attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :ciwl, :terrain_tokens
 
         CURRENCY_FORMAT_STR = '%s Ft'
-        BANK_CASH = 100_000
+        BANK_CASH = :unlimited
         CERT_LIMIT = {
           2 => 10,
           3 => 18,
@@ -197,7 +197,7 @@ module Engine
           @corporations.each do |corp|
             share_price = @stock_market.par_prices.find { |p| p.price == rand_prices[0] }
             rand_prices.shift
-            @stock_market.set_par(corp, share_price)
+            par_corporation(corp, share_price)
             corp.ipoed = true
 
             corp.ipo_shares.each do |share|

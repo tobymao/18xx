@@ -23,7 +23,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '₧%d'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         IMPASSABLE_HEX_COLORS = %i[gray red blue orange].freeze
 
@@ -40,6 +40,9 @@ module Engine
         TILE_RESERVATION_BLOCKS_OTHERS = :single_slot_cities
 
         MOUNTAIN_PASS_TOKEN_HEXES = %w[L8 J10 H12 D12].freeze
+
+        # Action types whose choice can open a mountain pass (Track choose / P4 SpecialChoose).
+        MOUNTAIN_PASS_CHOICE_ACTIONS = %w[choose choose_ability].freeze
 
         MOUNTAIN_PASS_TOKEN_COST = { 'L8' => 80, 'J10' => 80, 'H12' => 60, 'D12' => 100 }.freeze
 
@@ -367,6 +370,21 @@ module Engine
 
         def madrid_hex
           @madrid_hex ||= hex_by_id(MADRID_HEX)
+        end
+
+        # Tallies each entity's mountain-pass opens from @filtered_actions; consume_mountain_pass_hint! decrements as replayed.
+        def future_mountain_pass_choose?(entity)
+          @loading_mountain_pass_remaining ||= @filtered_actions.filter_map do |action|
+            action['entity'] if action && MOUNTAIN_PASS_CHOICE_ACTIONS.include?(action['type']) &&
+                                MOUNTAIN_PASS_TOKEN_HEXES.include?(action['choice'])
+          end.tally
+          @loading_mountain_pass_remaining.fetch(entity.id, 0).positive?
+        end
+
+        def consume_mountain_pass_hint!(entity)
+          return unless @loading
+
+          @loading_mountain_pass_remaining[entity.id] -= 1 if future_mountain_pass_choose?(entity)
         end
 
         def setup
@@ -1143,10 +1161,6 @@ module Engine
           @corporations.dup.each do |c|
             next unless c.type == :minor
 
-            if c.operated?
-              @bank.spend(c.share_price.price, c.owner)
-              @log << "#{c.owner.name} recieves compensation of #{format_currency(c.share_price.price)} for #{c.name}"
-            end
             close_minor(c)
           end
         end

@@ -79,7 +79,7 @@ module Engine
           end
 
           def train_price_min(train)
-            (train.price / 25).ceil * 5
+            (train.price / 25.0).ceil * 5
           end
 
           def president_may_contribute?(entity, _)

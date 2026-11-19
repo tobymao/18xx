@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_train'
+require_relative 'skip_for_national'
 
 module Engine
   module Game
     module G18Cuba
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          include SkipForNational
+
           def round_state
             # Track which minor corporations have exchanged for narrow gauge trains this OR.
             super.merge(narrow_gauge_exchanged_by: [])
@@ -67,6 +70,12 @@ module Engine
               @round.narrow_gauge_exchanged_by << action.entity.id
             end
             super
+          end
+
+          def sellable_bundle?(bundle)
+            return super unless bundle.corporation.type == :national
+
+            @game.share_pool.fit_in_bank?(bundle)
           end
 
           # Skip aged downgrade variants and over-priced plus variants when locating the cheapest.

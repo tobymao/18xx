@@ -20,7 +20,7 @@ module Engine
             minor.ipoed = true
 
             share_price = @game.stock_market.par_prices.find { |pp| pp.price == 50 }
-            @game.stock_market.set_par(minor, share_price)
+            @game.par_corporation(minor, share_price)
             @game.bank.spend(100, minor)
 
             @game.share_pool.transfer_shares(ShareBundle.new(minor.shares.first), player)

@@ -73,6 +73,12 @@ module Engine
         pass! if !can_buy_train?(action.entity) && pass_if_cannot_buy_train?(action.entity)
       end
 
+      def log_skip(entity)
+        return super if @game.num_corp_trains(entity) < @game.train_limit(entity)
+
+        @log << "#{entity.name} automatically skips #{description.downcase} because it has no room for more trains"
+      end
+
       def swap_sell(_player, _corporation, _bundle, _pool_share); end
     end
   end

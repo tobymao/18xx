@@ -39,7 +39,7 @@ module Engine
 
         BANKRUPTCY_ENDS_GAME_AFTER = :one
 
-        BANK_CASH = 999_000
+        BANK_CASH = :unlimited
 
         CLOSED_CORP_RESERVATIONS_REMOVED = false
 
@@ -571,7 +571,7 @@ module Engine
 
           h = hovedbanen
           share_price = @stock_market.par_prices.find { |pp| pp.price * 2 <= price }
-          @stock_market.set_par(h, share_price)
+          par_corporation(h, share_price)
           @bank.spend(price, h)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|

@@ -16,6 +16,10 @@ module Engine
         @tile.nodes.one?
       end
 
+      def stops
+        [self]
+      end
+
       def paths
         @paths ||= @tile.paths.select { |p| p.nodes.any? { |n| n == self } }
       end
@@ -25,6 +29,10 @@ module Engine
       end
 
       def rect?
+        false
+      end
+
+      def revisitable?
         false
       end
 
@@ -50,11 +58,14 @@ module Engine
         converging_path: true,
         walk_calls: Hash.new(0),
         backtracking: false,
+        pruner: nil,
+        revisit: false,
         &block
       )
         walk_calls[:all] += 1
 
-        return if visited[self]
+        revisiting = visited[self]
+        return if revisiting && !(revisit && revisitable?)
 
         walk_calls[:not_skipped] += 1
 
@@ -72,6 +83,7 @@ module Engine
             converging: converging_path,
             walk_calls: walk_calls,
             backtracking: backtracking,
+            pruner: pruner,
           ) do |path, vp, ct, converging|
             ret = yield path, vp, visited
             next if ret == :abort
@@ -91,13 +103,15 @@ module Engine
                 converging_path: converging_path || converging,
                 walk_calls: walk_calls,
                 backtracking: backtracking,
+                pruner: pruner,
+                revisit: revisit,
                 &block
               )
             end
           end
         end
 
-        visited.delete(self) if converging_path
+        visited.delete(self) if converging_path && !revisiting
       end
     end
   end

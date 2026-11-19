@@ -34,6 +34,7 @@ module View
               process_action(Engine::Action::Choose.new(
                 @game.current_entity,
                 choice: choice,
+                target: @entity,
               ))
             end
 

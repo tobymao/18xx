@@ -297,7 +297,7 @@ module Engine
           share_pool.move_share(corp.ipo_shares.first, upper_minor.owner)
           float_corporation(corp) if corp.floated?
           # TODO: currently relies on the ordering in the market for last
-          @stock_market.set_par(corp, @stock_market.par_prices.last)
+          par_corporation(corp, @stock_market.par_prices.last)
           close_corporation(lower_minor)
           close_corporation(upper_minor)
         end

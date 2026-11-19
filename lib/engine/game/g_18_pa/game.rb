@@ -43,18 +43,18 @@ module Engine
           %w[50 60 70 80 90],
         ].freeze
 
-        PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 2 },
+        PHASES = [{ name: '2', train_limit: 2, tiles: [:yellow], operating_rounds: 2 },
                   {
                     name: '3',
                     on: '3',
-                    train_limit: 4,
+                    train_limit: 2,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
                   },
                   {
                     name: '4',
                     on: '4',
-                    train_limit: 3,
+                    train_limit: 2,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
                   },

@@ -19,6 +19,7 @@ SKIP_BETA_PROD = {
   '1867' => [:bank],
 
   # no examples of these game end reasons were found in the live database
+  '1837' => [:bankrupt],
   '1848' => [:closed_five],
   '1849' => [:bankrupt],
   '1849: Kingdom of the Two Sicilies' => [:bankrupt],
