@@ -2,6 +2,7 @@
 
 require_relative '../../../step/special_token'
 require_relative 'skip_abbreviated_round'
+require_relative 'validated_token_cost'
 require_relative 'track_rights_tokener'
 
 module Engine
@@ -10,6 +11,7 @@ module Engine
       module Step
         class SpecialToken < Engine::Step::SpecialToken
           include SkipAbbreviatedRound
+          include ValidatedTokenCost
           include TrackRightsTokener
 
           def available_hex(entity, hex)
@@ -39,11 +41,14 @@ module Engine
                 raise GameError, "#{operator.name} cannot afford the #{@game.format_currency(action.cost)} token cost"
               end
 
+              charter_price = action.token.price
               action.token.price = action.cost
             end
 
             super
             @game.remove_wcf_placeholder! if action.entity.id == 'WCF'
+          ensure
+            action.token.price = charter_price if charter_price
           end
 
           def adjust_token_price_ability!(entity, token, hex, city, special_ability: nil)

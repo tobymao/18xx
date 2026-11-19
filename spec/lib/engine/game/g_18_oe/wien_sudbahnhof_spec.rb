@@ -153,6 +153,15 @@ describe 'G18OE Wien Südbahnhof (§14.3)' do
       expect(action.cost).to eq(40)
     end
 
+    it 'restores the token charter price after the cross-water placement' do
+      round = token_round!(dsj)
+      token = dsj.tokens.reject(&:used).max_by(&:price)
+      charter_price = token.price
+      place!(round, dsj, christiania)
+      expect(christiania.tokens).to include(token)
+      expect(token.price).to eq(charter_price)
+    end
+
     it 'rejects the placement when the treasury cannot pay the fee' do
       round = token_round!(dsj)
       dsj.spend(80, game.bank)
