@@ -257,6 +257,7 @@ module Engine
                       :loan_choice_player,
                       :old_operating_order, :moved_this_turn,
                       :e_token_sold, :e_tokens_enabled, :issue_bonds_enabled, :buy_tokens_enabled
+        attr_reader   :pending_afg_closure
 
         def option_delay_ift?
           @optional_rules&.include?(:delay_ift)
@@ -309,6 +310,8 @@ module Engine
           @available_par_groups = %i[par]
 
           @moved_this_turn = []
+
+          @pending_afg_closure = false
         end
 
         def setup_companies
@@ -774,11 +777,7 @@ module Engine
           city = messina.tile.cities[0]
 
           # If Garibaldi's only token removed, close Garibaldi
-          if afg && city.tokened_by?(afg) && afg.placed_tokens.one?
-            @log << '-- AFG loses only token, closing. --'
-            @round.force_next_entity! if @round.current_entity == afg
-            close_corporation(afg)
-          end
+          @pending_afg_closure = true if afg && city.tokened_by?(afg) && afg.placed_tokens.one?
 
           # Remove from game tokens on Messina
           @log << '-- Removing tokens from game. --'
@@ -794,6 +793,12 @@ module Engine
 
           # Some companies might no longer have valid routes
           @graph.clear_graph_for_all
+        end
+
+        def close_afg_if_last_token_lost!
+          @pending_afg_closure = false
+          @log << '-- AFG loses only token, closing. --'
+          close_corporation(afg)
         end
 
         def bank_sort(corporations)

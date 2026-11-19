@@ -3,6 +3,12 @@
 source 'https://rubygems.org'
 
 gem 'argon2'
+# These stopped being default gems in ruby 3.4 (logger is on the same path for
+# 4.0), so they have to be declared or the gems that require them fail to load:
+# base64 -> opal's source map builder, bigdecimal -> sequel, logger -> newrelic.
+gem 'base64'
+gem 'bigdecimal'
+gem 'logger'
 gem 'message_bus'
 gem 'mini_racer'
 gem 'newrelic_rpm'

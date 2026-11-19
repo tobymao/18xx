@@ -159,7 +159,7 @@ module Engine
             ['F10'] => 'city=revenue:20;city=revenue:20;city=revenue:20;path=a:4,b:_0;path=a:0,b:_1;path=a:2,b:_2;label=A;',
           },
           gray: {
-            ['B14'] => 'city=revenue:yellow_40|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['B14'] => 'town=revenue:yellow_40|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['I1'] => 'path=a:4,b:5',
             ['B24'] => 'city=revenue:yellow_20|brown_40|gray_50;path=a:1,b:_0;path=a:0,b:_0;icon=image:port,sticky:1,loc:0.5',
             ['J2'] => 'city=revenue:yellow_20|brown_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\

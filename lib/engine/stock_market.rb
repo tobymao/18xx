@@ -66,13 +66,6 @@ module Engine
       @two_d ||= !@zigzag && @market.size > 1
     end
 
-    def set_par(corporation, share_price)
-      share_price.corporations << corporation
-      corporation.share_price = share_price
-      corporation.par_price = share_price
-      corporation.original_par_price = share_price
-    end
-
     def right_ledge?(coordinates)
       row, col = coordinates
       col + 1 == @market[row].size

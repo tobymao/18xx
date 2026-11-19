@@ -4,6 +4,7 @@ require_relative 'base'
 require_relative '../assets/app/lib/settings'
 require 'argon2'
 require 'uri'
+require_relative '../lib/email_canonical'
 
 class User < Base
   one_to_many :games
@@ -11,6 +12,8 @@ class User < Base
   one_to_many :game_users
 
   RESET_WINDOW = 60 * 30 # 30 minutes
+  VERIFY_WINDOW = 60 * 60 * 24 # 24 hours
+  VERIFY_RESEND_WINDOW = 60 * 2 # 2 minutes
 
   SETTINGS = (Lib::Settings::ROUTE_COLORS.size.times.flat_map do |index|
     %w[color dash width].map do |prop|
@@ -44,13 +47,47 @@ class User < Base
     settings.delete('webhook_url') if settings['webhook'] != 'custom'
   end
 
+  def self.canonical_email(email)
+    EmailCanonical.normalize(email)
+  end
+
+  # Canonicalize before validation so validates_unique(:email) and the unique
+  # index see the same form. Must be before_validation, not before_save.
+  def before_validation
+    self.email = self.class.canonical_email(email) if email
+    super
+  end
+
   def self.by_email(email)
-    self[Sequel.function(:lower, :email) => email.downcase] || self[Sequel.function(:lower, :name) => email.downcase]
+    self[Sequel.function(:lower, :email) => canonical_email(email)] ||
+      self[Sequel.function(:lower, :name) => email.to_s.downcase]
   end
 
   def reset_hashes
     now = Time.now.to_i / RESET_WINDOW
     (0..1).map { |i| Digest::MD5.hexdigest("#{password}#{now + i}") }
+  end
+
+  # Stateless, time-windowed verification token (mirrors reset_hashes, longer
+  # window). Valid for ~24-48h via the current+next window pair.
+  def verification_hashes
+    now = Time.now.to_i / VERIFY_WINDOW
+    (0..1).map { |i| Digest::MD5.hexdigest("verify-#{id}-#{email}-#{password}-#{now + i}") }
+  end
+
+  # Accounts created before email verification existed have no 'verified' key,
+  # so they are grandfathered as verified. Only an explicit false blocks login.
+  def verified?
+    settings['verified'] != false
+  end
+
+  def verify!
+    settings['verified'] = true
+    save
+  end
+
+  def admin?
+    settings['admin'] == true
   end
 
   def password=(new_password)
@@ -61,6 +98,10 @@ class User < Base
 
   def can_reset?
     settings['last_password_reset'].to_i < Time.now.to_i - RESET_WINDOW
+  end
+
+  def can_resend_verification?
+    settings['last_verification_sent'].to_i < Time.now.to_i - VERIFY_RESEND_WINDOW
   end
 
   def to_h(for_user: false)
@@ -86,7 +127,7 @@ class User < Base
     validates_unique(:name, :email, { message: 'is already registered' })
     validates_format(/^.+$/, :name, message: 'may not be empty')
     validates_format(/^[^\s].*$/, :name, message: 'may not start with a whitespace')
-    validates_format(/^[^@\s]+@[^@\s]+\.[^@\s]+$/, :email)
+    validates_format(/\A[^@\s]+@[^@\s]+\.[^@\s]+\z/, :email)
 
     validate_webhook_user_id
   end

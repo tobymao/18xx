@@ -214,6 +214,7 @@ module Engine
           end
         end
         @game.log_share_price(entity, old_price, right_times)
+        @game.share_price_changed(entity, old_price)
       end
 
       def routes

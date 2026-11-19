@@ -1,0 +1,35 @@
+# Game pages are rendered per-action, so a crawler that follows them walks a
+# combinatorial URL space that is expensive to serve and worthless to index.
+# Keep crawlers on the static pages: /, /about, /tutorial, /map/*, /market/*.
+
+User-agent: *
+Disallow: /api/
+Disallow: /message-bus/
+Disallow: /game/
+Disallow: /profile/
+Disallow: /fixture/
+Disallow: /tiles
+Disallow: /hotseat
+Disallow: /new_game
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot
+Disallow: /reset
+Crawl-delay: 10
+
+# Crawls nothing but game state and action replays, and serves no audience here.
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: Baiduspider-render
+Disallow: /
+
+# SEO backlink scrapers.
+User-agent: DotBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

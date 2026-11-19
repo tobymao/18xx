@@ -100,7 +100,7 @@ module Engine
             name: 'D',
             distance: 999,
             price: 950,
-            num: 20,
+            num: 'unlimited',
             discount: { '4' => 200, '5' => 200, '6' => 200, '7' => 200 },
             variants: [
               {

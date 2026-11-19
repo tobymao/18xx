@@ -216,7 +216,7 @@ module Engine
               name: 'D',
               distance: 999,
               price: 1100,
-              num: 22,
+              num: 'unlimited',
               available_on: '6',
               discount: { '4' => 350, '5' => 350, '6' => 350 },
             },
@@ -224,7 +224,7 @@ module Engine
               name: '8',
               distance: 8,
               price: 1000,
-              num: 22,
+              num: 'unlimited',
               available_on: '6',
               discount: { '4' => 350, '5' => 350, '6' => 350 },
             },
@@ -1106,7 +1106,7 @@ module Engine
 
         def float_national
           national.float!
-          @stock_market.set_par(national, calculate_national_price)
+          par_corporation(national, calculate_national_price)
         end
 
         # Handles the share exchange in nationalization

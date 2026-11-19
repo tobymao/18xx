@@ -11,7 +11,7 @@ module Engine
       class Game < Game::Base
         CURRENCY_FORMAT_STR = '%s$N'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = {
           2 => { '5' => 10, '7' => 12 },
@@ -24,6 +24,26 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
+        STOCKMARKET_THRESHOLD = [
+          [100, 150, 150, 200, 200, 250, 250, 300, 350, 400, 450, 0],
+          [100, 100, 150, 150, 200, 200, 250, 250, 300],
+          [80, 100, 100, 150, 150, 200, 200],
+          [50, 80, 100, 100, 150],
+          [40, 50, 80],
+          [30, 40],
+        ].freeze
+
+        STOCKMARKET_GAIN = [
+          [1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 5, 6],
+          [1, 1, 2, 2, 2, 2, 3, 3, 3],
+          [1, 1, 2, 2, 2, 2, 2],
+          [1, 1, 1, 2, 2],
+          [0, 1, 1],
+          [0, 0],
+        ].freeze
+
+        STOCKMARKET_OWNER_GAIN = [0, 0, 0, 1, 2, 2, 2, 2, 3].freeze
+
         MARKET = [
           %w[7 8 9 10s 11s 12s 13s 14s 15s 16 20 24e],
           %w[6 7x 8 9z 10 11 12w 13 14],
@@ -31,7 +51,18 @@ module Engine
           %w[4 5x 6 7 8],
           %w[3 4 5],
           %w[2 3],
-        ].freeze
+        ].map.with_index do |row, row_index|
+          row.map.with_index do |code, column_index|
+            match = code.match(/(\d*)([a-zA-Z]*)/)
+            threshold = STOCKMARKET_THRESHOLD[row_index][column_index]
+
+            {
+              price: match[1].to_i,
+              types: match[2].chars.map { |char| Engine::SharePrice::TYPE_MAP[char] },
+              info: "#{threshold.zero? ? 'END' : threshold}, #{STOCKMARKET_GAIN[row_index][column_index]}",
+            }
+          end
+        end.freeze
 
         PHASES = [
           {
@@ -126,7 +157,7 @@ module Engine
             distance: 4,
             multiplier: 2,
             price: 47,
-            num: 99,
+            num: 'unlimited',
             events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
             variants: [
               {
@@ -134,7 +165,7 @@ module Engine
                 distance: 2,
                 multiplier: 2,
                 price: 37,
-                num: 99,
+                num: 'unlimited',
               },
             ],
           },
@@ -174,26 +205,6 @@ module Engine
           endgame: :orange,
           safe_par: :blue,
         }.freeze
-
-        STOCKMARKET_THRESHOLD = [
-          [100, 150, 150, 200, 200, 250, 250, 300, 350, 400, 450, 0],
-          [100, 100, 150, 150, 200, 200, 250, 250, 300],
-          [80, 100, 100, 150, 150, 200, 200],
-          [50, 80, 100, 100, 150],
-          [40, 50, 80],
-          [30, 40],
-        ].freeze
-
-        STOCKMARKET_GAIN = [
-          [1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 5, 6],
-          [1, 1, 2, 2, 2, 2, 3, 3, 3],
-          [1, 1, 2, 2, 2, 2, 2],
-          [1, 1, 1, 2, 2],
-          [0, 1, 1],
-          [0, 0],
-        ].freeze
-
-        STOCKMARKET_OWNER_GAIN = [0, 0, 0, 1, 2, 2, 2, 2, 3].freeze
 
         SELL_AFTER = :any_time
 
@@ -719,6 +730,17 @@ module Engine
           entity.player? && entity.companies.any? { |c| zoo_ticket?(c) }
         end
 
+        def company_by_id(id)
+          super || zoo_ticket_by_player_name(id)
+        end
+
+        def zoo_ticket_by_player_name(id)
+          return unless (match = id.to_s.match(/^ZOOTicket (\d+) - (.+)$/))
+          return unless (player = @players.find { |p| p.name == match[2] })
+
+          @_companies["ZOOTicket #{match[1]} - #{player.id}"]
+        end
+
         def check_distance(route, visits)
           name = route.train.name
           check_town = %w[4J 2J].include?(name)
@@ -976,9 +998,8 @@ module Engine
                                                                       .reject(&:ipoed)
                                                                       .map(&:full_name)
                                                                       .join(', ')
-                                 return if following_corporations.empty?
 
-                                 "open company in strict order: #{following_corporations}"
+                                 "open company in strict order: #{following_corporations}" unless following_corporations.empty?
                                when 2
                                  next_family = corporation_by_id(@near_families_purchasable[0][:id])
                                  prev_family = corporation_by_id(@near_families_purchasable[1][:id])
@@ -1142,7 +1163,7 @@ module Engine
           num_ticket_zoo = players.size == 5 ? 2 : 3
           players.each do |player|
             (1..num_ticket_zoo).each do |i|
-              ticket = Company.new(sym: "ZOOTicket #{i} - #{player.name}",
+              ticket = Company.new(sym: "ZOOTicket #{i} - #{player.id}",
                                    name: "ZOOTicket #{i}",
                                    value: 4,
                                    desc: 'Exchange it for money')

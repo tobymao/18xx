@@ -427,7 +427,7 @@ module Engine
                     name: '8',
                     distance: 8,
                     price: 1000,
-                    num: 16,
+                    num: 'unlimited',
                     available_on: '6',
                     discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
                     variants: [

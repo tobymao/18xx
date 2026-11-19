@@ -4,6 +4,8 @@ require_relative 'meta'
 require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'variants/kingdom_of_romania'
+require_relative 'variants/transylvania'
 
 module Engine
   module Game
@@ -18,6 +20,8 @@ module Engine
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 14, 6 => 12 }.freeze
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340 }.freeze
+
+        CORPORATION_CLASS = G1880Romania::Corporation
 
         TRAINS_NOT_TRIGGERING_SR = %w[2R 8 8E].freeze
 
@@ -150,17 +154,137 @@ module Engine
                     name: '8E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 99 }],
                     price: 900,
-                    num: 10,
+                    num: 'unlimited',
                   },
                   { name: '2R', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = G1880::Game::EVENTS_TEXT.merge(
-          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train']
+          'float_30' => ['30% to Float', 'Corporation must sell 30% of shares to float'],
+          'float_40' => ['40% to Float', 'Corporation must sell 40% of shares to float'],
+          'float_60' => ['60% to Float', 'Corporation must sell 60% of shares to float'],
+          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train'],
+          'open_borders' => ['Open Borders', 'Borders are opened, owner of P2 Consorţiu still receives payment for crossings'],
+          'remove_borders' => ['Remove Borders', 'Borders are removed entirely'],
         ).freeze
 
         GAME_END_REASONS_TEXT = {
           final_train: 'Last 6E train sold',
         }.freeze
+
+        def self.min_players(optional_rules, num_players)
+          meta.min_players(optional_rules, num_players)
+        end
+
+        def self.max_players(optional_rules, num_players)
+          meta.max_players(optional_rules, num_players)
+        end
+
+        def kingdom_of_romania?
+          @optional_rules.include?(:kingdom_of_romania)
+        end
+
+        def transylvania?
+          @optional_rules.include?(:transylvania)
+        end
+
+        def variant
+          return KingdomOfRomania if kingdom_of_romania?
+          return Transylvania if transylvania?
+
+          nil
+        end
+
+        def game_hexes
+          return add_borders(merge_hexes(KINGDOM_OF_ROMANIA_HEXES, TRANSYLVANIA_HEXES, FULL_MAP_HEXES)) unless variant
+
+          region = kingdom_of_romania? ? KINGDOM_OF_ROMANIA_HEXES : TRANSYLVANIA_HEXES
+          merge_hexes(region, variant::HEXES)
+        end
+
+        def location_name(coord)
+          return super unless variant
+
+          variant::LOCATION_NAMES[coord] || super
+        end
+
+        def game_companies
+          return super unless variant
+
+          coords = game_hexes.values.flat_map(&:keys).flatten
+          super.select { |company| variant::COMPANIES.include?(company[:sym]) }.map do |company|
+            next company unless company[:abilities]
+
+            company.merge(abilities: company[:abilities].map do |ability|
+              next ability unless ability[:type] == 'assign_hexes'
+
+              ability.merge(hexes: ability[:hexes] & coords)
+            end)
+          end
+        end
+
+        def game_corporations
+          return super unless variant
+
+          super.select { |corporation| variant::CORPORATIONS.include?(corporation[:sym]) }
+        end
+
+        def game_minors
+          return super unless variant
+
+          super.select { |minor| variant::MINORS.include?(minor[:sym]) }.map do |minor|
+            coordinates = variant::MINOR_COORDINATES[minor[:sym]]
+            coordinates ? minor.merge(coordinates: coordinates) : minor
+          end
+        end
+
+        def game_trains
+          return super unless variant
+
+          super.map do |train|
+            train = train.dup
+            train[:num] = variant::TRAIN_COUNTS[train[:name]] if variant::TRAIN_COUNTS.key?(train[:name])
+            next train unless train[:events]
+
+            train[:events] = train[:events].reject { |event| %w[open_borders remove_borders].include?(event['type']) }
+            train[:events] = train[:events].map do |event|
+              event['type'] == 'signal_end_game' ? event.merge('when' => train[:num]) : event
+            end
+            train
+          end
+        end
+
+        def game_cert_limit
+          variant ? variant::CERT_LIMIT : super
+        end
+
+        def init_starting_cash(players, bank)
+          return super unless variant
+
+          players.each { |player| bank.spend(variant::STARTING_CASH[players.size], player) }
+        end
+
+        def merge_hexes(*hex_maps)
+          hex_maps.each_with_object({}) do |hex_map, merged|
+            hex_map.each { |color, hexes| (merged[color] ||= {}).merge!(hexes) }
+          end
+        end
+
+        def add_borders(hex_map)
+          hex_map.transform_values do |hexes|
+            hexes.each_with_object({}) do |(coords, tile_string), result|
+              bordered, plain = coords.partition { |coord| BORDERS.key?(coord) }
+              result[plain] = tile_string unless plain.empty?
+              bordered.each do |coord|
+                border_strings = BORDERS[coord].map { |edge| "border=edge:#{edge},type:impassable,color:orange" }
+                result[[coord]] = [tile_string, *border_strings].reject(&:empty?).join(';')
+              end
+            end
+          end
+        end
+
+        def float_str(entity)
+          "#{entity.percent_to_float}% to float" if entity.corporation? && entity.floatable
+        end
 
         def init_minors
           game_minors.map { |minor| G1880::Minor.new(**minor) }
@@ -178,7 +302,7 @@ module Engine
         end
 
         def stock_round
-          G1880::Round::Stock.new(self, [
+          G1880Romania::Round::Stock.new(self, [
             Engine::Step::Exchange,
             G1880Romania::Step::SpecialChoose,
             G1880Romania::Step::BuySellParShares,
@@ -344,6 +468,8 @@ module Engine
         end
 
         def danube_port_bonus?(route, stops = route.stops)
+          return false unless danube_port
+
           stops.any? { |stop| stop.hex.assigned?(danube_port.id) } && route.corporation.owner == danube_port.owner
         end
 
@@ -354,6 +480,8 @@ module Engine
         # This game's Electroputere S.A. private company's forced train exchange is identical to the forced exchange for the
         # Rocket of China in 1880, so we can reuse that logic here rather than recoding the whole thing.
         def forced_exchange_rocket?
+          return false unless rocket
+
           phase.name == 'B2' && !rocket.closed?
         end
       end

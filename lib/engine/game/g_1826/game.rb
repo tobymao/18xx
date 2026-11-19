@@ -112,7 +112,7 @@ module Engine
                       distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 99, 'multiplier' => 2 },
                                  { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                       price: 1000,
-                      num: 20,
+                      num: 'unlimited',
                       discount: { '4' => 300, '5' => 300, '6' => 300 },
                     },
                   ].freeze

@@ -6,7 +6,7 @@ module Engine
   module Part
     class Path < Base
       attr_reader :a, :b, :city, :edges, :exit_lanes, :junction, :lanes, :nodes, :offboard,
-                  :stops, :terminal, :town, :track, :ignore
+                  :stops, :terminal, :town, :track, :ignore, :color
       attr_accessor :ignore_gauge_walk, :ignore_gauge_compare
 
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
@@ -24,7 +24,7 @@ module Engine
       end
 
       def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil, ignore: nil,
-                          ignore_gauge_walk: nil, ignore_gauge_compare: nil)
+                          ignore_gauge_walk: nil, ignore_gauge_compare: nil, color: nil)
         track ||= :broad
         if lanes
           Array.new(lanes) do |index|
@@ -40,7 +40,8 @@ module Engine
                      track: track,
                      ignore: ignore,
                      ignore_gauge_walk: ignore_gauge_walk,
-                     ignore_gauge_compare: ignore_gauge_compare)
+                     ignore_gauge_compare: ignore_gauge_compare,
+                     color: color)
           end
         else
           Path.new(a, b,
@@ -49,12 +50,13 @@ module Engine
                    track: track,
                    ignore: ignore,
                    ignore_gauge_walk: ignore_gauge_walk,
-                   ignore_gauge_compare: ignore_gauge_compare)
+                   ignore_gauge_compare: ignore_gauge_compare,
+                   color: color)
         end
       end
 
       def initialize(a, b, terminal: nil, lanes: LANES, track: :broad, ignore: nil,
-                     ignore_gauge_walk: nil, ignore_gauge_compare: nil)
+                     ignore_gauge_walk: nil, ignore_gauge_compare: nil, color: nil)
         @a = a
         @b = b
         @terminal = terminal
@@ -67,6 +69,7 @@ module Engine
         @ignore = ignore
         @ignore_gauge_walk = ignore_gauge_walk
         @ignore_gauge_compare = ignore_gauge_compare
+        @color = color
 
         separate_parts
       end
@@ -140,6 +143,7 @@ module Engine
         converging: true,
         walk_calls: Hash.new(0),
         backtracking: false,
+        pruner: nil,
         &block
       )
         walk_calls[:all] += 1
@@ -149,6 +153,7 @@ module Engine
         return if edges.sum { |edge| counter[edge.id] }.positive?
         return if track == skip_track
         return if @junction && @terminal
+        return if converging && pruner&.prune?(self)
 
         walk_calls[:not_skipped] += 1
 
@@ -168,6 +173,7 @@ module Engine
               converging: converging,
               walk_calls: walk_calls,
               backtracking: backtracking,
+              pruner: pruner,
               &block
             )
           end
@@ -184,7 +190,7 @@ module Engine
 
               p.walk(skip: edge, visited: visited, skip_paths: skip_paths, counter: counter, skip_track: skip_track,
                      converging: converging || @tile.converging_exit?(edge), walk_calls: walk_calls,
-                     backtracking: backtracking, &block)
+                     backtracking: backtracking, pruner: pruner, &block)
             end
           end
 
@@ -199,7 +205,7 @@ module Engine
 
             np.walk(skip: np_edge, visited: visited, skip_paths: skip_paths, counter: counter, skip_track: skip_track,
                     converging: converging || @tile.converging_exit?(edge), walk_calls: walk_calls,
-                    backtracking: backtracking, &block)
+                    backtracking: backtracking, pruner: pruner, &block)
           end
 
           counter[edge_id] -= 1
@@ -302,7 +308,8 @@ module Engine
                         track: @track,
                         ignore: @ignore,
                         ignore_gauge_walk: @ignore_gauge_walk,
-                        ignore_gauge_compare: @ignore_gauge_compare)
+                        ignore_gauge_compare: @ignore_gauge_compare,
+                        color: @color)
         path.index = index
         path.tile = @tile
         path

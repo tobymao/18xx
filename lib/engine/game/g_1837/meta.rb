@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :production
 
         GAME_DESIGNER = 'Leonhard Orgler'
         GAME_LOCATION = 'Eastern Europe'

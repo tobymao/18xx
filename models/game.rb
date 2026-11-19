@@ -84,32 +84,63 @@ class Game < Base
   SQL
   # rubocop:enable Style/FormatString
 
+  # Cap how deep offset paging can go -- well past any real page count, but finite
+  # so the cache key space can't be grown unbounded by arbitrary offsets.
+  HOME_OFFSET_MAX = 10_000
+  # Logged-out visitors get a far shallower cap: no anonymous session browses
+  # hundreds of pages deep, and the small cap keeps the shared (user-less) cache
+  # key space tiny, so walking offsets collapses onto a few cached pages instead
+  # of an endless stream of distinct, uncached DB queries.
+  ANON_OFFSET_MAX = 10
+
   def self.home_games(user, **opts)
-    Bus.cache("home_games:#{user&.id}", ttl: 9, skip: !opts.empty?) do
-      kwargs = {
-        new_offset: opts['new'],
-        active_offset: opts['active'],
-        finished_offset: opts['finished'],
-      }.transform_values { |v| v&.to_i || 0 }
+    offset_max = user ? HOME_OFFSET_MAX : ANON_OFFSET_MAX
+    offsets = {
+      new_offset: opts['new'],
+      active_offset: opts['active'],
+      finished_offset: opts['finished'],
+    }.transform_values { |v| (v&.to_i || 0).clamp(0, offset_max) }
 
+    # Normalize titles to the valid, sorted set (an all-invalid request still
+    # filters to nothing rather than falling back to every game).
+    requested = Array(opts['title']).map(&:strip).reject(&:empty?)
+    titles = requested.empty? ? nil : (requested & Engine::GAME_TITLES).sort
+
+    mode = opts['mode']&.strip
+    mode = nil unless %w[live async].include?(mode)
+
+    # Key the cache on the *normalized* query inputs so equivalent or junk params
+    # (e.g. "01" vs "1", unknown titles/modes) collapse to one key instead of
+    # minting an unbounded number of distinct entries.
+    key = [offsets.values, titles, mode]
+    Bus.cache("home_games:#{user&.id}:#{key}", ttl: 9) do
+      kwargs = offsets.dup
       kwargs[:user_id] = user.id if user
-      kwargs[:titles] = opts['title']&.then do |t|
-        titles = Array(t).map(&:strip).reject(&:empty?)
-        next nil if titles.empty?
-
-        Sequel.pg_array(titles)
-      end
-      mode = opts['mode']&.strip
-      kwargs[:mode] = mode && !mode.empty? && %w[live async].include?(mode) ? mode : nil
+      # Typed so an all-invalid request (empty array) still binds as text[] rather
+      # than raising IndeterminateDatatype; it just matches no rows.
+      kwargs[:titles] = titles && Sequel.pg_array(titles, :text)
+      kwargs[:mode] = mode
       kwargs[:status] = %w[new active]
       kwargs[:limit] = 1000
-      fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all.map(&:to_h)
+      to_h_safe(fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all)
     end
   end
 
   def self.profile_games(user)
     Bus.cache("profile_games:#{user.id}", ttl: 60) do
-      fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 }).all.map(&:to_h)
+      games = fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 })
+              .all
+              .reject { |g| g.status == 'new' && g.settings['unlisted'] }
+      to_h_safe(games)
+    end
+  end
+
+  def self.to_h_safe(games)
+    games.filter_map do |game|
+      game.to_h
+    rescue StandardError => e
+      warn "Skipping unloadable game #{game.id}: #{e}"
+      nil
     end
   end
 
@@ -145,7 +176,7 @@ class Game < Base
     update(archive_data)
   end
 
-  def to_h(include_actions: false, logged_in_user_id: nil)
+  def to_h(include_actions: false, logged_in_user_id: nil, admin: false)
     settings_h = settings.to_h
 
     # Move user settings and hide from other players
@@ -167,7 +198,7 @@ class Game < Base
       round: round,
       acting: acting.to_a,
       result: result.to_h,
-      actions: actions_h(include_actions: include_actions, logged_in_user_id: logged_in_user_id),
+      actions: actions_h(include_actions: include_actions, logged_in_user_id: logged_in_user_id, admin: admin),
       loaded: include_actions,
       created_at: created_at_ts,
       updated_at: updated_at_ts,
@@ -182,11 +213,11 @@ class Game < Base
 
   # Remove chat messages for players not in the game. Keeps the chat action (but
   # removes the `message` contents) if the action is the target for an undo, or
-  # if it has auto actions attached.
-  def actions_h(include_actions: false, logged_in_user_id: nil)
+  # if it has auto actions attached. Admins always see the full chat.
+  def actions_h(include_actions: false, logged_in_user_id: nil, admin: false)
     return [] unless include_actions
 
-    remove_messages = players.none? { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
+    remove_messages = !admin && players.none? { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
     undo_targets = actions.filter_map { |a| a.action['type'] == 'undo' && a.action['action_id'] }.to_set
 
     actions.filter_map do |db_action|

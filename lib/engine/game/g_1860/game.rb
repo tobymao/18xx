@@ -201,7 +201,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 9, 'visit' => 9 },
                        { 'nodes' => %w[town halt], 'pay' => 5, 'visit' => 99 }],
             price: 800,
-            num: 16,
+            num: 'unlimited',
             events: [{ 'type' => 'southern_forms' }],
           },
         ].freeze
@@ -348,6 +348,20 @@ module Engine
             @tiles.reject! { |t| t.id == ot }
             @all_tiles.reject! { |t| t.id == ot }
           end
+        end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Dividend ≥ 3x share price', '3 →'],
+            ['Dividend ≥ 4x share price', '4 →'],
+            ['Per share sold', '1 ↙ or ↖ (zigzag movement)'],
+            ['Sold out at end of SR', 'none'],
+          ]
         end
 
         def setup
@@ -1017,7 +1031,7 @@ module Engine
         end
 
         def loaner_new_rules?(route)
-          loaner?(route) && !option_original_insolvency? && !option_simplified_insolvency?
+          loaner?(route) && !option_original_insolvency?
         end
 
         def loaner_orig_rules?(route)

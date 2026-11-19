@@ -188,6 +188,11 @@ module Engine
 
       CAPITALIZATION = :full
 
+      # In some games, it's relevant to know the par price of a corporation even after the IPO sells out.
+      # Setting this to true will make the IPO row always appear on the corporation charter.
+      # If false then this row will be omitted when there are no IPO shares remaining.
+      ALWAYS_SHOW_PAR_PRICE = false
+
       # Must sell all shares of a company in one action per turn
       MUST_SELL_IN_BLOCKS = false
 
@@ -246,6 +251,8 @@ module Engine
       # :always -- token cannot be placed until tile reservation resolved
       # :single_slot_cities -- token cannot be placed if tile contains any single slot cities
       TILE_RESERVATION_BLOCKS_OTHERS = :never
+
+      REVISITABLE_NODES = [].freeze
 
       COMPANIES = [].freeze
       COMPANY_CLASS = Company
@@ -311,6 +318,11 @@ module Engine
       # operate (corporation's first OR turn)
       HOME_TOKEN_TIMING = :operate
 
+      # when is the stock market token placed? on...
+      # par
+      # float
+      STOCK_MARKET_TOKEN_TIMING = :par
+
       # Entity for token placement decided on tile lay
       # :current_operator
       # :owner
@@ -353,6 +365,11 @@ module Engine
       TILE_COST = 0
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
+
+      # When true, an unstarted corporation/minor's home-station reservation is
+      # drawn as a colored ring inset inside a white disc (using
+      # reservation_color) instead of filling the whole disc with that color.
+      RESERVATION_COLOR_HALO = false
 
       EVENTS_TEXT = {
         'close_companies' =>
@@ -443,6 +460,19 @@ module Engine
         %i[minors minor],
         %i[loans loan],
       ].freeze
+
+      # Defined once, on the class. cache_objects used to (re)define these per
+      # game via self.class.define_method, and YJIT pins the method entries it
+      # compiles in its root set -- so each block, and the game it closed over,
+      # was held for the life of the worker. Here the block closes over ivar and
+      # self is the class, so nothing per-game is captured.
+      CACHABLE.each do |type, name|
+        ivar = "@_#{type}"
+
+        define_method("#{name}_by_id") do |id|
+          instance_variable_get(ivar)[id]
+        end
+      end
 
       # https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
       RAND_A = 1_103_515_245
@@ -1329,6 +1359,7 @@ module Engine
           raise NotImplementedError
         end
         log_share_price(corporation, old_price) if sell_movement(corporation) != :none
+        share_price_changed(corporation, old_price)
       end
 
       def sold_out_increase?(_corporation)
@@ -1342,6 +1373,12 @@ module Engine
       def sold_out_stock_movement(corporation)
         @stock_market.move_up(corporation)
       end
+
+      # Called after a share sale, the end of a stock round and a dividend may
+      # have moved a corporation's share price; `from` is the price before the
+      # move (it can be the current price if nothing moved). Override it for
+      # rules that depend on where the price lands.
+      def share_price_changed(_entity, _from); end
 
       def log_share_price(entity, from, steps = nil, log_steps: false)
         from_price = from.price
@@ -1384,7 +1421,7 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        entity.trains.empty? &&
+        entity.trains.all? { |train| extra_train?(train) } &&
           !depot.depot_trains.empty? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
@@ -1445,7 +1482,11 @@ module Engine
       end
 
       def compute_other_paths(routes, route)
-        routes.reject { |r| r == route }.flat_map(&:paths)
+        routes.reject { |r| r == route }.flat_map(&:paths).reject { |path| shared_track?(path) }
+      end
+
+      def shared_track?(_path)
+        false
       end
 
       def city_tokened_by?(city, entity)
@@ -1471,6 +1512,8 @@ module Engine
 
         routes.each do |route|
           route.paths.each do |path|
+            next if shared_track?(path)
+
             a = path.a
             b = path.b
 
@@ -1500,7 +1543,7 @@ module Engine
 
       def check_distance(route, visits, train = nil)
         train ||= route.train
-        distance = train.distance
+        distance = route_train_distance(route, train)
         if distance.is_a?(Numeric)
           route_distance = visits.sum(&:visit_cost)
           raise RouteTooLong, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
@@ -1542,13 +1585,21 @@ module Engine
       # Intended for game specific rules that only depend on one route
       def check_other(_route); end
 
+      def route_train_distance(_route, train)
+        train.distance
+      end
+
+      def route_links(_start_node, _end_node, _corporation)
+        []
+      end
+
       # Intended for game specific rules that depend on multiple routes
       def check_route_combination(_routes); end
 
       def compute_stops(route, train = nil)
         train ||= route.train
         visits = revenue_stops(route)
-        distance = train.distance
+        distance = route_train_distance(route, train)
         return visits if distance.is_a?(Numeric)
         return [] if visits.empty?
 
@@ -1603,7 +1654,7 @@ module Engine
       end
 
       def visited_stops(route)
-        route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact
+        route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact.flat_map(&:stops)
       end
 
       def revenue_stops(route)
@@ -1748,9 +1799,11 @@ module Engine
         end
 
         discount = abilities.sum { |a| a.discounts_tile?(tile) ? a.discount : 0 }
+        sum_cost = tile.upgrades.sum(&:cost)
+        discount = [sum_cost, discount].min # In case discount exceeds total cost
         log_cost_discount(spender, abilities, discount)
 
-        tile.upgrades.sum(&:cost) - discount
+        sum_cost - discount
       end
 
       def tile_cost_with_discount(_tile, hex, entity, spender, cost)
@@ -1835,6 +1888,7 @@ module Engine
         #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
         # - TODO: account for games that allow double dits to upgrade to one town
         return false if from.towns.size != to.towns.size
+        return false if from.double_towns.size != to.double_towns.size
         return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
         return false if from.cities.size > 1 && to.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
 
@@ -1873,8 +1927,21 @@ module Engine
         self.class::MULTIPLE_BUY_ONLY_FROM_MARKET
       end
 
+      def par_corporation(corporation, share_price)
+        if self.class::STOCK_MARKET_TOKEN_TIMING == :par
+          share_price.corporations << corporation
+          corporation.share_price = share_price
+        end
+        corporation.par_price = share_price
+        corporation.original_par_price = share_price
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
+        if self.class::STOCK_MARKET_TOKEN_TIMING == :float
+          corporation.par_price.corporations << corporation
+          corporation.share_price = corporation.par_price
+        end
 
         return if %i[incremental none].include?(corporation.capitalization)
 
@@ -2085,6 +2152,10 @@ module Engine
         nil
       end
 
+      def bundle_annotation(bundle)
+        bundle.shares.any? { |s| s.last_cert || s.double_cert } ? '[d]' : ''
+      end
+
       def corporation_show_loans?(_corporation)
         true
       end
@@ -2204,8 +2275,13 @@ module Engine
         train.owner = nil
       end
 
+      def extra_train?(train)
+        train.extra
+      end
+
       def num_corp_trains(entity)
-        self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? entity.trains.size : entity.trains.count { |t| !t.obsolete }
+        trains = entity.trains.reject { |train| extra_train?(train) }
+        self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? trains.size : trains.count { |t| !t.obsolete }
       end
 
       def crowded_corps
@@ -2543,12 +2619,18 @@ module Engine
       end
 
       def bank_starting_cash
+        return 0 if unlimited_bank?
+
         cash = self.class::BANK_CASH
         cash.is_a?(Hash) ? cash[players.size] : cash
       end
 
       def init_bank_kwargs
         { check: game_end_check_values.include?(:bank) }
+      end
+
+      def unlimited_bank?
+        self.class::BANK_CASH == :unlimited
       end
 
       def spenders
@@ -2764,9 +2846,10 @@ module Engine
 
               tile =
                 begin
-                  Tile.for(tile_string, preprinted: true, index: index)
+                  Tile.for(tile_string, preprinted: true, index: index, revisitable_nodes: self.class::REVISITABLE_NODES)
                 rescue Engine::GameError
-                  Tile.from_code(coord, color, tile_string, preprinted: true, index: index)
+                  Tile.from_code(coord, color, tile_string, preprinted: true, index: index,
+                                                            revisitable_nodes: self.class::REVISITABLE_NODES)
                 end
 
               # name the location (city/town)
@@ -2821,6 +2904,7 @@ module Engine
               name,
               index: i,
               reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+              revisitable_nodes: self.class::REVISITABLE_NODES,
               unlimited: val == 'unlimited'
             )
           end
@@ -2836,6 +2920,7 @@ module Engine
               code,
               index: i,
               reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+              revisitable_nodes: self.class::REVISITABLE_NODES,
               unlimited: val['count'] == 'unlimited',
               hidden: hidden
             )
@@ -2897,7 +2982,9 @@ module Engine
             next unless neighbor
 
             hex.all_neighbors[direction] = neighbor
-            next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) && !neighbor.targeting?(hex)
+            next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) &&
+                    !neighbor.targeting?(hex) &&
+                    neighbor.tile.stubs.none? { |stub| stub.edge == Hex.invert(direction) }
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
 
             hex.neighbors[direction] = neighbor
@@ -3216,13 +3303,8 @@ module Engine
       end
 
       def cache_objects
-        CACHABLE.each do |type, name|
-          ivar = "@_#{type}"
-          instance_variable_set(ivar, send(type).to_h { |x| [x.id, x] })
-
-          self.class.define_method("#{name}_by_id") do |id|
-            instance_variable_get(ivar)[id]
-          end
+        CACHABLE.each do |type, _name|
+          instance_variable_set("@_#{type}", send(type).to_h { |x| [x.id, x] })
         end
       end
 

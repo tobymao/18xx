@@ -11,6 +11,7 @@ module View
       title = 'Forgot Password'
       inputs = [
         render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
+        turnstile_widget,
         h(:div, [render_button('Reset Password') { submit }]),
       ]
       render_form(title, inputs)
@@ -18,6 +19,7 @@ module View
 
     def submit
       forgot(params)
+      reset_turnstile
     end
   end
 end

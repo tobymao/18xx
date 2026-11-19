@@ -55,7 +55,7 @@ module Engine
     end
 
     def min_depot_train
-      depot_trains.min_by(&:price)
+      depot_trains.reject { |train| @game.extra_train?(train) }.min_by(&:price)
     end
 
     def min_depot_price

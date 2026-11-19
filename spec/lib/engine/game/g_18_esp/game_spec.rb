@@ -12,8 +12,8 @@ require 'spec_helper'
 
 describe Engine::Game::G18ESP::Game do
   describe '18ESP_game_end_second_eight' do
-    # 1334 = total action count for this fixture; loads the complete game.
-    let(:game) { fixture_at_action(1334) }
+    # 1335 = total action count for this fixture; loads the complete game.
+    let(:game) { fixture_at_action(1335) }
 
     it 'replays without exceptions' do
       expect(game.exception).to be_nil
@@ -22,6 +22,18 @@ describe Engine::Game::G18ESP::Game do
     it 'logs the destination goal exactly 8 times' do
       count = game.log.to_a.count { |e| e.message.include?('reached destination goal') }
       expect(count).to eq(8)
+    end
+
+    it 'logs each corporation reaching its destination goal at most once' do
+      # Guards against double-emission from CDC (inter-OR) and Track (same-turn).
+      # goal_reached! is idempotent, but a double log entry would still surface here.
+      # Log format: "SFVA reached destination goal. ..." — split.first is the corp name.
+      per_corp = game.log.to_a
+        .select { |e| e.message.include?('reached destination goal') }
+        .group_by { |e| e.message.split.first }
+      per_corp.each do |corp, entries|
+        expect(entries.size).to eq(1), "#{corp} logged 'reached destination goal' #{entries.size} times"
+      end
     end
 
     it 'removes all destination icons by game end' do

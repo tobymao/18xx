@@ -81,6 +81,14 @@ module Engine
         false
       end
 
+      def double_town?
+        false
+      end
+
+      def overrides_tile_revenue?
+        false
+      end
+
       def halt?
         false
       end

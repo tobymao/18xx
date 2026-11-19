@@ -17,7 +17,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%s F'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
 
@@ -146,7 +146,7 @@ module Engine
                     name: 'D',
                     distance: 999,
                     price: 800,
-                    num: 22,
+                    num: 'unlimited',
                     events: [{ 'type' => 'last_or_set_triggered' }],
                     discount: { '5+1' => 200, '6' => 300, '7' => 350 },
                   }].freeze
@@ -586,7 +586,7 @@ module Engine
         attr_reader :saved_tokens_hex
 
         def check_distance(route, _visits)
-          if route.connection_hexes.flatten.include?(LONDON_HEX) && !ferry_marker?(current_entity)
+          if route.connection_hex_ids.include?(LONDON_HEX) && !ferry_marker?(current_entity)
             raise GameError, 'Cannot run to London without a Ferry marker'
           end
 

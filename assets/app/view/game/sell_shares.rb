@@ -29,7 +29,7 @@ module View
               percent: bundle.percent,
             ))
           end
-          double_cert = bundle.shares.any? { |s| s.last_cert || s.double_cert } ? '[d]' : ''
+          bundle_annotation = @game.bundle_annotation(bundle)
           props = {
             style: {
               padding: '0.2rem 0',
@@ -40,7 +40,7 @@ module View
           h(
             'button.sell_share',
             props,
-            "Sell #{share_presentation(bundle)}#{double_cert} (#{@game.format_currency(bundle.price)})"
+            "Sell #{share_presentation(bundle)}#{bundle_annotation} (#{@game.format_currency(bundle.price)})"
           )
         end
 
@@ -63,7 +63,7 @@ module View
       private
 
       def share_presentation(bundle)
-        num_shares = bundle.num_shares
+        num_shares = bundle.num_shares(ceil: false)
         num_shares == 1 && bundle.percent != @corporation.share_percent ? "a #{bundle.percent}%" : num_shares.to_s
       end
 

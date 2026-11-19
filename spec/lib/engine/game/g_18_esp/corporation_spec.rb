@@ -3,13 +3,12 @@
 require 'spec_helper'
 
 describe Engine::Game::G18ESP::Corporation do
-  # SFVA at action 106: goals_reached_counter=0, destination_connected=false,
-  # par_price=90, cash=350, three blocked tokens (used=true, no hex),
-  # destination icon still present on hex C1.
-  # Action 107 is the first action that causes SFVA to reach its destination,
-  # so 106 is the last moment before any destination goal has been processed.
+  # SFVA at action 96: goals_reached_counter=0, destination_connected=false,
+  # SFVA is mid-OR (lay_tile done, place_token done), destination icon still present on hex C1.
+  # Action 97 is the lay_tile that completes SFVA's destination route,
+  # so 96 is the last moment before any destination goal has been processed.
   let(:fixture_data) { JSON.parse(File.read("#{FIXTURES_DIR}/18ESP/18ESP_game_end_second_eight.json")) }
-  let(:game) { Engine::Game.load(fixture_data, at_action: 106, strict: false) }
+  let(:game) { Engine::Game.load(fixture_data, at_action: 96, strict: false) }
   let(:corp) { game.corporation_by_id('SFVA') }
 
   describe '#goal_reached!(:destination)' do

@@ -428,7 +428,7 @@ module Engine
           {
             name: '7',
             distance: 7,
-            num: 20,
+            num: 'unlimited',
             price: 750,
             variants: [
               {
@@ -675,7 +675,7 @@ module Engine
               corp = find_corporation(company)
               corp.reservation_color = :white
 
-              stock_market.set_par(corp, par_price)
+              par_corporation(corp, par_price)
 
               share = corp.shares.first
               bundle = share.to_bundle

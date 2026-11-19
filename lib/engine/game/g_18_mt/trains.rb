@@ -55,7 +55,7 @@ module Engine
             name: 'E',
             distance: [{ 'nodes' => %w[city town offboard], 'pay' => 99, 'visit' => 99 }],
             price: 1000,
-            num: 99,
+            num: 'unlimited',
           },
         ].freeze
       end

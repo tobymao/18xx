@@ -19,7 +19,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         CURRENCY_FORMAT_STR = '%s'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 2 => 18, 3 => 16, 4 => 14, 5 => 13, 6 => 12 }.freeze
 
@@ -271,7 +271,7 @@ module Engine
           @city_corporations.each do |corporation|
             par_value = INITIAL_CITY_PAR[corporation.id]
             price = @stock_market.par_prices.find { |p| p.price == par_value }
-            @stock_market.set_par(corporation, price)
+            par_corporation(corporation, price)
             corporation.ipoed = true
 
             initial_coordinates_info = INITIAL_CITY_TOKENS[corporation.id]

@@ -269,7 +269,6 @@ module Engine
             simple_logo: '1880_romania/VRL.alt',
             tokens: [0, 40, 100],
             coordinates: 'H16',
-            city: 1,
             color: '#E32327',
             max_ownership_percent: 100,
             always_market_price: true,

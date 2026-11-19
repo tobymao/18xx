@@ -13,7 +13,10 @@ module Engine
         GAME_LOCATION = 'Vienna, Austria'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1840'
         GAME_PUBLISHER = :lonny_games
-        GAME_RULES_URL = 'https://www.lonny.at/app/download/10197449884/Rules_ENG_final-compr.pdf'
+        GAME_RULES_URL = {
+          'Rules' => 'https://www.lonny.at/app/download/10197449884/Rules_ENG_final-compr.pdf',
+          'FAQ' => 'https://boardgamegeek.com/filepage/226146/1840-faq',
+        }.freeze
 
         PLAYER_RANGE = [2, 6].freeze
 

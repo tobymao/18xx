@@ -4,6 +4,9 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative '../base'
+require_relative 'round/operating'
+require_relative 'step/waterfall_auction'
+require_relative 'step/buy_train'
 
 module Engine
   module Game
@@ -13,6 +16,7 @@ module Engine
         include Map
         include Entities
 
+        TILE_TYPE = :lawson
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :p_any_operate
@@ -48,6 +52,8 @@ module Engine
           par_2: :blue,
         )
 
+        ENTITY_DISPLAY_ORDER = %w[FB IF DH OC TH LY TSI RU VP LE MM OPC RCC AL].freeze
+
         PHASES = [
           {
             name: '1',
@@ -57,7 +63,7 @@ module Engine
           },
           {
             name: '2',
-            on: '4dc3',
+            on: '4/3',
             train_limit: 4,
             tiles: %i[yellow],
             operating_rounds: 2,
@@ -65,7 +71,7 @@ module Engine
           },
           {
             name: '3',
-            on: '5dc4',
+            on: '5/4',
             train_limit: 3,
             tiles: %i[yellow],
             operating_rounds: 2,
@@ -73,119 +79,135 @@ module Engine
           },
           {
             name: '4',
-            on: '6d5c',
+            on: '6/5',
             train_limit: 3,
             tiles: %i[yellow gray],
             operating_rounds: 2,
           },
           {
             name: '5',
-            on: '7d6c',
+            on: '7/6',
             train_limit: 3,
             tiles: %i[yellow gray],
             operating_rounds: 2,
           },
           {
             name: '6',
-            on: '9d7c',
+            on: '9/7',
             train_limit: 2,
             tiles: %i[yellow gray],
             operating_rounds: 2,
           },
         ].freeze
 
+        # Spaceship names are movement/cargo_holds (e.g. '3/2' = 3 MP, 2 cargo holds),
+        # matching the physical spaceship card naming. cargo_holds: is stored in
+        # Train#@opts by the base engine; a custom Train subclass will expose it properly.
         TRAINS = [
           {
             name: 'probe',
             distance: 4,
+            cargo_holds: 0,
             price: 1,
-            rusts_on: %w[4dc3 6d2c],
+            rusts_on: %w[4/3 6/2],
             num: 1,
           },
           {
-            name: '3dc2',
+            name: '3/2',
             distance: 3,
+            cargo_holds: 2,
             price: 100,
-            rusts_on: %w[5dc4 7d3c],
+            rusts_on: %w[5/4 7/3],
             num: 10,
             variants: [
               {
-                name: '5dc1',
-                rusts_on: %w[5dc4 7d3c],
+                name: '5/1',
                 distance: 5,
+                cargo_holds: 1,
                 price: 100,
+                rusts_on: %w[5/4 7/3],
               },
             ],
           },
           {
-            name: '4dc3',
+            name: '4/3',
             distance: 4,
+            cargo_holds: 3,
             price: 200,
-            rusts_on: %w[7d6c 9d5c],
+            rusts_on: %w[7/6 9/5],
             num: 10,
             variants: [
               {
-                name: '6d2c',
-                rusts_on: %w[7d6c 9d5c],
+                name: '6/2',
                 distance: 6,
+                cargo_holds: 2,
                 price: 175,
+                rusts_on: %w[7/6 9/5],
               },
             ],
           },
           {
-            name: '5dc4',
+            name: '5/4',
             distance: 5,
+            cargo_holds: 4,
             price: 325,
             rusts_on: 'D',
             num: 6,
             variants: [
               {
-                name: '7d3c',
+                name: '7/3',
                 distance: 7,
+                cargo_holds: 3,
                 price: 275,
+                rusts_on: 'D',
               },
             ],
             events: [{ 'type' => 'asteroid_league_can_form' }],
           },
           {
-            name: '6d5c',
+            name: '6/5',
             distance: 6,
+            cargo_holds: 5,
             price: 450,
             num: 5,
             variants: [
               {
-                name: '8d4c',
+                name: '8/4',
                 distance: 8,
+                cargo_holds: 4,
                 price: 400,
               },
             ],
             events: [{ 'type' => 'close_companies' }],
           },
           {
-            name: '7d6c',
+            name: '7/6',
             distance: 7,
+            cargo_holds: 6,
             price: 600,
             num: 2,
             variants: [
               {
-                name: '9d5c',
+                name: '9/5',
                 distance: 9,
+                cargo_holds: 5,
                 price: 550,
               },
             ],
           },
           {
-            name: '9d7c',
+            name: '9/7',
             distance: 9,
+            cargo_holds: 7,
             price: 950,
             num: 9,
             discount: {
-              '5dc4' => 700,
-              '7d3c' => 700,
-              '6d5c' => 700,
-              '8d4c' => 700,
-              '7d6c' => 700,
-              '9d5c' => 700,
+              '5/4' => 700,
+              '7/3' => 700,
+              '6/5' => 700,
+              '8/4' => 700,
+              '7/6' => 700,
+              '9/5' => 700,
             },
           },
         ].freeze
@@ -201,10 +223,19 @@ module Engine
         end
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
             G2038::Step::WaterfallAuction,
           ])
+        end
+
+        def new_operating_round(round_num = 1)
+          G2038::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
+            G2038::Step::BuyTrain,
+            Engine::Step::BuyCompany,
+          ], round_num: round_num)
         end
 
         def next_round!
@@ -214,7 +245,7 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Engine::Round::Operating
+            when G2038::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -229,6 +260,10 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def bank_sort(entities)
+          entities.sort_by { |e| ENTITY_DISPLAY_ORDER.index(e.id) || ENTITY_DISPLAY_ORDER.size }
         end
 
         def setup
@@ -277,12 +312,7 @@ module Engine
 
         def company_header(company)
           is_minor = @minors.find { |m| m.id == company.id }
-
-          if is_minor
-            'INDEPENDENT COMPANY'
-          else
-            'PRIVATE COMPANY'
-          end
+          is_minor ? 'INDEPENDENT COMPANY' : 'PRIVATE COMPANY'
         end
 
         def after_par(corporation)
@@ -306,7 +336,7 @@ module Engine
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
               if share.president
-                stock_market.set_par(share.corporation, share_price)
+                par_corporation(share.corporation, share_price)
                 share_pool.buy_shares(player, share, exchange: :free)
                 after_par(share.corporation)
               else

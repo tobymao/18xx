@@ -12,6 +12,7 @@ module View
       other_links = [item('About', '/about')]
 
       if @user
+        other_links << item('Admin', '/admin') if @user.dig('settings', 'admin')
         other_links << item("Profile (#{@user['name']})", "/profile/#{@user['id']}")
       else
         other_links << item('Signup', '/signup')

@@ -11,16 +11,16 @@ module Engine
         DEV_STAGE = :prealpha
 
         GAME_DESIGNER = 'Michael Meier-Bachl, Francis Tresham'
-        GAME_INFO_URL = 'https://google.com'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1835'
         GAME_LOCATION = 'Germany'
-        GAME_RULES_URL = 'http://google.com'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/106600/1835-english-rules-rewritten-for-readability'
 
         PLAYER_RANGE = [3, 7].freeze
         OPTIONAL_RULES = [
           {
             sym: :clemens,
             short_name: 'Clemens-Variante',
-            desc: 'all Privates and minors are available, Playerorder for the SR 4-3-2-1-1-2-3-4-1-2-3-4, '\
+            desc: 'all Privates and minors are available, player order for the first draft round is 4-3-2-1-1-2-3-4-1-2-3-4, '\
                   'Minors start when Bayerische Eisenbahn floats',
           },
         ].freeze

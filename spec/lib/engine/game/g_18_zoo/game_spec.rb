@@ -104,7 +104,7 @@ module Engine
       let(:corporation) { game.corporations.first }
 
       before do
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
         game.share_pool.buy_shares(player_1, corporation.shares[0])
         game.round.process_action(Action::BuyShares.new(player_1, shares: corporation.shares[0]))
       end
@@ -115,7 +115,7 @@ module Engine
       let(:corporation) { game.corporations.first }
 
       before do
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
         2.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
         game.round.process_action(Action::SellShares.new(player_1, shares: player_1.shares[1]))
       end
@@ -141,6 +141,29 @@ module Engine
     def first_player_buy_power_on_isr(company)
       2.times { |_| game.round.process_action(Engine::Action::Pass.new(game.current_entity)) }
       game.round.process_action(Engine::Action::Bid.new(game.current_entity, price: company.value, company: company))
+    end
+
+    describe 'stock market metadata' do
+      let(:stock_market) { StockMarket.new(described_class::MARKET, []) }
+
+      it 'stores the appreciation threshold and dividend as price info' do
+        stock_market.market.each_with_index do |row, row_index|
+          row.each_with_index do |share_price, column_index|
+            threshold = described_class::STOCKMARKET_THRESHOLD[row_index][column_index]
+
+            expect(share_price.info).to eq(
+              "#{threshold.zero? ? 'END' : threshold}, #{described_class::STOCKMARKET_GAIN[row_index][column_index]}"
+            )
+          end
+        end
+      end
+
+      it 'preserves the stock market prices and types' do
+        expect(stock_market.market.first.map(&:price)).to eq([7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 24])
+        expect(stock_market.market.first[3].types).to eq([:safe_par])
+        expect(stock_market.market.first.last.types).to eq([:endgame])
+        expect(stock_market.market[1][1].types).to eq([:par_1])
+      end
     end
 
     describe 'starting values' do
@@ -246,7 +269,7 @@ module Engine
 
         it 'can\'t buy over 80%' do
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           expect(game.active_step.can_buy?(player_1, corporation.shares[0])).to be_falsy
@@ -254,7 +277,7 @@ module Engine
 
         it 'should be able to get 100% buying from market' do
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           player_2.set_cash(10_000, game.bank)
@@ -273,7 +296,7 @@ module Engine
           next_sr!
 
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           player_2.set_cash(10_000, game.bank)
@@ -436,6 +459,47 @@ module Engine
 
         [3].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
         [1, 2].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
+      end
+
+      it 'shows the timeline when no unopened corporation follows the purchasable family' do
+        game.corporations.each { |corporation| corporation.ipoed = true }
+        game.instance_variable_set(:@near_families_purchasable, [{ id: corporation.id }])
+
+        expect(game.timeline).to be_an(Array)
+        expect(game.timeline).not_to include(/NEARBY FAMILY/)
+      end
+    end
+
+    describe 'ZOOTickets' do
+      let(:players) { { 1 => 'Alice', 2 => 'Bob', 3 => 'Carol' } }
+      let(:game) { Engine::Game::G18ZOOMapA::Game.new(players) }
+
+      before do
+        3.times { game.process_action(Action::Pass.new(game.current_entity)) }
+      end
+
+      def sell_ticket(ticket_id)
+        game.process_action({
+                              'type' => 'choose_ability',
+                              'entity' => ticket_id,
+                              'entity_type' => 'company',
+                              'choice' => { 'type' => 'sell' },
+                            })
+      end
+
+      it 'still finds a ticket after its owner renames' do
+        sell_ticket(game.player_by_id(1).companies.first.id)
+        renamed = Engine::Game::G18ZOOMapA::Game.new(players.merge(1 => 'Alicia'), actions: game.raw_actions)
+
+        expect(renamed.exception).to be_nil
+        expect(renamed.player_by_id(1).companies.count { |c| renamed.zoo_ticket?(c) }).to eq(2)
+      end
+
+      it 'finds a ticket by its owner name' do
+        sell_ticket('ZOOTicket 1 - Alice')
+
+        expect(game.exception).to be_nil
+        expect(game.player_by_id(1).companies.map(&:name)).to eq(['ZOOTicket 2', 'ZOOTicket 3'])
       end
     end
   end

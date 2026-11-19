@@ -78,7 +78,7 @@ module Engine
             price: 800,
             events: [{ 'type' => 'float_60' }],
           },
-          { name: 'D', num: 20, distance: 99, price: 1000 },
+          { name: 'D', num: 'unlimited', distance: 99, price: 1000 },
         ].freeze
 
         def second_edition?

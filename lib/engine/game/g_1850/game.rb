@@ -21,6 +21,7 @@ module Engine
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         MULTIPLE_BUY_ONLY_FROM_MARKET = true
         EBUY_FROM_OTHERS = :never
+        ALWAYS_SHOW_PAR_PRICE = true
 
         CERT_LIMIT = {
           2 => { 9 => 24, 8 => 21 },
@@ -118,7 +119,7 @@ module Engine
           },
           { name: '8', distance: 8, price: 800, num: 3 },
           { name: '10', distance: 10, price: 950, num: 2 },
-          { name: '12', distance: 12, price: 1100, num: 12 },
+          { name: '12', distance: 12, price: 1100, num: 'unlimited' },
         ].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(

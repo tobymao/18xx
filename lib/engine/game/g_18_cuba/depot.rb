@@ -1,0 +1,38 @@
+# frozen_string_literal: true
+
+require_relative '../../depot'
+
+module Engine
+  module Game
+    module G18Cuba
+      class Depot < Engine::Depot
+        # Engine's emergency-buy trigger keys off
+        # min_depot_price / min_depot_train; we only narrow the candidate set when
+        # the current entity actually needs a regular (non-wagon, gauge-matching)
+        # train. Once it owns one, fall back to the engine's global minimum.
+        def min_depot_train
+          current_entity = @game.round.current_entity
+          return super unless current_entity
+          # super's global min is only read under president_may_contribute? (trainless), so the fallback is safe.
+          return super unless @game.trainless?(current_entity)
+
+          gauge = @game.gauge_for(current_entity)
+          depot_trains.reject { |t| @game.wagon?(t) || t.track_type != gauge }.min_by(&:price)
+        end
+
+        def min_depot_price
+          train = min_depot_train
+          return super unless train
+          return super unless train.variants.values.any? { |v| v[:event_downgrade_variant] }
+
+          train.price
+        end
+
+        # FC trains are never bought back (rule VII.16); keyed on owner, as a flip back to the base variant restores buyable.
+        def other_trains(corporation)
+          super.reject { |t| t.owner == @game.fc }
+        end
+      end
+    end
+  end
+end

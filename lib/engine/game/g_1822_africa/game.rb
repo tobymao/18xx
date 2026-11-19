@@ -41,7 +41,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = 'A%s'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         MARKET = [
           %w[40 50p 60xp 70xp 80xp 95m 115 140 170 205 250 300 350e 400e],
@@ -53,8 +53,11 @@ module Engine
         GAME_END_CHECK = { stock_market: :current_or, bid_boxes: :full_or }.freeze
         GAME_END_LOCK_FIRST_TRIGGER = false
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          bid_boxes: 'Not enough companies to refill bid boxes'
+        ).freeze
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = Base::GAME_END_DESCRIPTION_REASON_MAP_TEXT.merge(
           bid_boxes: 'Cannot refill bid boxes'
-        )
+        ).freeze
 
         ASSIGNMENT_TOKENS = {
           P15: '/icons/1822_africa/coffee.svg',
@@ -306,7 +309,7 @@ module Engine
           {
             name: '6/E',
             distance: 6,
-            num: 99,
+            num: 'unlimited',
             price: 400,
             events: [
               {
@@ -602,6 +605,15 @@ module Engine
 
         def private?(company)
           company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
+        end
+
+        def game_end_check
+          previous_reason = @game_end_trigger&.first
+          result = super
+          if result&.first == :bid_boxes && previous_reason != :bid_boxes
+            @log << 'Not enough companies to refill bid boxes, end game triggered'
+          end
+          result
         end
 
         def game_end_check_bid_boxes?

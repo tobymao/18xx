@@ -9,7 +9,7 @@ class Api
 
         # '/api/game/<game_id>/'
         r.is do
-          game_data = game.to_h(include_actions: true, logged_in_user_id: user&.id)
+          game_data = game.to_h(include_actions: true, logged_in_user_id: user&.id, admin: user&.admin? || false)
 
           game_data
         end
@@ -17,6 +17,7 @@ class Api
         # POST '/api/game/<game_id>'
         r.post do
           not_authorized! unless user
+          block_if_email_conflict!(user)
 
           users = game.ordered_players
 
@@ -28,6 +29,12 @@ class Api
             if users.size == game.max_players - 1
               # Generate a message to the game owner
               type = 'Game Full'
+              user_ids = [game.user_id]
+              force = true
+              publish_turn(user_ids, game, r.base_url, type, force)
+            elsif users.size == game.min_players - 1
+              # Generate a message to the game owner
+              type = 'Minimum player count reached'
               user_ids = [game.user_id]
               force = true
               publish_turn(user_ids, game, r.base_url, type, force)
@@ -58,6 +65,18 @@ class Api
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
             halt(400, 'Archived games cannot be changed.') if game.status == 'archived'
+            # An unstarted game can only be started by its owner via /start. Without
+            # this, any joined player could start it (and flip status to 'active')
+            # just by posting an action such as a chat message.
+            halt(400, 'Game has not started') if game.status == 'new'
+
+            # A message's entity must be the sender's own id; only the game owner
+            # may act for others (hotseat / master mode).
+            if r.params['type'] == 'message' &&
+               r.params['entity'].to_i != user.id &&
+               game.user_id != user.id
+              halt(403, 'You can only send messages as yourself')
+            end
 
             acting, action = nil
 
@@ -65,6 +84,9 @@ class Api
               if game.settings['pin']
                 action_id = r.params['id']
                 action = r.params.clone
+                # Attribute the action to the authenticated submitter, mirroring
+                # the engine branch below.
+                action['user'] = user.id
                 meta = action['meta']
                 halt(400, 'Game missing metadata') unless meta
                 halt(400, 'Game out of sync') unless actions_h(game).size + 1 == action_id
@@ -192,10 +214,17 @@ class Api
       # POST '/api/game[/*]'
       r.post do
         not_authorized! unless user
+        block_if_email_conflict!(user)
 
         # POST '/api/game'
         r.is do
           title = r.params['title']
+
+          seed = r.params['seed']
+          if seed
+            seed = Integer(seed, exception: false)
+            halt(400, 'Invalid seed') unless seed
+          end
 
           params = {
             user: user,
@@ -203,13 +232,13 @@ class Api
             min_players: r.params['min_players'],
             max_players: r.params['max_players'],
             settings: {
-              seed: (r.params['seed'] || Random.new_seed) % (2**31),
+              seed: (seed || Random.new_seed) % (2**31),
               player_order: r.params['player_order'],
-              unlisted: r.params['unlisted'],
+              unlisted: bool_setting(r.params['unlisted']),
               optional_rules: r.params['optional_rules'],
               auto_routing: r.params['auto_routing'],
               use_engine_v2: r.params['use_engine_v2'],
-              is_async: r.params['async'],
+              is_async: bool_setting(r.params['async']),
             },
             title: title,
             round: 'Unstarted',
@@ -225,6 +254,12 @@ class Api
 
   def actions_h(game)
     game.actions(reload: true).map(&:to_h)
+  end
+
+  def bool_setting(value)
+    return if value.nil?
+
+    [true, 'true'].include?(value)
   end
 
   def set_game_state(game, engine, users)

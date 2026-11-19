@@ -124,7 +124,7 @@ module View
           pass2 = []
           sorted.each do |path, index|
             props = {
-              color: value_for_index(index, :color, path.track),
+              color: (!index && !path.stub? && path.color) || value_for_index(index, :color, path.track),
               width: width_for_index(path, index, path_indexes),
               dash: value_for_index(index, :dash, path.track),
             }

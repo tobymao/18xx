@@ -16,7 +16,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = 'Bs.%s'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 2 => 21, 3 => 16, 4 => 13, 5 => 11, 6 => 9, 7 => 9 }.freeze
 
@@ -102,7 +102,7 @@ module Engine
                     name: '4',
                     distance: 4,
                     price: 300,
-                    num: 40,
+                    num: 'unlimited',
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 

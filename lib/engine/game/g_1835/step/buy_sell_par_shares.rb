@@ -1,0 +1,112 @@
+# frozen_string_literal: true
+
+module Engine
+  module Game
+    module G1835
+      module Step
+        class BuySellParShares < Engine::Step::BuySellParShares
+          def process_buy_shares(action)
+            if action.bundle.owner.player?
+              nationalize(action.entity, action.bundle)
+              track_action(action, action.bundle.corporation)
+            else
+              owner = action.bundle.owner
+              super
+              @game.maybe_ipo_next_block(action.bundle.corporation) unless owner == @game.share_pool
+            end
+          end
+
+          def track_action(action, corporation, player_action = true)
+            @round.turns_since_last_purchase = 0 if action.type == 'buy_shares'
+            @round.last_to_act = action.entity.player if action.type == 'buy_shares'
+            @round.current_actions << action if player_action
+            @round.players_history[action.entity.player][corporation] << action
+          end
+
+          def can_buy?(entity, bundle)
+            if bundle&.owner&.player?
+              return false unless can_nationalize?(entity, bundle.corporation)
+
+              return entity.cash >= nationalization_price(bundle.price) &&
+                     !@round.players_sold[entity][bundle.corporation] &&
+                     can_gain?(entity, bundle)
+            end
+
+            return false unless super
+            return true if bundle.owner == @game.share_pool
+
+            # ensure 20% shares of BA, WT and HE cannot be bought before all 10% shares are gone
+            return bundle.shares.first == bundle.corporation.shares.first unless bundle.corporation == @game.prussian
+
+            # Ignore the order for PR: We cannot use the same logic we use for the other corporations, because the very first
+            # share - the president - is reserved. If we used the same logic, no PR share could ever be bought
+            true
+          end
+
+          def can_dump?(entity, bundle)
+            president_share = bundle.presidents_share
+            return true unless president_share
+
+            # bundles containing the pres share can only be sold if another player would become the president and thus
+            # receive the pres share from the market
+            sh = bundle.corporation.player_share_holders(corporate: true)
+            next_highest = (sh.reject { |k, _| k == entity }.values.max || 0)
+            next_highest > (entity.percent_of(bundle.corporation) - bundle.percent) && next_highest >= president_share.percent
+          end
+
+          def allow_president_change?(corporation)
+            # PR president can only change hands after it has been floated
+            corporation.id != 'PR' || corporation.floated?
+          end
+
+          def can_gain?(entity, bundle, exchange: false)
+            return if !bundle || !entity
+            return false if bundle.owner.player? && !@game.can_gain_from_player?(entity, bundle)
+
+            corporation = bundle.corporation
+
+            corporation.holding_ok?(entity, bundle.common_percent) &&
+              (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity))
+          end
+
+          def can_buy_any_from_player?(entity)
+            return false if bought?
+
+            @game.corporations.select(&:floated?).any? do |corporation|
+              can_nationalize?(entity, corporation) && entity.cash >= nationalization_price(corporation.share_price.price)
+            end
+          end
+
+          def nationalization_price(price)
+            (price * 1.5).ceil
+          end
+
+          def can_nationalize?(player, corporation)
+            return false unless player
+
+            player.percent_of(corporation) > 50
+          end
+
+          def nationalize(buyer, bundle)
+            price = nationalization_price(bundle.price)
+            seller = bundle.owner
+            corporation = bundle.corporation
+
+            raise GameError, 'Not enough cash for nationalization' unless buyer.cash >= price
+            raise GameError, 'Cannot nationalize this corporation' unless can_nationalize?(buyer, corporation)
+            raise GameError, "Can't buy a share of #{corporation&.name}" unless can_buy?(buyer, bundle)
+
+            @log << "-- Nationalization: #{buyer.name} buys a #{bundle.percent}% share"\
+                    " of #{corporation.name} from #{seller.name} for #{@game.format_currency(price)} --"
+
+            @game.share_pool.transfer_shares(bundle,
+                                             buyer,
+                                             spender: buyer,
+                                             receiver: seller,
+                                             price: price)
+          end
+        end
+      end
+    end
+  end
+end

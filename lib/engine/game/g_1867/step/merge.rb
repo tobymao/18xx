@@ -90,7 +90,7 @@ module Engine
               sp.price <= corporation.share_price.price
             end
 
-            @game.stock_market.set_par(target, new_price)
+            @game.par_corporation(target, new_price)
             owner = corporation.owner
 
             @converting = nil
@@ -155,15 +155,19 @@ module Engine
             @merge_major = true
           end
 
-          def finish_merge_to_major(action)
-            target = action.corporation
+          def merged_par_price
             # PAR price is average of lowest and highest priced
             # rounded down between 100-200 in either convert or par_3 areas
             min, max = @merging.map { |c| c.share_price.price }.minmax
             new_price = [200, [100, (max + min)].max].min
-            merged_par = @game.stock_market.share_prices_with_types(%i[par par_2]).find do |sp|
+            @game.stock_market.share_prices_with_types(%i[par par_2]).find do |sp|
               sp.price <= new_price
             end
+          end
+
+          def finish_merge_to_major(action)
+            target = action.corporation
+            merged_par = merged_par_price
 
             # Players who owned shares are eligible to buy shares unlike merger
             owners = @merging.sort.map(&:owner)
@@ -174,7 +178,7 @@ module Engine
               raise GameError, 'Merge impossible, no player can become president'
             end
 
-            @game.stock_market.set_par(target, merged_par)
+            @game.par_corporation(target, merged_par)
 
             # Replace the entity with the new one.
             @round.entities[@round.entity_index] = target

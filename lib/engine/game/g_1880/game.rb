@@ -42,7 +42,7 @@ module Engine
         EBUY_CAN_TAKE_PLAYER_LOAN = true
         MARKET_SHARE_LIMIT = 80 # percent
 
-        BANK_CASH = 37_860
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 14, 6 => 12, 7 => 11 }.freeze
 
@@ -234,7 +234,7 @@ module Engine
                     price: 900,
                     num: 2,
                   },
-                  { name: '10', distance: 10, price: 1000, num: 10 },
+                  { name: '10', distance: 10, price: 1000, num: 'unlimited' },
                   { name: '2R', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -257,17 +257,17 @@ module Engine
         ).freeze
 
         def event_float_30!
-          @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
+          @log << "-- Event: #{self.class::EVENTS_TEXT['float_30'][1]} --"
           update_float_percent(30)
         end
 
         def event_float_40!
-          @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
+          @log << "-- Event: #{self.class::EVENTS_TEXT['float_40'][1]} --"
           update_float_percent(40)
         end
 
         def event_float_60!
-          @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
+          @log << "-- Event: #{self.class::EVENTS_TEXT['float_60'][1]} --"
           update_float_percent(60)
         end
 
@@ -352,7 +352,7 @@ module Engine
         end
 
         def force_exchange_rocket
-          return if rocket.closed?
+          return if rocket.nil? || rocket.closed?
 
           player_corps = @corporations.select { |c| c.owner == rocket.owner }
 
@@ -623,10 +623,10 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company.owner
+          revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company&.owner
 
           stop_hexes = stops.map(&:hex)
-          revenue += 20 if route.corporation.owner == taiwan_company.owner && stop_hexes.include?(taiwan_hex)
+          revenue += 20 if route.corporation.owner == taiwan_company&.owner && stop_hexes.include?(taiwan_hex)
           revenue += 50 if trans_siberian_bonus?(stops)
 
           revenue
@@ -742,7 +742,7 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          if train.name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
+          if train.name == '4' && rocket && !rocket.closed? && @depot.upcoming.first.name != train.name
             @rocket_train = train
             return
           end

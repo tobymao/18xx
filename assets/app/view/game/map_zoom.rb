@@ -21,11 +21,10 @@ module View
         props = {
           style: {
             background: color_for(:bg),
-            position: 'absolute',
-            left: '0',
-            top: '0',
+            display: 'inline-block',
             padding: '0 2px 2px 0',
             borderRadius: '5px',
+            marginTop: '8px',
           },
         }
 

@@ -302,7 +302,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
-            num: 20,
+            num: 'unlimited',
             variants: [
               {
                 name: 'D',
@@ -318,7 +318,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 200,
-            num: 10,
+            num: 'unlimited',
             available_on: '5',
           },
         ].freeze
@@ -394,7 +394,7 @@ module Engine
           end
           @boe.owner = @share_pool
           @boe.set_cash(BOE_STARTING_CASH, @bank)
-          @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
+          par_corporation(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
           @close_corp_count = 0
           @player_corp_close_count = Hash.new { |h, k| h[k] = 0 }
@@ -543,7 +543,7 @@ module Engine
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
               if share.president
-                stock_market.set_par(share.corporation, stock_market.par_prices.find { |p| p.price == 100 })
+                par_corporation(share.corporation, stock_market.par_prices.find { |p| p.price == 100 })
                 share_pool.buy_shares(player, share, exchange: :free)
                 after_par(share.corporation)
               else
@@ -569,6 +569,10 @@ module Engine
         def init_loans
           @loan_value = 100
           Array.new(20) { |id| Loan.new(id, @loan_value) }
+        end
+
+        def loan_value(_entity = nil)
+          @loan_value
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
@@ -815,7 +819,7 @@ module Engine
 
         def init_train_handler
           trains = game_trains.flat_map do |train|
-            Array.new((train[:num] || num_trains(train))) do |index|
+            Array.new(num_trains(train)) do |index|
               Train.new(**train, index: index)
             end
           end

@@ -82,7 +82,7 @@ module Engine
             special: false,
             when: 'track',
             hexes: [],
-            tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69],
+            tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69 128],
             count_per_or: 1,
             cost: 30,
           ],

@@ -6,6 +6,8 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
+require_relative 'step/buy_sell_par_shares'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -17,9 +19,9 @@ module Engine
 
         # ---------------------------------------------------------------------------
         # Corporation groups — unlocked progressively.
-        # Group 1 available from game start.
-        # Group 2 unlocks when ALL Group 1 companies have floated.
-        # Group 3 unlocks when ALL Group 2 companies have floated.
+        # Group 1 available when ALL private companies have been sold.
+        # Group 2 unlocks when ALL Group 1 IPO shares have been sold.
+        # Group 3 unlocks when ALL Group 2 corporations have floated.
         #
         # Director share sizes by group (from rulebook):
         #   Group 1 (NYH, NYC, CP):       30% Director + 7×10%
@@ -80,6 +82,9 @@ module Engine
         SLC_ROUTE_BONUS_SOC            = 15
         GOLDEN_SPIKE_SHAREHOLDER_BONUS = 50 # FIXME: amount unconfirmed from rulebook
 
+        CLOSE_ON_FLOATED         = { 'CPR' => 'SOC', 'UP' => 'SOC', 'NYH' => 'NHSC' }.freeze
+        CLOSE_ON_FIRST_DIVIDEND  = { 'WP' => 'PSC', 'NYC' => 'FNY' }.freeze
+
         CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
@@ -133,17 +138,79 @@ module Engine
         ).freeze
 
         # ---------------------------------------------------------------------------
+        # Tile-lay budget — phase-gated.
+        # Phase 2:   1 yellow tile only.
+        # Phase 3+:  2 yellow tiles OR 1 upgrade (no mixing).
+        # ---------------------------------------------------------------------------
+        YELLOW_TILE_LAY = [{ lay: true, upgrade: false }].freeze
+        TWO_TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: :not_if_upgraded, upgrade: false },
+        ].freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'two_tile_lays' => ['Two tile lays', 'Corporations may lay 2 yellow tiles OR 1 upgrade tile per OR']
+        ).freeze
+
+        # ---------------------------------------------------------------------------
         # Phases
         # FIXME: verify exact operating_rounds count per phase from rulebook.
         # ---------------------------------------------------------------------------
         PHASES = [
-          { name: '2',          train_limit: 4, tiles: [:yellow],           operating_rounds: 1 },
-          { name: '3', on: '3', train_limit: 4, tiles: %i[yellow green],    operating_rounds: 2 },
-          { name: '4', on: '4', train_limit: 3, tiles: %i[yellow green],    operating_rounds: 2 },
-          { name: '5', on: '5', train_limit: 2, tiles: %i[yellow green brown], operating_rounds: 3 },
-          { name: '6', on: '6', train_limit: 2, tiles: %i[yellow green brown], operating_rounds: 3 },
-          { name: '7', on: '7', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 3 },
-          { name: '8', on: '8', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 3 },
+          {
+            name: '2',
+            train_limit: 4,
+            tiles: [:yellow],
+            operating_rounds: 1,
+          },
+          {
+            name: '3',
+            on: '3',
+            train_limit: 4,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '4',
+            on: '4',
+            train_limit: 3,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '5',
+            on: '5',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '6',
+            on: '6',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '7',
+            on: '7',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 3,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '8',
+            on: '8',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 3,
+            status: ['two_tile_lays'],
+          },
         ].freeze
 
         # ---------------------------------------------------------------------------
@@ -163,7 +230,7 @@ module Engine
             rusts_on: '4',
             num: 7,
             variants: [
-              { name: '2E', distance: [{ nodes: %w[city offboard town], pay: 2, visit: 999 }], price: 150 },
+              { name: '2E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 999 }], price: 150 },
             ],
           },
           {
@@ -173,7 +240,7 @@ module Engine
             rusts_on: '6',
             num: 6,
             variants: [
-              { name: '3E', distance: [{ nodes: %w[city offboard town], pay: 3, visit: 999 }], price: 300 },
+              { name: '3E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 999 }], price: 300 },
             ],
           },
           {
@@ -183,7 +250,7 @@ module Engine
             rusts_on: '8',
             num: 5,
             variants: [
-              { name: '4E', distance: [{ nodes: %w[city offboard town], pay: 4, visit: 999 }], price: 400 },
+              { name: '4E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 999 }], price: 400 },
             ],
           },
           {
@@ -192,7 +259,7 @@ module Engine
             price: 550,
             num: 4,
             variants: [
-              { name: '5E', distance: [{ nodes: %w[city offboard town], pay: 5, visit: 999 }], price: 700 },
+              { name: '5E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 999 }], price: 700 },
             ],
           },
           {
@@ -201,7 +268,7 @@ module Engine
             price: 650,
             num: 3,
             variants: [
-              { name: '6E', distance: [{ nodes: %w[city offboard town], pay: 6, visit: 999 }], price: 800 },
+              { name: '6E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 999 }], price: 800 },
             ],
           },
           {
@@ -210,13 +277,97 @@ module Engine
             price: 750,
             num: 2,
             variants: [
-              { name: '7E', distance: [{ nodes: %w[city offboard town], pay: 7, visit: 999 }], price: 900 },
+              { name: '7E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 7, 'visit' => 999 }], price: 900 },
             ],
           },
           { name: '8', distance: 999, price: 900, num: 'unlimited' },
         ].freeze
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or }.freeze
+
+        # ---------------------------------------------------------------------------
+        # Private company close triggers.
+        # SOC closes when CPR or UP floats.
+        # NHSC closes when NYH floats.
+        # PSC closes when WP pays its first dividend (via on_first_payout!).
+        # FNY closes when NYC pays its first dividend (via on_first_payout!).
+        # TOR closes automatically via closed_when_used_up on its tile_lay ability.
+        # ---------------------------------------------------------------------------
+        def float_corporation(corporation)
+          super
+          on_corporation_floated!(corporation)
+        end
+
+        def on_corporation_floated!(corporation)
+          sym = CLOSE_ON_FLOATED[corporation.id]
+          return unless sym
+
+          close_private_if_open!(sym, "#{corporation.name} floats")
+        end
+
+        def on_first_payout!(corporation)
+          sym = CLOSE_ON_FIRST_DIVIDEND[corporation.id]
+          return unless sym
+
+          close_private_if_open!(sym, "#{corporation.name} pays first dividend")
+        end
+
+        def close_private_if_open!(sym, reason)
+          company = companies.find { |c| c.sym == sym && !c.closed? }
+          return unless company
+
+          company.close!
+          @log << "#{company.name} closes (#{reason})"
+        end
+
+        # ---------------------------------------------------------------------------
+        # Tile-lay budget override.
+        # ---------------------------------------------------------------------------
+        def tile_lays(_entity)
+          @phase.status.include?('two_tile_lays') ? self.class::TWO_TILE_LAYS : self.class::YELLOW_TILE_LAY
+        end
+
+        # ---------------------------------------------------------------------------
+        # Home token — placed automatically at start of corp's first OR turn.
+        # Base place_home_token calls city.place_token directly (bypasses step
+        # layer) so clear_graph_for_entity is never called. Override to flush the
+        # graph cache immediately, otherwise the corp sees zero connected hexes
+        # and cannot lay track on the same turn.
+        # ---------------------------------------------------------------------------
+        def place_home_token(corporation)
+          super
+          clear_graph_for_entity(corporation)
+        end
+
+        # ---------------------------------------------------------------------------
+        # Corporation group unlock logic.
+        # ---------------------------------------------------------------------------
+        def corp_groups
+          @corp_groups ||= CORP_GROUPS.transform_values { |syms| syms.map { |s| corporation_by_id(s) } }
+        end
+
+        def corp_group(corporation)
+          corp_groups.find { |_, corps| corps.include?(corporation) }.first
+        end
+
+        def all_privates_sold?
+          @companies.all? { |c| c.owner&.player? || c.closed? }
+        end
+
+        def group_available?(group_num)
+          case group_num
+          when 1 then all_privates_sold?
+          when 2 then corp_groups[1].all? { |corp| corp.num_ipo_shares.zero? }
+          when 3 then corp_groups[2].all?(&:floated?)
+          else raise GameError, "Unknown corporation group #{group_num}"
+          end
+        end
+
+        def can_par?(corporation, parrer)
+          return false unless super
+
+          group_available?(corp_group(corporation))
+        end
 
         # ---------------------------------------------------------------------------
         # Round definitions — engine defaults only; custom steps added in later PRs.
@@ -226,7 +377,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParShares,
+            G1862UsaCanada::Step::BuySellParShares,
           ])
         end
 
@@ -239,7 +390,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1862UsaCanada::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)

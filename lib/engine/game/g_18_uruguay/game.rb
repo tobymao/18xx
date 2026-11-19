@@ -49,7 +49,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :p_any_operate
         TILE_RESERVATION_BLOCKS_OTHERS = true
-        CURRENCY_FORMAT_STR = '$U%d'
+        CURRENCY_FORMAT_STR = '$%d'
         HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
@@ -221,7 +221,7 @@ module Engine
             count: 0
           ))
 
-          @stock_market.set_par(@rptla, lookup_rptla_price(RPTLA_STARTING_PRICE))
+          par_corporation(@rptla, lookup_rptla_price(RPTLA_STARTING_PRICE))
 
           assign_goods(corn_farm, 'GOODS_CORN')
           assign_goods(sheep_farm, 'GOODS_SHEEP')

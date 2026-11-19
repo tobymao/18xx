@@ -7,14 +7,9 @@ module Engine
   module Game
     module G18ESP
       module Step
+        # No destination check needed: all TileLay abilities are bound to MINE_HEXES which cannot complete a destination route.
         class SpecialTrack < Engine::Step::SpecialTrack
           include LayTileCheck
-
-          def process_lay_tile(action)
-            owner = action.entity.owner
-            super
-            owner.goal_reached!(:destination) if @game.check_for_destination_connection(owner)
-          end
         end
       end
     end

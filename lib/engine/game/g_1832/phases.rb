@@ -10,6 +10,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
+            status: %w[first_miami_run_is_zero],
           },
           {
             name: '3',
@@ -17,7 +18,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[can_buy_companies],
+            status: %w[can_buy_companies can_place_miami_token first_miami_run_is_zero],
           },
           {
             name: '4',
@@ -25,7 +26,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[can_buy_companies mergers_allowed],
+            status: %w[can_buy_companies can_place_miami_token first_miami_run_is_zero mergers_allowed],
           },
           {
             name: '5',
@@ -33,7 +34,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[mergers_allowed],
+            status: %w[mergers_allowed can_place_miami_token],
           },
         ].freeze
 
@@ -44,6 +45,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: %w[can_place_miami_token],
           },
           {
             name: '8',
@@ -75,6 +77,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: %w[can_place_miami_token],
           },
           {
             name: 'D',

@@ -806,6 +806,12 @@ module Engine
           send("map_#{cmap_name}_game_end_check_values")
         end
 
+        def player_value(player)
+          return super unless respond_to?("map_#{cmap_name}_player_value")
+
+          send("map_#{cmap_name}_player_value", player)
+        end
+
         def rust?(train, purchased_train)
           !@deferred_rust.include?(train) && super
         end
@@ -871,7 +877,7 @@ module Engine
 
         # mostly borrowed from 1867
         def convert(player, corporation, minor)
-          @stock_market.set_par(corporation, minor.share_price)
+          par_corporation(corporation, minor.share_price)
           share = corporation.shares.first
           @share_pool.buy_shares(player, share.to_bundle, exchange: :free)
 
@@ -896,7 +902,7 @@ module Engine
             sp.price <= (minor_a.share_price.price + minor_b.share_price.price)
           end
 
-          @stock_market.set_par(corporation, new_price)
+          par_corporation(corporation, new_price)
           share = corporation.shares.first
           @share_pool.buy_shares(player, share.to_bundle, exchange: :free)
 

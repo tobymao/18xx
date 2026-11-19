@@ -11,6 +11,7 @@ require 'lib/params'
 require 'lib/settings'
 require 'lib/storage'
 require 'view/about'
+require 'view/admin'
 require 'view/create_game'
 require 'view/game_card_page'
 require 'view/home'
@@ -34,6 +35,7 @@ class App < Snabberb::Component
   needs :title, default: nil
   needs :production, default: nil
   needs :keywords, default: nil
+  needs :turnstile_sitekey, default: nil
 
   def render
     setup_logger
@@ -71,17 +73,19 @@ class App < Snabberb::Component
       when /[^?](game|hotseat|tutorial|fixture)/
         render_game
       when /signup/
-        h(View::User, type: :signup)
+        h(View::User, type: :signup, turnstile_sitekey: @turnstile_sitekey)
       when /login/
-        h(View::User, type: :login)
+        h(View::User, type: :login, turnstile_sitekey: @turnstile_sitekey)
       when /forgot/
-        h(View::Forgot)
+        h(View::Forgot, turnstile_sitekey: @turnstile_sitekey)
       when /reset/
-        h(View::Reset)
+        h(View::Reset, turnstile_sitekey: @turnstile_sitekey)
       when /profile/
         h(View::User, profile: @profile, type: :profile, user: @user)
       when /about/
         h(View::About)
+      when /admin/
+        h(View::Admin)
       when /tiles/
         h(View::TilesPage, route: @app_route, connection: @connection)
       when /map/

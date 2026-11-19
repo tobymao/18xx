@@ -84,7 +84,7 @@ module Engine
                       { 'type' => 'trigger_endgame' },
                       { 'type' => 'remove_forts' },
                     ]),
-          def_train('8', 1000, '8+5', 1100, 15, events: [
+          def_train('8', 1000, '8+5', 1100, 'unlimited', events: [
                       { 'type' => 'close_privates' },
                       { 'type' => 'close_coal_companies' },
                     ]),

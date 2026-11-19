@@ -185,7 +185,7 @@ module Engine
           },
           {
             name: 'D',
-            num: 29, # 7 majors @ 2, 15 minors @ 1
+            num: 'unlimited',
             distance: 99,
             price: 770,
             discount: {
@@ -584,7 +584,7 @@ module Engine
                 par_price = price / 2
                 share_price = @stock_market.par_prices.find { |sp| sp.price <= par_price }
 
-                @stock_market.set_par(corporation, share_price)
+                par_corporation(corporation, share_price)
                 @share_pool.buy_shares(player, share, exchange: :free)
 
                 after_par(corporation)

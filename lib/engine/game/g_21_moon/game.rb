@@ -140,7 +140,7 @@ module Engine
             name: '10',
             distance: 10,
             price: 730,
-            num: 14,
+            num: 'unlimited',
           },
         ].freeze
 
