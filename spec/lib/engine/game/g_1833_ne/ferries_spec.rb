@@ -78,20 +78,43 @@ module Engine
     describe 'buying a ferry' do
       before { lay('G24', '58', [1, 3]) }
 
-      it 'is offered after track and token, and only one ferry per turn' do
-        operate(bp)
-        game.process_action(Action::Pass.new(bp))
-
-        step = game.round.active_step
-        expect(step).to be_a(Game::G1833NE::Step::BuyFerry)
-        item = step.buyable_items(bp).find { |i| i.description.include?('F27') }
+      def buy(hex)
+        item = game.round.active_step.buyable_items(bp).find { |i| i.description.include?(hex.id) }
         game.process_action(Action::SpecialBuy.new(bp, item: item))
+      end
+
+      it 'can be bought during track and token, one per turn' do
+        operate(bp)
+        expect(game.round.actions_for(bp)).to include('lay_tile', 'special_buy')
+
+        buy(kingston)
 
         expect(bp.cash).to eq(260)
         expect(game.ferry_owner(kingston)).to eq(bp)
         expect(kingston.assigned?('new_ferry')).to be(true)
         expect(kingston.tile.icons.map(&:name)).to eq(['kingston_ferry_token'])
-        expect(game.round.active_step).not_to be_a(Game::G1833NE::Step::BuyFerry)
+        expect(game.round.active_step).to be_a(Game::G1833NE::Step::TrackAndToken)
+        expect(game.round.actions_for(bp)).to include('lay_tile')
+        expect(game.round.actions_for(bp)).not_to include('special_buy')
+      end
+
+      it 'keeps track and token open while a ferry is still buyable' do
+        operate(bp)
+        step = game.round.active_step
+        allow(step).to receive(:can_lay_tile?).and_return(false)
+        allow(step).to receive(:can_place_token?).and_return(false)
+        expect(step.actions(bp)).to eq(%w[special_buy pass])
+
+        buy(kingston)
+
+        expect(game.round.active_step).not_to be_a(Game::G1833NE::Step::TrackAndToken)
+      end
+
+      it 'is not offered once track and token is done' do
+        operate(bp)
+        game.process_action(Action::Pass.new(bp))
+
+        expect(game.round.actions_for(bp)).not_to include('special_buy')
       end
 
       it 'moves the New ferry bonus to the latest ferry bought' do
@@ -111,7 +134,6 @@ module Engine
 
       it 'rejects a ferry the corporation cannot buy' do
         operate(bp)
-        game.process_action(Action::Pass.new(bp))
         item = Item.new(description: 'Fall River ferry (G26)', cost: game.ferry_cost)
 
         expect { game.process_action(Action::SpecialBuy.new(bp, item: item)).maybe_raise! }

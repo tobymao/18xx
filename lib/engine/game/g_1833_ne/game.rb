@@ -230,7 +230,6 @@ module Engine
             G1833NE::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1833NE::Step::TrackAndToken,
-            [G1833NE::Step::BuyFerry, { blocks: true }],
             G1833NE::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
