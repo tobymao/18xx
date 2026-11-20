@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 ruby:3.2
+FROM --platform=linux/amd64 ruby:3.4.13
 
 ARG RACK_ENV
 RUN mkdir /18xx

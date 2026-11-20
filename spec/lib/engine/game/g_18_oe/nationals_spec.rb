@@ -422,13 +422,14 @@ describe 'G18OE Nationals' do
     end
 
     it 'takes a whole operating turn with no tokens, pays nothing and moves its share price left' do
-      national
+      national.trains.clear
       game.national_formation_done!(game.national_formation_player) while game.national_formation_player
       price = national.share_price
       cash = national.cash
 
       round = nil
       expect { round = operate!(national) }.not_to raise_error
+      act!(round, Engine::Action::Pass.new(national))
 
       expect(round).to be_finished
       expect(national.cash).to eq(cash)
@@ -437,10 +438,61 @@ describe 'G18OE Nationals' do
       expect(national.share_price.coordinates.last).to be < price.coordinates.last
     end
 
+    it 'takes a whole operating turn with trains, paying out its national revenue without a route step' do
+      national
+      game.national_formation_done!(game.national_formation_player) while game.national_formation_player
+      game.stock_market.move(national, cell(game, 100).coordinates)
+      cash = national.owner.cash
+
+      round = nil
+      expect { round = operate!(national) }.not_to raise_error
+      act!(round, Engine::Action::Pass.new(national))
+
+      messages = game.log.map(&:message)
+      expect(round).to be_finished
+      expect(messages.grep(/LNWR runs as a national/).size).to eq(1)
+      expect(messages.grep(/skips run routes/i)).to be_empty
+      expect(national.operating_history[[game.turn, 1]].dividend.kind).to eq('payout')
+      expect(national.operating_history[[game.turn, 1]].revenue).to eq(game.national_revenue(national).total)
+      expect(national.owner.cash).to be > cash
+      expect(game.national_revenue(national).total).to be >= 100
+      expect(national.share_price.price).to be > 100
+    end
+
     it 'lays track only in its zone with 9 tile points' do
       expect(game.tile_point_budget(national)).to eq(9)
       expect(game.hex_within_national_region?(national, game.hex_by_id('J29'))).to be true
       expect(game.hex_within_national_region?(national, game.hex_by_id('Q30'))).to be false
+    end
+  end
+
+  describe 'national operating round (§11.3.10)' do
+    let(:national) do
+      major = fund!(game, start_major!(game, 'LNWR', player), 500)
+      game.form_national!(major)
+      major
+    end
+    let(:round) do
+      round = game.operating_round(1)
+      round.entities = [national]
+      round.instance_variable_set(:@current_operator, national)
+      enter_round!(game, round)
+    end
+
+    before do
+      train = game.trains.find { |t| t.name == '2+2' && !t.owner.is_a?(Engine::Corporation) }
+      game.buy_train(national, train, :free)
+    end
+
+    it 'offers a national that owns trains no route actions' do
+      expect(round_step(round, Engine::Game::G18OE::Step::Route).actions(national)).to eq([])
+    end
+
+    it 'skips the Route step without logging a skip' do
+      round_step(round, Engine::Game::G18OE::Step::Route).skip!
+
+      expect(game.log.map(&:message).grep(/skips run routes/i)).to be_empty
+      expect(round.orient_express_revenue).to be_nil
     end
   end
 end

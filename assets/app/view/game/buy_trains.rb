@@ -276,8 +276,15 @@ module View
               )
             end
 
+            source = if @depot.discarded.include?(discount_train)
+                       'The Discard'
+                     elsif discount_train.owned_by_corporation? && discount_train.owner != @corporation
+                       discount_train.owner.name
+                     end
+            source_text = source ? "from #{source} " : ''
+            price_text = price.zero? ? '' : "#{@game.format_currency(price)} "
             children << h(:div, [
-              "#{train.name} -> #{variant} #{@game.format_currency(price)} ",
+              "#{train.name} -> #{variant} #{source_text}#{price_text}",
               h('button.no_margin', { on: { click: exchange_train } }, 'Exchange'),
             ])
           end
