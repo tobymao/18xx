@@ -21,7 +21,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:20;path=a:2,b:_0;path=a:4,b:_0;label=Cape Cod',
+            'code' => 'town=revenue:20;path=a:2,b:_0;path=a:4,b:_0;label=label:Cape Cod,loc:e0',
           },
           'N11' =>
           {
@@ -63,14 +63,16 @@ module Engine
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:50,slots:2,loc:0.5;city=revenue:50,loc:3.5;offboard=revenue:0;path=a:0,b:_0;path=a:1,b:_0;'\
-                      'path=a:5,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:2,b:_2;label=B',
+            'code' => 'city=revenue:50,slots:2,loc:0.5,groups:Boston;city=revenue:50,loc:3.5,groups:Boston;'\
+                      'offboard=revenue:50,groups:Boston;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_1;path=a:2,b:_2;label=B',
           },
           'N24' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40;city=revenue:40;offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_2;path=a:3,b:_1;label=Po',
+            'code' => 'city=revenue:40,groups:Portland;city=revenue:40,groups:Portland;offboard=revenue:40,groups:Portland;'\
+                      'path=a:1,b:_0;path=a:2,b:_2;path=a:3,b:_1;label=Po',
           },
           'N25' =>
           {
@@ -88,13 +90,15 @@ module Engine
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Ma',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Ma;'\
+                      'future_label=color:brown',
           },
           'N28' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=Ma',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=Ma;'\
+                      'future_label=color:brown',
           },
           'N40' =>
           {
@@ -169,7 +173,7 @@ module Engine
           {
             'count' => 2,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
           },
           'N52' =>
           {
@@ -265,7 +269,7 @@ module Engine
             %w[C18 F11] => 'upgrade=cost:100,terrain:mountain',
             %w[D7 D11 H11] => 'upgrade=cost:80,terrain:mountain',
             %w[B21 F13 G16] => 'upgrade=cost:60,terrain:mountain',
-            %w[B27 C4 F21 G24 I10 I26] => 'town=revenue:0',
+            %w[B27 C4 F21 G24 I10] => 'town=revenue:0',
             %w[D19 H19] => 'town=revenue:0;upgrade=cost:40,terrain:water',
             %w[C12 C26 E22 F19 G20 H17] => 'city=revenue:0',
             ['B9'] => 'border=edge:4,type:impassable;border=edge:5,type:water,cost:20',
@@ -284,7 +288,7 @@ module Engine
             ['E18'] => 'border=edge:2,type:water,cost:60',
             ['E24'] => 'border=edge:4,type:mountain,cost:20',
             ['E26'] => 'city=revenue:0;border=edge:5,type:water,cost:40',
-            ['F5'] => 'city=revenue:0;label=Sh',
+            ['F5'] => 'city=revenue:0;stub=edge:0;stub=edge:3;stub=edge:4;label=Sh',
             ['F9'] => 'upgrade=cost:40,terrain:water;border=edge:5,type:mountain,cost:60',
             ['F15'] => 'town=revenue:0;border=edge:1,type:water,cost:40',
             ['F23'] => 'town=revenue:0;border=edge:1,type:mountain,cost:20',
@@ -296,7 +300,7 @@ module Engine
             ['H9'] => 'border=edge:2,type:mountain,cost:60',
             ['H21'] => 'town=revenue:0;border=edge:0,type:impassable',
             ['H23'] => 'town=revenue:0;border=edge:3,type:impassable',
-
+            ['I26'] => 'town=revenue:0;label=label:Cape Cod,loc:e0',
           },
           yellow: {
             ['B3'] => 'city=revenue:30,loc:5;city=revenue:30,loc:2;path=a:4,b:_1;path=a:5,b:_0;'\
@@ -307,9 +311,11 @@ module Engine
             ['E20'] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0',
             ['F17'] => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;border=edge:2,type:water,cost:40;label=Ma',
             ['F25'] => 'city=revenue:20;path=a:0,b:_0;path=a:4,b:_0;upgrade=cost:40,terrain:water;label=Pr',
-            ['G22'] => 'city=revenue:30;city=revenue:30;offboard=revenue:0;path=a:0,b:_2;path=a:1,b:_0;path=a:3,b:_1;label=B',
-            ['I14'] => 'city=revenue:30,loc:5.5;junction;path=a:3,b:_0;path=a:1,b:_1,terminal:1;'\
-                       'path=a:2,b:_1,terminal:1;label=Po',
+            ['G22'] => 'city=revenue:30,groups:Boston;city=revenue:30,groups:Boston;offboard=revenue:30,groups:Boston;'\
+                       'path=a:0,b:_2;path=a:1,b:_0;path=a:3,b:_1;label=B',
+            ['I14'] => 'city=revenue:30,loc:5.5,groups:Portland;offboard=revenue:30,groups:Portland;'\
+                       'offboard=revenue:30,groups:Portland;'\
+                       'path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_2;label=Po',
           },
           gray: {
             ['B7'] => 'path=a:0,b:2;path=a:0,b:3;path=a:2,b:5',

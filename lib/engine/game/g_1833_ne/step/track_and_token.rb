@@ -22,6 +22,12 @@ module Engine
             pass! if !can_lay_tile?(action.entity) && @tokened
           end
 
+          def old_paths_maintained?(hex, tile)
+            return super unless @game.spike_tile?(hex.tile)
+
+            @game.spike_paths_kept?(hex.tile.paths, tile.paths)
+          end
+
           def lay_joint_tokens!
             hex = @game.hex_by_id(@game.class::SHERBROOKE_HEX)
             city = hex.tile.cities.first
