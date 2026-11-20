@@ -2,6 +2,7 @@
 
 require_relative '../../../step/token'
 require_relative 'skip_abbreviated_round'
+require_relative 'station_token_selection'
 require_relative 'track_rights_tokener'
 
 module Engine
@@ -10,6 +11,7 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           include SkipAbbreviatedRound
+          include StationTokenSelection
           include TrackRightsTokener
 
           def actions(entity)
@@ -21,17 +23,6 @@ module Engine
 
           def available_hex(entity, hex)
             track_rights_available_hex(entity, hex)
-          end
-
-          def available_tokens(entity)
-            entity.tokens.select { |token| available_station_token?(entity, token) }.uniq(&:price)
-          end
-
-          def selectable_token_choices(entity, city)
-            fee = @game.cross_water_token_fee(entity, city)
-            available_tokens(entity).map do |token|
-              { token: token, index: entity.tokens.index(token), cost: token.price + fee }
-            end
           end
 
           def process_place_token(action)
@@ -48,30 +39,20 @@ module Engine
             token.price = cost
             super
           ensure
-            token.price = charter_price if charter_price && !token.used
+            token.price = charter_price if charter_price
           end
 
           private
 
-          def available_station_token?(entity, token)
-            token && !token.used && token.type == :normal && token.corporation == entity
-          end
-
-          def selected_token(action)
-            index = action.token_index
-            return action.token if index.nil?
-
-            entity = action.entity
-            return if !index.is_a?(Integer) || index.negative? || index >= entity.tokens.size
-
-            entity.tokens[index]
+          def station_token_fee(entity, city)
+            @game.cross_water_token_fee(entity, city)
           end
 
           def token_cost(action, token)
             raise GameError, 'Include the station token cost' if !action.token_index.nil? && !action.cost.is_a?(Integer)
             return action.cost if @game.loading
 
-            validated_token_cost(action, token.price + @game.cross_water_token_fee(action.entity, action.city))
+            validated_token_cost(action, token.price + station_token_fee(action.entity, action.city))
           end
 
           def token_ability?(entity)

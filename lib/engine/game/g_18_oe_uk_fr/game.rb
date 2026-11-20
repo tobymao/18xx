@@ -20,6 +20,7 @@ module Engine
         TRAIN_COUNTS = { '2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3 }.freeze
         TRAINS = G18OE::Game::TRAINS.map do |train|
           scenario = train.merge(num: TRAIN_COUNTS.fetch(train[:name], train[:num]))
+          scenario[:events] = train[:events].reject { |event| event['type'] == 'minor_d_token' } if train[:events]
           train[:name] == '7+7' ? scenario.merge(events: [{ 'type' => 'level_8_available', 'when' => 1 }]) : scenario
         end.freeze
 

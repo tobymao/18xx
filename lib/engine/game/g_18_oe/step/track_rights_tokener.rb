@@ -21,12 +21,6 @@ module Engine
 
             raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
           end
-
-          def validated_token_cost(action, cost)
-            return cost if !action.cost || action.cost == cost
-
-            raise GameError, "Token costs #{@game.format_currency(cost)}, not #{@game.format_currency(action.cost)}"
-          end
         end
       end
     end

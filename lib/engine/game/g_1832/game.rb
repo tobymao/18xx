@@ -21,7 +21,7 @@ module Engine
         include G1832::Trains
 
         attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :p4_invested_in,
-                      :miami_has_been_run
+                      :miami_has_been_run, :saved_or_round
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -157,6 +157,7 @@ module Engine
           @miami_first_run_round = nil
           @p4_invested_in = nil
           @final_merger_triggered = false
+          @saved_or_round = nil
 
           coal_company.max_price = coal_company.value
 
@@ -257,6 +258,11 @@ module Engine
 
         def final_merger_triggered?
           @final_merger_triggered
+        end
+
+        def interrupt_operating_round!(round)
+          @saved_or_round = round
+          @final_merger_triggered = false
         end
 
         def event_remove_tokens!

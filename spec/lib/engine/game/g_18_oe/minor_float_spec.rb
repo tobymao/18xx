@@ -57,6 +57,15 @@ describe 'G18OE floating minors (§9.1)' do
     expect(minor).to be_floated
   end
 
+  it "keeps private D on Minor D's charter (§15.4)" do
+    minor = par_minor!(game.corporation_by_id('D'))
+    private_d = game.company_by_id('D')
+
+    expect(private_d).not_to be_closed
+    expect(private_d.owner).to eq(minor)
+    expect(minor.companies).to include(private_d)
+  end
+
   it 'has the minor place its home token next' do
     minor = par_minor!
 

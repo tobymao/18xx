@@ -49,6 +49,7 @@ module Engine
         TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :owner
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_FROM_OTHERS = :always
 
         MUST_BUY_TRAIN = :always
 
@@ -193,6 +194,16 @@ module Engine
 
         def init_share_pool
           G1835::SharePool.new(self)
+        end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['Any number of shares sold', '1 ↓ per sell action'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
         end
 
         def init_round
