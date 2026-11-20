@@ -53,6 +53,7 @@ module Engine
         let(:other) { game.corporation_by_id('GMO') }
 
         def drain(president, leave:)
+          buyer.spend(buyer.cash, game.bank) if buyer.cash.positive?
           game.bank.spend(1, buyer)
           president.spend(president.cash - leave, game.bank)
         end
@@ -65,27 +66,33 @@ module Engine
         def par_other
           game.par_corporation(other, game.stock_market.par_prices.find { |p| p.price == 100 })
           other.ipoed = true
-          give(player_b, [other.presidents_share, other.ipo_shares.reject(&:president).first])
+        end
+
+        # B is GMO's president with 30%, A holds 20%
+        def hold_other_shares
+          par_other
+          give(player_b, [other.presidents_share])
+          give(player_b, other.ipo_shares.reject(&:president).first(1))
           give(player_a, other.ipo_shares.reject(&:president).first(2))
         end
 
-        it 'counts the president\'s cash and the value of the president\'s sellable shares' do
-          give(player_b, buyer.ipo_shares.reject(&:president).first(2))
+        it 'counts the cash of the buyer and its president' do
           drain(player_a, leave: 100)
-
-          expect(game.can_afford_takeover?(buyer, target)).to be(false)
-
-          # The president's ACL president's certificate is worth 20% of $100 x 10, and B can take it over
-          game.bank.spend(700, buyer)
+          game.bank.spend(899, buyer)
 
           expect(game.can_afford_takeover?(buyer, target)).to be(true)
-        end
 
-        it 'does not count a president\'s certificate that no other player could take over' do
-          drain(player_a, leave: 100)
-          game.bank.spend(700, buyer)
+          buyer.spend(1, game.bank)
 
           expect(game.can_afford_takeover?(buyer, target)).to be(false)
+        end
+
+        it 'counts shares of other corporations that fit in the market' do
+          hold_other_shares
+          drain(player_a, leave: 100)
+          game.bank.spend(699, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(true)
         end
 
         it 'does not count shares of the target' do
@@ -96,16 +103,8 @@ module Engine
           expect(game.can_afford_takeover?(buyer, target)).to be(false)
         end
 
-        it 'counts shares of other corporations that fit in the market' do
-          par_other
-          drain(player_a, leave: 100)
-          game.bank.spend(699, buyer)
-
-          expect(game.can_afford_takeover?(buyer, target)).to be(true)
-        end
-
         it 'does not count shares that would take the market above its limit' do
-          par_other
+          hold_other_shares
           pool_shares(other, 5)
           drain(player_a, leave: 100)
           game.bank.spend(699, buyer)
@@ -114,7 +113,7 @@ module Engine
         end
 
         it 'counts the part of a holding that still fits in the market' do
-          par_other
+          hold_other_shares
           pool_shares(other, 4)
           drain(player_a, leave: 100)
           game.bank.spend(798, buyer)
@@ -124,6 +123,52 @@ module Engine
           game.bank.spend(1, buyer)
 
           expect(game.can_afford_takeover?(buyer, target)).to be(true)
+        end
+
+        it 'counts a president\'s certificate of another corporation that another player could take over' do
+          par_other
+          give(player_a, [other.presidents_share])
+          give(player_b, other.ipo_shares.reject(&:president).first(2))
+          drain(player_a, leave: 100)
+          game.bank.spend(699, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(true)
+        end
+
+        it 'does not count a president\'s certificate that no other player could take over' do
+          par_other
+          give(player_a, [other.presidents_share])
+          drain(player_a, leave: 100)
+          game.bank.spend(699, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(false)
+        end
+
+        context 'with shares of the buyer' do
+          # A is ACL's president with 40% and B holds 30%
+          before do
+            give(player_a, buyer.ipo_shares.reject(&:president).first(2))
+            give(player_b, buyer.ipo_shares.reject(&:president).first(3))
+            drain(player_a, leave: 100)
+          end
+
+          it 'counts the shares that can be sold while A stays president' do
+            game.bank.spend(799, buyer)
+
+            expect(game.can_afford_takeover?(buyer, target)).to be(true)
+          end
+
+          it 'does not count the shares whose sale would make B the president' do
+            game.bank.spend(798, buyer)
+
+            expect(game.can_afford_takeover?(buyer, target)).to be(false)
+          end
+
+          it 'offers no bundle that includes the president\'s certificate or that gives B the lead' do
+            bundles = game.takeover_sellable_bundles(buyer, target, buyer)
+
+            expect(bundles.map(&:percent)).to eq([10])
+          end
         end
       end
 

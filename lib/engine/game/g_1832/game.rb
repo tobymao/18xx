@@ -638,27 +638,28 @@ module Engine
         end
 
         def can_afford_takeover?(buyer, target)
-          buyer.cash + buyer.owner.cash + takeover_sale_proceeds(buyer.owner, target) >= takeover_cost(target)
+          buyer.cash + buyer.owner.cash + takeover_sale_proceeds(buyer, target) >= takeover_cost(target)
         end
 
-        # Sales during a takeover don't move the share price, so the most the president can raise is the
-        # largest bundle that can be sold in each corporation other than the target.
-        def takeover_sale_proceeds(president, target)
+        def takeover_sale_proceeds(buyer, target)
           @corporations.sum do |corporation|
-            bundles = takeover_sellable_bundles(president, corporation, target)
+            bundles = takeover_sellable_bundles(buyer, target, corporation)
             bundles.empty? ? 0 : bundles.max_by(&:percent).price
           end
         end
 
-        def takeover_sellable_bundles(president, corporation, target)
-          bundles_for_corporation(president, corporation).select { |bundle| takeover_sellable?(president, bundle, target) }
+        def takeover_sellable_bundles(buyer, target, corporation)
+          bundles_for_corporation(buyer.owner, corporation).select { |bundle| takeover_sellable?(buyer, target, bundle) }
         end
 
-        def takeover_sellable?(president, bundle, target)
+        def takeover_sellable?(buyer, target, bundle)
+          president = buyer.owner
+
           bundle.owner == president &&
             bundle.corporation != target &&
             @share_pool.fit_in_bank?(bundle) &&
-            can_dump?(president, bundle)
+            can_dump?(president, bundle) &&
+            (bundle.corporation != buyer || keeps_presidency_after_sale?(president, bundle))
         end
 
         # ── System formation (§11.6) ──────────────────────────────────
