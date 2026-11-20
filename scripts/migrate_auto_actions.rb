@@ -237,6 +237,9 @@ def migrate_db_actions(data, pin=nil, dry_run=false, debug=false, pry_db: false,
           end
         end
       end
+
+      data.update_state_from_engine(Engine::Game.load(data, actions: actions))
+      data.save_changes
     end
     return actions || original_actions
   rescue Exception => e

@@ -296,11 +296,16 @@ def run_game(game, actions = nil, strict: false, silent: false, trace: false, va
         errors <<  "DB stored result #{db_result} does not match engine computed result #{engine_result}"
       end
 
+      acting = engine.active_players_id & game.players.map(&:id)
+      db_state = [game.round, game.turn, game.acting.to_a.sort]
+      engine_state = [engine.round.name, engine.turn, acting.sort]
+      if db_state != engine_state
+        errors << "DB stored round/turn/acting #{db_state} does not match engine #{engine_state}"
+      end
+
       unless errors.empty?
         raise GameResultError, errors.join('; ')
       end
-      # TODO -- :turn :round :acting
-      # update :updated_at (or is this auto with migration?)
     end
 
   rescue Exception => e # rubocop:disable Lint/RescueException
