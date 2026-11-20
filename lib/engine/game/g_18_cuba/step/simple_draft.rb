@@ -62,6 +62,7 @@ module Engine
 
           def process_bid(action)
             super
+            @game.after_buy_company(action.entity, action.company, action.price)
             player = action.entity.player
             @completed_actions_player[player] += 1
           end

@@ -132,6 +132,7 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              { type: 'shares', shares: 'FC_1' },
             ],
             desc: '10% FC share',
             color: nil,
