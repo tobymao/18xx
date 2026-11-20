@@ -186,9 +186,10 @@ module Engine
           end
 
           def needs_skip_action?(player)
-            # Fully held majors can only merge a connected minor; skip avoids the graph check while loading.
             @round.current_actions.empty? &&
-              @game.corporations.any? { |c| c.type == :major && c.president?(player) && !@game.merge_share(c) } &&
+              @game.corporations.any? do |c|
+                %i[major national].include?(c.type) && c.president?(player) && !@game.merge_share(c)
+              end &&
               @game.corporations.any? { |c| c.type == :minor && c.owner == player }
           end
 
