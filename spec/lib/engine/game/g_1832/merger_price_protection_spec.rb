@@ -11,7 +11,7 @@ module Engine
     let(:salr) { game.corporation_by_id('SALR') }
     let(:gmo) { game.corporation_by_id('GMO') }
     let(:round) { game.send(:new_merger_round) }
-    let(:step_class) { Game::G1850::Step::PriceProtection }
+    let(:step_class) { Game::G1832::Step::MergerPriceProtection }
 
     def give(player, shares)
       game.share_pool.buy_shares(player, ShareBundle.new(shares), exchange: :free)
@@ -42,7 +42,10 @@ module Engine
       game.instance_variable_set(:@round, round)
       round.process_action(Action::Merge.new(acl, corporation: salr))
       round.process_action(Action::Choose.new(acl, choice: 'takeover'))
-      bundle = game.bundles_for_corporation(player_a, gmo).max_by(&:percent)
+    end
+
+    def sell_gmo(percent)
+      bundle = game.bundles_for_corporation(player_a, gmo).find { |b| b.percent == percent }
       round.process_action(
         Action::SellShares.new(player_a, shares: bundle.shares, share_price: bundle.price_per_share, percent: bundle.percent)
       )
@@ -50,17 +53,48 @@ module Engine
 
     describe 'selling shares to fund a takeover' do
       it 'completes the takeover' do
+        sell_gmo(20)
+
         expect(salr).to be_closed
         expect(player_a.cash).to eq(0)
       end
 
+      it 'waits until the takeover is funded before offering the sold shares for price protection' do
+        sell_gmo(10)
+
+        expect(salr).not_to be_closed
+        expect(round.active_step).to be_a(Game::G1832::Step::SellSharesForTakeover)
+        expect(game.sell_queue.size).to eq(1)
+
+        sell_gmo(10)
+
+        expect(salr).to be_closed
+        expect(round.active_step).to be_a(step_class)
+      end
+
       it 'offers the sold shares to the corporation\'s president for price protection before the round goes on' do
+        sell_gmo(20)
+
         expect(round.active_step).to be_a(step_class)
         expect(round.current_entity).to eq(player_b)
         expect(round.actions_for(player_b)).to include('buy_shares', 'pass')
       end
 
+      it 'settles price protection before the buyer may merge or take over again' do
+        merge_step = round.steps.find { |s| s.is_a?(Game::G1832::Step::Merge) }
+        allow(merge_step).to receive(:mergeable_corporations).and_return([gmo])
+        sell_gmo(20)
+
+        expect(round.active_step).to be_a(step_class)
+
+        round.process_action(Action::Pass.new(player_b))
+
+        expect(round.active_step).to be(merge_step)
+        expect(round.current_entity).to eq(acl)
+      end
+
       it 'drops the share price when the president does not price protect' do
+        sell_gmo(20)
         round.process_action(Action::Pass.new(player_b))
 
         expect(gmo.share_price.price).to eq(82)
@@ -69,6 +103,7 @@ module Engine
       end
 
       it 'leaves the price alone when the president price protects' do
+        sell_gmo(20)
         bundle = game.sell_queue.first.first
         round.process_action(Action::BuyShares.new(player_b, shares: bundle.shares, share_price: bundle.price_per_share,
                                                              percent: bundle.percent))
