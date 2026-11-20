@@ -75,6 +75,8 @@ module Engine
         def town_stops
           @town_stops ||= zone_hexes.flat_map do |hex|
             hex.tile.towns.flat_map do |town|
+              next [] if town == @game.hochberg_town
+
               town.stops.map { |stop| [hex, stop_value([stop]), linked?(town)] }
             end
           end

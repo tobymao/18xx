@@ -166,6 +166,15 @@ module Engine
                   'Turn the private face-down to indicate placement. Any RR controlled by the private\'s owner may '\
                   'count the token as a town when running a route through the hex, collecting £10 (Phase 2), '\
                   '£20 (Phase 3–4), £40 (Phase 5–6) or £60 (Phase 7–8).',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: [],
+                count: 1,
+                when: 'owning_player_track',
+                owner_type: 'player',
+              },
+            ],
             auction_row: 4,
           },
           {
