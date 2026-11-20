@@ -10,6 +10,12 @@ module Engine
         class SpecialToken < Engine::Step::SpecialToken
           include HalfPriceToken
 
+          def available_hex(entity, hex)
+            corporation = @game.token_owner(entity)
+            corporation.abilities.any? { |a| a.type == :token && a.hexes.include?(hex.id) } ||
+              @game.token_graph_for_entity(corporation).reachable_hexes(corporation)[hex]
+          end
+
           def process_place_token(action)
             entity = action.entity
 
