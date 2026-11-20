@@ -9,13 +9,14 @@ module Engine
         class BuySellParShares < G1870::Step::BuySellParShares
           # A corporation or system may hold at most 40% of itself through redemption.
           MAX_TREASURY_PERCENT = 40
+          MAX_REDEMPTION_PERCENT = 10
 
           def visible_corporations
             @game.sorted_corporations.reject { |item| item.type == :system unless item.floated? }
           end
 
           def round_state
-            super.merge(redemptions: Hash.new(0))
+            super.merge(redeemed_percent: Hash.new(0))
           end
 
           def actions(entity)
@@ -44,10 +45,22 @@ module Engine
             @game.corporations.any? { |c| c.owner == player && !corporate_actions(c).empty? }
           end
 
+          def redeemable_shares(entity)
+            return [] if !entity.corporation? || entity.share_price.price > @round.redeem_cash[entity]
+
+            market_shares = @game.share_pool.shares_of(entity)
+            return redeemable_from_players(entity) if market_shares.empty?
+
+            share = redeemable_market_share(entity, market_shares)
+            share ? [ShareBundle.new(share)] : []
+          end
+
           def can_buy?(entity, bundle)
             return super unless entity.corporation?
 
-            super && redemptions_left?(entity) && treasury_percent(entity) + bundle.percent <= MAX_TREASURY_PERCENT
+            super &&
+              @round.redeemed_percent[entity] + bundle.percent <= MAX_REDEMPTION_PERCENT &&
+              treasury_percent(entity) + bundle.percent <= MAX_TREASURY_PERCENT
           end
 
           def process_buy_shares(action)
@@ -56,12 +69,35 @@ module Engine
             super
             return unless corporation
 
-            @round.redemptions[corporation] += 1
+            @round.redeemed_percent[corporation] += action.bundle.percent
             # 1870 spends the whole redemption budget on the first redemption; a system keeps the rest for its second.
             @round.redeem_cash[corporation] = budget - action.bundle.price if redemptions_left?(corporation)
           end
 
           private
+
+          def redeemable_market_share(corporation, shares)
+            certificates = shares.reject(&:president)
+            regular = certificates.reject { |share| corporation.vice_president_certs.include?(share) }
+            (regular.empty? ? certificates : regular).min_by(&:percent)
+          end
+
+          def redeemable_from_players(corporation)
+            holders = corporation.player_share_holders.keys
+            regular = holders.filter_map { |player| redeemable_from_player(corporation, player, vice_president: false) }
+            return regular unless regular.empty?
+
+            holders.filter_map { |player| redeemable_from_player(corporation, player, vice_president: true) }
+          end
+
+          def redeemable_from_player(corporation, player, vice_president:)
+            certificates = player.shares_of(corporation).reject(&:president)
+            share = certificates.select { |s| corporation.vice_president_certs.include?(s) == vice_president }.min_by(&:percent)
+            return unless share
+
+            bundle = ShareBundle.new(share)
+            bundle if player != corporation.owner || @game.keeps_presidency_after_sale?(player, bundle)
+          end
 
           def can_redeem_more?(entity)
             treasury_percent(entity) < MAX_TREASURY_PERCENT && redemptions_left?(entity)
@@ -71,10 +107,10 @@ module Engine
             entity.shares_of(entity).sum(&:percent)
           end
 
-          # A corporation may redeem one share per stock round, a system two (one per turn, which the
-          # 1870 step already enforces).
+          # A corporation may redeem 10% of itself per stock round: one share, or for a system a vice-president
+          # certificate or two 5% shares (one per turn, which the 1870 step already enforces).
           def redemptions_left?(entity)
-            @round.redemptions[entity] < (@game.system?(entity) ? 2 : 1)
+            @round.redeemed_percent[entity] < MAX_REDEMPTION_PERCENT
           end
         end
       end

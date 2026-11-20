@@ -24,7 +24,6 @@ module Engine
                       :miami_has_been_run, :saved_or_round
 
         CORPORATION_CLASS = G1832::Corporation
-        CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         MULTIPLE_BUY_ONLY_FROM_MARKET = true
         MUST_SELL_IN_BLOCKS = true
         EBUY_FROM_OTHERS = :never
@@ -410,6 +409,20 @@ module Engine
 
           miami_hex.remove_assignment!(fecr_corp)
           @log << "-- Event: #{fecr_corp.name} loses Key West token --"
+        end
+
+        def can_gain_from_player?(entity, _bundle)
+          entity.corporation?
+        end
+
+        def keeps_presidency_after_sale?(president, bundle)
+          return false if bundle.presidents_share
+
+          corporation = bundle.corporation
+          holders = corporation.player_share_holders
+          others = holders.reject { |holder, _| holder == president }.values.max || 0
+
+          holders.fetch(president, 0) - bundle.percent >= others || others < corporation.presidents_percent
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
