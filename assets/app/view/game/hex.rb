@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'lib/hex_choice_popup'
 require 'lib/settings'
 require 'lib/tile_selector'
 require 'view/game/actionable'
@@ -230,6 +231,14 @@ module View
             ))
           end
           if @actions.include?('choose') && step.choices.include?(@hex.id)
+            # Opt-in hook: a step may offer a small popup of choices for
+            # this hex instead of dispatching the bare hex-id choice
+            # immediately (e.g. G2038's Explore-vs-Fly-Over decision).
+            # Inert for every other game, which never defines this method.
+            if step.respond_to?(:hex_choice_popup) && @entity && (popup = step.hex_choice_popup(@entity, @hex))
+              return store(:tile_selector, Lib::HexChoicePopup.new(@hex, popup, coordinates, root, @entity, @role))
+            end
+
             return process_action(Engine::Action::Choose.new(
                 @entity,
                 choice: @hex.id,
