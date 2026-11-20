@@ -555,6 +555,7 @@ module Engine
           G1832::Round::Merger.new(self, [
             G1832::Step::Merge,
             G1832::Step::SellSharesForTakeover,
+            G1850::Step::PriceProtection,
             Engine::Step::DiscardTrain,
           ])
         end
