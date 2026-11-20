@@ -40,6 +40,8 @@ module Engine
         SHERBROOKE_HEX = 'F5'
         BOSTON_HEX = 'G22'
         SPIKE_HEXES = %w[G22 I14].freeze
+        RESTRICTED_BROWN_TILES = %w[N51 N52 N53].freeze
+        FULL_BROWN_TILES = %w[N50 N54].freeze
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         GAME_END_CHECK = {
@@ -295,9 +297,17 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
+          return false if self.class::RESTRICTED_BROWN_TILES.include?(to.name) && full_brown_tile_fits?(from.hex)
           return super unless spike_tile?(from)
 
           upgrades_to_correct_color?(from, to) && upgrades_to_correct_label?(from, to)
+        end
+
+        # N50/N54 have all six exits: they fit unless an edge is blocked
+        def full_brown_tile_fits?(hex)
+          return false unless hex
+
+          hex.neighbors.size == 6 && @tiles.any? { |t| self.class::FULL_BROWN_TILES.include?(t.name) }
         end
 
         def legal_tile_rotation?(entity, hex, tile)
