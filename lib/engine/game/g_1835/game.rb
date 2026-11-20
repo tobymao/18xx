@@ -49,6 +49,7 @@ module Engine
         TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :owner
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_FROM_OTHERS = :always
 
         MUST_BUY_TRAIN = :always
 
