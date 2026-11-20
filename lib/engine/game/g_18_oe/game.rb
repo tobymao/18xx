@@ -864,8 +864,7 @@ module Engine
         end
 
         def region_for_hex(hex)
-          self.class::CITY_TOWN_NATIONAL_ZONE[hex.coordinates] ||
-            self.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.coordinates) }&.first
+          national_region_by_coordinates[hex.coordinates]
         end
 
         def region_available?(region)
@@ -976,6 +975,8 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity, spender)
+          return 0 if national?(entity)
+
           base_cost = tile.upgrades.sum(&:cost)
           return super if base_cost.zero?
 
@@ -1699,6 +1700,8 @@ module Engine
         end
 
         def cross_water_tile_fee(corporation, hex, tile)
+          return 0 if national?(corporation)
+
           (@graph.sea_connectivity(corporation).tile_cost(hex, tile) || 0) * self.class::TILE_FEE_PER_WATER_DISTANCE
         end
 
@@ -2047,7 +2050,7 @@ module Engine
 
         def terrain_discount_minor(entity, tile)
           corp = owning_corporation(entity)
-          return if !corp || national?(corp)
+          return unless corp
 
           return corporation_by_id('E') if corp.abilities.include?(@minor_e_ability) &&
                                           tile.terrain.intersect?(self.class::MINOR_E_TERRAIN)
