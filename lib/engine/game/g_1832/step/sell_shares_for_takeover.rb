@@ -43,7 +43,6 @@ module Engine
             return unless buyer.cash + buyer.owner.cash >= @game.takeover_cost(pending[:target])
 
             @game.perform_takeover(buyer, pending[:target])
-            @round.post_merge_entity = buyer
             @round.pending_takeover = nil
             pass!
           end

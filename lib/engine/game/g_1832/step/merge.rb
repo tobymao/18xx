@@ -79,7 +79,6 @@ module Engine
             elsif choice == 'takeover'
               if initiator.cash + initiator.owner.cash >= @game.takeover_cost(target)
                 @game.perform_takeover(initiator, target)
-                @round.post_merge_entity = initiator
               else
                 @round.pending_takeover = { buyer: initiator, target: target }
               end

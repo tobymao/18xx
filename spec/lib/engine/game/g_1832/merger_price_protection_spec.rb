@@ -93,17 +93,19 @@ module Engine
         expect(round.actions_for(player_b)).to include('buy_shares', 'pass')
       end
 
-      it 'settles price protection before the buyer may merge or take over again' do
+      it 'goes on to the next corporation, not back to the buyer, once price protection is settled' do
         merge_step = round.steps.find { |s| s.is_a?(Game::G1832::Step::Merge) }
         allow(merge_step).to receive(:mergeable_corporations).and_return([gmo])
         sell_gmo(20)
+        next_corporation = round.entities[(round.entity_index + 1)..].find { |entity| !entity.closed? }
 
         expect(round.active_step).to be_a(step_class)
 
         round.process_action(Action::Pass.new(player_b))
 
         expect(round.active_step).to be(merge_step)
-        expect(round.current_entity).to eq(acl)
+        expect(round.current_entity).to eq(next_corporation)
+        expect(round.current_entity).not_to eq(acl)
       end
 
       it 'offers the sold shares in the order they were sold' do
