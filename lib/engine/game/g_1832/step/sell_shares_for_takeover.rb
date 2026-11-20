@@ -32,7 +32,7 @@ module Engine
             return false unless (pending = @round.pending_takeover)
             return false unless entity == pending[:buyer].owner
 
-            entity == bundle.owner && @game.share_pool.fit_in_bank?(bundle)
+            @game.takeover_sellable?(entity, bundle, pending[:target])
           end
 
           def process_sell_shares(action)

@@ -50,16 +50,119 @@ module Engine
       end
 
       describe '#can_afford_takeover?' do
-        it 'counts the president\'s cash and the value of the president\'s shares' do
+        let(:other) { game.corporation_by_id('GMO') }
+
+        def drain(president, leave:)
           game.bank.spend(1, buyer)
-          player_a.spend(player_a.cash - 100, game.bank)
+          president.spend(president.cash - leave, game.bank)
+        end
+
+        def pool_shares(corporation, count)
+          shares = corporation.ipo_shares.reject(&:president).first(count)
+          game.share_pool.transfer_shares(ShareBundle.new(shares), game.share_pool)
+        end
+
+        def par_other
+          game.par_corporation(other, game.stock_market.par_prices.find { |p| p.price == 100 })
+          other.ipoed = true
+          give(player_b, [other.presidents_share, other.ipo_shares.reject(&:president).first])
+          give(player_a, other.ipo_shares.reject(&:president).first(2))
+        end
+
+        it 'counts the president\'s cash and the value of the president\'s sellable shares' do
+          give(player_b, buyer.ipo_shares.reject(&:president).first(2))
+          drain(player_a, leave: 100)
 
           expect(game.can_afford_takeover?(buyer, target)).to be(false)
 
-          # The president's ACL president's certificate is worth 20% of $100 x 10
+          # The president's ACL president's certificate is worth 20% of $100 x 10, and B can take it over
           game.bank.spend(700, buyer)
 
           expect(game.can_afford_takeover?(buyer, target)).to be(true)
+        end
+
+        it 'does not count a president\'s certificate that no other player could take over' do
+          drain(player_a, leave: 100)
+          game.bank.spend(700, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(false)
+        end
+
+        it 'does not count shares of the target' do
+          give(player_a, target.ipo_shares.reject(&:president).first(1))
+          drain(player_a, leave: 100)
+          game.bank.spend(898, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(false)
+        end
+
+        it 'counts shares of other corporations that fit in the market' do
+          par_other
+          drain(player_a, leave: 100)
+          game.bank.spend(699, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(true)
+        end
+
+        it 'does not count shares that would take the market above its limit' do
+          par_other
+          pool_shares(other, 5)
+          drain(player_a, leave: 100)
+          game.bank.spend(699, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(false)
+        end
+
+        it 'counts the part of a holding that still fits in the market' do
+          par_other
+          pool_shares(other, 4)
+          drain(player_a, leave: 100)
+          game.bank.spend(798, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(false)
+
+          game.bank.spend(1, buyer)
+
+          expect(game.can_afford_takeover?(buyer, target)).to be(true)
+        end
+      end
+
+      describe Game::G1832::Step::SellSharesForTakeover do
+        let(:round) { Struct.new(:pending_takeover).new({ buyer: buyer, target: target }) }
+        let(:step) { described_class.new(game, round) }
+        let(:other) { game.corporation_by_id('GMO') }
+
+        before do
+          game.par_corporation(other, game.stock_market.par_prices.find { |p| p.price == 100 })
+          other.ipoed = true
+          give(player_b, [other.presidents_share, other.ipo_shares.reject(&:president).first])
+          give(player_a, other.ipo_shares.reject(&:president).first(2))
+          give(player_a, target.ipo_shares.reject(&:president).first(1))
+        end
+
+        it 'offers shares of other corporations' do
+          bundle = game.bundles_for_corporation(player_a, other).first
+
+          expect(step.can_sell?(player_a, bundle)).to be(true)
+        end
+
+        it 'does not offer shares of the target' do
+          bundle = game.bundles_for_corporation(player_a, target).first
+
+          expect(step.can_sell?(player_a, bundle)).to be(false)
+        end
+
+        it 'does not offer shares held by another player' do
+          bundle = game.bundles_for_corporation(player_b, other).reject(&:presidents_share).first
+
+          expect(step.can_sell?(player_a, bundle)).to be(false)
+        end
+
+        it 'does not offer shares that would take the market above its limit' do
+          game.share_pool.transfer_shares(ShareBundle.new(other.ipo_shares.reject(&:president).first(5)), game.share_pool)
+          bundle = game.bundles_for_corporation(player_a, other).first
+
+          expect(step.can_sell?(player_a, bundle)).to be(false)
         end
       end
 
