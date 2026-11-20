@@ -258,4 +258,35 @@ describe Engine::Game::G1835::Game do
       expect(sellable_bayern_bundles[0].percent).to be 20
     end
   end
+
+  describe 'swap_to' do
+    it 'should swap the shares with the market if the president share was sold to the market' do
+      game = fixture_at_action(681)
+
+      player_1 = game.players.find { |player| player.id == 0 }
+      player_2 = game.players.find { |player| player.id == 1 }
+      player_3 = game.players.find { |player| player.id == 2 }
+      preussen = game.corporation_by_id('PR')
+
+      # assert the situation: Player 3 (director) has 35%
+      expect(game.round).to be_a(Engine::Round::Stock)
+      expect(preussen.owner).to eq(player_3)
+      expect(player_1.percent_of(preussen)).to be 10
+      expect(player_2.percent_of(preussen)).to be 25
+      expect(player_3.percent_of(preussen)).to be 35
+      expect(game.share_pool.percent_of(preussen)).to be 0
+      expect(player_3.shares_of(preussen).map(&:percent).count(5)).to be 3
+
+      # Sell 2 whole shares, one being the president share
+      bundle = game.sellable_bundles(player_3, preussen).find { |b| b.percent == 20 && b.shares.all? { |s| s.percent == 10 } }
+      game.process_action(Engine::Action::SellShares.new(player_3, shares: bundle.shares)).maybe_raise!
+
+      # Make sure non-IPO shares add up to the same as before
+      expect(preussen.owner).to eq(player_2)
+      expect(player_1.percent_of(preussen)).to be 10
+      expect(player_2.percent_of(preussen)).to be 25
+      expect(player_3.percent_of(preussen)).to be 15
+      expect(game.share_pool.percent_of(preussen)).to be 20
+    end
+  end
 end
