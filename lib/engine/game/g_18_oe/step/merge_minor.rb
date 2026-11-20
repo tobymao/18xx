@@ -20,7 +20,7 @@ module Engine
           end
 
           def description
-            "Merge #{mergeable_entity.name} into a major"
+            "Merge #{mergeable_entity.name} into a major or national"
           end
 
           def blocks?
@@ -46,7 +46,7 @@ module Engine
           end
 
           def mergeable_type(minor)
-            "Majors that can absorb #{minor.name}"
+            "Majors and nationals that can absorb #{minor.name}"
           end
 
           def merge_action
@@ -90,12 +90,17 @@ module Engine
             end
             transfer_treasury(minor, cash_recipient)
             @round.merge_trains = { corporation: major, trains: move_trains!(minor, major) }
-            @game.add_minor_charter!(minor, major)
             @game.minor_regional_order.delete(minor)
             @round.merged_majors << major
-            @round.pending_acquisition = { minor: minor, corporation: major }
             @round.merge_minor = nil
-            @round.steps.find { |step| step.is_a?(MergeToken) }.resolve_forced!
+            if @game.national?(major)
+              @game.discard_pullman!(major) if @game.pullman(major)
+              @game.abandon_minor!(minor)
+            else
+              @game.add_minor_charter!(minor, major)
+              @round.pending_acquisition = { minor: minor, corporation: major }
+              @round.steps.find { |step| step.is_a?(MergeToken) }.resolve_forced!
+            end
           end
 
           private
