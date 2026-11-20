@@ -17,7 +17,7 @@ module Engine
 
           def pass_triggers_train_removal?
             train = @game.depot.upcoming.first
-            train && !avoid_discarding_final_trains?(train) && !@game.trains_not_triggering_sr?(train.name)
+            !avoid_discarding_final_trains?(train) && !@game.trains_not_triggering_sr?(train.name)
           end
 
           def process_buy_train(action)
