@@ -21,7 +21,7 @@ module Engine
             points_available = remaining_tile_points(entity)
             return false if !points_available.positive? && !@game.zero_point_tile_lays_available?(entity)
 
-            !entity.tokens.empty?
+            !entity.tokens.empty? || @game.national?(entity)
           end
 
           def auto_actions(entity)

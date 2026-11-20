@@ -30,7 +30,7 @@ describe 'G18OE lay track (§11.1)' do
   end
 
   it 'budgets tile points by railroad type (§11.1)' do
-    entity = Struct.new(:type, :abilities)
+    entity = Struct.new(:type, :abilities) { def corporation? = true }
     budgets = %i[minor regional major national].to_h { |type| [type, game.tile_point_budget(entity.new(type, []))] }
 
     expect(budgets).to eq(minor: 3, regional: 3, major: 6, national: 9)
@@ -387,11 +387,11 @@ describe 'G18OE lay track (§11.1)' do
       expect([cost('M30', 'E'), cost('Z23', 'E')]).to eq([45, 24])
     end
 
-    it 'excludes nationals from inherited minor cash benefits (§6.2)' do
+    it 'charges nationals no terrain cost despite inherited minor benefits (§11.1.5)' do
       major = major_with_terrain_minor!('E')
       major.type = :national
 
-      expect(cost('M30', 'LNWR')).to eq(45)
+      expect(cost('M30', 'LNWR')).to eq(0)
     end
 
     it 'does not charge terrain again when upgrading a laid tile (§11.1.5)' do

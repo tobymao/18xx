@@ -429,6 +429,7 @@ describe 'G18OE Nationals' do
 
       round = nil
       expect { round = operate!(national) }.not_to raise_error
+      act!(round, Engine::Action::Pass.new(national))
 
       expect(round).to be_finished
       expect(national.cash).to eq(cash)
@@ -445,6 +446,7 @@ describe 'G18OE Nationals' do
 
       round = nil
       expect { round = operate!(national) }.not_to raise_error
+      act!(round, Engine::Action::Pass.new(national))
 
       messages = game.log.map(&:message)
       expect(round).to be_finished

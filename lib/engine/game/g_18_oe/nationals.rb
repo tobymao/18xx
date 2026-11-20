@@ -12,7 +12,23 @@ module Engine
         end
 
         def national?(corporation)
-          corporation.type == :national
+          corporation&.corporation? && corporation.type == :national
+        end
+
+        def national_region_by_coordinates
+          @national_region_by_coordinates ||= begin
+            regions = {}
+            self.class::NATIONAL_REGION_HEXES.each do |region, coordinates|
+              coordinates.each { |coordinate| regions[coordinate] ||= region }
+            end
+            regions.merge(self.class::CITY_TOWN_NATIONAL_ZONE)
+          end
+        end
+
+        def city_tokened_by?(city, entity)
+          return true if national?(entity) && region_for_hex(city.hex) == entity_track_rights_zone(entity)
+
+          super
         end
 
         def national_candidates(player)
