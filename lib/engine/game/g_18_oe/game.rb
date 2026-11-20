@@ -6,7 +6,7 @@ require_relative 'map'
 require_relative 'stock_market'
 require_relative 'graph'
 require_relative 'sea_routes'
-require_relative 'national_revenue'
+require_relative 'nationals'
 require_relative 'train'
 require_relative '../base'
 require_relative 'depot'
@@ -18,6 +18,7 @@ require_relative 'step/consolidate'
 require_relative 'step/fast_start_capital'
 require_relative 'step/form_national'
 require_relative 'step/merge_discard_train'
+require_relative 'step/national_buy_trains'
 require_relative 'step/merge_minor'
 require_relative 'step/merge_offer'
 require_relative 'step/merge_token'
@@ -38,6 +39,7 @@ module Engine
         include G18OE::Entities
         include G18OE::Map
         include G18OE::SeaRoutes
+        include G18OE::Nationals
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
         attr_reader :fast_start_minors, :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability
@@ -527,8 +529,7 @@ module Engine
           @first_or_complete = false
           @reserved_shares = []
           @face_down_privates = []
-          @rusted_at_phase_change = Hash.new { |hash, owner| hash[owner] = [] }
-          @national_formation_queue = []
+          setup_nationals
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -867,18 +868,6 @@ module Engine
             self.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.coordinates) }&.first
         end
 
-        def national_revenue(corporation)
-          NationalRevenue.new(self, corporation)
-        end
-
-        def national_filler_city_revenue
-          self.class::NATIONAL_FILLER_CITY_REVENUE
-        end
-
-        def national_filler_town_revenue
-          self.class::NATIONAL_FILLER_TOWN_REVENUE
-        end
-
         def region_available?(region)
           @minor_available_regions.key?(region)
         end
@@ -1127,35 +1116,6 @@ module Engine
           end
         end
 
-        def abandon_corporation_merged_minors!(corporation)
-          minors = @merged_minors.delete(corporation) || []
-          minors.each { |minor| abandon_merged_minor!(minor, corporation) }
-          return if minors.empty?
-
-          order = game_corporations.map { |definition| definition[:sym] }
-          @corporations.sort_by! { |corp| order.index(corp.id) || order.size }
-        end
-
-        def abandon_merged_minor!(minor, corporation)
-          assets = @minor_charter_assets.delete(minor)
-          assets[:abilities].each do |ability|
-            corporation.remove_ability(ability)
-            minor.add_ability(ability)
-          end
-          assets[:companies].each do |company|
-            corporation.companies.delete(company)
-            company.owner = minor
-            minor.companies << company
-          end
-          minor.reopen!
-          @corporations << minor
-          share = minor.presidents_share
-          share.owner.shares_by_corporation[minor] << share
-          minor.ipoed = true
-          minor.floated = true
-          abandon_minor!(minor)
-        end
-
         def pay_minor_a_bonus!(minor, major)
           ability = minor.abilities.first
           return if !ability || ability.used?
@@ -1178,96 +1138,14 @@ module Engine
           @depot.reclaim_train(train)
         end
 
-        def rusted_trains
-          @depot.rusted_trains
+        def discountable_trains_for(corporation)
+          national?(corporation) ? national_train_exchanges(corporation) : super
         end
 
-        def rusted_at_phase_change(owner)
-          @rusted_at_phase_change.fetch(owner, [])
-        end
+        def discard_discount(train, price)
+          return 0 if train.rusted
 
-        def clear_rusted_at_phase_change!
-          @rusted_at_phase_change.clear
-        end
-
-        def return_corporation_rusted_trains!(corporation)
-          @rusted_at_phase_change.delete(corporation)&.each do |train|
-            @depot.remove_train(train)
-            train.owner = corporation
-            corporation.trains << train
-          end
-          @crowded_corps = nil
-        end
-
-        def national?(corporation)
-          corporation.type == :national
-        end
-
-        def national_candidates(player)
-          corporations.select { |corporation| corporation.floated? && corporation.type == :major && corporation.owner == player }
-        end
-
-        def national_formation_phase?(name)
-          self.class::NATIONAL_FORMATION_PHASES.include?(name)
-        end
-
-        def start_national_formation!(buyer)
-          clear_rusted_at_phase_change!
-          order = @players.include?(buyer) ? @players.rotate(@players.index(buyer)) : @players
-          @national_formation_queue = order.reject { |player| national_candidates(player).empty? }
-        end
-
-        def national_formation_player
-          @national_formation_queue.first
-        end
-
-        def national_formation_done!(player)
-          @national_formation_queue.delete(player)
-          clear_rusted_at_phase_change! if @national_formation_queue.empty?
-        end
-
-        def form_national!(major)
-          @log << "#{major.name} forms a national (#{entity_track_rights_zone(major)})"
-          major.spend(major.cash, @bank) if major.cash.positive?
-          move_corporation_treasury_shares_to_open_market!(major)
-          discard_pullman!(major) if pullman(major)
-          remove_corporation_tokens!(major)
-          remove_corporation_port_authorities!(major)
-          remove_corporation_orient_express_marker!(major)
-          remove_corporation_pass_through_tokens!(major)
-          abandon_corporation_merged_minors!(major)
-          major.type = :national
-          return_corporation_rusted_trains!(major)
-          clear_graph
-        end
-
-        def move_corporation_treasury_shares_to_open_market!(corporation)
-          shares = corporation.treasury_shares.dup
-          return if shares.empty?
-
-          bundle = Engine::ShareBundle.new(shares)
-          @share_pool.transfer_shares(bundle, @share_pool, allow_president_change: false)
-          @log << "#{corporation.name} moves #{shares.sum(&:percent)}% of its treasury shares to the Open Market"
-        end
-
-        def remove_corporation_tokens!(corporation)
-          corporation.tokens.each(&:remove!)
-          corporation.tokens.clear
-        end
-
-        def remove_corporation_port_authorities!(corporation)
-          @port_authorities.delete(corporation)&.each { |sea| @removed_port_authorities[sea] += 1 }
-        end
-
-        def remove_corporation_orient_express_marker!(corporation)
-          @orient_express_markers.delete(corporation)
-        end
-
-        def remove_corporation_pass_through_tokens!(corporation)
-          @pass_through_tokens.select { |_company, token| token.corporation == corporation }.each do |company, token|
-            token.remove!
-            @pass_through_tokens.delete(company)
-          end
+          super
         end
 
         def pullman?(train)
@@ -1809,6 +1687,7 @@ module Engine
             G18OE::Step::OrientExpressBonus,
             G18OE::Step::TransferTokens,
             G18OE::Step::BuyTrain,
+            G18OE::Step::NationalBuyTrains,
             G18OE::Step::IssueShares,
           ], round_num: round_num)
         end

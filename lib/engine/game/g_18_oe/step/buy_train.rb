@@ -48,6 +48,10 @@ module Engine
             end
           end
 
+          def log_skip(entity)
+            super unless @game.national?(entity)
+          end
+
           def cannot_afford_transfer?(entity)
             entity.cash < @game.pullman_transfer_price
           end
@@ -105,8 +109,6 @@ module Engine
             @game.pay_pullman_royalty! if royalty
             @game.fulfill_train_obligation!(action.entity) if reserved
           end
-
-          # TODO: Nationals claiming rusted trains for free (openpoints §1.9, §3.7) — deferred
         end
       end
     end
