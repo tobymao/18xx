@@ -6,6 +6,8 @@ module Engine
   module Game
     module G1835
       class SharePool < Engine::SharePool
+        NUMBERS_AS_WORDS = %w[zero one two three four five].freeze
+
         def possible_reorder(shares)
           # unless we're swapping, return the big shares first, so that we do not get stuck in case the new president
           # has small shares that would not add up to the president share's percentage.
@@ -39,24 +41,11 @@ module Engine
 
           low, high = bundle.shares.map(&:percent).tally.sort_by { |p, _| p }
 
-          "#{to_words(low[1])} #{low[0]}% and #{to_words(high[1])} #{high[0]}% share(s)"
+          "#{number_to_word(low[1])} #{low[0]}% and #{number_to_word(high[1])} #{high[0]}% share(s)"
         end
 
-        def to_words(i)
-          case i
-          when 1
-            'one'
-          when 2
-            'two'
-          when 3
-            'three'
-          when 4
-            'four'
-          when 5
-            'five'
-          else
-            '' + i
-          end
+        def number_to_word(i)
+          NUMBERS_AS_WORDS[i] || ('' + i)
         end
       end
     end
