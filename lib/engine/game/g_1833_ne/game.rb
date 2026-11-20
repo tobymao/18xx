@@ -53,6 +53,21 @@ module Engine
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
+        BOSTON_HEX = 'G22'
+        FERRY_COST = 40
+        FERRY_NEW_BONUS = 20
+        FERRY_LAST_BONUS = 10
+        NEW_FERRY_MARKER = 'new_ferry'
+        LAST_FERRY_MARKER = 'last_ferry'
+        FERRIES_REMOVED_PHASE = 'IV'
+        LUXURY_FERRY_SERVICE = 'P5'
+
+        ASSIGNMENT_TOKENS = FERRIES.transform_values { |ferry| "/icons/1833_ne/#{ferry[:icon]}_token.svg" }.merge(
+          NEW_FERRY_MARKER => '/icons/1833_ne/new_ferry.svg',
+          LAST_FERRY_MARKER => '/icons/1833_ne/last_ferry.svg',
+          LUXURY_FERRY_SERVICE => '/icons/1833_ne/lux_ferry.svg',
+        ).freeze
+
         MARKET = [
           %w[0c 10 20 30 40p 50p 60p 70p 80p 90p 100p 112p 124p 137p 150p
              165 180 195 212 230 250 270 295 320 345 375 405 440 475 510 550 590 630 680 730],
@@ -161,6 +176,7 @@ module Engine
             ],
             events: [
               { 'type' => 'remove_bonuses' },
+              { 'type' => 'remove_ferries' },
               { 'type' => 'remove_reservations' },
             ],
           },
@@ -208,13 +224,13 @@ module Engine
           @round_num = round_num
           G1833NE::Round::Operating.new(self, [
             G1846::Step::Bankrupt,
-            Engine::Step::Assign,
+            G1833NE::Step::Assign,
             Engine::Step::SpecialToken,
             G1833NE::Step::SpecialTrack,
             G1833NE::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1833NE::Step::TrackAndToken,
-            Engine::Step::Route,
+            G1833NE::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1833NE::Step::BuyTrain,
@@ -274,6 +290,15 @@ module Engine
           else
             corporations.sort!
           end
+        end
+
+        def revenue_for(route, stops)
+          super + route_ferries(route).sum { |hex| ferry_revenue(hex) }
+        end
+
+        def revenue_str(route)
+          ferries = route_ferries(route).map { |hex| "#{ferry_name(hex)} #{format_currency(ferry_revenue(hex))}" }
+          ferries.empty? ? super : "#{super} (#{ferries.join(', ')})"
         end
 
         def upgrade_cost(tile, hex, entity, spender)
@@ -528,6 +553,101 @@ module Engine
 
         def takeover_game?
           @takeover_game ||= @optional_rules&.include?(:takeover_game)
+        end
+
+        def ferry_cost
+          self.class::FERRY_COST
+        end
+
+        def ferry_hexes
+          @ferry_hexes ||= self.class::FERRIES.keys.map { |hex_id| hex_by_id(hex_id) }
+        end
+
+        def ferry_name(hex)
+          "#{hex.location_name} ferry"
+        end
+
+        def ferry_owner(hex)
+          @corporations.find { |corporation| corporation.assigned?(hex.id) }
+        end
+
+        def owned_ferries(corporation)
+          ferry_hexes.select { |hex| corporation.assigned?(hex.id) }
+        end
+
+        def all_ferries_sold?
+          ferry_hexes.all? { |hex| ferry_owner(hex) }
+        end
+
+        def ferries_in_play?
+          !@phase.available?(self.class::FERRIES_REMOVED_PHASE)
+        end
+
+        def ferry_revenue(hex)
+          revenue = self.class::FERRIES[hex.id][:revenue]
+          revenue += self.class::FERRY_NEW_BONUS if hex.assigned?(self.class::NEW_FERRY_MARKER)
+          revenue += self.class::FERRY_LAST_BONUS if hex.assigned?(self.class::LAST_FERRY_MARKER)
+          hex.assigned?(self.class::LUXURY_FERRY_SERVICE) ? revenue * 2 : revenue
+        end
+
+        def route_ferries(route)
+          owned_ferries(route.corporation) & route.visited_stops.map(&:hex)
+        end
+
+        def buyable_ferries(corporation)
+          return [] if !ferries_in_play? || corporation.cash < ferry_cost
+
+          nodes = graph_for_entity(corporation).connected_nodes(corporation)
+          ferries = ferry_hexes.select { |hex| !ferry_owner(hex) && hex.tile.city_towns.any? { |node| nodes[node] } }
+          ferries.empty? || !connected_to_boston?(corporation) ? [] : ferries
+        end
+
+        def connected_to_boston?(corporation)
+          Engine::Graph.new(self, no_blocking: true).connected_nodes(corporation).keys
+            .any? { |node| node.hex.id == self.class::BOSTON_HEX }
+        end
+
+        def buy_ferry!(corporation, hex)
+          corporation.spend(ferry_cost, @bank)
+          corporation.assign!(hex.id)
+          icon = ferry_icon(hex)
+          hex.tile.icons.reject! { |i| i.name == icon }
+          hex.tile.icons << Engine::Part::Icon.new("1833_ne/#{icon}_token")
+          Assignable.remove_from_all!(ferry_hexes, self.class::NEW_FERRY_MARKER)
+          hex.assign!(self.class::NEW_FERRY_MARKER)
+          @log << "#{corporation.name} buys the #{ferry_name(hex)} for #{format_currency(ferry_cost)}"
+          @log << "The New ferry bonus flips to Last after #{corporation.name} runs its trains" if all_ferries_sold?
+        end
+
+        def flip_last_ferry_bonus!(corporation)
+          hex = ferry_hexes.find { |ferry_hex| ferry_hex.assigned?(self.class::NEW_FERRY_MARKER) }
+          return if !hex || !corporation || ferry_owner(hex) != corporation || !all_ferries_sold?
+
+          hex.remove_assignment!(self.class::NEW_FERRY_MARKER)
+          hex.assign!(self.class::LAST_FERRY_MARKER)
+          @log << "The ferry bonus on the #{ferry_name(hex)} flips to Last"
+        end
+
+        def event_remove_ferries!
+          @log << '-- Event: Ferries are removed --'
+          markers = [self.class::NEW_FERRY_MARKER, self.class::LAST_FERRY_MARKER, self.class::LUXURY_FERRY_SERVICE]
+          ferry_hexes.each do |hex|
+            hex.tile.icons.reject! { |i| i.name.start_with?(ferry_icon(hex)) }
+            markers.each { |marker| hex.remove_assignment!(marker) }
+            @corporations.each { |corporation| corporation.remove_assignment!(hex.id) }
+          end
+        end
+
+        def ferry_icon(hex)
+          self.class::FERRIES[hex.id][:icon]
+        end
+
+        def luxury_ferry_service
+          @luxury_ferry_service ||= company_by_id(self.class::LUXURY_FERRY_SERVICE)
+        end
+
+        def luxury_ferry_hexes(company)
+          company.owner&.corporation? ? owned_ferries(company.owner) : []
         end
 
         def lowell_merchants_company
