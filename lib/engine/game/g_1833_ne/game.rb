@@ -562,6 +562,11 @@ module Engine
           super || offboard_token_nodes(entity).include?(city)
         end
 
+        # P4/P6 change which off-boards act as tokens for the buyer
+        def company_bought(company, buyer)
+          clear_graph_for_entity(buyer) if OFFBOARD_TOKEN_COMPANIES.key?(company.id)
+        end
+
         # P4 closing removes A6 as a token
         def event_close_companies!
           super
