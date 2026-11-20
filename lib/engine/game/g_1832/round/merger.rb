@@ -68,6 +68,11 @@ module Engine
             next_entity! if finished?
           end
 
+          def recalculate_order
+            unsorted_corps = @entities.pop(@entities.size - @entity_index - 1)
+            @entities.concat(select_entities.select { |entity| unsorted_corps.include?(entity) })
+          end
+
           def force_next_entity!
             # Suppress the normal entity-change triggered by close_corporation during a merger
           end
