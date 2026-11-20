@@ -17,7 +17,7 @@ module Engine
           ADD_ON_CHOICE_SEPARATOR = ':'
 
           def actions(entity)
-            return [] if @game.repeat_last_revenue?(entity)
+            return [] if @game.repeat_last_revenue?(entity) || @game.national?(entity)
 
             actions = super
             return actions if actions.empty?
@@ -71,7 +71,9 @@ module Engine
           end
 
           def log_skip(entity)
-            super unless @game.repeat_last_revenue?(entity)
+            return if @game.repeat_last_revenue?(entity) || @game.national?(entity)
+
+            super
           end
 
           def help

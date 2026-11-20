@@ -102,4 +102,95 @@ describe 'G18OE dividends (§11.4, §4.4)' do
 
     expect(minor.operating_history[[game.turn, 1]].dividend.kind).to eq('withhold')
   end
+
+  describe 'national dividends (§11.3.10, §11.4)' do
+    let(:national) do
+      major = fund!(game, start_major!(game, 'LNWR', president), 500)
+      game.form_national!(major)
+      major
+    end
+    let(:national_round) do
+      round = game.operating_round(1)
+      round.entities = [national]
+      round.instance_variable_set(:@current_operator, national)
+      enter_round!(game, round)
+    end
+    let(:national_step) { round_step(national_round, Engine::Game::G18OE::Step::Dividend) }
+
+    def give_two_plus_two!
+      train = game.trains.find { |t| t.name == '2+2' && !t.owner.is_a?(Engine::Corporation) }
+      game.buy_train(national, train, :free)
+    end
+
+    def national_at(price)
+      game.stock_market.move(national, cell(game, price).coordinates)
+    end
+
+    it 'takes the national revenue as the dividend revenue' do
+      give_two_plus_two!
+
+      expect(national_step.total_revenue).to eq(80)
+    end
+
+    it 'repeats the last revenue in an abbreviated final OR instead of recomputing' do
+      give_two_plus_two!
+      game.instance_variable_set(:@turn, 3)
+      game.instance_variable_set(:@final_turn, 3)
+      game.instance_variable_set(:@operating_rounds, 2)
+      national_round.instance_variable_set(:@round_num, 2)
+      action = Engine::Action::Dividend.new(national, kind: 'payout')
+      national.operating_history[[3, 1]] = Engine::OperatingInfo.new([], action, 55, {})
+
+      expect(game.repeat_last_revenue?(national)).to be(true)
+      expect(national_step.total_revenue).to eq(55)
+    end
+
+    it 'logs the revenue breakdown before paying out' do
+      give_two_plus_two!
+      national_at(100)
+      national_step.skip!
+      lines = game.log.map(&:message)
+      breakdown = 'LNWR runs as a national (capacity 2 cities, 0 doubled, 2 towns): cities £60 (2 linked, 0 unlinked, '\
+                  '0 at £60), towns £0 (0 linked, 2 unlinked, 0 at £10), Pullman £20'
+      index = lines.index(breakdown)
+
+      expect(index).not_to be_nil
+      expect(lines[index + 1]).to include('LNWR')
+      expect(lines[index + 1]).to include('£80')
+    end
+
+    it 'pays out the national revenue' do
+      give_two_plus_two!
+      national_at(100)
+      before = national.owner.cash
+      national_step.skip!
+
+      expect(national.operating_history[[game.turn, 1]].dividend.kind).to eq('payout')
+      expect(national.operating_history[[game.turn, 1]].revenue).to eq(80)
+      expect(national.owner.cash).to be > before
+    end
+
+    it 'does not move a national that pays less than its share value' do
+      give_two_plus_two!
+      national_at(100)
+      national_step.skip!
+
+      expect(national.share_price.price).to eq(100)
+    end
+
+    it 'moves a national RIGHT when it pays at least its share value' do
+      give_two_plus_two!
+      national_at(75)
+      national_step.skip!
+
+      expect(national.share_price.price).to be > 75
+    end
+
+    it 'moves a trainless national LEFT on £0' do
+      national_at(75)
+      national_step.skip!
+
+      expect(national.share_price.price).to be < 75
+    end
+  end
 end

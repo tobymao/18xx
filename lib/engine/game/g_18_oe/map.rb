@@ -1613,6 +1613,16 @@ module Engine
 
         FERRY_TRACK_COLOR = '#0047AB'
 
+        CITY_TOWN_NATIONAL_ZONE = {
+          'Q38' => 'FR',
+          'O52' => 'PHS',
+          'S76' => 'BRS',
+          'R51' => 'AH',
+          'S46' => 'AH',
+          'T37' => 'PHS',
+          'X25' => 'FR',
+        }.freeze
+
         PORTS = {
           'AD1' => { 4 => { port: :public } },
           'AC6' => { 1 => { port: :public } },

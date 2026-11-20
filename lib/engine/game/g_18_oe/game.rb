@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative 'stock_market'
 require_relative 'graph'
 require_relative 'sea_routes'
+require_relative 'national_revenue'
 require_relative 'train'
 require_relative '../base'
 require_relative 'depot'
@@ -83,6 +84,8 @@ module Engine
         DEPOT_CLASS = G18OE::Depot
         PULLMAN = 'Pullman'
         PULLMAN_BONUS_PER_LEVEL = 10
+        NATIONAL_FILLER_CITY_REVENUE = 60
+        NATIONAL_FILLER_TOWN_REVENUE = 10
         TRAIN_ADD_ONS = { pullman: 'Pullman', one_plus_one_marker: '+1+1 marker' }.freeze
         PULLMAN_ROYALTY = 15
         PULLMAN_TRANSFER_PRICE = 75
@@ -430,14 +433,6 @@ module Engine
                      O58 O60 O62 O64 O66 O68 O70 O72 O74 O76 O78 O80 O82 O84 O86
                      P73 P75 P77 P79 P81 P83 P85 P87 Q74 Q76 Q78 Q80 Q82 Q84 Q86
                      R75 R77 R79 R81 R83 R85 R87 S76 S78 S80 S82 S84 S86 S88 T79 T81 T87 U80],
-        }.freeze
-
-        # Cities that sit on a national-zone border hex (hex listed in two zones).
-        # All other cities belong unambiguously to one zone; only these need an explicit override.
-        CITY_NATIONAL_ZONE = {
-          'Q38' => 'FR',  # Nancy   — FR/PHS border hex
-          'O52' => 'PHS', # Dresden — PHS/AH border hex
-          'S76' => 'BRS',
         }.freeze
 
         # Cities excluded from minor home-token placement regardless of zone membership.
@@ -868,8 +863,20 @@ module Engine
         end
 
         def region_for_hex(hex)
-          self.class::CITY_NATIONAL_ZONE[hex.coordinates] ||
+          self.class::CITY_TOWN_NATIONAL_ZONE[hex.coordinates] ||
             self.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.coordinates) }&.first
+        end
+
+        def national_revenue(corporation)
+          NationalRevenue.new(self, corporation)
+        end
+
+        def national_filler_city_revenue
+          self.class::NATIONAL_FILLER_CITY_REVENUE
+        end
+
+        def national_filler_town_revenue
+          self.class::NATIONAL_FILLER_TOWN_REVENUE
         end
 
         def region_available?(region)
@@ -899,7 +906,7 @@ module Engine
 
           @hexes
             .select { |hex| region_hexes.include?(hex.coordinates) }
-            .reject { |hex| (z = self.class::CITY_NATIONAL_ZONE[hex.coordinates]) && !@minor_available_regions.key?(z) }
+            .reject { |hex| (z = self.class::CITY_TOWN_NATIONAL_ZONE[hex.coordinates]) && !@minor_available_regions.key?(z) }
             .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
             .reject { |hex| metropolis_hex?(hex) }
             .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.coordinates) }
@@ -1005,6 +1012,13 @@ module Engine
             @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
           end
           cost
+        end
+
+        def entity_track_rights_zone(entity)
+          corp = owning_corporation(entity)
+          return nil unless corp
+
+          self.class::CORPORATIONS_TRACK_RIGHTS[corp.id] || @minor_floated_regions[corp.id]
         end
 
         def track_rights_zones(entity)
@@ -1277,6 +1291,10 @@ module Engine
           super.reject { |train| pullman?(train) }
         end
 
+        def pullman_bonus_per_level
+          self.class::PULLMAN_BONUS_PER_LEVEL
+        end
+
         def pullman_royalty
           self.class::PULLMAN_ROYALTY
         end
@@ -1408,6 +1426,7 @@ module Engine
         def repeat_last_revenue?(entity)
           return false unless abbreviated_operating_round?
           return false unless (info = last_revenue_info(entity))
+          return true if national?(entity)
 
           ran = info.routes.keys.flat_map { |train| component_trains(train) }
           ran.map(&:id).sort == entity.trains.reject { |train| extra_train?(train) }.map(&:id).sort
@@ -2024,7 +2043,7 @@ module Engine
         def pullman_bonus(route)
           return 0 unless add_on_train?(:pullman, route.train)
 
-          route.train.level * self.class::PULLMAN_BONUS_PER_LEVEL
+          route.train.level * pullman_bonus_per_level
         end
 
         def routes_revenue(routes)
@@ -2145,13 +2164,6 @@ module Engine
 
         def orient_express_bonus_route?(route)
           orient_express_run?(route) && route.equal?(orient_express_route(route.routes.empty? ? [route] : route.routes))
-        end
-
-        def entity_track_rights_zone(entity)
-          corp = owning_corporation(entity)
-          return nil unless corp
-
-          self.class::CORPORATIONS_TRACK_RIGHTS[corp.id] || @minor_floated_regions[corp.id]
         end
 
         def terrain_discount_minor(entity, tile)
