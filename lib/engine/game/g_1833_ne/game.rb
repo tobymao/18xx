@@ -205,6 +205,7 @@ module Engine
           @last_action = nil
           @lowell_merchants_company_activated = false
           @takeovers_by = Hash.new(0)
+          @blocking_corporation = Corporation.new(sym: 'B', name: 'Blocking', logo: '1833_ne/blocking', tokens: [0])
         end
 
         def game_corporations
@@ -754,6 +755,7 @@ module Engine
             if city.tokened_by?(acquirer)
               token.remove!
               @log << "#{target.name}'s token in #{city.hex.name} is discarded"
+              place_blocking_token(city.hex, city: city) if city.hex.id == self.class::SHERBROOKE_HEX
             else
               replacement = Engine::Token.new(acquirer)
               acquirer.tokens << replacement
@@ -763,6 +765,13 @@ module Engine
           end
           transfer_takeover_reservations!(acquirer, target)
           graph.clear
+        end
+
+        def place_blocking_token(hex, city: nil)
+          @log << "Placing a blocking token on #{hex.name} (#{hex.location_name})"
+          token = Token.new(@blocking_corporation)
+          city ||= hex.tile.cities[0]
+          city.place_token(@blocking_corporation, token, check_tokenable: false)
         end
 
         def transfer_takeover_reservations!(acquirer, target)

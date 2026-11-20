@@ -9,9 +9,11 @@ describe Engine::Game::G1833NE::Game do
 
   describe 'Takeover Game setup' do
     it 'adds the five Variable Start railroads only in the Takeover Game' do
+      variable_starts = takeover_game.corporations.select { |c| takeover_game.variable_start?(c) }
+
       expect(standard_game.corporations.size).to eq(9)
-      expect(takeover_game.corporations.map(&:id).last(5)).to eq(%w[B&M LSL Era NYNH&H UP])
-      expect(takeover_game.corporations.last(5).map(&:coordinates).uniq).to eq([nil])
+      expect(variable_starts.map(&:id)).to contain_exactly('B&M', 'NYNH&H', 'Era', 'UP', 'LSL')
+      expect(variable_starts.map(&:coordinates).uniq).to eq([nil])
       expect(takeover_game.corporations.map(&:type).tally).to eq(major: 9, variable_start: 5)
     end
 
@@ -384,6 +386,62 @@ describe Engine::Game::G1833NE::Game do
       standard_game.send(:next_round!)
 
       expect(standard_game.round).to be_a(Engine::Round::Stock)
+    end
+  end
+
+  describe 'takeovers in Sherbrooke' do
+    let(:game) { takeover_game }
+    let(:stla) { game.corporation_by_id('StL&A') }
+    let(:astl) { game.corporation_by_id('A&StL') }
+    let(:hartford) { game.corporation_by_id('HR') }
+    let(:sherbrooke) { game.hex_by_id('F5').tile.cities.first }
+
+    def launch!(corporation, player, price)
+      game.par_corporation(corporation, game.stock_market.par_prices.find { |p| p.price == price })
+      game.share_pool.buy_shares(player, corporation.presidents_share.to_bundle, exchange: :free)
+      game.place_home_token(corporation)
+      game.buy_train(corporation, game.depot.upcoming.first, :free)
+    end
+
+    def sherbrooke_tokens
+      sherbrooke.tokens.map { |token| token&.corporation&.id }
+    end
+
+    before do
+      launch!(stla, game.players[0], 100)
+      launch!(astl, game.players[1], 90)
+      game.bank.spend(1000, stla)
+      game.hex_by_id('F5').lay(game.tiles.find { |t| t.name == 'N11' })
+      Engine::Game::G1833NE::Step::TrackAndToken.new(game, game.round).lay_joint_tokens!
+    end
+
+    it 'blocks the second slot when one of the pair takes over the other' do
+      game.phase.next!
+      game.instance_variable_set(:@round, game.send(:new_takeover_round))
+      game.round.setup
+
+      game.process_action(Engine::Action::Merge.new(stla, corporation: astl))
+      game.process_action(Engine::Action::Choose.new(game.players[1], choice: 'accept'))
+      game.process_action(Engine::Action::Choose.new(stla, choice: '0'))
+
+      expect(game.exception).to be_nil
+      expect(astl.closed?).to be(true)
+      expect(sherbrooke_tokens).to eq(%w[StL&A B])
+      expect(sherbrooke.tokenable?(hartford, free: true)).to be(false)
+    end
+
+    it 'gives a third corporation the target’s slot without blocking' do
+      game.send(:transfer_takeover_tokens!, hartford, stla)
+
+      expect(sherbrooke_tokens).to eq(%w[HR A&StL])
+    end
+
+    it 'blocks the second slot when a third corporation ends up with both' do
+      game.send(:transfer_takeover_tokens!, hartford, stla)
+      game.send(:transfer_takeover_tokens!, hartford, astl)
+
+      expect(sherbrooke_tokens).to eq(%w[HR B])
+      expect(sherbrooke.tokenable?(game.corporation_by_id('RR'), free: true)).to be(false)
     end
   end
 end
