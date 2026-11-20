@@ -22,14 +22,13 @@ module Engine
           private
 
           def banater_enables_purchase?(entity)
-            banater = @game.banater
-            return false if !banater || banater.closed?
             return false unless entity.corporation?
-            return false unless banater.owner == entity.owner
-            return false unless @game.abilities(banater, :choose_ability)
+
+            banater = @game.banater
+            return false if banater&.closed? || banater&.owner != entity.owner
 
             price = @game.depot.min_depot_price
-            price.positive? && entity.cash < price && entity.cash + 40 >= price && room?(entity)
+            entity.cash < price && entity.cash + 40 >= price && room?(entity)
           end
         end
       end
