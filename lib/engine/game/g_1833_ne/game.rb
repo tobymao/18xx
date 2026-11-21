@@ -4,6 +4,7 @@ require_relative '../g_1846/game'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'graph'
 require_relative '../company_price_up_to_face'
 require_relative '../base'
 
@@ -36,6 +37,11 @@ module Engine
         TILE_COST = 20
 
         SHERBROOKE_HEX = 'F5'
+        MONTREAL_HEX = 'B3'
+        DH_COMPANY = 'P6'
+        DH_HEX = 'A12'
+        DH_PURCHASE_FEE = 40
+        OFFBOARD_TOKEN_COMPANIES = { 'P4' => 'A6', DH_COMPANY => DH_HEX }.freeze
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         GAME_END_CHECK = {
@@ -528,6 +534,59 @@ module Engine
 
         def takeover_game?
           @takeover_game ||= @optional_rules&.include?(:takeover_game)
+        end
+
+        def init_graph
+          G1833NE::Graph.new(self)
+        end
+
+        def token_graph_for_entity(_entity)
+          @token_graph ||= Engine::Graph.new(self)
+        end
+
+        def clear_graph
+          super
+          @token_graph&.clear
+        end
+
+        def offboard_token_nodes(corporation)
+          return [] unless corporation
+
+          OFFBOARD_TOKEN_COMPANIES.flat_map do |company_id, hex_id|
+            company_by_id(company_id).owner == corporation ? hex_by_id(hex_id).tile.offboards : []
+          end
+        end
+
+        # Lets a route count the P4/P6 off-boards as tokens.
+        def city_tokened_by?(city, entity)
+          super || offboard_token_nodes(entity).include?(city)
+        end
+
+        # P4/P6 change which off-boards act as tokens for the buyer
+        def company_bought(company, buyer)
+          clear_graph_for_entity(buyer) if OFFBOARD_TOKEN_COMPANIES.key?(company.id)
+        end
+
+        # P4 closing removes A6 as a token
+        def event_close_companies!
+          super
+          clear_graph
+        end
+
+        def check_other(route)
+          super
+          return if route.visited_stops.none? { |stop| stop.hex.id == DH_HEX }
+          return if company_by_id(DH_COMPANY).owner == route.corporation
+
+          raise GameError, "Only the owner of the D&H RR may run to #{DH_HEX}"
+        end
+
+        # A12 is worth $0 unless the route goes to or through Montreal
+        def revenue_for(route, stops)
+          revenue = super
+          return revenue if route.all_hexes.any? { |hex| hex.id == MONTREAL_HEX }
+
+          revenue - stops.sum { |stop| stop.hex.id == DH_HEX ? stop.route_revenue(route.phase, route.train) : 0 }
         end
 
         def lowell_merchants_company
