@@ -85,12 +85,14 @@ module Engine
           },
           {
             name: '2P',
+            extra: true,
             distance: 2,
             num: 1,
             price: 0,
           },
           {
             name: 'LP',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -114,6 +116,7 @@ module Engine
           },
           {
             name: 'P+',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],

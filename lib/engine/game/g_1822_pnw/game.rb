@@ -441,12 +441,14 @@ module Engine
           },
           {
             name: '2P',
+            extra: true,
             distance: 2,
             num: 1,
             price: 0,
           },
           {
             name: 'LP',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -470,6 +472,7 @@ module Engine
           },
           {
             name: 'P+',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -585,11 +588,6 @@ module Engine
             G1822::Step::DiscardTrain,
             G1822PNW::Step::BuySellParShares,
           ])
-        end
-
-        def must_buy_train?(entity)
-          entity.trains.none? { |t| !extra_train?(t) } &&
-          !depot.depot_trains.empty?
         end
 
         def corporation_from_company(company)

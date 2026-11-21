@@ -81,7 +81,6 @@ module Engine
         TRACK_RESTRICTION = :permissive
 
         EXTRA_TRAIN_GRAIN = 'G'
-        EXTRA_TRAINS = %w[2P P LP G].freeze
         EXTRA_TRAIN_PULLMAN = 'P'
 
         GRAIN_ELEVATORS = %w[G13 H16 I11 I15 I17 J16 K13 K17 L16 M17].freeze

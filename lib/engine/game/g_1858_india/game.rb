@@ -63,7 +63,7 @@ module Engine
             G1858::Step::Token,
             G1858India::Step::Route,
             G1858::Step::Dividend,
-            G1858India::Step::DiscardTrain,
+            G1858::Step::DiscardTrain,
             G1858India::Step::BuyTrain,
             G1858::Step::IssueShares,
           ], round_num: round_num)
@@ -109,6 +109,7 @@ module Engine
                 track_type: :broad,
                 price: 100,
                 available_on: '3',
+                extra: true,
               }
           end
           @game_trains
@@ -129,12 +130,7 @@ module Engine
         def trainless?(corporation)
           # For emergency money raising, a Pullman on its own doesn't stop
           # a public company from issuing shares.
-          corporation.trains.none? { |train| !pullman?(train) }
-        end
-
-        def num_corp_trains(corporation)
-          # Pullmans don't count towards train limit.
-          corporation.trains.count { |train| !pullman?(train) }
+          corporation.trains.all? { |train| extra_train?(train) }
         end
 
         def route_trains(entity)

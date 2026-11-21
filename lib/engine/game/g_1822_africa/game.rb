@@ -67,7 +67,6 @@ module Engine
 
         PRIVATES_IN_GAME = 12
 
-        EXTRA_TRAINS = %w[2P P+ LP S].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
 
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P18].freeze
@@ -322,12 +321,14 @@ module Engine
           },
           {
             name: '2P',
+            extra: true,
             distance: 2,
             num: 2,
             price: 0,
           },
           {
             name: 'LP',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -345,6 +346,7 @@ module Engine
           },
           {
             name: 'P+',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -391,6 +393,7 @@ module Engine
           },
           {
             name: 'S',
+            extra: true,
             distance: 2,
             num: 1,
             price: 0,
@@ -921,7 +924,7 @@ module Engine
         end
 
         def room?(entity)
-          entity.trains.count { |t| !extra_train?(t) } < train_limit(entity)
+          num_corp_trains(entity) < train_limit(entity)
         end
 
         def company_status_game_specific(company)
