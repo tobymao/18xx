@@ -126,7 +126,7 @@ module View
             props = {
               color: (!index && !path.stub? && path.color) || value_for_index(index, :color, path.track),
               width: width_for_index(path, index, path_indexes),
-              dash: value_for_index(index, :dash, path.track),
+              dash: value_for_index(index, :dash, path.track, path),
             }
 
             border_props = BORDER_PROPS[path.track]
@@ -166,7 +166,12 @@ module View
           indexes.empty? ? [nil] : indexes
         end
 
-        def value_for_index(index, prop, track)
+        def value_for_index(index, prop, track, path = nil)
+          if prop == :dash && index && path
+            override = @routes[index].path_dash(path)
+            return override if override
+          end
+
           return TRACK[track][prop] if index && track == :narrow && prop == :dash
           return TRACK[track][prop] if track == :thin && prop == :dash
 
