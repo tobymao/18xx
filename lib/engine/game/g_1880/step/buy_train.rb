@@ -7,6 +7,19 @@ module Engine
     module G1880
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def actions(entity)
+            actions = super
+            return actions if entity != current_entity
+            return actions | %w[pass] if actions.include?('buy_train') && pass_triggers_train_removal?
+
+            actions
+          end
+
+          def pass_triggers_train_removal?
+            train = @game.depot.upcoming.first
+            !avoid_discarding_final_trains?(train) && !@game.trains_not_triggering_sr?(train.name)
+          end
+
           def process_buy_train(action)
             @game.train_marker = action.entity if bought_trains?(action) && !@game.end_game_triggered
             @round.bought_trains = bought_trains?(action)
