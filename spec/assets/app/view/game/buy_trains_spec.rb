@@ -3,6 +3,7 @@
 require 'spec_helper'
 require_relative '../../../../lib/engine/game/g_18_oe/helpers'
 require 'view/game/buy_trains'
+require 'view/game/choose'
 
 describe View::Game::BuyTrains do
   include G18OESpecHelpers
@@ -116,5 +117,87 @@ describe View::Game::BuyTrains, 'an 1822 L to 2 exchange' do
 
     price = game.format_currency(Engine::Game::G1822::Game::UPGRADE_COST_L_TO_2)
     expect(nodes.flat_map { |node| strings(node) }).to include("L -> 2 #{price} ")
+  end
+end
+
+describe View::Game::BuyTrains, 'a forced conversion (§11.6.4)' do
+  include G18OESpecHelpers
+
+  let(:game) { new_game }
+  let(:player) { game.players.first }
+  let(:lnwr) { start_major!(game, 'LNWR', player) }
+  let(:nodes) { [] }
+  let(:component) { described_class.new(nil, game: game) }
+  let(:round) do
+    Engine::Round::Operating.new(
+      game,
+      [Engine::Game::G18OE::Step::BuyTrain, Engine::Game::G18OE::Step::NationalBuyTrains],
+      round_num: 2,
+    )
+  end
+
+  def strings(node)
+    node.is_a?(Array) ? node.flat_map { |part| strings(part) } : [node].select { |part| part.is_a?(String) }
+  end
+
+  before do
+    [lnwr, player].each { |entity| entity.spend(entity.cash, game.bank) }
+    game.fulfill_train_obligation!(lnwr)
+    game.instance_variable_set(:@first_or_complete, true)
+    game.depot.upcoming.select { |t| t.name == '2+2' }.each { |t| game.depot.remove_train(t) }
+    allow(game).to receive(:major_phase?).and_return(true)
+    round.entities = [lnwr]
+    round.instance_variable_set(:@current_operator, lnwr)
+    enter_round!(game, round)
+    allow(component).to receive(:h) do |tag, props = {}, children = nil|
+      node = [tag, props, children]
+      nodes << node
+      node
+    end
+    allow(component).to receive(:store)
+    game.singleton_class.send(:public, :president_assisted_buy, :info_train_name, :info_train_price)
+  end
+
+  it 'never offers bankruptcy for a major' do
+    component.render
+
+    expect(nodes.flat_map { |node| strings(node) }.join(' ')).not_to include('declare bankruptcy')
+  end
+
+  it 'hides the president contribution while the major must convert' do
+    component.render
+
+    expect(nodes.flat_map { |node| strings(node) }.join(' ')).not_to include('must contribute')
+  end
+
+  it 'shows the president contribution when the president can pay' do
+    game.bank.spend(200, player)
+    component.render
+
+    expect(nodes.flat_map { |node| strings(node) }.join(' ')).to include("#{player.name} must contribute £200")
+  end
+
+  it 'names the shortfall the president cannot cover' do
+    expect(round.active_step.choice_name).to eq("#{player.name} cannot cover LNWR's £200 shortfall for the cheapest train")
+  end
+
+  it 'offers the conversion as a Choose button that converts the major' do
+    choose = View::Game::Choose.new(nil, game: game)
+    choose_nodes = []
+    allow(choose).to receive(:h) do |tag, props = {}, children = nil|
+      node = [tag, props, children]
+      choose_nodes << node
+      node
+    end
+    allow(choose).to receive(:store)
+    allow(choose).to receive(:process_action) { |action| round.process_action(action) }
+    choose.render
+
+    button = choose_nodes.find { |tag, _, children| tag == 'button' && children == 'Convert LNWR to a national' }
+    expect(button).not_to be_nil
+
+    button[1][:on][:click].call
+
+    expect(game.national?(lnwr)).to be(true)
   end
 end

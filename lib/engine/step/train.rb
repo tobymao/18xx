@@ -43,6 +43,10 @@ module Engine
         must_buy_train?(entity)
       end
 
+      def show_president_contributions?(entity, shell = nil)
+        (must_buy_train?(entity) && ebuy_president_can_contribute?(entity)) || president_may_contribute?(entity, shell)
+      end
+
       def should_buy_train?(entity); end
 
       def discountable_trains_allowed?(_entity)

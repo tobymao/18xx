@@ -54,6 +54,25 @@ module Engine
           clear_rusted_at_phase_change! if @national_formation_queue.empty?
         end
 
+        def forced_national_choice
+          self.class::FORCED_NATIONAL_CHOICE
+        end
+
+        def forced_national_conversion?(major)
+          return false if major.type != :major || !major.floated? || !trainless?(major)
+
+          price = forced_train_price(major)
+          !price.nil? && major.cash + major.owner.cash < price
+        end
+
+        def force_national!(major)
+          president = major.owner
+          cash = president.cash
+          @log << "#{president.name} cannot fund a train for #{major.name} and surrenders #{format_currency(cash)} to the bank"
+          president.spend(cash, @bank) if cash.positive?
+          form_national!(major)
+        end
+
         def form_national!(major)
           @log << "#{major.name} forms a national (#{entity_track_rights_zone(major)})"
           major.spend(major.cash, @bank) if major.cash.positive?
