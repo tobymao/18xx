@@ -114,6 +114,7 @@ module Engine
              discount: 0.5,
              count: 1,
              from_owner: true,
+             special_only: true,
            }],
          },
          {
