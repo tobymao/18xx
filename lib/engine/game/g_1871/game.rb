@@ -506,15 +506,10 @@ module Engine
           max_bundle&.price || 0
         end
 
-        def can_go_bankrupt?(player, corporation)
-          return false if player == @union_bank
+        def total_emr_buying_power(player, corporation)
+          return super unless corporation&.owner == @union_bank
 
-          if corporation.owner == @union_bank && company_by_id('UB').owner == player
-            total_emr_buying_power(player, corporation) +
-              total_emr_buying_power(@union_bank, corporation) < @depot.min_depot_price
-          else
-            super
-          end
+          super(@union_bank, corporation) + liquidity(company_by_id('UB').owner, emergency: true)
         end
 
         def purchasable_companies(entity = nil)
