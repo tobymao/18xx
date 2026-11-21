@@ -547,7 +547,7 @@ module Engine
 
           setup_fast_start! if fast_start?
           setup_patronage_tiles!
-          setup_wcf_placeholder!
+          place_wcf_placeholder!
           @pass_through_tokens = {}
           setup_minor_k!
           @minor_c_ability = corporation_by_id('C')&.abilities&.first
@@ -579,9 +579,13 @@ module Engine
           end
         end
 
-        def setup_wcf_placeholder!
+        def place_wcf_placeholder!
           @wcf_placeholder = Engine::Token.new(nil, price: 0, logo: '/logos/18_oe/wcf_reserved.svg', type: :neutral)
           lille_city.exchange_token(@wcf_placeholder, extra_slot: true)
+        end
+
+        def wcf_position_token?(corporation)
+          lille_city.extra_tokens.any? { |token| token.corporation == corporation && token.type != :pass_through }
         end
 
         def pass_through_token_definitions
