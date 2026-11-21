@@ -74,6 +74,9 @@ module Engine
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         EBUY_FROM_OTHERS = :never
+        EBUY_CAN_SELL_SHARES = false
+        BANKRUPTCY_ALLOWED = false
+        FORCED_NATIONAL_CHOICE = 'national'
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_RESERVATION_BLOCKS_OTHERS = :always
@@ -1187,6 +1190,13 @@ module Engine
           corporation.trains.all? { |train| extra_train?(train) }
         end
 
+        def forced_train_price(corporation)
+          train = @depot.min_depot_train
+          return unless train
+
+          train.min_price(ability: abilities(corporation, :train_discount))
+        end
+
         def route_trains(entity)
           super.reject { |train| pullman?(train) }
         end
@@ -1695,7 +1705,6 @@ module Engine
           Round::G18OE::Operating.new(self, [
             G18OE::Step::ChooseOperatingPosition,
             G18OE::Step::BuyPortAuthority,
-            Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G18OE::Step::FormNational,
             Engine::Step::DiscardTrain,

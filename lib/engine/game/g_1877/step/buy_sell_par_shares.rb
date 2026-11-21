@@ -55,6 +55,10 @@ module Engine
             false
           end
 
+          def show_president_contributions?(_entity, _shell = nil)
+            false
+          end
+
           def can_finance?(_entity)
             false
           end

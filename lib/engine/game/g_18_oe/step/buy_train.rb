@@ -10,6 +10,38 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           include SkipAbbreviatedRound
 
+          def actions(entity)
+            actions = super - ['sell_shares']
+            actions += ['choose'] if entity == current_entity && @game.forced_national_conversion?(entity)
+            actions
+          end
+
+          def can_sell?(_entity, _bundle)
+            false
+          end
+
+          def show_president_contributions?(entity, shell = nil)
+            super && !@game.forced_national_conversion?(entity)
+          end
+
+          def choice_name
+            shortfall = @game.format_currency(@game.forced_train_price(current_entity) - current_entity.cash)
+            "#{current_entity.owner.name} cannot cover #{current_entity.name}'s #{shortfall} shortfall for the cheapest train"
+          end
+
+          def choices
+            { @game.forced_national_choice => "Convert #{current_entity.name} to a national" }
+          end
+
+          def process_choose(action)
+            entity = action.entity
+            raise GameError, "#{entity.name} cannot be converted to a national" unless @game.forced_national_conversion?(entity)
+            raise GameError, "Invalid choice: #{action.choice}" unless action.choice == @game.forced_national_choice
+
+            @game.force_national!(entity)
+            pass!
+          end
+
           def can_entity_buy_train?(entity)
             super && !@game.national?(entity)
           end
