@@ -133,7 +133,8 @@ module Engine
                   'Place Token step and closes the private. Until then the ferry through Lille stays open to every RR '\
                   'even when Lille is full; afterwards only RRs with a token in Lille (or the Central Circle '\
                   'token) may take the ferry to London or pass through Lille from London. If a national\'s '\
-                  'formation removes the token, Lille is open to every RR for good. See §11.2.2 and §14.7.',
+                  'formation removes the token, the ferry through Lille is open to every RR again. See §11.2.2 and '\
+                  '§14.7.',
             abilities: [
               {
                 type: 'token',

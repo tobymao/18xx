@@ -98,8 +98,13 @@ module Engine
         end
 
         def remove_corporation_tokens!(corporation)
+          wcf_position = wcf_position_token?(corporation)
           corporation.tokens.each(&:remove!)
           corporation.tokens.clear
+          return unless wcf_position
+
+          place_wcf_placeholder!
+          @log << "Lille's White Cliffs Ferry position is open again (§11.2.2)"
         end
 
         def remove_corporation_port_authorities!(corporation)
