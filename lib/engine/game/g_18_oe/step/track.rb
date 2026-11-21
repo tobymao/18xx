@@ -16,7 +16,7 @@ module Engine
           end
 
           def can_lay_tile?(entity)
-            return true if @game.minor_d_token_placeable?(entity)
+            return true if @game.track_token_placeable?(entity)
 
             points_available = remaining_tile_points(entity)
             return false if !points_available.positive? && !@game.zero_point_tile_lays_available?(entity)
@@ -27,7 +27,7 @@ module Engine
           def auto_actions(entity)
             return unless actions(entity).include?('lay_tile')
             return if remaining_tile_points(entity).positive?
-            return if @game.minor_d_token_placeable?(entity)
+            return if @game.track_token_placeable?(entity)
 
             hexes = @game.graph_for_entity(entity).connected_hexes(entity).keys
             return if hexes.any? { |hex| available_hex(entity, hex) }

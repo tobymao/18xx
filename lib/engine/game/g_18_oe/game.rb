@@ -42,7 +42,8 @@ module Engine
         include G18OE::Nationals
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
-        attr_reader :fast_start_minors, :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability
+        attr_reader :fast_start_minors, :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability,
+                    :hochberg_token_hex
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -316,8 +317,8 @@ module Engine
         MINOR_MAX_TREASURY = 180
         TILE_FEE_PER_WATER_DISTANCE = 5
         TOKEN_FEE_PER_WATER_DISTANCE = 20
-        MINOR_E_TERRAIN = %i[water river lake].freeze
-        MINOR_F_TERRAIN = %i[mountain hill].freeze
+        BLUE_TERRAIN = %i[water river lake].freeze
+        GREEN_TERRAIN = %i[mountain hill].freeze
         SEA_CHANNEL_PASSAGE_COST = 20
         SEA_REDUCTION_BY_PHASE = { '2' => 1, '3' => 1, '4' => 1, '5' => 1, '6' => 1, '7' => 2, '8' => 2 }.freeze
 
@@ -464,7 +465,11 @@ module Engine
         MINOR_D_20_TOKEN = 'D+20'
         MINOR_D_40_TOKEN = 'D+40'
         MINOR_D_BONUS = { MINOR_D_20_TOKEN => 20, MINOR_D_40_TOKEN => 40 }.freeze
+        HOCHBERG_TOKEN = 'HMLC'
+        HOCHBERG_MIN_TERRAIN_COST = 45
+        HOCHBERG_REVENUE = { '2' => 10, '3' => 20, '4' => 20, '5' => 40, '6' => 40, '7' => 60, '8' => 60 }.freeze
         ASSIGNMENT_TOKENS = {
+          HOCHBERG_TOKEN => '/logos/18_oe/hmlc.svg',
           MINOR_D_20_TOKEN => '/icons/18_oe/plus_twenty.svg',
           MINOR_D_40_TOKEN => '/icons/18_oe/plus_forty.svg',
         }.freeze
@@ -529,6 +534,8 @@ module Engine
           @first_or_complete = false
           @reserved_shares = []
           @face_down_privates = []
+          @hochberg_token_hex = nil
+          @hochberg_printed_revenue = {}
           setup_nationals
 
           corporations.each do |corp|
@@ -615,7 +622,21 @@ module Engine
         end
 
         def counted_stops(route)
-          without_pass_through_cities(visited_stops(route), route.corporation)
+          stops = without_pass_through_cities(visited_stops(route), route.corporation)
+          return stops if !hochberg_token_hex || hochberg_owner_route?(route)
+
+          stops.reject { |stop| stop == hochberg_town }
+        end
+
+        def hochberg_owner_route?(route)
+          company = hochberg_private
+          !hochberg_token_hex.nil? && !company.owner.nil? && route.corporation&.owner == company.owner
+        end
+
+        def hochberg_bonus(route, stops)
+          return 0 if !hochberg_owner_route?(route) || !stops.include?(hochberg_town)
+
+          self.class::HOCHBERG_REVENUE[route.phase.name]
         end
 
         def without_pass_through_cities(stops, corporation)
@@ -955,7 +976,7 @@ module Engine
           return unless tile.color == :white
 
           terrain_point_abilities(entity).find do |color, _|
-            terrain = color == :blue ? self.class::MINOR_E_TERRAIN : self.class::MINOR_F_TERRAIN
+            terrain = color == :blue ? self.class::BLUE_TERRAIN : self.class::GREEN_TERRAIN
             tile.terrain.intersect?(terrain)
           end&.last
         end
@@ -1786,7 +1807,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super - one_plus_one_marker_undoubled_revenue(route, stops)
           revenue += self.class::ORIENT_EXPRESS_BONUS[route.phase.name] if orient_express_bonus_route?(route)
-          revenue + pullman_bonus(route) + minor_d_bonus(route)
+          revenue + pullman_bonus(route) + minor_d_bonus(route) + hochberg_bonus(route, stops)
         end
 
         def minor_d_private
@@ -1799,6 +1820,72 @@ module Engine
 
         def minor_d_token_placeable?(entity)
           minor_d_private&.owner == entity && !abilities(minor_d_private, :assign_hexes, time: 'any').nil?
+        end
+
+        def track_token_placeable?(entity)
+          minor_d_token_placeable?(entity) || hochberg_token_placeable?(entity)
+        end
+
+        def hochberg_private
+          company_by_id(self.class::HOCHBERG_TOKEN)
+        end
+
+        def hochberg_token_placeable?(corporation)
+          company = hochberg_private
+          return false if !corporation || !company || !company.owner&.player? || national?(corporation)
+          return false unless corporation.owner == company.owner
+
+          !abilities(company, :assign_hexes, time: 'any').nil?
+        end
+
+        def hochberg_town
+          hochberg_token_hex&.tile&.towns&.first
+        end
+
+        def hochberg_hex?(hex)
+          return false if hochberg_token_hex
+          return false unless hex.original_tile.upgrades.any? do |upgrade|
+            upgrade.cost >= self.class::HOCHBERG_MIN_TERRAIN_COST && upgrade.terrains.intersect?(self.class::GREEN_TERRAIN)
+          end
+
+          tile = hex.tile
+          return false if !tile.cities.empty? || !tile.offboards.empty? || !tile.double_towns.empty?
+          return false if tile.towns.size > 1
+          return true if !tile.towns.empty? || tile.exits.empty?
+
+          !hochberg_town_tile(tile).nil?
+        end
+
+        def place_hochberg_token!(hex)
+          @hochberg_token_hex = hex
+          tile = hex.tile
+          if tile.towns.one?
+            zero_hochberg_town!(tile)
+          elsif tile.exits.empty?
+            town = Engine::Part::Town.new('0')
+            town.tile = tile
+            tile.towns << town
+            tile.city_towns << town
+          else
+            replacement, turn = hochberg_town_tile(tile)
+            replacement.rotate!(turn)
+            update_tile_lists(replacement, tile)
+            hex.lay(replacement)
+          end
+          hex.assign!(self.class::HOCHBERG_TOKEN)
+          abilities(hochberg_private, :assign_hexes, time: 'any').use!
+          flip_private!(hochberg_private) unless face_down_private?(hochberg_private)
+          clear_graph
+          @log << "#{hochberg_private.owner.name} places the Hochberg Mining and Lumber Company token in #{hex.name}"
+        end
+
+        def update_tile_lists(tile, old_tile)
+          super
+          return if !hochberg_token_hex || old_tile.hex != hochberg_token_hex
+
+          printed = @hochberg_printed_revenue.delete(old_tile.id)
+          old_tile.towns.first.revenue = old_tile.towns.first.parse_revenue(printed) if printed
+          zero_hochberg_town!(tile)
         end
 
         def minor_d_token_hex
@@ -1820,6 +1907,29 @@ module Engine
           return 0 unless route.visited_stops.any? { |stop| stop.hex.assigned?(@minor_d_token) }
 
           self.class::MINOR_D_BONUS[@minor_d_token] * (route.train.multiplier || 1)
+        end
+
+        def hochberg_town_tile(tile)
+          exits = tile.exits.sort
+          @tiles.each do |candidate|
+            next if candidate.color != tile.color || !candidate.towns.one? || !candidate.cities.empty?
+            next if !candidate.double_towns.empty? || !candidate.offboards.empty?
+
+            edges = candidate.edges.map(&:num)
+            turn = (0..5).find { |t| edges.map { |e| (e + t) % 6 }.uniq.sort == exits }
+            return [candidate, turn] if turn
+          end
+          nil
+        end
+
+        def zero_hochberg_town!(tile)
+          town = tile.towns.first
+          return unless town
+
+          printed = town.revenue_to_render
+          @hochberg_printed_revenue[tile.id] =
+            printed.is_a?(Hash) ? printed.map { |phase, value| "#{phase}_#{value}" }.join('|') : printed.to_s
+          town.revenue = town.parse_revenue('0')
         end
 
         def add_minor_d_ability!
@@ -2053,10 +2163,10 @@ module Engine
           return unless corp
 
           return corporation_by_id('E') if corp.abilities.include?(@minor_e_ability) &&
-                                          tile.terrain.intersect?(self.class::MINOR_E_TERRAIN)
+                                          tile.terrain.intersect?(self.class::BLUE_TERRAIN)
 
           return unless corp.abilities.include?(@minor_f_ability)
-          return unless tile.terrain.intersect?(self.class::MINOR_F_TERRAIN)
+          return unless tile.terrain.intersect?(self.class::GREEN_TERRAIN)
 
           corporation_by_id('F')
         end
