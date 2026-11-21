@@ -55,7 +55,7 @@ module Engine
             ability = miami_token_ability(entity)
             return false unless ability
 
-            return false unless corporation.cash >= ability.cost
+            return false unless entity.cash >= ability.cost
 
             true
           end
