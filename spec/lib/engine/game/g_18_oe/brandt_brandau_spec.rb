@@ -1,0 +1,185 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+require_relative 'helpers'
+
+describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
+  include G18OESpecHelpers
+
+  let(:game) { new_game }
+  let(:player) { game.players.first }
+  let(:bbe) { game.company_by_id('BBE') }
+  let(:lnwr) { start_major!(game, 'LNWR', player) }
+  let(:hex) { game.hex_by_id('J23') }
+
+  before { give_company!(player, bbe) }
+
+  def operating_round_for(entity)
+    round = enter_round!(game, game.operating_round(1))
+    round.entities = [entity]
+    round.instance_variable_set(:@current_operator, entity)
+    round
+  end
+
+  def brandt_step(round)
+    round_step(round, Engine::Game::G18OE::Step::BrandtTrack)
+  end
+
+  def track_step(round)
+    round_step(round, Engine::Game::G18OE::Step::Track)
+  end
+
+  def brandt_lay!(target, round: @round)
+    tile = brandt_step(round).upgradeable_tiles(bbe, target).first
+    action = Engine::Action::LayTile.new(bbe, tile: tile, hex: target, rotation: tile.legal_rotations.first)
+    brandt_step(round).process_lay_tile(action)
+    action
+  end
+
+  context 'with LNWR operating' do
+    before do
+      @round = operating_round_for(lnwr)
+      allow(game).to receive(:cross_water_tile_fee).and_return(0)
+    end
+
+    it "offers lay_tile to the owner's RR during Track" do
+      expect(@round.actions_for(bbe)).to include('lay_tile')
+    end
+
+    it "offers nothing for another player's RR" do
+      other = start_major!(game, 'GWR', game.players.last)
+      round = operating_round_for(other)
+
+      expect(round.actions_for(bbe)).to be_empty
+    end
+
+    it 'places the token and lays a yellow tile with no terrain cost, spending a tile point' do
+      cash = lnwr.cash
+      brandt_lay!(hex)
+
+      expect(hex.tile.color).to eq(:yellow)
+      expect(hex.assigned?('BBE')).to be(true)
+      expect(lnwr.cash).to eq(cash)
+      expect(track_step(@round).help).to eq('5 track points')
+    end
+
+    it 'rejects a hex without rough terrain' do
+      flat = game.hex_by_id('J25')
+
+      expect(flat.original_tile.terrain).to be_empty
+      expect(game.brandt_hex?(flat)).to be(false)
+      expect(brandt_step(@round).available_hex(bbe, flat)).to be_nil
+      action = Engine::Action::LayTile.new(bbe, tile: game.tiles.find { |t| t.name == '7' }, hex: flat, rotation: 0)
+      expect { brandt_step(@round).process_lay_tile(action) }.to raise_error(Engine::GameError)
+    end
+
+    it 'rejects a hex that already holds a tile' do
+      brandt_lay!(hex)
+
+      expect(game.brandt_hex?(hex)).to be(false)
+      expect(brandt_step(@round).available_hex(bbe, hex)).to be_nil
+    end
+
+    it 'rejects a hex not connected to the operating RR' do
+      far = game.hex_by_id('U36')
+
+      expect(game.brandt_hex?(far)).to be(true)
+      expect(brandt_step(@round).available_hex(bbe, far)).to be_nil
+    end
+
+    it 'keeps the token when the yellow tile is upgraded to green' do
+      game.phase.next!
+      brandt_lay!(hex)
+      cash = lnwr.cash
+      green = track_step(@round).upgradeable_tiles(lnwr, hex).first
+      action = Engine::Action::LayTile.new(lnwr, tile: green, hex: hex, rotation: green.legal_rotations.first)
+      track_step(@round).process_lay_tile(action)
+
+      expect(hex.tile.color).to eq(:green)
+      expect(hex.assigned?('BBE')).to be(true)
+      expect(lnwr.cash).to eq(cash)
+    end
+
+    it 'allows two lays in one OR across two RRs and refuses a third' do
+      gwr = start_major!(game, 'GWR', player)
+      brandt_lay!(hex)
+      expect(@round.actions_for(bbe)).to include('lay_tile')
+
+      brandt_lay!(game.hex_by_id('I26'))
+      expect(@round.actions_for(bbe)).to be_empty
+
+      second = operating_round_for(gwr)
+      expect(second.actions_for(bbe)).to be_empty
+    end
+
+    it 'allows lays again in a new operating round' do
+      brandt_lay!(hex)
+      brandt_lay!(game.hex_by_id('I26'))
+      bbe.reset_ability_count_this_or!
+
+      expect(operating_round_for(lnwr).actions_for(bbe)).to include('lay_tile')
+    end
+
+    it 'pays 25 after the third placement and turns face down with no revenue after the fourth' do
+      [hex, game.hex_by_id('I26'), game.hex_by_id('B43')].each do |target|
+        bbe.reset_ability_count_this_or!
+        game.abilities(bbe, :tile_lay, time: 'owning_player_track').use!
+        game.place_brandt_token!(target)
+      end
+      expect(game.face_down_private?(bbe)).to be(false)
+      expect(bbe.revenue).to eq(25)
+
+      bbe.reset_ability_count_this_or!
+      game.abilities(bbe, :tile_lay, time: 'owning_player_track').use!
+      game.place_brandt_token!(game.hex_by_id('U36'))
+
+      expect(game.face_down_private?(bbe)).to be(true)
+      expect(bbe.revenue).to eq(0)
+      expect(game.brandt_hexes.map(&:name)).to contain_exactly('J23', 'I26', 'B43', 'U36')
+    end
+
+    it 'charges the cross-water fee to the operating RR' do
+      allow(game).to receive(:cross_water_tile_fee).and_call_original
+      target = game.hex_by_id('I26')
+      cash = lnwr.cash
+      action = brandt_lay!(target)
+
+      expect(action.extra_cost).to be_positive
+      expect(cash - lnwr.cash).to eq(action.extra_cost)
+    end
+
+    it 'replays a recorded lay using the recorded cross-water fee' do
+      target = game.hex_by_id('I26')
+      tile = brandt_step(@round).upgradeable_tiles(bbe, target).first
+      action = Engine::Action::LayTile.new(bbe, tile: tile, hex: target, rotation: tile.legal_rotations.first, extra_cost: 10)
+      cash = lnwr.cash
+      allow(game).to receive(:loading).and_return(true)
+      brandt_step(@round).process_lay_tile(action)
+
+      expect(target.assigned?('BBE')).to be(true)
+      expect(cash - lnwr.cash).to eq(10)
+    end
+  end
+
+  context 'with Minor F operating' do
+    let(:minor_f) { game.corporation_by_id('F') }
+
+    before do
+      minor_f.owner = player
+      fund!(game, minor_f)
+      game.minor_floated_regions['F'] = 'UK'
+      city = game.hex_by_id('J27').tile.cities.first
+      city.remove_all_reservations!
+      city.place_token(minor_f, minor_f.tokens.first, free: true)
+      @round = operating_round_for(minor_f)
+    end
+
+    it "costs no tile point because of Minor F's green-terrain point" do
+      brandt_lay!(hex)
+
+      expect(hex.assigned?('BBE')).to be(true)
+      expect(track_step(@round).help).to eq('3 track points')
+      expect(minor_f.abilities.first.count_this_or).to eq(1)
+    end
+  end
+end

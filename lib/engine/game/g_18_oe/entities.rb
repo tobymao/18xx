@@ -191,6 +191,19 @@ module Engine
                   'when no tokens remain on the map. To remove a token, another RR must pay the original terrain '\
                   'cost and expend one tile point (two for a metropolis), without placing track. '\
                   'Nationals skip the terrain cost but still expend tile points.',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                free: true,
+                reachable: true,
+                count: 4,
+                count_per_or: 2,
+                tiles: [],
+                hexes: [],
+              },
+            ],
             auction_row: 4,
           },
           {

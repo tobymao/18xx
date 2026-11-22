@@ -488,7 +488,7 @@ describe 'Assets' do
         round.instance_variable_set(:@current_operator, entity)
         game.instance_variable_set(:@round, round)
         step = round.steps.last
-        step.instance_variable_set(:@points_used, 3)
+        step.instance_variable_get(:@round).tile_points_used = 3
         hex = game.hex_by_id('J29')
         hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0;upgrade=cost:45,terrain:river'))
         game.graph.clear
@@ -530,7 +530,7 @@ describe 'Assets' do
         round.instance_variable_set(:@current_operator, entity)
         game.instance_variable_set(:@round, round)
         step = round.steps.last
-        step.instance_variable_set(:@points_used, 3)
+        step.instance_variable_get(:@round).tile_points_used = 3
         hex = game.hex_by_id('J29')
         hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0;upgrade=cost:45,terrain:mountain'))
         game.graph.clear
@@ -554,7 +554,7 @@ describe 'Assets' do
         round.entities = [major]
         round.instance_variable_set(:@current_operator, major)
         game.instance_variable_set(:@round, round)
-        round.steps.last.instance_variable_set(:@points_used, 6)
+        round.tile_points_used = 6
         major_html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1')
         [minor_html, major_html]
       RUBY

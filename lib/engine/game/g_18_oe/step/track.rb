@@ -10,9 +10,13 @@ module Engine
         class Track < Engine::Step::Track
           include SkipAbbreviatedRound
 
+          def round_state
+            super.merge(tile_points_used: 0)
+          end
+
           def setup
             super
-            @points_used = 0
+            @round.tile_points_used = 0
           end
 
           def potential_tile_colors(entity, hex)
@@ -118,7 +122,7 @@ module Engine
             end
             @round.num_laid_track += 1
             @round.laid_hexes << action.hex
-            @points_used += points_cost
+            @round.tile_points_used += points_cost
           end
 
           def tracker_available_hex(entity, hex)
@@ -168,11 +172,11 @@ module Engine
           end
 
           def remaining_tile_points(entity)
-            get_tile_lay(entity) - @points_used
+            get_tile_lay(entity) - @round.tile_points_used
           end
 
-          def cross_water_fee(action)
-            fee = @game.cross_water_tile_fee(action.entity, action.hex, action.tile)
+          def cross_water_fee(action, entity = action.entity)
+            fee = @game.cross_water_tile_fee(entity, action.hex, action.tile)
             return fee if !action.extra_cost || action.extra_cost == fee
 
             raise GameError, "Cross-water fee is #{@game.format_currency(fee)}, not #{@game.format_currency(action.extra_cost)}"

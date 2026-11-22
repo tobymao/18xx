@@ -483,8 +483,10 @@ module Engine
         HOCHBERG_TOKEN = 'HMLC'
         HOCHBERG_MIN_TERRAIN_COST = 45
         HOCHBERG_REVENUE = { '2' => 10, '3' => 20, '4' => 20, '5' => 40, '6' => 40, '7' => 60, '8' => 60 }.freeze
+        BRANDT_TOKEN = 'BBE'
         ASSIGNMENT_TOKENS = {
           HOCHBERG_TOKEN => '/logos/18_oe/hmlc.svg',
+          BRANDT_TOKEN => '/logos/18_oe/bbe.svg',
           MINOR_D_20_TOKEN => '/icons/18_oe/plus_twenty.svg',
           MINOR_D_40_TOKEN => '/icons/18_oe/plus_forty.svg',
         }.freeze
@@ -1828,6 +1830,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18OE::Step::Assign,
+            G18OE::Step::BrandtTrack,
             G18OE::Step::Track,
             G18OE::Step::SpecialToken,
             G18OE::Step::Token,
@@ -1963,6 +1966,36 @@ module Engine
           return false unless corporation.owner == company.owner
 
           !abilities(company, :assign_hexes, time: 'any').nil?
+        end
+
+        def brandt_private
+          company_by_id(self.class::BRANDT_TOKEN)
+        end
+
+        def brandt_token_placeable?(corporation)
+          company = brandt_private
+          return false if !corporation || !company || !company.owner&.player?
+          return false unless corporation.owner == company.owner
+
+          !abilities(company, :tile_lay, time: 'owning_player_track').nil?
+        end
+
+        def brandt_hex?(hex)
+          hex.tile.color == :white &&
+            hex.original_tile.terrain.intersect?(self.class::GREEN_TERRAIN) &&
+            !hex.assigned?(self.class::BRANDT_TOKEN)
+        end
+
+        def brandt_hexes
+          hexes.select { |hex| hex.assigned?(self.class::BRANDT_TOKEN) }
+        end
+
+        def place_brandt_token!(hex)
+          company = brandt_private
+          hex.assign!(self.class::BRANDT_TOKEN)
+          flip_private!(company) if company.abilities.empty? && !face_down_private?(company)
+          clear_graph
+          @log << "#{company.owner.name} places a Brandt & Brandau token in #{hex.name}"
         end
 
         def hochberg_town

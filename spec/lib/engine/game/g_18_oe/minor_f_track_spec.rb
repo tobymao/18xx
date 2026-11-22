@@ -21,7 +21,7 @@ describe 'G18OE Minor F green-terrain tile point (§15.6)' do
     round.instance_variable_set(:@current_operator, railroad)
     enter_round!(prepared_game, round)
     step = round_step(round, Engine::Game::G18OE::Step::Track)
-    step.instance_variable_set(:@points_used, prepared_game.tile_point_budget(railroad) - points_left) if points_left
+    step.instance_variable_get(:@round).tile_points_used = prepared_game.tile_point_budget(railroad) - points_left if points_left
     step
   end
 
@@ -101,7 +101,7 @@ describe 'G18OE Minor F green-terrain tile point (§15.6)' do
     expect(step.tracker_available_hex(entity, hex)).to be_nil
     expect { step.process_lay_tile(Engine::Action::LayTile.new(entity, tile: tile, hex: hex, rotation: 0)) }
       .to raise_error(Engine::GameError, 'Cannot lay a yellow now')
-    step.instance_variable_set(:@points_used, 2)
+    step.instance_variable_get(:@round).tile_points_used = 2
     expect(step.tracker_available_hex(entity, hex)).not_to be_nil
     lay!(step, hex)
 
