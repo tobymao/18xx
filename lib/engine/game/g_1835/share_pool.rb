@@ -44,11 +44,9 @@ module Engine
 
           low, high = bundle.shares.map(&:percent).tally.sort_by { |p, _| p }
 
-          "#{number_to_word(low[1])} #{low[0]}% and #{number_to_word(high[1])} #{high[0]}% share(s)"
-        end
+          number_to_word = ->(i) { NUMBERS_AS_WORDS[i] || ('' + i) }
 
-        def number_to_word(i)
-          NUMBERS_AS_WORDS[i] || ('' + i)
+          "#{number_to_word.call(low[1])} #{low[0]}% and #{number_to_word.call(high[1])} #{high[0]}% share(s)"
         end
       end
     end
