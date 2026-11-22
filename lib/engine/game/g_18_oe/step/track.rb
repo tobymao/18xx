@@ -15,6 +15,43 @@ module Engine
             @points_used = 0
           end
 
+          def potential_tile_colors(entity, hex)
+            colors = super
+            colors << :green if right_of_way?(entity, hex)
+            colors
+          end
+
+          def legal_tile_rotation?(entity_or_entities, hex, tile)
+            return false unless super
+            return true if @game.phase.tiles.include?(tile.color)
+
+            home_connectable?(Array(entity_or_entities).first, 0, hex => tile)
+          end
+
+          def home_connectable?(entity, points, laid = {})
+            return false unless (home = entity.tokens.first&.city)
+
+            cheapest = {}
+            queue = home.exits.map { |exit| [home.hex, exit, 0] } + yellow_lay_ends(entity, home.hex, home.tile, 0, points)
+            until queue.empty?
+              hex, exit, cost = queue.shift
+              next if cheapest[[hex.id, exit]] && cheapest[[hex.id, exit]] <= cost
+
+              cheapest[[hex.id, exit]] = cost
+              crossings(hex, exit).each do |neighbor, edge|
+                tile = laid[neighbor] || neighbor.tile
+                paths = tile.paths.select { |path| path.exits.include?(edge) }.flat_map { |path| path.junction&.paths || [path] }
+                return true if paths.any? { |path| path.nodes.any? { |node| node != home } }
+
+                lay_ends = yellow_lay_ends(entity, neighbor, tile, cost, points)
+                return true if !lay_ends.empty? && !tile.city_towns.empty?
+
+                queue.concat(paths.flat_map(&:exits).map { |track_exit| [neighbor, track_exit, cost] }, lay_ends)
+              end
+            end
+            false
+          end
+
           def can_lay_tile?(entity)
             return true if @game.track_token_placeable?(entity)
 
@@ -58,7 +95,10 @@ module Engine
             tile = action.tile
             old_tile = action.hex.tile
             points_available = remaining_tile_points(action.entity)
-            points_cost = @game.tile_point_cost(action.entity, old_tile: old_tile)
+            right_of_way = !@game.phase.tiles.include?(tile.color)
+            raise GameError, 'Right-of-Way is not available' if right_of_way && !right_of_way?(action.entity, action.hex)
+
+            points_cost = right_of_way ? points_available : @game.tile_point_cost(action.entity, old_tile: old_tile)
             raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && points_cost > points_available
             raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && points_cost > points_available
 
@@ -86,12 +126,41 @@ module Engine
 
             points_available = remaining_tile_points(entity)
             cost = @game.tile_point_cost(entity, old_tile: hex.tile)
-            return nil if cost > points_available
+            return nil if cost > points_available && !right_of_way?(entity, hex)
 
             connected
           end
 
           private
+
+          def right_of_way?(entity, hex)
+            points = remaining_tile_points(entity)
+            @game.players.size > 2 &&
+              !@game.phase.tiles.include?(:green) &&
+              !entity.operated? &&
+              hex.tile.color == :yellow &&
+              hex.tile.cities.empty? &&
+              points.positive? &&
+              (@game.loading || !home_connectable?(entity, points))
+          end
+
+          def yellow_lay_ends(entity, hex, tile, cost, points)
+            return [] if tile.color != :white || !@game.hex_within_national_region?(entity, hex)
+
+            cost += @game.tile_point_cost(entity, old_tile: tile)
+            return [] if cost > points
+            return [] unless @game.tiles.any? { |yellow| yellow.color == :yellow && @game.upgrades_to?(tile, yellow) }
+
+            (0..5).map { |exit| [hex, exit, cost] }
+          end
+
+          def crossings(hex, exit)
+            ferries = @game.ferry_links(hex.id, exit).map { |(hex_id, edge), _distance| [@game.hex_by_id(hex_id), edge] }
+            neighbor = hex.neighbors[exit]
+            return ferries if !neighbor || @game.sea_exit?(hex.id, exit)
+
+            ferries << [neighbor, Engine::Hex.invert(exit)]
+          end
 
           def remaining_tile_points(entity)
             get_tile_lay(entity) - @points_used
