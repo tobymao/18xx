@@ -7,6 +7,7 @@ require_relative 'stock_market'
 require_relative 'graph'
 require_relative 'sea_routes'
 require_relative 'nationals'
+require_relative 'first_round_insolvency'
 require_relative 'train'
 require_relative '../base'
 require_relative 'depot'
@@ -41,6 +42,7 @@ module Engine
         include G18OE::Map
         include G18OE::SeaRoutes
         include G18OE::Nationals
+        include G18OE::FirstRoundInsolvency
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
         attr_reader :fast_start_minors, :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability,
@@ -65,6 +67,7 @@ module Engine
           'CCTC' => { logo: '/logos/18_oe/cctc.svg', port: false },
         }.freeze
 
+        RESERVED_TRAIN = '2+2'
         CERT_LIMIT = { 2 => 99, 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20 }.freeze
         # Standard game: £5,400 total / num_players, rounded up to nearest £5.
         # 2-player variant uses without-concessions formula (£5,200 / 2 = £2,600).
@@ -78,6 +81,7 @@ module Engine
         EBUY_CAN_SELL_SHARES = false
         BANKRUPTCY_ALLOWED = false
         FORCED_NATIONAL_CHOICE = 'national'
+        FIRST_ROUND_INSOLVENCY_CHOICE = 'first_round_insolvency'
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_RESERVATION_BLOCKS_OTHERS = :always
@@ -523,6 +527,7 @@ module Engine
 
         def setup
           super
+          setup_first_round_insolvency
           @minor_regional_order = []
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
@@ -879,7 +884,7 @@ module Engine
         end
 
         def operating_order
-          floated_minors_and_regionals = @minor_regional_order.select(&:floated?)
+          floated_minors_and_regionals = @minor_regional_order.select { |c| c.floated? && !insolvent?(c) }
           floated_minors_and_regionals + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
         end
 
@@ -1094,7 +1099,7 @@ module Engine
         end
 
         def abandoned_minor?(corporation)
-          corporation.type == :minor && corporation.floated? && !corporation.owner
+          corporation.type == :minor && corporation.floated? && !corporation.owner && !insolvent?(corporation)
         end
 
         def corporation_show_shares?(corporation)
@@ -1302,6 +1307,7 @@ module Engine
         end
 
         def consolidation_round_finished!
+          close_unowned_insolvents!
           @consolidation_complete = true
         end
 
@@ -1444,6 +1450,8 @@ module Engine
           lines << ['Orient Express marker'] if orient_express_marker?(corporation)
           port_authorities(corporation).each { |sea| lines << [port_authority_name(sea)] }
           lines.concat(pass_through_token_lines(corporation))
+          insolvent_line = insolvency_status_line(corporation)
+          lines << insolvent_line if insolvent_line
           lines unless lines.empty?
         end
 

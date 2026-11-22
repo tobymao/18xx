@@ -156,4 +156,35 @@ describe 'G18OE floating minors (§9.1)' do
 
     expect(minor.tokens.reject(&:used).map(&:price)).to eq([20])
   end
+
+  it 'leaves the minor without a par, share price or stock market token (§6.2)' do
+    minor = par_minor!
+
+    expect(minor.par_price).to be_nil
+    expect(minor.share_price).to be_nil
+    expect(game.stock_market.market.flatten.compact.flat_map(&:corporations)).not_to include(minor)
+  end
+
+  it 'values the minor charter at its face value of £120 (§6.2)' do
+    player = round.current_entity
+    minor = unused_minor
+    give_company!(player, game.company_by_id(minor.id))
+    before = player.value
+    par_minor!(minor)
+
+    expect(minor.presidents_share.price).to eq(120)
+    expect(player.value).to eq(before - game.company_by_id(minor.id).value + 120)
+  end
+
+  it 'ignores a par price carried by the Float action (§6.2)' do
+    player = round.current_entity
+    minor = unused_minor
+    give_company!(player, game.company_by_id(minor.id))
+    fund!(game, minor, 120)
+    act!(round, Engine::Action::Par.new(player, corporation: minor, share_price: cell(game, 90, :par)))
+
+    expect(minor.par_price).to be_nil
+    expect(minor.share_price).to be_nil
+    expect(minor.presidents_share.price).to eq(120)
+  end
 end

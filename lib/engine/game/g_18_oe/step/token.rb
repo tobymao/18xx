@@ -33,6 +33,8 @@ module Engine
             cost = token_cost(action, token)
             raise GameError, "#{entity.name} cannot afford the #{@game.format_currency(cost)} token cost" if cost > entity.cash
 
+            @game.check_reserved_train_funds!(entity, cost)
+
             charter_price = token.price
             action.token = token
             action.cost = cost

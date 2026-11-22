@@ -41,6 +41,7 @@ module Engine
                 raise GameError, "#{operator.name} cannot afford the #{@game.format_currency(action.cost)} token cost"
               end
 
+              @game.check_reserved_train_funds!(operator, action.cost)
               charter_price = action.token.price
               action.token.price = action.cost
             end
