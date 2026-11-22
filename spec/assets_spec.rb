@@ -361,6 +361,13 @@ describe 'Assets' do
       expect(render(app_route: '/new_game', title: '1889')).to include('Shikoku 1889')
     end
 
+    it 'renders Aggressive Game on the 18OE setup form' do
+      html = render(app_route: '/new_game', title: '18OE')
+
+      expect(html).to include('Designs In Creative Entertainment, LLC.', 'Aggressive Game')
+      expect(render(app_route: '/new_game', title: '18OE UK-France Scenario')).not_to include('Aggressive Game')
+    end
+
     it 'renders game' do
       needs = {
         game_data: {

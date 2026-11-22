@@ -135,7 +135,7 @@ module Engine
 
           def right_of_way?(entity, hex)
             points = remaining_tile_points(entity)
-            @game.players.size > 2 &&
+            !@game.aggressive_game? &&
               !@game.phase.tiles.include?(:green) &&
               !entity.operated? &&
               hex.tile.color == :yellow &&
