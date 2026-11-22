@@ -68,24 +68,35 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       expect { brandt_step(@round).potential_tile_colors(bbe, hex) }.not_to raise_error
     end
 
-    it 'renders the printed terrain on a B&B tile (§14.9)' do
+    it 'shows the printed terrain on the B&B tile (§14.9)' do
       brandt_lay!(hex)
 
-      expect(game.tile_upgrades_to_render(hex.tile)).to eq(hex.original_tile.upgrades)
-      expect(game.tile_upgrades_to_render(hex.tile).sum(&:cost)).to eq(45)
+      expect(hex.tile.upgrades.map(&:cost)).to eq([45])
+      expect(hex.tile.upgrades.map(&:tile).uniq).to eq([hex.tile])
     end
 
-    it 'renders the tile upgrades once the token is removed (§14.9)' do
+    it 'carries the terrain to the upgraded tile without charging it (§14.9)' do
+      game.phase.next!
       brandt_lay!(hex)
+      yellow = hex.tile
+      expect(game.upgrade_cost(yellow, hex, lnwr, lnwr)).to eq(0)
+      green = track_step(@round).upgradeable_tiles(lnwr, hex).first
+      cash = lnwr.cash
+      action = Engine::Action::LayTile.new(lnwr, tile: green, hex: hex, rotation: green.legal_rotations.first)
+      track_step(@round).process_lay_tile(action)
+
+      expect(hex.tile).to eq(green)
+      expect(hex.tile.upgrades.map(&:cost)).to eq([45])
+      expect(yellow.upgrades).to be_empty
+      expect(lnwr.cash).to eq(cash)
+    end
+
+    it 'clears the terrain from the tile once the token is removed (§14.9)' do
+      brandt_lay!(hex)
+      expect(hex.tile.upgrades).not_to be_empty
       game.remove_brandt_token!(lnwr, hex)
 
-      expect(game.tile_upgrades_to_render(hex.tile)).to eq(hex.tile.upgrades)
-    end
-
-    it 'renders the tile upgrades on a hex without a B&B token' do
-      other = game.hex_by_id('U36')
-
-      expect(game.tile_upgrades_to_render(other.tile)).to eq(other.tile.upgrades)
+      expect(hex.tile.upgrades).to be_empty
     end
 
     it 'rejects a hex without rough terrain' do

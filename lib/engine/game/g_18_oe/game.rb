@@ -1059,7 +1059,7 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity, spender)
-          return 0 if national?(entity)
+          return 0 if national?(entity) || hex.assigned?(self.class::BRANDT_TOKEN)
 
           base_cost = tile.upgrades.sum(&:cost)
           return super if base_cost.zero?
@@ -1992,14 +1992,6 @@ module Engine
             !hex.assigned?(self.class::BRANDT_TOKEN)
         end
 
-        def tile_upgrades_to_render(tile)
-          upgrades = super
-          hex = tile.hex
-          return upgrades unless hex&.assigned?(self.class::BRANDT_TOKEN)
-
-          hex.original_tile.upgrades
-        end
-
         def brandt_hexes
           hexes.select { |hex| hex.assigned?(self.class::BRANDT_TOKEN) }
         end
@@ -2036,9 +2028,18 @@ module Engine
         def place_brandt_token!(hex)
           company = brandt_private
           hex.assign!(self.class::BRANDT_TOKEN)
+          copy_brandt_terrain!(hex.original_tile, hex.tile)
           flip_private!(company) if company.abilities.empty? && !face_down_private?(company)
           clear_graph
           @log << "#{company.owner.name} places a Brandt & Brandau token in #{hex.name}"
+        end
+
+        def copy_brandt_terrain!(from_tile, to_tile)
+          to_tile.upgrades = from_tile.upgrades.map do |upgrade|
+            copy = Engine::Part::Upgrade.new(upgrade.cost, upgrade.terrains, upgrade.size, loc: upgrade.loc)
+            copy.tile = to_tile
+            copy
+          end
         end
 
         def brandt_removal_cost(corporation, hex)
@@ -2056,6 +2057,7 @@ module Engine
           cost = brandt_removal_cost(corporation, hex)
           corporation.spend(cost, bank) if cost.positive?
           hex.remove_assignment!(self.class::BRANDT_TOKEN)
+          hex.tile.upgrades = []
           @log << "#{corporation.name} removes the Brandt & Brandau token from #{hex.name}" \
                   "#{cost.positive? ? " for #{format_currency(cost)}" : ''}"
           remove_private!(company) if face_down_private?(company) && brandt_hexes.empty?
@@ -2105,6 +2107,10 @@ module Engine
 
         def update_tile_lists(tile, old_tile)
           super
+          if old_tile.hex&.assigned?(self.class::BRANDT_TOKEN)
+            copy_brandt_terrain!(old_tile, tile)
+            old_tile.upgrades = []
+          end
           return if !hochberg_token_hex || old_tile.hex != hochberg_token_hex
 
           printed = @hochberg_printed_revenue.delete(old_tile.id)

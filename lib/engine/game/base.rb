@@ -2497,10 +2497,6 @@ module Engine
         @companies
       end
 
-      def tile_upgrades_to_render(tile)
-        tile.upgrades
-      end
-
       def render_hex_reservation?(_corporation)
         true
       end
