@@ -564,13 +564,14 @@ module Engine
 
         # P4/P6 change which off-boards act as tokens for the buyer
         def company_bought(company, buyer)
-          clear_graph_for_entity(buyer) if OFFBOARD_TOKEN_COMPANIES.key?(company.id)
+          @graph.clear_graph_for(buyer) if OFFBOARD_TOKEN_COMPANIES.key?(company.id)
         end
 
-        # P4 closing removes A6 as a token
+        # P4 closing removes A6 as a token for its owner
         def event_close_companies!
+          owner = company_by_id('P4').owner
           super
-          clear_graph
+          @graph.clear_graph_for(owner) if owner&.corporation?
         end
 
         def check_other(route)
