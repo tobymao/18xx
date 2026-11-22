@@ -450,7 +450,7 @@ module Engine
     end
 
     def read_connection(saved, index, used, previous)
-      hex_ids = saved
+      hex_ids = hex_ids_of(saved)
       if saved.is_a?(Hash)
         from = node_by_signature(saved['from'])
         to = node_by_signature(saved['to'])
@@ -460,7 +460,6 @@ module Engine
           end
           return segment(found, left: from) if found
         end
-        hex_ids = saved['hexes']
       end
 
       candidates = find_matching_chains(hex_ids).reject { |chain| (chain[:paths] & used).any? }
@@ -512,7 +511,8 @@ module Engine
       options.max_by { |option| yield(option).count { |node| @node_signatures.include?(node.signature) } }
     end
 
-    def find_matching_chains(hex_ids)
+    def find_matching_chains(saved)
+      hex_ids = hex_ids_of(saved)
       return [] if !hex_ids || hex_ids.empty?
 
       start_hex = @game.hex_by_id(hex_ids.first.split.first)
