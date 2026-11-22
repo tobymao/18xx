@@ -59,11 +59,13 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
     player = round.current_entity
     plm = game.corporation_by_id('PLM')
     float_regionals!(game, 5, except: ['PLM'])
+    leftover = game.corporations.find { |c| c.type == :regional && !c.ipoed && c != plm }
     fund!(game, player)
     act!(round, Engine::Action::Par.new(player, corporation: plm, share_price: cell(game, 60, :par)))
 
     expect(game.corporations.count { |c| c.type == :regional }).to eq(6)
     expect(game.corporations.select { |c| c.type == :regional && !c.ipoed }).to be_empty
+    expect(game.removed_regionals).to eq([leftover])
   end
 
   it 'deals ten level 2, seven level 3, three each of levels 4 and 5, two level 6, four level 7 and three level 8 trains' do

@@ -396,6 +396,48 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#auto', **needs)).to include('Auto Actions')
     end
 
+    it 'shows remaining track rights chits and removed regionals in the first 18OE stock round' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        require_tree 'engine/game/g_18_oe_uk_fr'
+
+        def start_stock_round(game)
+          game.instance_variable_set(:@round, game.stock_round)
+        end
+
+        players = { 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }
+        game = Engine::Game::G18OE::Game.new(players, id: 1, seed: 1)
+        start_stock_round(game)
+        initial = View::Game::Help.html(game: game)
+        game.claim_region!(game.corporation_by_id('A'), 'UK')
+        after_claim = View::Game::Help.html(game: game)
+        %w[B C D].zip(%w[UK FR PHS]).each { |id, zone| game.claim_region!(game.corporation_by_id(id), zone) }
+        after_withdrawal = View::Game::Help.html(game: game)
+
+        scenario = Engine::Game::G18OEUKFR::Game.new(players, id: 1, seed: 1)
+        start_stock_round(scenario)
+        short_initial = View::Game::Help.html(game: scenario)
+        scenario.remove_regional!(scenario.corporation_by_id('LNWR'))
+        %w[C H K M].zip(%w[UK UK FR FR]).each { |id, zone| scenario.claim_region!(scenario.corporation_by_id(id), zone) }
+        short_after_removal = View::Game::Help.html(game: scenario)
+
+        scenario.instance_variable_set(:@turn, 2)
+        start_stock_round(scenario)
+        [initial, after_claim, after_withdrawal, short_initial, short_after_removal, View::Game::Help.html(game: scenario)]
+      RUBY
+      initial, after_claim, after_withdrawal, short_initial, short_after_removal, second_round =
+        subject.context(['18OE', '18OE UK-France Scenario']).eval(Opal.compile(script))
+
+      expect(initial).to include('Available track rights zones: UK(2), PHS(2), FR(2), AH(2), IT(2), SP(2), SC(2), RU(2).',
+                                 'Removed regionals: None.')
+      expect(after_claim).to include('Available track rights zones: UK(1), PHS(2), FR(2),')
+      expect(after_withdrawal).to include('Available track rights zones: AH(2), IT(2), SP(2), SC(2), RU(2).')
+      expect(short_initial).to include('Available track rights zones: UK(2), FR(2).')
+      expect(short_after_removal).to include('Available track rights zones: None.',
+                                             'Removed regionals: London and North Western Railway.')
+      expect(second_round).not_to include('Available track rights zones:', 'Removed regionals:')
+    end
+
     it 'renders Minor E track controls with only the blue-terrain point remaining' do
       script = <<~RUBY
         require_tree 'engine/game/g_18_oe'
