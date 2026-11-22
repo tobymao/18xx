@@ -184,4 +184,102 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       expect(minor_f.abilities.first.count_this_or).to eq(1)
     end
   end
+
+  describe 'exclusive use' do
+    let(:liverpool_hex) { game.hex_by_id('J25') }
+    let(:other_owner) { game.players.last }
+    let(:mover) { start_major!(game, 'GWR', other_owner) }
+
+    before do
+      lnwr
+      mover
+      liverpool_hex.assign!('BBE')
+      game.clear_graph
+    end
+
+    def reachable_hexes(corporation)
+      game.graph.connected_paths(corporation).keys.map { |path| path.hex.id }.uniq
+    end
+
+    it "lets the owner's railroad trace through the token hex" do
+      expect(game.brandt_blocked?(lnwr, liverpool_hex)).to be(false)
+      expect(reachable_hexes(lnwr)).to include('J25', 'I20')
+    end
+
+    it "stops another player's railroad tracing through the token hex" do
+      expect(game.brandt_blocked?(mover, liverpool_hex)).to be(true)
+      expect(game.graph_skip_paths(mover).keys.map(&:hex).uniq).to eq([liverpool_hex])
+      expect(reachable_hexes(mover)).not_to include('J25')
+    end
+
+    it 'offers the token hex city to the owner but not to another railroad' do
+      liverpool = liverpool_hex.tile.cities.first
+
+      expect(game.graph.tokenable_cities(lnwr)).to include(liverpool)
+      expect(game.graph.tokenable_cities(mover)).not_to include(liverpool)
+    end
+
+    it 'does not block hexes without a token' do
+      expect(game.brandt_blocked?(mover, game.hex_by_id('J27'))).to be(false)
+      expect(game.graph_skip_paths(lnwr)).to be_nil
+    end
+
+    it "refuses another railroad's track lay on the token hex but not the owner's" do
+      round = operating_round_for(lnwr)
+      step = track_step(round)
+
+      expect(step.tracker_available_hex(lnwr, liverpool_hex)).not_to be_nil
+      expect(step.tracker_available_hex(mover, liverpool_hex)).to be_nil
+    end
+
+    context 'with routes' do
+      let(:manchester) { game.hex_by_id('J27').tile.cities.first }
+      let(:liverpool) { liverpool_hex.tile.cities.first }
+
+      def route_for(corporation)
+        train = game.trains.find { |t| t.name == '3' && !t.owner.is_a?(Engine::Corporation) }
+        game.buy_train(corporation, train, :free)
+        route = Engine::Route.new(game, game.phase, train, routes: [])
+        route.routes = [route]
+        route.touch_node(manchester)
+        route.touch_node(liverpool)
+        route
+      end
+
+      it "raises for another player's railroad running through the hex" do
+        route = route_for(mover)
+
+        expect { game.check_other(route) }.to raise_error(Engine::GameError, /Brandt & Brandau/)
+      end
+
+      it "accepts the owner's railroad running through the hex" do
+        route = route_for(lnwr)
+
+        expect { game.check_other(route) }.not_to raise_error
+      end
+    end
+
+    it 'flips the block when the private changes hands and the graph is cleared' do
+      expect(reachable_hexes(lnwr)).to include('J25')
+
+      bbe.owner.companies.delete(bbe)
+      give_company!(other_owner, bbe)
+      game.clear_graph
+
+      expect(game.brandt_blocked?(lnwr, liverpool_hex)).to be(true)
+      expect(reachable_hexes(lnwr)).not_to include('J25')
+    end
+
+    it 'clears the graph when the private is sold to another player' do
+      expect(reachable_hexes(lnwr)).to include('J25')
+      step = round_step(stock_round!(game), Engine::Game::G18OE::Step::BuySellParShares)
+      allow(step).to receive(:purchasable_companies).and_return([bbe])
+      allow(step).to receive(:validate_trade_price!)
+      fund!(game, other_owner)
+      step.process_buy_company(Engine::Action::BuyCompany.new(other_owner, company: bbe, price: 10))
+
+      expect(bbe.owner).to eq(other_owner)
+      expect(reachable_hexes(lnwr)).not_to include('J25')
+    end
+  end
 end

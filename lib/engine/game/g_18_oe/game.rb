@@ -1866,6 +1866,7 @@ module Engine
 
         def check_other(route)
           super
+          check_brandt_exclusive!(route)
 
           if counted_stops(route).size < 2 && !route.connection_data.empty? && !route.train.local?
             raise RouteTooShort, 'Route must have at least 2 stops'
@@ -1988,6 +1989,37 @@ module Engine
 
         def brandt_hexes
           hexes.select { |hex| hex.assigned?(self.class::BRANDT_TOKEN) }
+        end
+
+        def brandt_blocked?(corporation, hex)
+          hex.assigned?(self.class::BRANDT_TOKEN) && corporation.owner != brandt_private.owner
+        end
+
+        def brandt_paths
+          brandt_hexes.each_with_object({}) { |hex, paths| hex.tile.paths.each { |path| paths[path] = true } }
+        end
+
+        def graph_skip_paths(corporation)
+          skip_paths = super || {}
+          brandt_hexes.each do |hex|
+            hex.tile.paths.each { |path| skip_paths[path] = true } if brandt_blocked?(corporation, hex)
+          end
+          skip_paths.empty? ? nil : skip_paths
+        end
+
+        def after_buy_company(player, company, price)
+          super
+          clear_graph if company == brandt_private
+        end
+
+        def check_brandt_exclusive!(route)
+          return if brandt_hexes.empty?
+
+          hex = route.paths.map(&:hex).uniq.find { |h| brandt_blocked?(route.corporation, h) }
+          return unless hex
+
+          owner = brandt_private.owner
+          raise GameError, "#{hex.name} is reserved for #{owner.name}'s railroads (Brandt & Brandau)"
         end
 
         def place_brandt_token!(hex)

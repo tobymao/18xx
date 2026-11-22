@@ -127,6 +127,7 @@ module Engine
 
           def tracker_available_hex(entity, hex)
             return nil unless @game.hex_within_national_region?(entity, hex)
+            return nil if @game.brandt_blocked?(entity, hex)
 
             connected = hex_neighbors(entity, hex)
             return nil unless connected
