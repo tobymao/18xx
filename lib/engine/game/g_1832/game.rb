@@ -233,8 +233,7 @@ module Engine
         end
 
         def event_close_companies!
-          @log << '-- Event: Private companies close --'
-          company.close!
+          super
 
           @coal_company_sold_or_closed = true
         end
