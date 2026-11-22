@@ -126,6 +126,7 @@ module Engine
             token.remove!
             @pass_through_tokens.delete(company)
           end
+          @pass_through_city_cache = nil
         end
 
         def abandon_corporation_merged_minors!(corporation)

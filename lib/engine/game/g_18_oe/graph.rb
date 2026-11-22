@@ -12,12 +12,14 @@ module Engine
 
         def initialize(game, **opts)
           @sea_connectivityes = {}
+          @corporation_ports = nil
           super
         end
 
         def clear
           super
           @sea_connectivityes.clear
+          @corporation_ports = nil
         end
 
         def sea_connectivity(corporation)

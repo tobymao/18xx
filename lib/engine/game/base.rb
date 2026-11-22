@@ -1589,6 +1589,13 @@ module Engine
         train.distance
       end
 
+      # Upper bound on the number of non-town stops a train can use in one
+      # route, used by the auto-router to prune path walks. Return nil when the
+      # game's distance rules cannot be bounded this way.
+      def max_route_stops(_train)
+        nil
+      end
+
       def route_links(_start_node, _end_node, _corporation)
         []
       end

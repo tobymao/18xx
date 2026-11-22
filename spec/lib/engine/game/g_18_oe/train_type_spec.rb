@@ -88,4 +88,26 @@ describe '18OE train types on purchase (§11.6)' do
       expect([buyer.cash, game.bank.cash]).to eq([cash[0] - price, cash[1] + price])
     end
   end
+
+  describe 'auto-router stop limit' do
+    def train_named(name)
+      game.trains.find { |t| t.name == name }
+    end
+
+    it 'caps non-town stops at the city allowance of each permanent train' do
+      expect(%w[5 6 7+7 8+8].to_h { |name| [name, game.max_route_stops(train_named(name))] })
+        .to eq('5' => 5, '6' => 6, '7+7' => 7, '8+8' => 8)
+    end
+
+    it 'extends the limit by one for a train using the one-plus-one marker' do
+      five = train_named('5')
+      game.instance_variable_set(:@round, Struct.new(:add_on_trains).new({ one_plus_one_marker: five }))
+
+      expect(game.max_route_stops(five)).to eq(6)
+    end
+
+    it 'does not bound the Pullman add-on train' do
+      expect(game.max_route_stops(game.trains.find { |t| t.name == 'Pullman' })).to be_nil
+    end
+  end
 end
