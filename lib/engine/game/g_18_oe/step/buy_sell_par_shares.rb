@@ -494,7 +494,6 @@ module Engine
           end
 
           def float_minor(action)
-            share_price = action.share_price
             corporation = action.corporation
             entity = action.entity
             company = find_minor_company(corporation)
@@ -502,7 +501,6 @@ module Engine
 
             @log << "#{entity.name} floats #{company.sym}"
 
-            @game.par_corporation(corporation, share_price)
             share = corporation.ipo_shares.first
             @round.players_bought[entity][corporation] += share.percent
             buy_shares(entity, share.to_bundle, exchange: company, silent: true)
