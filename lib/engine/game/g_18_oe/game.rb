@@ -776,6 +776,10 @@ module Engine
           @optional_rules.include?(:long_endgame)
         end
 
+        def aggressive_game?
+          two_player? || @optional_rules.include?(:aggressive_game)
+        end
+
         def concessions?
           !medium_start? && !fast_start? && players.size > 2
         end
@@ -1408,7 +1412,7 @@ module Engine
         end
 
         def reserved_shares?
-          @players.size > 2
+          !aggressive_game?
         end
 
         def reserved_share(corporation)

@@ -257,5 +257,33 @@ describe 'G18OE Right-of-Way (§11.1.9)' do
 
       expect(step.potential_tile_colors(railroad, two_player.hex_by_id('B47'))).not_to include(:green)
     end
+
+    context 'in an Aggressive Game' do
+      let(:game) { new_game(optional_rules: [:aggressive_game]) }
+
+      it 'bars early green lays in the tile picker and on submission or replay' do
+        blocked_home!
+        step = track_step!
+        hex = game.hex_by_id('B47')
+
+        expect(step.potential_tile_colors(entity, hex)).not_to include(:green)
+        expect { lay_green!(step, green_81, 1) }.to raise_error(Engine::GameError, /Right-of-Way is not available/)
+        game.instance_variable_set(:@loading, true)
+        expect { lay_green!(step, green_81, 1) }.to raise_error(Engine::GameError, /Right-of-Way is not available/)
+        expect(hex.tile.color).to eq(:yellow)
+      end
+
+      it 'allows a normal green upgrade when Train Phase 3 begins' do
+        blocked_home!
+        step = track_step!(points_left: nil)
+        game.phase.next!
+        hex = game.hex_by_id('B47')
+
+        expect(step.potential_tile_colors(entity, hex)).to include(:green)
+        lay_green!(step, green_81, 1)
+        expect(hex.tile.color).to eq(:green)
+        expect(step.help).to eq('1 track points')
+      end
+    end
   end
 end

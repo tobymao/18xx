@@ -34,6 +34,10 @@ module Engine
           super
           @minor_available_regions = { 'UK' => 2, 'FR' => 2 }
         end
+
+        def aggressive_game?
+          two_player?
+        end
       end
     end
   end

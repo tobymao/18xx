@@ -22,6 +22,13 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
     expect([scenario(2), scenario(3)].map(&:cert_limit)).to eq([24, 16])
   end
 
+  it 'uses Aggressive Game rules in two-player games only, even if the option is supplied' do
+    three_players = new_game(klass: klass, optional_rules: [:aggressive_game])
+
+    expect(game.reserved_shares?).to be(false)
+    expect(three_players.reserved_shares?).to be(true)
+  end
+
   it 'holds £18,000 between the bank and the players' do
     expect(game.bank.cash + game.players.sum(&:cash)).to eq(18_000)
   end

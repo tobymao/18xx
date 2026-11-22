@@ -11,7 +11,7 @@ module Engine
         DEV_STAGE = :prealpha
 
         GAME_DESIGNER = 'Edward T. Sindelar'
-        GAME_PUBLISHER = :DICE
+        GAME_PUBLISHER = :dice
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18OE'
         GAME_LOCATION = 'Europe'
         GAME_RULES_URL = 'http://www.designsice.com/files/18OE%20Rulebook.pdf'
@@ -44,6 +44,12 @@ module Engine
             sym: :long_endgame,
             short_name: 'Long Endgame',
             desc: 'Play the final two ORs as regular ORs',
+          },
+          {
+            sym: :aggressive_game,
+            short_name: 'Aggressive Game',
+            desc: 'Play without Right-of-Way or reserved shares',
+            players: [3, 4, 5, 6, 7],
           },
         ].freeze
 
