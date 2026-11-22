@@ -5,6 +5,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative '../company_price_up_to_face'
+require_relative 'takeover_game'
 require_relative '../base'
 
 module Engine
@@ -15,6 +16,7 @@ module Engine
         include Entities
         include Map
         include CompanyPriceUpToFace
+        include TakeoverGame
 
         attr_accessor :last_action, :lowell_merchants_company_activated
 
@@ -103,8 +105,8 @@ module Engine
             distance: 2,
             price: 75,
             num: 8,
-            obsolete_on: '3+3',
-            rusts_on: '5+3',
+            obsolete_on: '4/7',
+            rusts_on: '6/9',
             variants: [
               {
                 name: '2+1',
@@ -173,17 +175,16 @@ module Engine
           },
         ].freeze
 
-        def num_trains(train)
-          return takeover_game? ? 5 : 3 if train[:name] == '6/9'
-
-          train[:num]
-        end
-
         def setup
           setup_company_price_up_to_face
 
           @last_action = nil
           @lowell_merchants_company_activated = false
+          setup_takeover_game
+        end
+
+        def sherbrooke_hex
+          self.class::SHERBROOKE_HEX
         end
 
         def ipo_name(_entity = nil)
@@ -199,6 +200,7 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            G1833NE::Step::HomeToken,
             Engine::Step::Assign,
             G1846::Step::BuySellParShares,
           ])
@@ -222,13 +224,6 @@ module Engine
           ], round_num: round_num)
         end
 
-        def takeover_round
-          G1833NE::Round::Takeover.new(self, [
-            G1833NE::Step::ViewAcquirable,
-            G1833NE::Step::TakeoverCorporation,
-          ])
-        end
-
         def next_round!
           @round =
             case @round
@@ -241,27 +236,24 @@ module Engine
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
-              elsif takeover_game? && @phase.name != 'I'
+              elsif takeovers_allowed?
                 or_round_finished
                 or_set_finished
                 new_takeover_round
               else
                 @turn += 1
                 or_round_finished
+                or_set_finished
                 new_stock_round
               end
             when G1833NE::Round::Takeover
+              @turn += 1
               new_stock_round
             when init_round.class
               init_round_finished
               reorder_players
               new_stock_round
             end
-        end
-
-        def new_takeover_round
-          @log << '-- Takeover Round -- '
-          takeover_round
         end
 
         def operating_order
@@ -524,10 +516,6 @@ module Engine
           return [biggest_bundle] if biggest_bundle
 
           []
-        end
-
-        def takeover_game?
-          @takeover_game ||= @optional_rules&.include?(:takeover_game)
         end
 
         def lowell_merchants_company
