@@ -2063,9 +2063,10 @@ module Engine
           distance = train_distance(train)
           return nil if distance.is_a?(Numeric)
 
-          distance.sum do |row|
+          city_limit = distance.sum do |row|
             row['nodes'].include?('city') || row['nodes'].include?('offboard') ? row['pay'] : 0
           end
+          RouteStopLimit.new(city_limit, nil)
         end
 
         def train_distance(train)

@@ -173,14 +173,15 @@ module Engine
           connection = connections[id]
           bitfield = bitfield_from_connection(connection, hexside_bits)
           stops = connection.flat_map { |conn| [conn[:left], conn[:right]] }.uniq.compact.flat_map(&:stops)
-          non_town_stops = stops.count { |stop| !stop.town? }
+          city_stops = stops.count { |stop| !stop.town? }
+          town_stops = stops.count(&:town?)
 
           # each train has opportunity to vote to abort a branch of this node's path-walk tree
           path_abort = trains.to_h { |train| [train, true] }
 
           # build a test route for each train, use route.revenue to check for errors, keep the good ones
           trains.each  do |train|
-            if too_many_stops?(non_town_stops, train)
+            if too_many_stops?(city_stops, town_stops, train)
               path_abort.delete(train)
               next
             end
@@ -232,14 +233,18 @@ module Engine
       @game.finish_auto_router! if @game.respond_to?(:finish_auto_router!)
     end
 
-    def too_many_stops?(stop_count, train)
+    def too_many_stops?(city_stops, town_stops, train)
+      limit = route_stop_limit(train)
+      return false unless limit
+
+      (limit.city ? city_stops > limit.city : false) || (limit.town ? town_stops > limit.town : false)
+    end
+
+    def route_stop_limit(train)
       @max_route_stops ||= {}
-      limit = if @max_route_stops.key?(train)
-                @max_route_stops[train]
-              else
-                @max_route_stops[train] = @game.max_route_stops(train)
-              end
-      limit && stop_count > limit
+      return @max_route_stops[train] if @max_route_stops.key?(train)
+
+      @max_route_stops[train] = @game.max_route_stops(train)
     end
 
     def shared_track?(path)
