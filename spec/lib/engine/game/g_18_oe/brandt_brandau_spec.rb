@@ -64,13 +64,15 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
     end
 
     it 'rejects a hex without rough terrain' do
-      flat = game.hex_by_id('J25')
+      flat = game.hex_by_id('X77')
 
+      expect(flat.tile.color).to eq(:white)
       expect(flat.original_tile.terrain).to be_empty
+      expect(track_step(@round).tracker_available_hex(lnwr, flat)).not_to be_nil
       expect(game.brandt_hex?(flat)).to be(false)
-      expect(brandt_step(@round).available_hex(bbe, flat)).to be_nil
-      action = Engine::Action::LayTile.new(bbe, tile: game.tiles.find { |t| t.name == '7' }, hex: flat, rotation: 0)
-      expect { brandt_step(@round).process_lay_tile(action) }.to raise_error(Engine::GameError)
+      action = Engine::Action::LayTile.new(bbe, tile: game.tiles.find { |t| t.color == :yellow }, hex: flat, rotation: 0)
+      expect { brandt_step(@round).process_lay_tile(action) }
+        .to raise_error(Engine::GameError, /cannot hold a Brandt & Brandau token/)
     end
 
     it 'rejects a hex that already holds a tile' do
