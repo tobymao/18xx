@@ -362,10 +362,17 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
     end
 
     it 'does not offer removal to an RR not connected to the hex' do
-      gwr = start_major!(game, 'GWR', other_owner)
-      round = operating_round_for(gwr)
+      third = game.players[1]
+      expect(third).not_to eq(other_owner)
+      midi = start_major!(game, 'MIDI', third)
+      far = game.hex_by_id('R39')
+      far.assign!('BBE')
+      game.clear_graph
+      round = operating_round_for(midi)
 
-      expect(track_step(round).choices).to be_empty
+      expect(game.brandt_blocked?(midi, far)).to be(true)
+      expect(game.graph_for_entity(midi).connected_hexes(midi)[far]).to be_nil
+      expect(track_step(round).choices).not_to have_key('R39')
     end
 
     it 'does not offer removal without enough cash for the terrain cost' do
@@ -382,14 +389,6 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
 
     it 'refuses a choose for a hex without a removable token' do
       expect { choose!(lnwr, 'I26') }.to raise_error(Engine::GameError, /No Brandt & Brandau token/)
-    end
-
-    it 'does not auto-pass the Track step while only a removal is possible' do
-      @round.tile_points_used = removal_step.get_tile_lay(lnwr) - 1
-      allow(game).to receive(:zero_point_tile_lays_available?).and_return(false)
-
-      expect(removal_step.can_lay_tile?(lnwr)).to be(true)
-      expect(removal_step.auto_actions(lnwr)).to be_nil
     end
 
     it 'never offers or processes choose from the Brandt step' do
@@ -458,6 +457,14 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
         game.minor_floated_regions['F'] = 'UK'
         @round = operating_round_for(minor_f)
         allow(removal_step).to receive(:hex_neighbors).and_return(true)
+      end
+
+      it 'does not auto-pass Track with no regular points left while only a removal is possible' do
+        @round.tile_points_used = removal_step.get_tile_lay(minor_f)
+
+        expect(removal_step.choices).to have_key('J23')
+        expect(removal_step.actions(minor_f)).to include('lay_tile', 'choose')
+        expect(removal_step.auto_actions(minor_f)).to be_nil
       end
 
       it "pays one removal point with Minor F's unused green-terrain point" do

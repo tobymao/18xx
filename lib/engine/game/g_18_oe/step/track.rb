@@ -109,7 +109,6 @@ module Engine
 
           def can_lay_tile?(entity)
             return true if @game.track_token_placeable?(entity)
-            return true unless brandt_removal_choices(entity).empty?
 
             points_available = remaining_tile_points(entity)
             return false if !points_available.positive? && !@game.zero_point_tile_lays_available?(entity)
