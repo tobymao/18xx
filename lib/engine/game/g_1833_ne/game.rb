@@ -290,12 +290,6 @@ module Engine
           self.class::SPIKE_HEXES.include?(tile.hex&.id)
         end
 
-        def spike_paths_kept?(old_paths, new_paths)
-          old_paths.all? do |op|
-            new_paths.any? { |np| op <= np || (op.offboard && np.city && op.exits == np.exits) }
-          end
-        end
-
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return false if self.class::RESTRICTED_BROWN_TILES.include?(to.name) && full_brown_tile_fits?(from.hex)
           return super unless spike_tile?(from)

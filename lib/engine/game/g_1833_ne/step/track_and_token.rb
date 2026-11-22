@@ -22,10 +22,13 @@ module Engine
             pass! if !can_lay_tile?(action.entity) && @tokened
           end
 
+          # A Boston/Portland spike may become city track on the same edge
           def old_paths_maintained?(hex, tile)
             return super unless @game.spike_tile?(hex.tile)
 
-            @game.spike_paths_kept?(hex.tile.paths, tile.paths)
+            hex.tile.paths.all? do |op|
+              tile.paths.any? { |np| op <= np || (op.offboard && np.city && op.exits == np.exits) }
+            end
           end
 
           def lay_joint_tokens!
