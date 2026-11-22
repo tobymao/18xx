@@ -326,10 +326,29 @@ module Engine
           end
 
           def process_buy_shares(action)
-            return super unless reservation_prompt?(action)
+            return buy_back_insolvent!(action) if insolvent_pool_bundle?(action.bundle)
 
-            check_legal_buy(action.entity, action.bundle, swap: action.swap)
-            @round.pending_share_buy = action
+            if reservation_prompt?(action)
+              check_legal_buy(action.entity, action.bundle, swap: action.swap)
+              @round.pending_share_buy = action
+            else
+              super
+            end
+          end
+
+          def buy_back_insolvent!(action)
+            player = action.entity
+            bundle = action.bundle
+            corporation = bundle.corporation
+            check_legal_buy(player, bundle)
+
+            @round.players_bought[player][corporation] += bundle.percent
+            @game.share_pool.transfer_shares(
+              bundle, player,
+              spender: player, receiver: @game.bank, price: @game.insolvent_purchase_price(corporation)
+            )
+            @game.restore_insolvent!(corporation)
+            track_action(action, corporation)
           end
 
           def corporation_actions(corporation)
@@ -347,6 +366,7 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
+            return false if bundle && @game.insolvent?(bundle.corporation) && !insolvent_pool_bundle?(bundle)
             return false if treasury_share_off_sale?(bundle)
             return false if reserved_for_another?(entity, bundle)
 
@@ -375,6 +395,7 @@ module Engine
           end
 
           def modify_purchase_price(bundle)
+            return @game.insolvent_purchase_price(bundle.corporation) if insolvent_pool_bundle?(bundle)
             return bundle.corporation.share_price.price * 2 if president_pool_overcap_buy?(current_entity, bundle)
 
             super
@@ -629,6 +650,13 @@ module Engine
             return false if bundle.owner != corporation.ipo_owner || !corporation.ipoed
 
             !(@game.parred_regional?(corporation) && bundle.presidents_share && bundle.percent == corporation.presidents_percent)
+          end
+
+          def insolvent_pool_bundle?(bundle)
+            return false unless bundle&.owner&.share_pool?
+            return false unless bundle.presidents_share
+
+            @game.insolvent?(bundle.corporation)
           end
 
           def president_pool_overcap_buy?(entity, bundle)

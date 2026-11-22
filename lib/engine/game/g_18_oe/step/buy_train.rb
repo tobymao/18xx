@@ -12,7 +12,7 @@ module Engine
 
           def actions(entity)
             actions = super - ['sell_shares']
-            actions += ['choose'] if entity == current_entity && @game.forced_national_conversion?(entity)
+            actions += ['choose'] if entity == current_entity && (forced_national?(entity) || insolvency?(entity))
             actions
           end
 
@@ -21,24 +21,46 @@ module Engine
           end
 
           def show_president_contributions?(entity, shell = nil)
-            super && !@game.forced_national_conversion?(entity)
+            super && !forced_national?(entity) && !insolvency?(entity)
+          end
+
+          def forced_national?(entity)
+            @game.forced_national_conversion?(entity)
+          end
+
+          def insolvency?(entity)
+            @game.first_round_insolvency?(entity)
           end
 
           def choice_name
-            shortfall = @game.format_currency(@game.forced_train_price(current_entity) - current_entity.cash)
-            "#{current_entity.owner.name} cannot cover #{current_entity.name}'s #{shortfall} shortfall for the cheapest train"
+            entity = current_entity
+            if insolvency?(entity)
+              shortfall = @game.format_currency(@game.reserved_train_price - entity.cash - entity.owner.cash)
+              return "#{entity.owner.name} cannot cover #{entity.name}'s #{shortfall} shortfall for its reserved " \
+                     "#{@game.reserved_train_name}"
+            end
+
+            shortfall = @game.format_currency(@game.forced_train_price(entity) - entity.cash)
+            "#{entity.owner.name} cannot cover #{entity.name}'s #{shortfall} shortfall for the cheapest train"
           end
 
           def choices
+            return { @game.first_round_insolvency_choice => 'Declare first-round insolvency' } if insolvency?(current_entity)
+
             { @game.forced_national_choice => "Convert #{current_entity.name} to a national" }
           end
 
           def process_choose(action)
             entity = action.entity
-            raise GameError, "#{entity.name} cannot be converted to a national" unless @game.forced_national_conversion?(entity)
-            raise GameError, "Invalid choice: #{action.choice}" unless action.choice == @game.forced_national_choice
+            if action.choice == @game.first_round_insolvency_choice
+              @game.declare_first_round_insolvency!(entity)
+            elsif action.choice == @game.forced_national_choice
+              raise GameError, "#{entity.name} cannot be converted to a national" unless forced_national?(entity)
 
-            @game.force_national!(entity)
+              @game.force_national!(entity)
+            else
+              raise GameError, "Invalid choice: #{action.choice}"
+            end
             pass!
           end
 
@@ -74,9 +96,9 @@ module Engine
             if @game.fulfilled_train_obligation?(entity)
               return [] unless @game.non_starter_trains_available?
 
-              trains.reject { |t| t.name == '2+2' }
+              trains.reject { |t| t.name == @game.reserved_train_name }
             else
-              trains.select { |t| t.name == '2+2' && t.from_depot? }
+              trains.select { |t| t.name == @game.reserved_train_name && t.from_depot? }
             end
           end
 
@@ -135,7 +157,7 @@ module Engine
               raise GameError, "#{action.entity.name} has no room for another train"
             end
 
-            reserved = train.name == '2+2' && train.from_depot?
+            reserved = train.name == @game.reserved_train_name && train.from_depot?
             royalty = @game.pullman?(train) && train.from_depot? && !@depot.discarded.include?(train)
             super
             @game.pay_pullman_royalty! if royalty

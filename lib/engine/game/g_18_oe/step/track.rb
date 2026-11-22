@@ -72,6 +72,11 @@ module Engine
             [Engine::Action::Pass.new(entity)]
           end
 
+          def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, extra_cost)
+            @game.check_reserved_train_funds!(spender, cost)
+            super
+          end
+
           def get_tile_lay(entity)
             @game.tile_point_budget(entity)
           end
