@@ -8,12 +8,13 @@ module View
     module Part
       class Upgrades < Snabberb::Component
         needs :tile
+        needs :upgrades, default: nil
         needs :region_use
         needs :loc, default: nil
         needs :formatter, default: nil
 
         def render
-          @tile.upgrades.map do |upgrade|
+          (@upgrades || @tile.upgrades).map do |upgrade|
             h(
               Part::Upgrade,
               region_use: @region_use,

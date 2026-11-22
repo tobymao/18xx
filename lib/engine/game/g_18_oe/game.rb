@@ -1992,6 +1992,14 @@ module Engine
             !hex.assigned?(self.class::BRANDT_TOKEN)
         end
 
+        def tile_upgrades_to_render(tile)
+          upgrades = super
+          hex = tile.hex
+          return upgrades unless hex&.assigned?(self.class::BRANDT_TOKEN)
+
+          hex.original_tile.upgrades
+        end
+
         def brandt_hexes
           hexes.select { |hex| hex.assigned?(self.class::BRANDT_TOKEN) }
         end

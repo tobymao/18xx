@@ -95,9 +95,11 @@ module View
         revenue = render_tile_part(Part::Revenue) if render_revenue
         @tile.labels.each { |l| children << render_tile_part(Part::Label, label: l, loc: l.loc) }
 
+        upgrades = @game ? @game.tile_upgrades_to_render(@tile) : @tile.upgrades
         render_tile_parts_by_loc(
           Part::Upgrades,
-          parts: @tile.upgrades,
+          parts: upgrades,
+          upgrades: upgrades,
           formatter: @game && @game.class::FORMAT_UPGRADES_ON_HEXES ? ->(cost) { @game.format_currency(cost) } : nil,
         ).each { |p| children << p }
         children << render_tile_part(Part::Blocker)

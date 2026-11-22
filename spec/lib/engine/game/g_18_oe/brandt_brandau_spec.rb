@@ -63,6 +63,26 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       expect(track_step(@round).help).to eq('5 track points')
     end
 
+    it 'renders the printed terrain on a B&B tile (§14.9)' do
+      brandt_lay!(hex)
+
+      expect(game.tile_upgrades_to_render(hex.tile)).to eq(hex.original_tile.upgrades)
+      expect(game.tile_upgrades_to_render(hex.tile).sum(&:cost)).to eq(45)
+    end
+
+    it 'renders the tile upgrades once the token is removed (§14.9)' do
+      brandt_lay!(hex)
+      game.remove_brandt_token!(lnwr, hex)
+
+      expect(game.tile_upgrades_to_render(hex.tile)).to eq(hex.tile.upgrades)
+    end
+
+    it 'renders the tile upgrades on a hex without a B&B token' do
+      other = game.hex_by_id('U36')
+
+      expect(game.tile_upgrades_to_render(other.tile)).to eq(other.tile.upgrades)
+    end
+
     it 'rejects a hex without rough terrain' do
       flat = game.hex_by_id('X77')
 
