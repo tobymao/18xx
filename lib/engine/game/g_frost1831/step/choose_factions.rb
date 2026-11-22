@@ -35,8 +35,8 @@ module Engine
             nil
           end
 
-          def choice_views
-            [['GFrost1831::InfluenceArena', { game: @game, scale: 0.67 }]]
+          def choice_view
+            :faction_support
           end
 
           def description

@@ -62,10 +62,14 @@ module View
           paragraphs = explanation.map { |text_block| h(:p, text_block) }
           children << h(:div, { style: { marginTop: '0.5rem' } }, paragraphs)
         end
-        if step.respond_to?(:choice_views)
-          step.choice_views.each { |view, props| children << h(Object.const_get("View::Game::#{view}"), props) }
+        if step.respond_to?(:choice_view) && (view = step.choice_view)
+          children << send("render_#{view}")
         end
         h(:div, children)
+      end
+
+      def render_faction_support
+        h(GFrost1831::InfluenceArena, game: @game, scale: 0.67)
       end
 
       def render_choice_amount(amounts)

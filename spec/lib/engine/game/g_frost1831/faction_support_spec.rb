@@ -35,7 +35,7 @@ module Engine
           expect(step).to be_a(GFrost1831::Step::ChooseFactions)
           expect(step.ipo_type(cm)).to be_nil
           expect(step.choices.keys).to eq(%w[TEC LOR GUA EXP])
-          expect(step.choice_views.map(&:first)).to eq(['GFrost1831::InfluenceArena'])
+          expect(step.choice_view).to eq(:faction_support)
         end
 
         it 'gives a cube to the Corporation and the Faction and moves the Government for each choice' do
