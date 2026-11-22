@@ -110,7 +110,7 @@ describe '18OE train types on purchase (§11.6)' do
     end
 
     it 'does not bound the Pullman add-on train' do
-      expect(game.max_route_stops(game.trains.find { |t| t.name == 'Pullman' })).to be_nil
+      expect(game.max_route_stops(game.trains.find { |t| t.name == 'Pullman' })).to eq(city: nil, town: nil)
     end
 
     it 'applies city and town limits independently and treats nil as unlimited' do

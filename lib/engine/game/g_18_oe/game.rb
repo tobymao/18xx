@@ -2048,7 +2048,7 @@ module Engine
 
         def max_route_stops(train)
           distance = train_distance(train)
-          return nil if distance.is_a?(Numeric)
+          return { city: nil, town: nil } if distance.is_a?(Numeric)
 
           city_limit = distance.sum do |row|
             row['nodes'].include?('city') || row['nodes'].include?('offboard') ? row['pay'] : 0
