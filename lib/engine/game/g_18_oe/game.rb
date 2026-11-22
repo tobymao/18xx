@@ -1820,6 +1820,11 @@ module Engine
           ])
         end
 
+        def new_operating_round(round_num = 1)
+          clear_graph unless brandt_hexes.empty?
+          super
+        end
+
         def operating_round(round_num)
           Round::G18OE::Operating.new(self, [
             G18OE::Step::SpecialChoose,
@@ -2013,9 +2018,7 @@ module Engine
         end
 
         def check_brandt_exclusive!(route)
-          return if brandt_hexes.empty?
-
-          hex = route.paths.map(&:hex).uniq.find { |h| brandt_blocked?(route.corporation, h) }
+          hex = route.paths.map(&:hex).find { |h| brandt_blocked?(route.corporation, h) }
           return unless hex
 
           owner = brandt_private.owner

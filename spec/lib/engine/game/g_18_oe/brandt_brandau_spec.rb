@@ -206,17 +206,26 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       expect(reachable_hexes(lnwr)).to include('J25', 'I20')
     end
 
+    def give_bbe_to!(new_owner)
+      bbe.owner.companies.delete(bbe)
+      give_company!(new_owner, bbe)
+      game.clear_graph
+    end
+
     it "stops another player's railroad tracing through the token hex" do
-      expect(game.brandt_blocked?(mover, liverpool_hex)).to be(true)
-      expect(game.graph_skip_paths(mover).keys.map(&:hex).uniq).to eq([liverpool_hex])
-      expect(reachable_hexes(mover)).not_to include('J25')
+      give_bbe_to!(other_owner)
+
+      expect(game.brandt_blocked?(lnwr, liverpool_hex)).to be(true)
+      expect(game.graph_skip_paths(lnwr).keys.map(&:hex).uniq).to eq([liverpool_hex])
+      expect(reachable_hexes(lnwr)).not_to include('J25', 'I20')
     end
 
     it 'offers the token hex city to the owner but not to another railroad' do
       liverpool = liverpool_hex.tile.cities.first
 
       expect(game.graph.tokenable_cities(lnwr)).to include(liverpool)
-      expect(game.graph.tokenable_cities(mover)).not_to include(liverpool)
+      give_bbe_to!(other_owner)
+      expect(game.graph.tokenable_cities(lnwr)).not_to include(liverpool)
     end
 
     it 'does not block hexes without a token' do
@@ -225,11 +234,11 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
     end
 
     it "refuses another railroad's track lay on the token hex but not the owner's" do
-      round = operating_round_for(lnwr)
-      step = track_step(round)
+      step = track_step(operating_round_for(lnwr))
 
       expect(step.tracker_available_hex(lnwr, liverpool_hex)).not_to be_nil
-      expect(step.tracker_available_hex(mover, liverpool_hex)).to be_nil
+      give_bbe_to!(other_owner)
+      expect(step.tracker_available_hex(lnwr, liverpool_hex)).to be_nil
     end
 
     context 'with routes' do
@@ -279,6 +288,18 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       step.process_buy_company(Engine::Action::BuyCompany.new(other_owner, company: bbe, price: 10))
 
       expect(bbe.owner).to eq(other_owner)
+      expect(reachable_hexes(lnwr)).not_to include('J25')
+    end
+
+    it 'flips the block when a presidency change and a new operating round occur without an explicit clear' do
+      expect(reachable_hexes(lnwr)).to include('J25')
+      game.share_pool.transfer_shares(lnwr.presidents_share.to_bundle, other_owner)
+      expect(lnwr.owner).to eq(other_owner)
+      expect(reachable_hexes(lnwr)).to include('J25')
+
+      game.new_operating_round
+
+      expect(game.brandt_blocked?(lnwr, liverpool_hex)).to be(true)
       expect(reachable_hexes(lnwr)).not_to include('J25')
     end
   end
