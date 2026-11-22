@@ -28,6 +28,7 @@ require_relative 'step/reserve_share'
 require_relative 'step/orient_express_bonus'
 require_relative 'step/transfer_tokens'
 require_relative 'step/route'
+require_relative 'step/special_choose'
 require_relative 'step/special_token'
 require_relative 'step/buy_port_authority'
 
@@ -43,7 +44,7 @@ module Engine
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
         attr_reader :fast_start_minors, :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability,
-                    :hochberg_token_hex
+                    :hochberg_token_hex, :swift_metropolitan_train
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -530,6 +531,7 @@ module Engine
           @minor_charter_assets = {}
           @removed_regional_zones = []
           @orient_express_markers = []
+          @swift_metropolitan_train = nil
           @port_authorities = Hash.new { |hash, corporation| hash[corporation] = [] }
           @removed_port_authorities = Hash.new(0)
           @concessions = companies.select { |company| concession?(company) }
@@ -1167,6 +1169,24 @@ module Engine
           @depot.reclaim_train(train)
         end
 
+        def acquire_swift_metropolitan_train!(corporation)
+          train = @depot.rusted_trains.find { |t| t.name == '2+2' }
+          raise GameError, 'No rusted 2+2 remains in the Locomotive Works' unless train
+
+          buy_train(corporation, train, :free)
+          train.rusted = false
+          train.operated = false
+          train.extra = true
+          @swift_metropolitan_train = train
+          @log << "#{corporation.name} acquires an extra #{train.name} from the Swift Metropolitan Line"
+        end
+
+        def rust?(train, purchased_train)
+          return false if extra_train?(train)
+
+          super
+        end
+
         def discountable_trains_for(corporation)
           national?(corporation) ? national_train_exchanges(corporation) : super
         end
@@ -1343,7 +1363,7 @@ module Engine
           return true if national?(entity)
 
           ran = info.routes.keys.flat_map { |train| component_trains(train) }
-          ran.map(&:id).sort == entity.trains.reject { |train| extra_train?(train) }.map(&:id).sort
+          ran.map(&:id).sort == entity.trains.reject { |train| pullman?(train) }.map(&:id).sort
         end
 
         def last_revenue_info(entity)
@@ -1707,6 +1727,7 @@ module Engine
 
         def operating_round(round_num)
           Round::G18OE::Operating.new(self, [
+            G18OE::Step::SpecialChoose,
             G18OE::Step::ChooseOperatingPosition,
             G18OE::Step::BuyPortAuthority,
             Engine::Step::Exchange,
@@ -1770,7 +1791,7 @@ module Engine
           return [] if !corporation.corporation? || corporation.type != :major
           return [] if corporation.trains.any? { |train| combined_train?(train) }
 
-          corporation.trains.reject { |train| train.operated || !train.rusts_on }
+          corporation.trains.reject { |train| train.operated || !train.rusts_on || extra_train?(train) }
         end
 
         def non_permanent_trains?

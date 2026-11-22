@@ -203,6 +203,15 @@ module Engine
                   'This train does not count against the train limit, cannot run on track already used by '\
                   'the RR\'s other trains in the same OR, and can never be sold. '\
                   'If held by a minor, the train transfers to the major when the minor merges.',
+            abilities: [
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                after_phase: '3',
+                choices: { preserve: 'Preserve a rusted 2+2' },
+              },
+            ],
             auction_row: 4,
           },
           # -----------------------------------------------------------------------

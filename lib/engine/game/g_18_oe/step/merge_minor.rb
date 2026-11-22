@@ -95,6 +95,7 @@ module Engine
             @round.merge_minor = nil
             if @game.national?(major)
               @game.discard_pullman!(major) if @game.pullman(major)
+              @game.nationalize_swift_metropolitan_train! if major.trains.include?(@game.swift_metropolitan_train)
               @game.abandon_minor!(minor)
             else
               @game.add_minor_charter!(minor, major)
