@@ -19,6 +19,57 @@ module Engine
             @round.tile_points_used = 0
           end
 
+          def actions(entity)
+            actions = super
+            return actions if entity != current_entity || entity.company?
+            return actions if brandt_removal_choices(entity).empty?
+
+            (actions + %w[choose]).uniq
+          end
+
+          def choice_name
+            'Brandt & Brandau tokens'
+          end
+
+          def choices
+            brandt_removal_choices(current_entity)
+          end
+
+          def process_choose(action)
+            entity = action.entity
+            hex = @game.hex_by_id(action.choice)
+            if !hex || !brandt_removal_choices(entity).key?(hex.id)
+              raise GameError, "No Brandt & Brandau token to remove on #{action.choice}"
+            end
+
+            points = @game.brandt_removal_points(hex)
+            ability = @game.terrain_point_abilities(entity)[:green]
+            if ability
+              ability.use!
+              points -= 1
+            end
+            @round.tile_points_used += points
+            @game.remove_brandt_token!(entity, hex)
+          end
+
+          def brandt_removal_choices(entity)
+            return {} if @game.brandt_hexes.empty?
+
+            @game.brandt_hexes.each_with_object({}) do |hex, choices|
+              next unless @game.brandt_blocked?(entity, hex)
+              next unless @game.hex_within_national_region?(entity, hex)
+              next if !@game.loading && !hex_neighbors(entity, hex)
+
+              cost = @game.brandt_removal_cost(entity, hex)
+              points = @game.brandt_removal_points(hex)
+              covered = @game.terrain_point_abilities(entity).key?(:green) ? 1 : 0
+              next if points - covered > remaining_tile_points(entity)
+              next if cost > buying_power(entity)
+
+              choices[hex.id] = "Remove B&B token on #{hex.id} (#{@game.format_currency(cost)}, #{points} pt)"
+            end
+          end
+
           def potential_tile_colors(entity, hex)
             colors = super
             colors << :green if right_of_way?(entity, hex)
@@ -58,6 +109,7 @@ module Engine
 
           def can_lay_tile?(entity)
             return true if @game.track_token_placeable?(entity)
+            return true unless brandt_removal_choices(entity).empty?
 
             points_available = remaining_tile_points(entity)
             return false if !points_available.positive? && !@game.zero_point_tile_lays_available?(entity)
@@ -69,6 +121,7 @@ module Engine
             return unless actions(entity).include?('lay_tile')
             return if remaining_tile_points(entity).positive?
             return if @game.track_token_placeable?(entity)
+            return unless brandt_removal_choices(entity).empty?
 
             hexes = @game.graph_for_entity(entity).connected_hexes(entity).keys
             return if hexes.any? { |hex| available_hex(entity, hex) }

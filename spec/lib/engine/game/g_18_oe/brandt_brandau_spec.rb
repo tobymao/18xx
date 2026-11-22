@@ -303,4 +303,227 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       expect(reachable_hexes(lnwr)).not_to include('J25')
     end
   end
+  describe 'removal' do
+    let(:other_owner) { game.players.last }
+    let(:token_hex) { game.hex_by_id('J23') }
+
+    def setup_blocked_token!
+      @round = operating_round_for(lnwr)
+      allow(game).to receive(:cross_water_tile_fee).and_return(0)
+      brandt_lay!(token_hex)
+      bbe.owner.companies.delete(bbe)
+      give_company!(other_owner, bbe)
+      game.clear_graph
+    end
+
+    def removal_step
+      track_step(@round)
+    end
+
+    def choose!(corporation, hex_id)
+      @round.process_action(Engine::Action::Choose.new(corporation, choice: hex_id))
+    end
+
+    before { setup_blocked_token! }
+
+    it "offers another player's connected RR the removal with its cost and points" do
+      expect(@round.actions_for(lnwr)).to include('choose')
+      expect(removal_step.choice_name).to eq('Brandt & Brandau tokens')
+      expect(removal_step.choices).to eq('J23' => 'Remove B&B token on J23 (£45, 1 pt)')
+    end
+
+    it 'charges the printed terrain cost to the bank and one tile point, then frees the hex' do
+      cash = lnwr.cash
+      bank_cash = game.bank.cash
+      choose!(lnwr, 'J23')
+
+      expect(token_hex.assigned?('BBE')).to be(false)
+      expect(cash - lnwr.cash).to eq(45)
+      expect(game.bank.cash - bank_cash).to eq(45)
+      expect(removal_step.help).to eq('4 track points')
+      expect(game.brandt_blocked?(lnwr, token_hex)).to be(false)
+      expect(removal_step.tracker_available_hex(lnwr, token_hex)).not_to be_nil
+    end
+
+    it 'lets routes use the hex after removal' do
+      choose!(lnwr, 'J23')
+
+      expect(game.graph_skip_paths(lnwr)).to be_nil
+      expect(game.graph.connected_paths(lnwr).keys.map { |path| path.hex.id }).to include('J23')
+    end
+
+    it "does not offer removal to the owner's RRs" do
+      bbe.owner.companies.delete(bbe)
+      give_company!(lnwr.owner, bbe)
+      game.clear_graph
+
+      expect(removal_step.choices).to be_empty
+      expect(@round.actions_for(lnwr)).not_to include('choose')
+    end
+
+    it 'does not offer removal to an RR not connected to the hex' do
+      gwr = start_major!(game, 'GWR', other_owner)
+      round = operating_round_for(gwr)
+
+      expect(track_step(round).choices).to be_empty
+    end
+
+    it 'does not offer removal without enough cash for the terrain cost' do
+      lnwr.spend(lnwr.cash - 44, game.bank)
+
+      expect(removal_step.choices).to be_empty
+    end
+
+    it 'does not offer removal without a tile point left' do
+      @round.tile_points_used = removal_step.get_tile_lay(lnwr)
+
+      expect(removal_step.choices).to be_empty
+    end
+
+    it 'refuses a choose for a hex without a removable token' do
+      expect { choose!(lnwr, 'I26') }.to raise_error(Engine::GameError, /No Brandt & Brandau token/)
+    end
+
+    it 'does not auto-pass the Track step while only a removal is possible' do
+      @round.tile_points_used = removal_step.get_tile_lay(lnwr) - 1
+      allow(game).to receive(:zero_point_tile_lays_available?).and_return(false)
+
+      expect(removal_step.can_lay_tile?(lnwr)).to be(true)
+      expect(removal_step.auto_actions(lnwr)).to be_nil
+    end
+
+    it 'never offers or processes choose from the Brandt step' do
+      step = brandt_step(@round)
+
+      expect(step.actions(lnwr)).to be_empty
+      expect(step.choices).to be_empty
+    end
+
+    it 'round-trips the choose action and accepts it unchanged while loading' do
+      action = Engine::Action::Choose.new(lnwr, choice: 'J23')
+      rebuilt = Engine::Action::Base.action_from_h(action.to_h, game)
+      game.instance_variable_set(:@loading, true)
+      removal_step.process_choose(rebuilt)
+
+      expect(rebuilt.choice).to eq('J23')
+      expect(token_hex.assigned?('BBE')).to be(false)
+      expect(@round.tile_points_used).to eq(2)
+    end
+
+    context 'with a metropolis hex' do
+      let(:madrid) { game.hex_by_id('Y14') }
+
+      before do
+        madrid.assign!('BBE')
+        game.clear_graph
+        allow(removal_step).to receive(:hex_neighbors).and_return(true)
+      end
+
+      it 'costs two tile points and is offered only with two left' do
+        expect(game.brandt_removal_points(madrid)).to eq(2)
+        expect(removal_step.choices).to include('Y14' => 'Remove B&B token on Y14 (£45, 2 pt)')
+
+        @round.tile_points_used = removal_step.get_tile_lay(lnwr) - 1
+
+        expect(removal_step.choices).not_to have_key('Y14')
+      end
+
+      it 'charges two tile points when removed' do
+        choose!(lnwr, 'Y14')
+
+        expect(@round.tile_points_used).to eq(3)
+      end
+    end
+
+    context 'with a national' do
+      it 'pays no terrain cost' do
+        allow(game).to receive(:national?).and_call_original
+        allow(game).to receive(:national?).with(lnwr).and_return(true)
+
+        expect(game.brandt_removal_cost(lnwr, token_hex)).to eq(0)
+        cash = lnwr.cash
+        game.remove_brandt_token!(lnwr, token_hex)
+
+        expect(lnwr.cash).to eq(cash)
+        expect(game.brandt_removal_points(token_hex)).to eq(1)
+      end
+    end
+
+    context 'with Minor F operating' do
+      let(:minor_f) { game.corporation_by_id('F') }
+
+      before do
+        minor_f.owner = player
+        fund!(game, minor_f)
+        game.minor_floated_regions['F'] = 'UK'
+        @round = operating_round_for(minor_f)
+        allow(removal_step).to receive(:hex_neighbors).and_return(true)
+      end
+
+      it "pays one removal point with Minor F's unused green-terrain point" do
+        points = removal_step.get_tile_lay(minor_f)
+        expect(removal_step.choices).to have_key('J23')
+        choose!(minor_f, 'J23')
+
+        expect(@round.tile_points_used).to eq(0)
+        expect(removal_step.get_tile_lay(minor_f)).to eq(points)
+        expect(minor_f.abilities.first.count_this_or).to eq(1)
+        expect(token_hex.assigned?('BBE')).to be(false)
+      end
+    end
+
+    describe 'closing' do
+      before { fund!(game, lnwr) }
+
+      def place_all!
+        %w[I26 B43 U36].each do |id|
+          bbe.abilities.first.use!
+          game.place_brandt_token!(game.hex_by_id(id))
+          bbe.reset_ability_count_this_or!
+        end
+      end
+
+      it 'closes the face-down private when the last token is removed' do
+        place_all!
+        expect(game.face_down_private?(bbe)).to be(true)
+
+        game.brandt_hexes.dup.each { |hex| game.remove_brandt_token!(lnwr, hex) }
+
+        expect(bbe.closed?).to be(true)
+        expect(game.brandt_hexes).to be_empty
+        expect(game.brandt_private).to eq(bbe)
+      end
+
+      it 'does not close while a token is still unplaced' do
+        game.remove_brandt_token!(lnwr, token_hex)
+
+        expect(bbe.closed?).to be(false)
+      end
+
+      it 'does not close when tokens remain on the map' do
+        place_all!
+        game.remove_brandt_token!(lnwr, token_hex)
+
+        expect(bbe.closed?).to be(false)
+      end
+
+      it 'still pays 25 with two placed and both removed' do
+        bbe.abilities.first.use!
+        game.place_brandt_token!(game.hex_by_id('I26'))
+        game.brandt_hexes.dup.each { |hex| game.remove_brandt_token!(lnwr, hex) }
+
+        expect(bbe.closed?).to be(false)
+        expect(bbe.revenue).to eq(25)
+      end
+
+      it 'tolerates graph and route checks after closing' do
+        place_all!
+        game.brandt_hexes.dup.each { |hex| game.remove_brandt_token!(lnwr, hex) }
+
+        expect(game.brandt_blocked?(lnwr, token_hex)).to be(false)
+        expect(game.graph_skip_paths(lnwr)).to be_nil
+        expect(game.brandt_token_placeable?(lnwr)).to be(false)
+      end
+    end
+  end
 end

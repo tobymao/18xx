@@ -14,6 +14,10 @@ module Engine
             %w[lay_tile]
           end
 
+          def choices
+            {}
+          end
+
           def blocks?
             false
           end

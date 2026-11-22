@@ -2033,6 +2033,27 @@ module Engine
           @log << "#{company.owner.name} places a Brandt & Brandau token in #{hex.name}"
         end
 
+        def brandt_removal_cost(corporation, hex)
+          return 0 if national?(corporation)
+
+          hex.original_tile.upgrades.sum(&:cost)
+        end
+
+        def brandt_removal_points(hex)
+          metropolis_hex?(hex) ? 2 : 1
+        end
+
+        def remove_brandt_token!(corporation, hex)
+          company = brandt_private
+          cost = brandt_removal_cost(corporation, hex)
+          corporation.spend(cost, bank) if cost.positive?
+          hex.remove_assignment!(self.class::BRANDT_TOKEN)
+          @log << "#{corporation.name} removes the Brandt & Brandau token from #{hex.name}" \
+                  "#{cost.positive? ? " for #{format_currency(cost)}" : ''}"
+          remove_private!(company) if face_down_private?(company) && brandt_hexes.empty?
+          clear_graph
+        end
+
         def hochberg_town
           hochberg_token_hex&.tile&.towns&.first
         end
