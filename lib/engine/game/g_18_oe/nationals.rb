@@ -84,8 +84,14 @@ module Engine
           remove_corporation_pass_through_tokens!(major)
           abandon_corporation_merged_minors!(major)
           major.type = :national
+          nationalize_swift_metropolitan_train! if major.trains.include?(@swift_metropolitan_train)
           return_corporation_rusted_trains!(major)
           clear_graph
+        end
+
+        def nationalize_swift_metropolitan_train!
+          @swift_metropolitan_train.extra = false
+          @swift_metropolitan_train = nil
         end
 
         def move_corporation_treasury_shares_to_open_market!(corporation)
@@ -165,6 +171,8 @@ module Engine
 
         def return_corporation_rusted_trains!(corporation)
           @rusted_at_phase_change.delete(corporation)&.each do |train|
+            next unless rusted_trains.include?(train)
+
             @depot.remove_train(train)
             train.owner = corporation
             corporation.trains << train
