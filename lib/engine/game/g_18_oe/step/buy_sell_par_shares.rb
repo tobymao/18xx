@@ -487,10 +487,16 @@ module Engine
               return "#{current_entity.name} must purchase one share of #{@converted.name} to become president."
             end
 
-            return super unless can_float_minor?(current_entity)
+            can_float_minor = can_float_minor?(current_entity)
+            first_stock_round = @game.turn == 1 && @round.instance_of?(Engine::Round::Stock)
+            return super if !first_stock_round && !can_float_minor
 
-            "Available track rights zones: #{zones_display}. "\
-              'Home station placement determines which zone the minor receives.'
+            zones = "Available track rights zones: #{zones_display}."
+            zones += ' Home station placement determines which zone the minor receives.' if can_float_minor
+            return zones unless first_stock_round
+
+            regionals = @game.removed_regionals.map(&:full_name)
+            [zones, "Removed regionals: #{regionals.empty? ? 'None' : regionals.join(', ')}."]
           end
 
           def float_minor(action)
@@ -562,7 +568,7 @@ module Engine
             leftovers = @game.corporations.reject { |corp| corp.ipoed || corp.type == :minor }
             return if leftovers.empty?
 
-            leftovers.each { |corp| @game.close_corporation(corp) }
+            leftovers.each { |corp| @game.remove_regional!(corp, stock_action: false) }
 
             pass!
           end
@@ -627,6 +633,8 @@ module Engine
           end
 
           def zones_display
+            return 'None' if @game.minor_available_regions.empty?
+
             @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
           end
 

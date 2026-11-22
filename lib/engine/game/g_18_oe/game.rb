@@ -46,7 +46,7 @@ module Engine
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
         attr_reader :fast_start_minors, :concessions, :merged_minors, :wcf_placeholder, :minor_c_ability,
-                    :hochberg_token_hex, :swift_metropolitan_train
+                    :hochberg_token_hex, :swift_metropolitan_train, :removed_regionals
 
         PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
                            { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
@@ -534,6 +534,7 @@ module Engine
           @minor_floated_regions = {}
           @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
           @minor_charter_assets = {}
+          @removed_regionals = []
           @removed_regional_zones = []
           @orient_express_markers = []
           @swift_metropolitan_train = nil
@@ -1417,9 +1418,10 @@ module Engine
           !@removed_regional_zones.include?(self.class::CORPORATIONS_TRACK_RIGHTS[corporation.id])
         end
 
-        def remove_regional!(corporation)
-          @removed_regional_zones << self.class::CORPORATIONS_TRACK_RIGHTS[corporation.id]
+        def remove_regional!(corporation, stock_action: true)
+          @removed_regional_zones << self.class::CORPORATIONS_TRACK_RIGHTS[corporation.id] if stock_action
           close_corporation(corporation)
+          @removed_regionals << corporation
         end
 
         def parred_regional?(corporation)
