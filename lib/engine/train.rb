@@ -41,14 +41,14 @@ module Engine
       init_variants(opts[:variants])
     end
 
-    def clone_unlimited
+    def clone_unlimited(index: @index + 1)
       raise GameError, "Cannot clone #{self}, opts[:num] = #{@opts[:num]}" unless @unlimited
 
       # If there are multiple variants of this rank of train we need to clone
       # the base variant, which is always at the head of the @variants array.
       base = @variants.values.first
       Train.new(name: base[:name], distance: base[:distance],
-                price: base[:price], index: @index + 1, **@opts)
+                price: base[:price], index: index, **@opts)
     end
 
     def operated=(value)

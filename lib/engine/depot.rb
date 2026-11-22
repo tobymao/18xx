@@ -86,8 +86,12 @@ module Engine
       deleted = @upcoming.delete(train)
       return if !index || !deleted&.unlimited || (@upcoming[index]&.name == train.name)
 
-      insert_train(train.clone_unlimited, index)
+      insert_train(train.clone_unlimited(index: next_clone_index(train)), index)
       @game.update_trains_cache
+    end
+
+    def next_clone_index(train)
+      @trains.select { |t| t.sym == train.sym }.map(&:index).max + 1
     end
 
     def add_train(train)
