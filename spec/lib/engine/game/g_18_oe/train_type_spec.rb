@@ -96,19 +96,17 @@ describe '18OE train types on purchase (§11.6)' do
     end
 
     it 'caps city stops at the city allowance of each permanent train and leaves towns unlimited' do
-      limits = %w[5 6 7+7 8+8].to_h do |name|
-        limit = game.max_route_stops(train_named(name))
-        [name, [limit.city, limit.town]]
-      end
+      limits = %w[5 6 7+7 8+8].to_h { |name| [name, game.max_route_stops(train_named(name))] }
 
-      expect(limits).to eq('5' => [5, nil], '6' => [6, nil], '7+7' => [7, nil], '8+8' => [8, nil])
+      expect(limits).to eq('5' => { city: 5, town: nil }, '6' => { city: 6, town: nil },
+                           '7+7' => { city: 7, town: nil }, '8+8' => { city: 8, town: nil })
     end
 
     it 'extends the city limit by one for a train using the one-plus-one marker' do
       five = train_named('5')
       game.instance_variable_set(:@round, Struct.new(:add_on_trains).new({ one_plus_one_marker: five }))
 
-      expect(game.max_route_stops(five).city).to eq(6)
+      expect(game.max_route_stops(five)[:city]).to eq(6)
     end
 
     it 'does not bound the Pullman add-on train' do
@@ -118,14 +116,14 @@ describe '18OE train types on purchase (§11.6)' do
     it 'applies city and town limits independently and treats nil as unlimited' do
       router = Engine::AutoRouter.new(game)
       five = train_named('5')
-      allow(game).to receive(:max_route_stops).with(five).and_return(Engine::Game::Base::RouteStopLimit.new(2, 3))
+      allow(game).to receive(:max_route_stops).with(five).and_return({ city: 2, town: 3 })
 
       expect(router.too_many_stops?(2, 3, five)).to be(false)
       expect(router.too_many_stops?(3, 0, five)).to be(true)
       expect(router.too_many_stops?(0, 4, five)).to be(true)
       expect(router.too_many_stops?(1, 99, five)).to be(true)
 
-      allow(game).to receive(:max_route_stops).with(five).and_return(Engine::Game::Base::RouteStopLimit.new(nil, nil))
+      allow(game).to receive(:max_route_stops).with(five).and_return({ city: nil, town: nil })
       router = Engine::AutoRouter.new(game)
       expect(router.too_many_stops?(99, 99, five)).to be(false)
     end

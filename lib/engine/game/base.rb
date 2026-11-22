@@ -1590,11 +1590,9 @@ module Engine
       end
 
       # Limits on the number of city and town stops a train can use in one
-      # route, used by the auto-router to prune path walks. Return nil when the
-      # game's distance rules cannot be bounded. A nil city or town limit means
-      # that stop type is unlimited.
-      RouteStopLimit = Struct.new(:city, :town)
-
+      # route, used by the auto-router to prune path walks. Return a hash with
+      # :city and :town limits, using nil for an unlimited stop type. Return nil
+      # when the game's distance rules cannot be bounded.
       def max_route_stops(_train)
         nil
       end

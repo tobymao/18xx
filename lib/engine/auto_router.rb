@@ -51,7 +51,6 @@ module Engine
 
       @shared_track = {}
       @max_route_stops = {}
-      @game.start_auto_router! if @game.respond_to?(:start_auto_router!)
       graph = @game.graph_for_entity(corporation)
       nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = trains
@@ -229,15 +228,13 @@ module Engine
       end
 
       [train_routes, path_walk_timed_out]
-    ensure
-      @game.finish_auto_router! if @game.respond_to?(:finish_auto_router!)
     end
 
     def too_many_stops?(city_stops, town_stops, train)
       limit = route_stop_limit(train)
       return false unless limit
 
-      (limit.city ? city_stops > limit.city : false) || (limit.town ? town_stops > limit.town : false)
+      (limit[:city] ? city_stops > limit[:city] : false) || (limit[:town] ? town_stops > limit[:town] : false)
     end
 
     def route_stop_limit(train)
