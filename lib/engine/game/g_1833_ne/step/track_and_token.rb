@@ -17,13 +17,13 @@ module Engine
               @game.remove_lowell_merchants_ability!
             end
 
-            lay_joint_tokens! if action.hex.id == @game.class::SHERBROOKE_HEX && action.tile.color == :yellow
+            lay_joint_tokens! if action.hex.id == @game.sherbrooke_hex && action.tile.color == :yellow
 
             pass! if !can_lay_tile?(action.entity) && @tokened
           end
 
           def lay_joint_tokens!
-            hex = @game.hex_by_id(@game.class::SHERBROOKE_HEX)
+            hex = @game.hex_by_id(@game.sherbrooke_hex)
             city = hex.tile.cities.first
 
             %w[StL&A A&StL].each do |corp_id|
