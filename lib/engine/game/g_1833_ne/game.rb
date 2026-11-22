@@ -6,6 +6,8 @@ require_relative 'map'
 require_relative 'meta'
 require_relative '../company_price_up_to_face'
 require_relative '../base'
+require_relative 'graph'
+require_relative 'auto_router'
 
 module Engine
   module Game
@@ -173,6 +175,32 @@ module Engine
           },
         ].freeze
 
+        INTERCONNECTION_EXTENSION = [
+          { 'nodes' => %w[city offboard town], 'pay' => 0, 'visit' => 99, 'extension' => true },
+        ].freeze
+
+        def init_train_handler
+          trains = game_trains.flat_map do |train|
+            train = with_extension(train)
+            Array.new(num_trains(train)) do |index|
+              self.class::TRAIN_CLASS.new(**train, index: index)
+            end
+          end
+
+          self.class::DEPOT_CLASS.new(trains, self)
+        end
+
+        def with_extension(train)
+          train = train.merge(distance: extended_distance(train[:distance])) if train[:distance]
+          return train unless train[:variants]
+
+          train.merge(
+            variants: train[:variants].map do |variant|
+              variant.merge(distance: extended_distance(variant[:distance]))
+            end
+          )
+        end
+
         def num_trains(train)
           return takeover_game? ? 5 : 3 if train[:name] == '6/9'
 
@@ -214,7 +242,7 @@ module Engine
             G1833NE::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1833NE::Step::TrackAndToken,
-            Engine::Step::Route,
+            G1833NE::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1833NE::Step::BuyTrain,
@@ -227,6 +255,26 @@ module Engine
             G1833NE::Step::ViewAcquirable,
             G1833NE::Step::TakeoverCorporation,
           ])
+        end
+
+        def extension_graph
+          @extension_graph ||= G1833NE::Graph.new(self)
+        end
+
+        def auto_router_class
+          G1833NE::AutoRouter
+        end
+
+        def clear_graph_for_entity(entity)
+          super
+          @extension_graph&.clear
+          @route_memos = nil
+        end
+
+        def for_graph_city_tokened_by?(city, corporation, graph)
+          return true if graph.is_a?(G1833NE::Graph) && city.blocks?(corporation)
+
+          super
         end
 
         def next_round!
@@ -278,6 +326,322 @@ module Engine
 
         def upgrade_cost(tile, hex, entity, spender)
           [self.class::TILE_COST, super].max
+        end
+
+        def check_distance(route, visits, train = nil)
+          train ||= route.train
+          has_extension = train.distance.is_a?(Array) && train.distance.any? { |h| h['extension'] }
+
+          return super unless has_extension
+          raise RouteTooLong, 'Route has no legal main range' if visits.any? && main_range(route, visits, train).empty?
+        end
+
+        def check_connected(route, corporation)
+          paths = route.ordered_paths
+
+          paths.each_cons(2) do |a, b|
+            next if a.connects_to?(b, corporation) || blocked_join_legal?(route, a, b, corporation)
+
+            raise GameError, 'Route is not connected'
+          end
+        end
+
+        def within_main_range?(entries, visits, train)
+          return true if visits.empty?
+
+          rows = entries.map { |h| { nodes: h['nodes'], visit: h['visit'] || h['pay'] } }
+
+          visits.group_by { |v| stop_type(v, train) }
+                .sort_by { |t, _| rows.count { |r| r[:nodes].include?(t) } }
+                .all? do |type, group|
+            num = group.sum(&:visit_cost)
+            rows.each do |row|
+              usable = row[:nodes].include?(type) && row[:visit].positive?
+
+              next unless usable
+
+              take = [num, row[:visit]].min
+              row[:visit] -= take
+              num -= take
+              break unless num.positive?
+            end
+            num.zero?
+          end
+        end
+
+        def within_extension?(visits)
+          visits.sum(&:visit_cost) <= INTERCONNECTION_EXTENSION.first['visit']
+        end
+
+        def blocked_for?(stop, corporation)
+          stop.respond_to?(:blocks?) && stop.blocks?(corporation)
+        end
+
+        def blocked_join_legal?(route, a, b, corporation)
+          shared = a.nodes & b.nodes
+          return false unless shared.any? { |node| blocked_for?(node, corporation) }
+
+          extension = extension_track(route)
+          extension.include?(a) || extension.include?(b)
+        end
+
+        def route_path_dashes(route)
+          extension_track(route).to_h { |p| [p, '12 6'] }
+        end
+
+        # A route's main range is asked for many times while its paid stops are
+        # chosen, so it is kept until the route's connections or train change.
+        def route_memo(route)
+          connections = route.connection_data
+          @route_memos ||= {}
+          @route_memos.clear if @route_memos.size > 20_000
+          memo = @route_memos[route]
+          same = memo && memo[:train] == route.train && memo[:connections].size == connections.size &&
+                 memo[:connections].each_with_index.all? { |c, i| c.equal?(connections[i]) }
+          same ? memo : (@route_memos[route] = { train: route.train, connections: connections.dup })
+        end
+
+        # The route's stops in running order. A stop the route returns to appears twice.
+        def running_stops(route)
+          connections = route.connection_data.select { |c| c[:left] && c[:right] }
+          return [] if connections.empty?
+
+          first, second = connections
+          stop = second && [second[:left], second[:right]].include?(first[:left]) ? first[:right] : first[:left]
+          [stop] + connections.map { |c| stop = (c[:left] == stop ? c[:right] : c[:left]) }
+        end
+
+        def main_range(route, stops = nil, train = route.train)
+          return route_memo(route)[:main] ||= main_range(route, running_stops(route), train) unless stops
+
+          main = train.distance.reject { |h| h['extension'] }
+          [stops, stops.reverse].filter_map do |ordered|
+            longest = (1..ordered.size).select do |n|
+              prefix = ordered.first(n)
+              prefix.uniq.size == n &&
+                within_main_range?(main, prefix, train) &&
+                prefix[1..-2].none? { |s| s.city? && blocked_for?(s, route.corporation) }
+            end.max || 0
+            range = ordered.first(longest)
+            range if range.any? { |s| s.tokened_by?(route.corporation) }
+          end.max_by(&:size) || []
+        end
+
+        def extension_stops(route)
+          route_memo(route)[:extension] ||= begin
+            stops = running_stops(route)
+            main = main_range(route)
+            (stops.first(main.size) == main ? stops : stops.reverse).drop(main.size)
+          end
+        end
+
+        def extension_track(route)
+          count = extension_stops(route).size
+          return [] if count.zero?
+
+          main = main_range(route)
+          connections = route.connection_data.select { |c| c[:left] && c[:right] }
+          connections = connections.reverse unless running_stops(route).first(main.size) == main
+          connections.last(count).flat_map { |c| c[:chain][:paths] }
+        end
+
+        # A route may return to a stop it already visits only as the last stop
+        # of its extension, and only at an interconnection destination.
+        def route_may_revisit?(route, node)
+          extension = extension_stops(route)
+          extension.last == node && extension.count(node) == 1 && main_range(route).include?(node) &&
+            INTERCONNECTION_BONUSES.any? { |bonus| stop_in_group?(node, bonus[:destination]) }
+        end
+
+        def connection_bonus_tier
+          case phase.name
+          when 'I', 'II' then :i_ii
+          when 'III', 'IV' then :iii_iv
+          else :v
+          end
+        end
+
+        # Ogdensburg RR owner doubles its bonuses in Phases I-III only.
+        def ogdensburg_doubling?(corporation)
+          ogdensburg_rr_owner?(corporation) && !after_phase_iii?
+        end
+
+        def bonus_value(bonus, route)
+          value = bonus[:values][connection_bonus_tier]
+          ogdensburg_bonus = bonus[:ogdensburg_owner] && ogdensburg_doubling?(route.corporation)
+
+          return value unless ogdensburg_bonus
+
+          value * 2
+        end
+
+        def any_stop_matches?(stops, names)
+          stops.any? { |stop| names.any? { |name| stop_in_group?(stop, [name]) } }
+        end
+
+        def stop_in_group?(stop, group)
+          group.include?(stop.tile.location_name) || group.include?(stop.hex.id)
+        end
+
+        def extended_distance(distance)
+          base = if distance.is_a?(Numeric)
+                   [{ 'nodes' => %w[city offboard town], 'pay' => distance, 'visit' => distance }]
+                 else
+                   distance
+                 end
+          base.reject { |h| h['extension'] }.map(&:dup) + INTERCONNECTION_EXTENSION.map(&:dup)
+        end
+
+        def interconnection_bonus(route, stops)
+          interconnection_bonus_entries(route, stops).sum { |_label, value| value }
+        end
+
+        # The extension earns an interconnection when it ends in the destination
+        # and the origin is a paid stop of the train's own run, at least one stop
+        # back from where the extension leaves it. The destination may also be on
+        # the train's own run, but not between the origin and the extension.
+        def interconnection_bonus_entries(route, stops)
+          range = main_range(route)
+          far = extension_stops(route).last
+          return [] if range.size < 2 || far.nil?
+
+          paid = stops || route.stops
+          claims = INTERCONNECTION_BONUSES.map do |bonus|
+            next nil unless interconnection_origin?(range, paid, bonus)
+            next nil unless any_stop_matches?([far], bonus[:destination])
+
+            value = bonus_value(bonus, route)
+            value.positive? ? [bonus[:label], value] : nil
+          end.compact
+
+          best = claims.max_by { |_label, value| value }
+          best ? [best] : []
+        end
+
+        def interconnection_origin?(range, paid, bonus)
+          range[0..-2].each_with_index.any? do |origin, index|
+            paid.include?(origin) && any_stop_matches?([origin], bonus[:origin]) &&
+              !any_stop_matches?(range[index..-1], bonus[:destination])
+          end
+        end
+
+        INTERCONNECTION_BONUSES = [
+          {
+            label: 'Albany/Troy to Boston intercx bonus',
+            origin: %w[Albany Troy],
+            destination: %w[Boston],
+            values: { i_ii: 50, iii_iv: 0, v: 0 },
+          },
+          {
+            label: 'Montreal to Boston intercx bonus',
+            origin: %w[Montreal],
+            destination: %w[Boston],
+            values: { i_ii: 70, iii_iv: 90, v: 0 },
+          },
+          {
+            label: 'Boston to Montreal intercx bonus',
+            origin: %w[Boston],
+            destination: %w[Montreal],
+            values: { i_ii: 30, iii_iv: 50, v: 0 },
+          },
+          {
+            label: 'Boston to Ogdensburg intercx bonus',
+            origin: %w[Boston],
+            destination: %w[Ogdensburg],
+            values: { i_ii: 30, iii_iv: 50, v: 0 },
+          },
+          {
+            label: 'Ogdensburg to Boston intercx bonus',
+            origin: %w[Ogdensburg],
+            destination: %w[Boston],
+            values: { i_ii: 40, iii_iv: 70, v: 0 },
+            ogdensburg_owner: true,
+          },
+          {
+            label: 'Montreal to Portland intercx bonus',
+            origin: %w[Montreal],
+            destination: %w[Portland],
+            values: { i_ii: 30, iii_iv: 60, v: 40 },
+          },
+          {
+            label: 'Portland to Montreal intercx bonus',
+            origin: %w[Portland],
+            destination: %w[Montreal],
+            values: { i_ii: 30, iii_iv: 60, v: 40 },
+          },
+        ].map(&:freeze).freeze
+
+        def direct_connection_bonus(route, stops)
+          direct_bonus_entries(route, stops).sum { |_label, value| value.to_i }
+        end
+
+        def direct_bonus_entries(route, _stops)
+          range = main_range(route)
+          return [] if range.size < 2
+
+          DIRECT_CONNECTION_BONUSES.map do |bonus|
+            group_a, group_b = bonus[:groups]
+            matched = range.any? { |s| stop_in_group?(s, group_a) } &&
+                      range.any? { |s| stop_in_group?(s, group_b) }
+            next nil unless matched
+
+            value = bonus_value(bonus, route)
+            value.positive? ? [bonus[:label], value] : nil
+          end.compact
+        end
+
+        DIRECT_CONNECTION_BONUSES = [
+          {
+            label: 'Albany/Troy and Boston direct bonus',
+            groups: [%w[Albany Troy], %w[Boston]],
+            values: { i_ii: 100, iii_iv: 0, v: 0 },
+          },
+          { label: 'NYC and Boston direct bonus', groups: [['New York'], %w[Boston]], values: { i_ii: 0, iii_iv: 60, v: 80 } },
+          {
+            label: 'Montreal and Boston direct bonus',
+            groups: [%w[Montreal], %w[Boston]],
+            values: { i_ii: 150, iii_iv: 200, v: 0 },
+          },
+          {
+            label: 'Ogdensburg and Boston direct bonus',
+            groups: [%w[Boston], %w[Ogdensburg]],
+            values: { i_ii: 120, iii_iv: 180, v: 0 },
+            ogdensburg_owner: true,
+          },
+          {
+            label: 'Montreal and Portland direct bonus',
+            groups: [%w[Montreal], %w[Portland]],
+            values: { i_ii: 60, iii_iv: 120, v: 80 },
+          },
+          {
+            label: 'Montreal and New Haven/Norwich direct bonus',
+            groups: [%w[Montreal], ['New Haven', 'Norwich']],
+            values: { i_ii: 0, iii_iv: 50, v: 80 },
+          },
+        ].map(&:freeze).freeze
+
+        def revenue_for(route, stops)
+          stops.sum { |stop| stop.route_revenue(route.phase, route.train) } +
+            direct_connection_bonus(route, stops) +
+            interconnection_bonus(route, stops)
+        end
+
+        def revenue_stops(route)
+          return super unless route.connection_hexes
+
+          main_range(route)
+        end
+
+        def revenue_str(route)
+          names = main_range(route).map { |stop| stop.hex.name }
+          names += extension_stops(route).map { |stop| "(#{stop.hex.name})" }
+          base = names.join('-')
+
+          entries = direct_bonus_entries(route, nil) + interconnection_bonus_entries(route, nil)
+          return base if entries.empty?
+
+          bonuses = entries.map { |label, value| "#{label} #{format_currency(value)}" }.join(', ')
+          "#{base} (#{bonuses})"
         end
 
         def show_map_legend?
@@ -530,6 +894,14 @@ module Engine
           @takeover_game ||= @optional_rules&.include?(:takeover_game)
         end
 
+        def after_phase_i?
+          phase.name != 'I'
+        end
+
+        def after_phase_iii?
+          %w[IV V].include?(phase.name)
+        end
+
         def lowell_merchants_company
           @lowell_merchants_company ||= company_by_id('P2')
         end
@@ -548,6 +920,14 @@ module Engine
           end
 
           @lowell_merchants_company_activated = false
+        end
+
+        def ogdensburg_rr
+          @ogdensburg_rr ||= company_by_id('P4')
+        end
+
+        def ogdensburg_rr_owner?(corporation)
+          corporation == ogdensburg_rr.owner
         end
       end
     end
