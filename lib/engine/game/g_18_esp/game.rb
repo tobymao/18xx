@@ -37,6 +37,8 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
 
+        MUST_BUY_TRAIN = :always
+
         TILE_RESERVATION_BLOCKS_OTHERS = :single_slot_cities
 
         MOUNTAIN_PASS_TOKEN_HEXES = %w[L8 J10 H12 D12].freeze
@@ -164,6 +166,7 @@ module Engine
 
           {
             name: '2P',
+            extra: true,
             distance: 2,
             price: 0,
             num: 1,
@@ -275,10 +278,6 @@ module Engine
           },
           ].freeze
 
-        # These trains don't count against train limit, they also don't count as a train
-        # against the mandatory train ownership. They cant the bought by another corporation.
-        EXTRA_TRAINS = %w[2P].freeze
-
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
                 'south_majors_available' => ['South Majors Available',
                                              'Major Corporations in the south map can open'],
@@ -320,7 +319,7 @@ module Engine
         def stock_round
           G18ESP::Round::Stock.new(self, [
             G18ESP::Step::Acquire,
-            G18ESP::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
             G18ESP::Step::BuySellParShares,
           ])
         end
@@ -340,7 +339,7 @@ module Engine
             G18ESP::Step::Track,
             G18ESP::Step::Route,
             G18ESP::Step::Dividend,
-            G18ESP::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
             G18ESP::Step::Acquire,
             G18ESP::Step::BuyTrain,
             G18ESP::Step::CombinedTrains,
@@ -898,11 +897,6 @@ module Engine
           rev_str
         end
 
-        def must_buy_train?(entity)
-          entity.trains.none? { |t| !extra_train?(t) } &&
-          !depot.depot_trains.empty?
-        end
-
         def num_corp_trains(entity)
           type_to_ignore = north_corp?(entity) ? :broad : :narrow
           entity.trains.count { |t| t.track_type != type_to_ignore }
@@ -1051,10 +1045,6 @@ module Engine
 
           tile = hex_by_id(corp.destination).tile
           tile.icons.reject! { |icon| icon.name == corp.name }
-        end
-
-        def extra_train?(train)
-          self.class::EXTRA_TRAINS.include?(train.name)
         end
 
         def crowded_corps

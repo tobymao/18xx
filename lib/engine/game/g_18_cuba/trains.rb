@@ -32,10 +32,6 @@ module Engine
           entity.trains.count { |t| wagon?(t) }
         end
 
-        def num_corp_trains(entity)
-          entity.trains.count { |t| !wagon?(t) }
-        end
-
         # The gauge of regular train an entity may run/buy: minors narrow, majors broad.
         def gauge_for(entity)
           entity.type == :minor ? :narrow : :broad
@@ -212,9 +208,9 @@ module Engine
             ],
           },
           # Sugar Cane Wagons — distance indicates cube capacity
-          { name: '1w', distance: 1, price: 40,  available_on: '2', rusts_on: '3w' },
-          { name: '2w', distance: 2, price: 80,  available_on: '4' },
-          { name: '3w', distance: 3, price: 150, available_on: '6' },
+          { name: '1w', distance: 1, price: 40,  available_on: '2', rusts_on: '3w', extra: true },
+          { name: '2w', distance: 2, price: 80,  available_on: '4', extra: true },
+          { name: '3w', distance: 3, price: 150, available_on: '6', extra: true },
           # Narrow Gauge Trains
           {
             name: '2n',

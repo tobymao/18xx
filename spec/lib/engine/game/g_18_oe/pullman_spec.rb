@@ -131,6 +131,22 @@ describe 'G18OE Pullman cars (§11.6.2)' do
     end
   end
 
+  describe 'emergency train purchase with a train owned' do
+    it 'keeps the Pullman offered when the major cannot afford the cheapest real train' do
+      game.depot.upcoming.select { |t| %w[2+2 3 4].include?(t.name) }.each { |t| game.depot.remove_train(t) }
+      advance_to_phase!(game, '5')
+      major = start_major!(game, 'LNWR', player)
+      give!(major, game.train_by_id('4-0'))
+      major.spend(major.cash, game.bank) if major.cash.positive?
+      fund!(game, major, 200)
+      round = enter_round!(game, game.operating_round(1))
+      step = round_step(round, Engine::Game::G18OE::Step::BuyTrain)
+
+      expect(game.depot.min_depot_price).to be > 200
+      expect(step.buyable_trains(major).map(&:name)).to include('Pullman')
+    end
+  end
+
   describe 'buying' do
     let(:major) { fund!(game, start_major!(game, 'LNWR', player), 500) }
     let(:step) do
