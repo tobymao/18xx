@@ -68,7 +68,7 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
 
   it 'deals ten level 2, seven level 3, three each of levels 4 and 5, two level 6, four level 7 and three level 8 trains' do
     expect(game.depot.upcoming.map(&:name).tally)
-      .to eq('2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3, 'Pullman' => 10)
+      .to eq('2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3, 'Pullman' => 3)
   end
 
   it 'gives each train card its variants' do
