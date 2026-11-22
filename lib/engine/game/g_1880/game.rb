@@ -353,6 +353,10 @@ module Engine
           @can_cross_buy = true
         end
 
+        def rocket_train_name
+          self.class::ROCKET_TRAIN
+        end
+
         def force_exchange_rocket
           return if rocket.nil? || rocket.closed?
 
@@ -744,7 +748,7 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          if train.name == self.class::ROCKET_TRAIN && rocket && !rocket.closed? &&
+          if train.name == rocket_train_name && rocket && !rocket.closed? &&
              @depot.upcoming.first.name != train.name
             @rocket_train = train
             return
