@@ -27,7 +27,8 @@ module Engine
         end
 
         def corporation_ports(corporation)
-          @game.class::PORTS.flat_map do |hex_id, exits|
+          @corporation_ports ||= {}
+          @corporation_ports[corporation] ||= @game.class::PORTS.flat_map do |hex_id, exits|
             exits.keys.select { |exit| @game.port_usable?(hex_id, exit, corporation) }.map { |exit| [hex_id, exit] }
           end
         end

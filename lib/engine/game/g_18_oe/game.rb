@@ -616,7 +616,9 @@ module Engine
         end
 
         def pass_through_cities(corporation)
-          @pass_through_tokens.values.filter_map { |token| token.city if token.corporation == corporation }
+          @pass_through_city_cache ||= {}
+          @pass_through_city_cache[corporation] ||=
+            @pass_through_tokens.values.filter_map { |token| token.city if token.corporation == corporation }
         end
 
         def pass_through_city?(city, corporation)
@@ -666,8 +668,14 @@ module Engine
           super(route, without_pass_through_cities(visits, route.corporation), train)
         end
 
-        def check_route_token(route, _token)
-          super(route, counted_stops(route).find { |stop| city_tokened_by?(stop, route.corporation) })
+        def check_route_token(route, token)
+          corporation = route.corporation
+          if token && pass_through_cities(corporation).empty? &&
+             !(hochberg_token_hex && hochberg_owner_route?(route) && token == hochberg_town)
+            return super(route, token)
+          end
+
+          super(route, counted_stops(route).find { |stop| city_tokened_by?(stop, corporation) })
         end
 
         def place_pass_through_token!(company, corporation, city)
@@ -679,6 +687,7 @@ module Engine
           )
           city.exchange_token(token, extra_slot: true)
           @pass_through_tokens[company] = token
+          @pass_through_city_cache = nil
           hex = city.hex
           @log << "#{corporation.name} (#{company.sym}) places the #{company.name} token on "\
                   "#{hex.name} (#{hex.location_name})"
@@ -2043,6 +2052,16 @@ module Engine
 
         def add_on_train?(type, train)
           !train.nil? && add_on_train(type) == train
+        end
+
+        def max_route_stops(train)
+          distance = train_distance(train)
+          return { city: nil, town: nil } if distance.is_a?(Numeric)
+
+          city_limit = distance.sum do |row|
+            row['nodes'].include?('city') || row['nodes'].include?('offboard') ? row['pay'] : 0
+          end
+          { city: city_limit, town: nil }
         end
 
         def train_distance(train)

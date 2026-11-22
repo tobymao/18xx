@@ -14,13 +14,14 @@ module Engine
       end
 
       def type
-        type_s(self)
+        @type_string ||= type_s(self)
       end
 
       def type_s(obj)
         return nil unless obj
 
-        obj.class.name.split('::').last.gsub(/(.)([A-Z])/, '\1_\2').downcase
+        @type_s_cache ||= {}
+        @type_s_cache[obj.class] ||= obj.class.name.split('::').last.gsub(/(.)([A-Z])/, '\1_\2').downcase
       end
     end
   end
