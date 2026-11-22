@@ -25,6 +25,8 @@ module Engine
 
         TRAINS_NOT_TRIGGERING_SR = %w[2R 8 8E].freeze
 
+        ROCKET_TRAIN = '3+3'
+
         ASSIGNMENT_TOKENS = G1880::Game::ASSIGNMENT_TOKENS.merge(
           'P4' => '/icons/1880_romania/danube_bonus.svg'
         ).freeze

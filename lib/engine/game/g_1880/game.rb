@@ -57,6 +57,8 @@ module Engine
 
         TRAINS_NOT_TRIGGERING_SR = %w[2R 8E 10].freeze
 
+        ROCKET_TRAIN = '4'
+
         GAME_END_REASONS_TEXT = {
           final_train: 'Last 8 train sold',
         }.freeze
@@ -349,6 +351,10 @@ module Engine
         def event_can_buy_trains!
           @log << "-- Event: #{EVENTS_TEXT['can_buy_trains'][1]} --"
           @can_cross_buy = true
+        end
+
+        def rocket_train_name
+          self.class::ROCKET_TRAIN
         end
 
         def force_exchange_rocket
@@ -742,7 +748,8 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          if train.name == '4' && rocket && !rocket.closed? && @depot.upcoming.first.name != train.name
+          if train.name == rocket_train_name && rocket && !rocket.closed? &&
+             @depot.upcoming.first.name != train.name
             @rocket_train = train
             return
           end
