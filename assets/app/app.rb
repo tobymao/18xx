@@ -113,7 +113,7 @@ class App < Snabberb::Component
         enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat, pin: @pin)
       end
     elsif %w[new archived].include?(@game_data['status'])
-      return h(View::GameCardPage, user: @user, game: @game_data)
+      return h(View::GameCardPage, user: @user, game: @game_data, turnstile_sitekey: @turnstile_sitekey)
     elsif !@game_data['loaded'] && !@game_data['loading']
       enter_game(@game_data)
     end

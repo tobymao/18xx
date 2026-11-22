@@ -41,7 +41,7 @@ module View
     def turnstile_widget
       return '' unless @turnstile_sitekey
 
-      h(:div, {
+      h('div.turnstile', {
           key: 'turnstile',
           style: { margin: '0.5rem 0' },
           hook: { insert: ->(vnode) { render_turnstile(vnode) } },
