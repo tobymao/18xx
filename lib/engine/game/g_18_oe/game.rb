@@ -2009,12 +2009,25 @@ module Engine
           add_minor_d_ability!
         end
 
+        def start_auto_router!
+          @auto_router_stops_cache = {}
+        end
+
+        def finish_auto_router!
+          @auto_router_stops_cache = nil
+        end
+
         def compute_stops(route, train = nil)
           train ||= route.train
           previous = @one_plus_one_city_limit
+          key = [train, route.visited_stops.map(&:signature).sort] if @auto_router_stops_cache
+          return @auto_router_stops_cache[key] if key && @auto_router_stops_cache.key?(key)
+
           marked = add_on_train?(:one_plus_one_marker, train) && (train.multiplier || 1) > 1
           @one_plus_one_city_limit = marked ? one_plus_one_city_limit(route, train) : nil
-          super
+          result = super
+          @auto_router_stops_cache[key] = result if key
+          result
         ensure
           @one_plus_one_city_limit = previous
         end
