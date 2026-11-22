@@ -14,10 +14,6 @@ module Engine
             %w[lay_tile]
           end
 
-          def choices
-            {}
-          end
-
           def blocks?
             false
           end
@@ -36,6 +32,10 @@ module Engine
             return unless @game.brandt_hex?(hex)
 
             tracker_available_hex(@round.current_operator, hex)
+          end
+
+          def potential_tile_colors(_entity, hex)
+            super(@round.current_operator, hex)
           end
 
           def upgradeable_tiles(_entity, ui_hex)

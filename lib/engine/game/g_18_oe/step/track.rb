@@ -21,7 +21,7 @@ module Engine
 
           def actions(entity)
             actions = super
-            return actions if entity != current_entity || entity.company?
+            return actions if actions.empty? || entity != current_entity || entity.company?
             return actions if brandt_removal_choices(entity).empty?
 
             (actions + %w[choose]).uniq

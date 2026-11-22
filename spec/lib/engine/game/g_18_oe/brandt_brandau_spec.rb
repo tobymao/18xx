@@ -63,6 +63,11 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       expect(track_step(@round).help).to eq('5 track points')
     end
 
+    it 'computes potential tile colors for the private in phase 2 without raising' do
+      expect(game.phase.name).to eq('2')
+      expect { brandt_step(@round).potential_tile_colors(bbe, hex) }.not_to raise_error
+    end
+
     it 'renders the printed terrain on a B&B tile (§14.9)' do
       brandt_lay!(hex)
 
@@ -127,6 +132,8 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       brandt_lay!(hex)
       expect(@round.actions_for(bbe)).to include('lay_tile')
 
+      @round.instance_variable_set(:@current_operator, gwr)
+      game.clear_graph
       brandt_lay!(game.hex_by_id('I26'))
       expect(@round.actions_for(bbe)).to be_empty
 
@@ -415,7 +422,13 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       step = brandt_step(@round)
 
       expect(step.actions(lnwr)).to be_empty
-      expect(step.choices).to be_empty
+    end
+
+    it 'does not block or offer removal in the abbreviated final operating round' do
+      allow(game).to receive(:abbreviated_operating_round?).and_return(true)
+
+      expect(removal_step.choices).not_to be_empty
+      expect(removal_step.actions(lnwr)).to be_empty
     end
 
     it 'round-trips the choose action and accepts it unchanged while loading' do
