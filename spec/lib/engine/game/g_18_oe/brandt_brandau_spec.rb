@@ -68,6 +68,12 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       expect { brandt_step(@round).potential_tile_colors(bbe, hex) }.not_to raise_error
     end
 
+    it 'offers only legal yellow upgrades for the hex it is laid on' do
+      names = brandt_step(@round).upgradeable_tiles(bbe, hex).map(&:name)
+
+      expect(names).to contain_exactly('4', '58')
+    end
+
     it 'shows the printed terrain on the B&B tile (§14.9)' do
       brandt_lay!(hex)
 

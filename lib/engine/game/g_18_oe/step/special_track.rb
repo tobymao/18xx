@@ -79,7 +79,7 @@ module Engine
             operator = @round.current_operator
             action.tile.rotate!(action.rotation)
             action.extra_cost = cross_water_fee(action, operator) unless @game.loading
-            super(action, extra_cost: action.extra_cost || 0, entity: entity, spender: operator)
+            super(action, extra_cost: action.extra_cost || 0, entity: entity, spender: spender)
           end
         end
       end

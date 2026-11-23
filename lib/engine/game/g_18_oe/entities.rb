@@ -198,6 +198,7 @@ module Engine
                 when: 'owning_player_track',
                 free: true,
                 reachable: true,
+                special: false,
                 count: 4,
                 count_per_or: 2,
                 tiles: [],
