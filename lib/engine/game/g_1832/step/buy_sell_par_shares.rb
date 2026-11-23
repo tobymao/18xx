@@ -49,18 +49,14 @@ module Engine
             return [] if !entity.corporation? || entity.share_price.price > @round.redeem_cash[entity]
 
             market_shares = @game.share_pool.shares_of(entity)
-            return redeemable_from_players(entity) if market_shares.empty?
+            bundles = if market_shares.empty?
+                        redeemable_from_players(entity)
+                      else
+                        share = redeemable_market_share(entity, market_shares)
+                        share ? [ShareBundle.new(share)] : []
+                      end
 
-            share = redeemable_market_share(entity, market_shares)
-            share ? [ShareBundle.new(share)] : []
-          end
-
-          def can_buy?(entity, bundle)
-            return super unless entity.corporation?
-
-            super &&
-              @round.redeemed_percent[entity] + bundle.percent <= MAX_REDEMPTION_PERCENT &&
-              treasury_percent(entity) + bundle.percent <= MAX_TREASURY_PERCENT
+            bundles.select { |bundle| within_redemption_limits?(entity, bundle) }
           end
 
           def process_buy_shares(action)
@@ -97,6 +93,11 @@ module Engine
 
             bundle = ShareBundle.new(share)
             bundle if player != corporation.owner || @game.keeps_presidency_after_sale?(player, bundle)
+          end
+
+          def within_redemption_limits?(corporation, bundle)
+            @round.redeemed_percent[corporation] + bundle.percent <= MAX_REDEMPTION_PERCENT &&
+              treasury_percent(corporation) + bundle.percent <= MAX_TREASURY_PERCENT
           end
 
           def can_redeem_more?(entity)

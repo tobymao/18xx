@@ -83,7 +83,19 @@ module Engine
         redeem_percent(system, 5)
         next_turn
 
-        expect(step.redeemable_shares(system).map(&:percent)).to eq([10])
+        expect(step.redeemable_shares(system)).to be_empty
+        expect(step.can_buy?(system, ShareBundle.new([vp_cert]))).to be(false)
+      end
+
+      it 'does not offer a market vice-president certificate that would take it past 40%' do
+        hold_in_treasury(35)
+        game.share_pool.shares_of(system).dup.each { |share| share.transfer(player_c) }
+        vp_cert = system.vice_president_certs.first
+        vp_cert.transfer(game.share_pool)
+        act_as(player_a)
+
+        expect(step.actions(system)).to include('buy_shares')
+        expect(step.redeemable_shares(system)).to be_empty
         expect(step.can_buy?(system, ShareBundle.new([vp_cert]))).to be(false)
       end
 
@@ -300,12 +312,27 @@ module Engine
         [player_a, player_c].each do |player|
           player.shares_of(system).reject(&:president).each { |share| share.transfer(system) }
         end
+        system.shares_of(system).first(8).each { |share| share.transfer(corp) }
         act_as(player_a)
 
         bundles = step.redeemable_shares(system)
 
         expect(bundles.map(&:owner)).to eq([player_b])
         expect(bundles.map(&:percent)).to eq([10])
+      end
+
+      it 'does not offer a vice-president certificate from a player that would take it past 40%' do
+        system.instance_variable_set(:@operating_history, { [1, 1] => :ran })
+        game.bank.spend(1000, system)
+        [player_a, player_c].each do |player|
+          player.shares_of(system).reject(&:president).each { |share| share.transfer(system) }
+        end
+        system.shares_of(system).first(7).each { |share| share.transfer(corp) }
+        act_as(player_a)
+
+        expect(system.shares_of(system).sum(&:percent)).to eq(35)
+        expect(step.actions(system)).to include('buy_shares')
+        expect(step.redeemable_shares(system)).to be_empty
       end
 
       it 'offers only the market shares while the market holds any' do
