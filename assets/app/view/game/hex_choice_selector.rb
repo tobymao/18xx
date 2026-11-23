@@ -25,30 +25,51 @@ module View
       EDGE_MARGIN = 260
       BOTTOM_EDGE_MARGIN = 220
 
-      # Fan radius at 1x zoom. Wide enough that the widest expected label
-      # ("Transshipment ($XX)") and Cancel, landing on the same horizontal
-      # line, don't overlap -- centers need ~89px of separation plus a gap.
-      BASE_DISTANCE = 100
+      # Fan radius at 1x zoom for short labels -- grows per-popup (see
+      # fan_distance) when a longer label needs more room.
+      BASE_DISTANCE = 55
+
+      # Rough per-character width estimate at 1x zoom/font-size -- not real
+      # text measurement (unavailable without a DOM layout pass), just
+      # enough to keep a long label and Cancel from overlapping.
+      CHAR_WIDTH = 7
+      CANCEL_HALF_WIDTH = 15
+      MIN_GAP = 10
 
       BASE_FONT_SIZE = 14
       BASE_PAD_V = 4
       BASE_PAD_H = 8
 
-      # Caps the spread between adjacent choices -- without it,
-      # list_coordinates' own angle stretch doubles a 2-choice half-circle
-      # fan into a full circle, landing them diametrically opposite instead
-      # of together.
+      # Caps the spread between adjacent choices when the fan is already
+      # constrained to a half/quarter circle (near a map edge) -- without
+      # it, list_coordinates' own angle stretch doubles a 2-choice
+      # half-circle fan into a full circle, landing them diametrically
+      # opposite instead of together. Never applied to a full, unconstrained
+      # circle (the middle-of-map case): list_coordinates' stretch is a
+      # no-op there already (only triggers below 360), and choices should
+      # spread around the whole hex, not bunch into an arbitrary slice.
       MAX_ANGLE_PER_CHOICE = 70
+
+      # Estimates how far a popup's longest text label (ignoring tile/claim
+      # choices, which have their own fixed sizes) needs to sit from the
+      # hex's center so it doesn't overlap Cancel, sitting at that center.
+      def fan_distance
+        longest = @tile_selector.choices.values.grep(String).map(&:length).max.to_i
+        return BASE_DISTANCE if longest.zero?
+
+        needed = ((longest * CHAR_WIDTH) / 2.0) + BASE_PAD_H + CANCEL_HALF_WIDTH + MIN_GAP
+        [BASE_DISTANCE, needed].max
+      end
 
       def render
         angle, rotation = calc_angle_rotation(@near_left_edge, @near_right_edge, @near_top_edge, @near_bottom_edge)
         count = @tile_selector.choices.size
-        if count > 1
+        if count > 1 && angle < FULL_CIRCLE
           capped = [(count - 1) * MAX_ANGLE_PER_CHOICE, angle].min
-          rotation += (angle - capped) / 2.0 if angle < FULL_CIRCLE
+          rotation += (angle - capped) / 2.0
           angle = capped
         end
-        distance = BASE_DISTANCE * @zoom
+        distance = fan_distance * @zoom
 
         choices = list_coordinates(@tile_selector.choices.to_a, distance, 0, angle, rotation).map do |pair, left, bottom|
           choice, label = pair
