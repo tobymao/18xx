@@ -43,7 +43,7 @@ module Engine
           end
 
           def split_active_entities
-            [@split_corporation&.owner].compact
+            [@game.acting_for_entity(@split_corporation)].compact
           end
 
           def split_choice_entity
