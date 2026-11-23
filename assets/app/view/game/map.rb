@@ -4,7 +4,7 @@ require '../lib/storage'
 require '../lib/settings'
 require 'view/game/axis'
 require 'view/game/hex'
-require 'view/game/hex_choice_popup'
+require 'view/game/hex_choice_selector'
 require 'view/game/map_legend'
 require 'view/game/sea_crossings'
 require 'view/game/tile_confirmation'
@@ -93,17 +93,13 @@ module View
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
               h(TokenSelector, zoom: map_zoom)
-            elsif @tile_selector.is_a?(Lib::HexChoicePopup)
+            elsif @tile_selector.is_a?(Lib::HexChoiceSelector)
               width, height = map_size
-              # Same edge-proximity idea TileSelector already uses below
-              # (right_col/top_row/bottom_row) so the popup flips to
-              # extend toward the opposite side instead of overflowing
-              # past the map's own boundary.
-              h(HexChoicePopup, zoom: map_zoom,
-                                near_left_edge: left < HexChoicePopup::EDGE_MARGIN,
-                                near_right_edge: width - left < HexChoicePopup::EDGE_MARGIN,
-                                near_top_edge: top < HexChoicePopup::EDGE_MARGIN,
-                                near_bottom_edge: height - top < HexChoicePopup::BOTTOM_EDGE_MARGIN)
+              h(HexChoiceSelector, zoom: map_zoom,
+                                   near_left_edge: left < HexChoiceSelector::EDGE_MARGIN,
+                                   near_right_edge: width - left < HexChoiceSelector::EDGE_MARGIN,
+                                   near_top_edge: top < HexChoiceSelector::EDGE_MARGIN,
+                                   near_bottom_edge: height - top < HexChoiceSelector::BOTTOM_EDGE_MARGIN)
             elsif @tile_selector.role != :map
               # Tile selector not for the map
             elsif @tile_selector.hex.tile != @tile_selector.tile

@@ -161,15 +161,10 @@ module Engine
             {}
           end
 
-          # Optional hook for the map view: when a hex needing a click-time
-          # decision is clicked directly, offer a popup with the relevant
-          # choices instead of dispatching a default immediately. Two
-          # cases: a transshipment-collection-vs-undo decision on the hex
-          # the ship is already sitting on, else an explore/flyover
-          # decision -- for a direct neighbor (1 hop) or a shortcut
-          # destination (2+ hops) alike; only the choice keys differ (see
-          # shortcut_choices/compute_choices).
-          def hex_choice_popup(entity, hex)
+          # Optional hook for the map view (View::Game::HexChoiceSelector):
+          # returns choices for a clicked hex when it needs disambiguation
+          # (transshipment-collection-vs-undo, or explore-vs-flyover).
+          def hex_choices(entity, hex)
             return nil unless entity == current_entity
 
             if @trace.empty?
@@ -198,12 +193,8 @@ module Engine
             popup.empty? ? nil : popup
           end
 
-          # Mid-flight version of the same "force a popup if undo would
-          # un-reveal a tile, otherwise let a single option dispatch
-          # directly" rule hex_choice_popup's finished-route branch above
-          # uses -- current_hex_action_choices already folds Undo in
-          # alongside transship, so this only needs to decide *when* that
-          # combined set needs a popup instead of a direct click.
+          # Same "force a popup if undo would un-reveal a tile, otherwise
+          # dispatch directly" rule as hex_choices' finished-route branch.
           def current_hex_popup
             matches = current_hex_action_choices
             return matches if matches.size > 1
@@ -405,7 +396,7 @@ module Engine
           # finish_route empties @trace) the endpoint of the route it
           # just flew, once finished but not yet submitted. nil once
           # nothing's pending at all. Shared by available_hex/
-          # hex_choice_popup/compute_choices/dispatch_choice! so all four
+          # hex_choices/compute_choices/dispatch_choice! so all four
           # always agree on the exact same hex.
           def undo_click_hex
             return @trace.last unless @trace.empty?
@@ -417,7 +408,7 @@ module Engine
 
           # Public: whether undoing the last hex would take back an
           # exploration -- the deciding factor for whether a click needs
-          # a confirmation popup first (see hex_choice_popup/current_hex_popup)
+          # a confirmation popup first (see hex_choices/current_hex_popup)
           # rather than acting immediately.
           def undoing_last_hex_reveals_tile?
             return false unless @rollback
@@ -659,7 +650,7 @@ module Engine
           # hex is different: that's exactly where a hand-flown route
           # would stop and decide whether to explore too, so it gets the
           # same Explore/Fly-over choice a direct neighbor would (see
-          # hex_choice_popup), just at the shortcut's own MP cost. Adjacent
+          # hex_choices), just at the shortcut's own MP cost. Adjacent
           # hexes are excluded here since the normal per-hex choice
           # already covers them.
           def shortcut_choices(entity, ship)
@@ -784,7 +775,7 @@ module Engine
           # true. Alias it here so clicking the ship's own hex can trigger
           # the one real action there. With exactly one action available
           # this value is what actually gets dispatched; with 2+ it's a
-          # placeholder `hex_choice_popup` always intercepts ahead of.
+          # placeholder `hex_choices` always intercepts ahead of.
           def alias_current_hex_action!(result)
             result[UNDO_HEX] = undo_hex_label if undo_last_hex_available?(current_entity)
 

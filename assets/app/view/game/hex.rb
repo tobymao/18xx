@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
-require 'lib/hex_choice_popup'
+require 'lib/hex_choice_selector'
 require 'lib/settings'
 require 'lib/tile_selector'
 require 'view/game/actionable'
@@ -48,9 +48,10 @@ module View
         return '' if @hex.empty
 
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
+        tile_selector = @tile_selector if @tile_selector.is_a?(Lib::TileSelector)
         @tile =
-          if @selected && @actions.include?('lay_tile') && @tile_selector&.tile
-            @tile_selector.tile
+          if @selected && @actions.include?('lay_tile') && tile_selector&.tile
+            tile_selector.tile
           else
             @hex.tile
           end
@@ -179,7 +180,7 @@ module View
       def on_hex_click
         return if @actions.empty? && @role != :tile_page
 
-        if !@clickable || (@hex == @tile_selector&.hex && !(@tile_selector.respond_to?(:tile) && @tile_selector.tile))
+        if !@clickable || (@hex == @tile_selector&.hex && !(@tile_selector.is_a?(Lib::TileSelector) && @tile_selector.tile))
           return store(:tile_selector, nil)
         end
 
@@ -233,13 +234,12 @@ module View
           if @actions.include?('choose')
             # Opt-in hook: a step may offer a small popup of choices for
             # this hex instead of dispatching the bare hex-id choice
-            # immediately (e.g. G2038's Explore-vs-Fly-Over decision).
-            # Inert for every other game, which never defines this method.
-            # Checked before the bare-id choice below, not after -- a hex
-            # can have only a prefixed choice available (e.g. "Skip" when
-            # "Explore" is priced out of reach) with no bare entry at all.
-            if step.respond_to?(:hex_choice_popup) && @entity && (popup = step.hex_choice_popup(@entity, @hex))
-              return store(:tile_selector, Lib::HexChoicePopup.new(@hex, popup, coordinates, root, @entity, @role))
+            # immediately. Inert for every other game, which never defines
+            # this method. Checked before the bare-id choice below, not
+            # after -- a hex can have only a prefixed choice available with
+            # no bare entry at all.
+            if step.respond_to?(:hex_choices) && @entity && (popup = step.hex_choices(@entity, @hex))
+              return store(:tile_selector, Lib::HexChoiceSelector.new(@hex, popup, coordinates, @entity, @role))
             end
 
             if step.choices.include?(@hex.id)
@@ -251,7 +251,7 @@ module View
           end
           return unless @actions.include?('lay_tile')
 
-          if @selected && (tile = @tile_selector&.tile)
+          if @selected && @tile_selector.is_a?(Lib::TileSelector) && (tile = @tile_selector.tile)
             @tile_selector.rotate! if tile.hex != @hex
           else
             store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity, @role))

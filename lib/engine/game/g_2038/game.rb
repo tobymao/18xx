@@ -17,6 +17,8 @@ module Engine
         include Map
         include Entities
 
+        attr_reader :mine_state
+
         TILE_TYPE = :lawson
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
@@ -531,6 +533,18 @@ module Engine
         # Returns [dist, predecessor]: dist is {hex_id => hop count},
         # predecessor is {hex_id => the hex reached just before it} for
         # every hex reachable from start (excluding start itself).
+        # Read/write access to the seeded LCG's own state (a single integer
+        # -- see Game::Base#rand/#initialize_seed), so Step::Route can
+        # snapshot it before a local, unsubmitted flight consumes
+        # randomness and rewind precisely on discard.
+        def rand_state
+          @rand
+        end
+
+        def rand_state=(value)
+          @rand = value
+        end
+
         def hex_bfs(start)
           @hex_bfs_cache ||= {}
           return @hex_bfs_cache[start.id] if @hex_bfs_cache.key?(start.id)
