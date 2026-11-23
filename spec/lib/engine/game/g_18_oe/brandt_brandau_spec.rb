@@ -22,7 +22,7 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
   end
 
   def brandt_step(round)
-    round_step(round, Engine::Game::G18OE::Step::BrandtTrack)
+    round_step(round, Engine::Game::G18OE::Step::SpecialTrack)
   end
 
   def track_step(round)

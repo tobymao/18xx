@@ -104,9 +104,6 @@ module G18OESpecHelpers
   end
 
   def round_step(round, klass)
-    brandt = Engine::Game::G18OE::Step::BrandtTrack
-    round.steps.find { |s| s.instance_of?(klass) } ||
-      round.steps.find { |s| s.is_a?(klass) && !s.is_a?(brandt) } ||
-      round.steps.find { |s| s.is_a?(klass) }
+    round.steps.find { |s| s.is_a?(klass) }
   end
 end

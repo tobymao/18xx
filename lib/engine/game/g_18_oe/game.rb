@@ -1835,7 +1835,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18OE::Step::Assign,
-            G18OE::Step::BrandtTrack,
+            G18OE::Step::SpecialTrack,
             G18OE::Step::Track,
             G18OE::Step::SpecialToken,
             G18OE::Step::Token,
