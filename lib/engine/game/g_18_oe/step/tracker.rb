@@ -46,14 +46,14 @@ module Engine
 
         def potential_tile_colors(entity, hex)
           entity = tile_lay_operator(entity)
-          colors = super
+          colors = super(entity, hex)
           colors << :green if right_of_way?(entity, hex)
           colors
         end
 
         def legal_tile_rotation?(entity_or_entities, hex, tile)
           entity_or_entities = tile_lay_operator(entity_or_entities)
-          return false unless super
+          return false unless super(entity_or_entities, hex, tile)
           return true if @game.phase.tiles.include?(tile.color)
 
           home_connectable?(Array(entity_or_entities).first, 0, hex => tile)
