@@ -7,6 +7,9 @@ require_relative 'route'
 
 module Engine
   class AutoRouter
+    # How many walk steps between checks of path_timeout during a node's walk
+    TIMEOUT_CHECK_INTERVAL = 256
+
     attr_accessor :running
 
     def initialize(game, flash = nil)
@@ -103,7 +106,7 @@ module Engine
           next :abort if path_walk_timed_out
 
           walk_count += 1
-          if (walk_count % 256).zero? && Time.now - now > path_timeout
+          if (walk_count % TIMEOUT_CHECK_INTERVAL).zero? && Time.now - now > path_timeout
             LOGGER.debug('Path timeout reached during a node walk')
             path_walk_timed_out = true
             next :abort
