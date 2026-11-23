@@ -42,8 +42,26 @@ module View
       # How far from the hex's center each non-Cancel choice fans out.
       DISTANCE = 55
 
+      # Caps how many degrees apart two adjacent fanned choices land.
+      # Without this, a 2-choice half-circle fan (e.g. Explore/Skip next
+      # to a map edge) gets stretched edge-to-edge by list_coordinates'
+      # own `angle = angle * count / (count - 1)` adjustment -- for
+      # count == 2 that doubles a 180-degree half-circle back to a full
+      # 360, landing the two choices diametrically opposite (literally
+      # top and bottom of the hex) instead of close together on the side
+      # the fan opened toward. Capping the real spread per choice first
+      # (same technique TileSelector's own coordinates_for uses via its
+      # MAX_ANGLE) keeps that stretch modest regardless of choice count.
+      MAX_ANGLE_PER_CHOICE = 70
+
       def render
         angle, rotation = calc_angle_rotation(@near_left_edge, @near_right_edge, @near_top_edge, @near_bottom_edge)
+        count = @tile_selector.choices.size
+        if count > 1
+          capped = [(count - 1) * MAX_ANGLE_PER_CHOICE, angle].min
+          rotation += (angle - capped) / 2.0 if angle < FULL_CIRCLE
+          angle = capped
+        end
         distance = DISTANCE * @zoom
 
         choices = list_coordinates(@tile_selector.choices.to_a, distance, 0, angle, rotation).map do |pair, left, bottom|
