@@ -1358,14 +1358,14 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           # This is needed because the S tile upgrade removes the town in yellow
           if self.class::UPGRADEABLE_S_HEX_NAME == from.hex&.name && from.color == :white
             return self.class::UPGRADEABLE_S_YELLOW_CITY_TILE == to.name
           end
 
           # Special case for P2 Middleton Railway where we remove a town from a tile
-          if self.class::TRACK_TOWN.include?(from.name) && self.class::TRACK_PLAIN.include?(to.name)
+          if special && self.class::TRACK_TOWN.include?(from.name) && self.class::TRACK_PLAIN.include?(to.name)
             return Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
           end
 

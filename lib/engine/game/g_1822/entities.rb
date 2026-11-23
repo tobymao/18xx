@@ -37,6 +37,7 @@ module Engine
                 reachable: true,
                 closed_when_used_up: true,
                 hexes: [],
+                special: true,
                 tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
                 combo_entities: %w[P8 P10 P11 P12],
               },
