@@ -61,6 +61,19 @@ describe Engine::Game::G1868WY::Game do
     end
   end
 
+  describe 'P8 The Pure Oil Camp' do
+    it 'can only be placed on hexes without a revenue location' do
+      game = Engine::Game::G1868WY::Game.new(%w[Alice Bob Carl Dana], id: 'test')
+      p8 = game.company_by_id('P8')
+      assign_hexes = p8.all_abilities.find { |ability| ability.type == :assign_hexes }
+      hexes = assign_hexes.hexes.map { |hex_id| game.hex_by_id(hex_id) }
+
+      expect(hexes.reject { |hex| hex.tile.cities.empty? && hex.tile.towns.empty? }).to be_empty
+      expect(assign_hexes.hexes).to include('K19')
+      expect(assign_hexes.hexes).not_to include('B12', 'L20')
+    end
+  end
+
   describe 'tokenless DPR' do
     describe 'tokenless_dpr_choose_new_home' do
       it 'must choose home city when started' do
