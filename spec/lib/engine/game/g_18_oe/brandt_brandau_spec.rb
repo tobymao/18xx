@@ -376,6 +376,16 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
       expect(removal_step.choices).to eq('J23' => 'Remove B&B token on J23 (£45, 1 pt)')
     end
 
+    it 'refuses a removal that breaks the first-round insolvency guard (§11.6.5)' do
+      allow(game).to receive(:check_reserved_train_funds!).and_call_original
+      allow(game).to receive(:reserved_train_due?).with(lnwr).and_return(true)
+      lnwr.spend(lnwr.cash - 50, game.bank)
+      lnwr.owner.spend(lnwr.owner.cash, game.bank)
+
+      expect { choose!(lnwr, 'J23') }.to raise_error(Engine::GameError, /cannot spend £45.*reserved/)
+      expect(token_hex.assigned?('BBE')).to be(true)
+    end
+
     it 'charges the printed terrain cost to the bank and one tile point, then frees the hex' do
       cash = lnwr.cash
       bank_cash = game.bank.cash

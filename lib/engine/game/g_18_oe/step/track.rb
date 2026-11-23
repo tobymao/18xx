@@ -35,6 +35,7 @@ module Engine
               raise GameError, "No Brandt & Brandau token to remove on #{action.choice}"
             end
 
+            @game.check_reserved_train_funds!(entity, @game.brandt_removal_cost(entity, hex))
             points = @game.brandt_removal_points(hex)
             ability = @game.terrain_point_abilities(entity)[:green]
             if ability
@@ -82,11 +83,6 @@ module Engine
             return if hexes.any? { |hex| available_hex(entity, hex) }
 
             [Engine::Action::Pass.new(entity)]
-          end
-
-          def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, extra_cost)
-            @game.check_reserved_train_funds!(spender, cost)
-            super
           end
 
           def description

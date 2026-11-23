@@ -40,6 +40,11 @@ module Engine
           @round.tile_points_used += points_cost
         end
 
+        def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, extra_cost)
+          @game.check_reserved_train_funds!(spender, cost)
+          super
+        end
+
         def tile_points_cost(operator, action)
           @game.tile_point_cost(operator, old_tile: action.hex.tile)
         end
@@ -112,7 +117,7 @@ module Engine
 
         def right_of_way?(entity, hex)
           points = remaining_tile_points(entity)
-          @game.players.size > 2 &&
+          !@game.aggressive_game? &&
             !@game.phase.tiles.include?(:green) &&
             !entity.operated? &&
             hex.tile.color == :yellow &&
