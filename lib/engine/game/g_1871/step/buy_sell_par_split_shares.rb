@@ -28,10 +28,11 @@ module Engine
           end
 
           def can_buy_for(entity)
-            return [] unless entity == @game.company_by_id('UB').owner
-            return [] if @round.bank_bought
+            ub_owner_can_help?(entity) ? [@game.union_bank] : []
+          end
 
-            [@game.union_bank]
+          def ub_owner_can_help?(entity)
+            entity == @game.company_by_id('UB').owner && !@round.bank_bought
           end
 
           # This makes sure we don't auto pass if the player is allowed to
@@ -189,7 +190,9 @@ module Engine
           # Ditto
           def can_ipo_any?(entity)
             !bought? && @game.corporations.any? do |c|
-              @game.can_par?(c, entity) && can_buy?(entity, @game.share_by_id("#{c.name}_0")&.to_bundle)
+              bundle = @game.share_by_id("#{c.name}_0")&.to_bundle
+              @game.can_par?(c, entity) &&
+                (can_buy?(entity, bundle) || (ub_owner_can_help?(entity) && can_buy?(@game.union_bank, bundle)))
             end
           end
 
