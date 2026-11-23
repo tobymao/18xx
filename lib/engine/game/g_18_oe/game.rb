@@ -74,6 +74,13 @@ module Engine
         STARTING_CASH = { 2 => 2600, 3 => 1800, 4 => 1350, 5 => 1080, 6 => 900, 7 => 775 }.freeze
         STARTING_CASH_NO_CONCESSIONS = { 2 => 2600, 3 => 1735, 4 => 1300, 5 => 1040, 6 => 870, 7 => 745 }.freeze
         BANK_CASH = 54_000
+
+        EXTENDED_CERT_LIMIT = { 3 => 64, 4 => 48, 5 => 39, 6 => 32, 7 => 27, 8 => 24 }.freeze
+        EXTENDED_STARTING_CASH = { 3 => 2160, 4 => 1620, 5 => 1300, 6 => 1080, 7 => 930, 8 => 810 }.freeze
+        EXTENDED_STARTING_CASH_NO_CONCESSIONS = { 3 => 2095, 4 => 1570, 5 => 1260, 6 => 1050, 7 => 900, 8 => 785 }.freeze
+        EXTENDED_BANK_CASH = 64_800
+        EXTENDED_ADDITIONAL_PULLMANS = 4
+
         CURRENCY_FORMAT_STR = '£%s'
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
@@ -779,6 +786,27 @@ module Engine
           @log << "#{entity.name} fulfills the #{hex.location_name} patronage tile and receives #{format_currency(amount)}"
         end
 
+        def self.min_players(optional_rules, num_players)
+          meta.min_players(optional_rules, num_players)
+        end
+
+        def self.max_players(optional_rules, num_players)
+          meta.max_players(optional_rules, num_players)
+        end
+
+        def extended_full_game?
+          @optional_rules.include?(:extended_full_game) &&
+            self.class::OPTIONAL_RULES.any? { |rule| rule[:sym] == :extended_full_game }
+        end
+
+        def bank_starting_cash
+          extended_full_game? ? self.class::EXTENDED_BANK_CASH : super
+        end
+
+        def game_cert_limit
+          extended_full_game? ? self.class::EXTENDED_CERT_LIMIT : super
+        end
+
         def medium_start?
           @optional_rules.include?(:medium_start)
         end
@@ -806,8 +834,17 @@ module Engine
         def init_starting_cash(players, bank)
           return if fast_start?
 
-          cash = medium_start? ? self.class::STARTING_CASH_NO_CONCESSIONS : self.class::STARTING_CASH
-          players.each { |player| bank.spend(cash[players.size], player) }
+          cash = starting_cash
+          players.each { |player| bank.spend(cash, player) }
+        end
+
+        def starting_cash
+          cash = if extended_full_game?
+                   medium_start? ? self.class::EXTENDED_STARTING_CASH_NO_CONCESSIONS : self.class::EXTENDED_STARTING_CASH
+                 else
+                   medium_start? ? self.class::STARTING_CASH_NO_CONCESSIONS : self.class::STARTING_CASH
+                 end
+          cash.fetch(players.size)
         end
 
         def init_round
@@ -866,10 +903,6 @@ module Engine
           'Treasury'
         end
 
-        # True once MAX_FLOATED_REGIONALS have been floated and the 6 remaining
-        # unfloated regionals have been closed. This is the correct trigger for
-        # "Major Railroad Phase" entry: conversions and secondary-share purchases
-        # become available from this point on.
         def major_phase?
           return false if @corporations.any? { |corporation| corporation.type == :regional && !corporation.floated? }
 
@@ -1176,6 +1209,19 @@ module Engine
           @log << "#{major.name} receives #{format_currency(amount)} from the bank for #{minor.name}"
         end
 
+        def num_trains(train)
+          return super unless extended_full_game?
+
+          case train[:name]
+          when reserved_train_name
+            @corporations.count { |corporation| %i[minor regional].include?(corporation.type) }
+          when self.class::PULLMAN
+            extended_pullman_count
+          else
+            super
+          end
+        end
+
         def rust(train)
           owner = train.owner
           if owner&.corporation? && national?(owner)
@@ -1218,6 +1264,14 @@ module Engine
 
         def pullman?(train)
           train.name == self.class::PULLMAN
+        end
+
+        def standard_pullman_count
+          game_trains.find { |train| train[:name] == self.class::PULLMAN }[:num]
+        end
+
+        def extended_pullman_count
+          standard_pullman_count + self.class::EXTENDED_ADDITIONAL_PULLMANS
         end
 
         def pullman(corporation)
@@ -1277,6 +1331,8 @@ module Engine
         end
 
         def event_pullmans_available!
+          remove_rusted_2_plus_2s! if extended_full_game?
+
           holder = minor_m_holder
           return unless holder
 
@@ -1285,6 +1341,14 @@ module Engine
 
           buy_train(holder, pullman_card, :free)
           @log << "#{holder.name} receives a free #{self.class::PULLMAN}"
+        end
+
+        def remove_rusted_2_plus_2s!
+          rusted_2_plus_2s = @depot.rusted_trains.select { |train| train.sym == reserved_train_name }
+          rusted_2_plus_2s.last(self.class::EXTENDED_ADDITIONAL_PULLMANS).each do |train|
+            remove_train(train)
+            train.owner = nil
+          end
         end
 
         def level8_train_available?
@@ -1411,9 +1475,15 @@ module Engine
           @corporations.count { |corporation| corporation.type == :regional && corporation.ipoed }
         end
 
+        def max_floated_regionals
+          return self.class::MAX_FLOATED_REGIONALS unless extended_full_game?
+
+          @max_floated_regionals ||= game_corporations.count { |corporation| corporation[:type] == 'regional' }
+        end
+
         def removable_regional?(corporation)
           return false if corporation.type != :regional || corporation.ipoed
-          return false unless @corporations.count { |c| c.type == :regional } > self.class::MAX_FLOATED_REGIONALS
+          return false unless @corporations.count { |c| c.type == :regional } > max_floated_regionals
 
           !@removed_regional_zones.include?(self.class::CORPORATIONS_TRACK_RIGHTS[corporation.id])
         end

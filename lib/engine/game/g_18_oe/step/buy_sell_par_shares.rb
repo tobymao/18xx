@@ -563,7 +563,7 @@ module Engine
           end
 
           def close_unfloated_regionals_at_maximum!
-            return unless @game.regionals_in_play >= @game.class::MAX_FLOATED_REGIONALS
+            return unless @game.regionals_in_play >= @game.max_floated_regionals
 
             leftovers = @game.corporations.reject { |corp| corp.ipoed || corp.type == :minor }
             return if leftovers.empty?

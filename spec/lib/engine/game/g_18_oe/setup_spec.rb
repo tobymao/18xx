@@ -57,19 +57,19 @@ describe 'G18OE setup' do
   it 'offers Medium Start only to three or more players (PB 5.4)' do
     rule = Engine::Game::G18OE::Meta::OPTIONAL_RULES.find { |r| r[:sym] == :medium_start }
 
-    expect(rule[:players]).to eq([3, 4, 5, 6, 7])
+    expect(rule[:players]).to eq([3, 4, 5, 6, 7, 8])
   end
 
   it 'offers the full-game variants and only Long Endgame in UK-France' do
     expect(Engine::Game::G18OE::Meta::OPTIONAL_RULES.map { |r| r[:sym] })
-      .to eq(%i[fast_start medium_start long_endgame aggressive_game])
+      .to eq(%i[fast_start medium_start long_endgame aggressive_game extended_full_game])
     expect(Engine::Game::G18OEUKFR::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq([:long_endgame])
   end
 
-  it 'offers Aggressive Game as an opt-in rule for 3–7 players (PB 5.5)' do
+  it 'offers Aggressive Game as an opt-in rule for three or more players (PB 5.5)' do
     rule = Engine::Game::G18OE::Meta::OPTIONAL_RULES.find { |r| r[:sym] == :aggressive_game }
 
-    expect(rule).to include(short_name: 'Aggressive Game', players: [3, 4, 5, 6, 7])
+    expect(rule).to include(short_name: 'Aggressive Game', players: [3, 4, 5, 6, 7, 8])
     expect(rule[:default]).to be_falsey
     expect(game.reserved_shares?).to be(true)
   end
