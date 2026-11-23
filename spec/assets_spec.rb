@@ -379,6 +379,26 @@ describe 'Assets' do
       expect(render(app_route: '/new_game', title: '18OE UK-France Scenario')).not_to include('Aggressive Game')
     end
 
+    it 'offers Extended Full Game for an eight-player 18OE hotseat game' do
+      script = <<~RUBY
+        standard = View::CreateGame.html(title: '18OE')
+        hotseat = { title: '18OE', mode: :hotseat, min_players: 2, max_players: 8 }
+        extended = View::CreateGame.html(**hotseat, optional_rules: [:extended_full_game])
+        without_rule = View::CreateGame.html(**hotseat)
+        two_players = View::CreateGame.html(**hotseat.merge(max_players: 2))
+        scenario = View::CreateGame.html(title: '18OE UK-France Scenario')
+        [standard, extended, without_rule, two_players, scenario]
+      RUBY
+      standard, extended, without_rule, two_players, scenario = subject.context([]).eval(Opal.compile(script))
+
+      expect(standard).to include('Extended Full Game')
+      expect(extended).to include('Player 8', 'Extended Full Game')
+      expect(extended).to match(%r{<button[^>]*disabled="false"[^>]*>Create</button>})
+      expect(without_rule).to match(%r{<button[^>]*disabled="true"[^>]*>Create</button>})
+      expect(two_players).to match(/<input[^>]*id="extended_full_game"[^>]*disabled="true"/)
+      expect(scenario).not_to include('Extended Full Game')
+    end
+
     it 'renders game' do
       needs = {
         game_data: {
