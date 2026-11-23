@@ -45,12 +45,14 @@ module Engine
         end
 
         def potential_tile_colors(entity, hex)
+          entity = tile_lay_operator(entity)
           colors = super
           colors << :green if right_of_way?(entity, hex)
           colors
         end
 
         def legal_tile_rotation?(entity_or_entities, hex, tile)
+          entity_or_entities = tile_lay_operator(entity_or_entities)
           return false unless super
           return true if @game.phase.tiles.include?(tile.color)
 
@@ -102,6 +104,11 @@ module Engine
         end
 
         private
+
+        def tile_lay_operator(entity_or_entities)
+          entity = Array(entity_or_entities).first
+          entity.company? ? @round.current_operator : entity_or_entities
+        end
 
         def right_of_way?(entity, hex)
           points = remaining_tile_points(entity)

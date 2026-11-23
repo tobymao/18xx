@@ -17,12 +17,7 @@ module Engine
             %w[lay_tile]
           end
 
-          def description
-            'Lay Track (Brandt & Brandau)'
-          end
-
-          def available_hex(entity, hex)
-            return unless entity.company?
+          def available_hex(_entity, hex)
             return unless @game.brandt_hex?(hex)
 
             tracker_available_hex(@round.current_operator, hex)
@@ -30,23 +25,6 @@ module Engine
 
           def hex_neighbors(entity, hex)
             @game.graph_for_entity(entity).connected_hexes(entity)[hex]
-          end
-
-          def potential_tile_colors(_entity, hex)
-            super(@round.current_operator, hex)
-          end
-
-          def potential_tiles(entity_or_entities, hex)
-            super.reject(&:blocks_lay)
-          end
-
-          def upgradeable_tiles(entity_or_entities, ui_hex)
-            super.select { |tile| tile.color == :yellow }
-          end
-
-          def legal_tile_rotation?(entity_or_entities, hex, tile)
-            entity = Array(entity_or_entities).first
-            super(entity.company? ? @round.current_operator : entity_or_entities, hex, tile)
           end
 
           def process_lay_tile(action)
