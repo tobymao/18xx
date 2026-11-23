@@ -309,6 +309,17 @@ describe 'Assets' do
       expect(render(app_route: '/login')).to include('Login')
     end
 
+    it 'renders the captcha on the login form of a game card page' do
+      html = render(
+        app_route: '/game/1',
+        turnstile_sitekey: 'site-key',
+        game_data: { id: 1, status: 'new', title: '1889', players: [], actions: [] },
+      )
+
+      expect(html).to include('You need to login before joining a game:')
+      expect(html).to include('class="turnstile"')
+    end
+
     it 'renders signup' do
       expect(render(app_route: '/signup')).to include('Signup')
     end
