@@ -64,6 +64,7 @@ module Engine
       end
 
       path_walk_timed_out = false
+      walk_count = 0
       now = Time.now
 
       skip_paths = if @train_autoroute_group.nil?
@@ -98,6 +99,16 @@ module Engine
         walk_corporation = graph.no_blocking? ? nil : corporation
         graph.walk_token(node, corporation: walk_corporation, skip_paths: skip_paths, links: true,
                                revisit: true) do |_, vp|
+          # A single node's walk can be huge; stop it once the time is up
+          next :abort if path_walk_timed_out
+
+          walk_count += 1
+          if (walk_count % 256).zero? && Time.now - now > path_timeout
+            LOGGER.debug('Path timeout reached during a node walk')
+            path_walk_timed_out = true
+            next :abort
+          end
+
           paths = vp.keys
           chains = []
           chain = []
