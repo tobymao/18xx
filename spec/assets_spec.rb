@@ -228,6 +228,9 @@ TEST_CASES = [
      'stock',
      ['Stock Round 3',
       '10 receives $110 in its Treasury']]]],
+  ['1837',
+   '1837_game_end_bank',
+   [[821, 'exchange_round', 'Exchange Round before Operating Round 8.2']]],
 ].freeze
 
 AUTO_ACTIONS_TEST_CASES = [
