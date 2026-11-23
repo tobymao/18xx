@@ -74,6 +74,10 @@ module View
           players << company.owner
         end
 
+        if (consenter = @game.consenter_for_lay_tile(entity, hex, tile))
+          blocking_players << consenter
+        end
+
         if blocking_players.empty?
           lay_tile_lambda
         else

@@ -1416,6 +1416,8 @@ module Engine
       # consent is not required.
       def consenter_for_choice(_entity, _choice, _label); end
 
+      def consenter_for_lay_tile(_entity, _hex, _tile); end
+
       def can_run_route?(entity)
         graph_for_entity(entity).route_info(entity)&.dig(:route_available)
       end
