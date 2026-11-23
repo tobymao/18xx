@@ -10,14 +10,13 @@ module Engine
           def actions(entity)
             actions = super
             return actions if entity != current_entity
-            return actions | %w[pass] if actions.include?('buy_train') && pass_triggers_train_removal?
+            return actions | %w[pass] if actions.include?('buy_train') && pass_removes_trains?
 
             actions
           end
 
-          def pass_triggers_train_removal?
-            train = @game.depot.upcoming.first
-            !avoid_discarding_final_trains?(train) && !@game.trains_not_triggering_sr?(train.name)
+          def pass_removes_trains?
+            !avoid_discarding_final_trains?(@game.depot.upcoming.first)
           end
 
           def process_buy_train(action)
@@ -51,10 +50,9 @@ module Engine
           end
 
           def pass!
-            train = @game.depot.upcoming.first
-            return super if !train || avoid_discarding_final_trains?(train)
+            return super unless pass_removes_trains?
 
-            discard_all_trains(train.name)
+            discard_all_trains(@game.depot.upcoming.first.name)
           end
 
           def avoid_discarding_final_trains?(train)
