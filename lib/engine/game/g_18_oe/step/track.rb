@@ -2,7 +2,7 @@
 
 require_relative '../../../step/track'
 require_relative 'skip_abbreviated_round'
-require_relative 'tile_point_tracker'
+require_relative 'tracker'
 
 module Engine
   module Game
@@ -10,16 +10,7 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include SkipAbbreviatedRound
-          include TilePointTracker
-
-          def round_state
-            super.merge(tile_points_used: 0)
-          end
-
-          def setup
-            super
-            @round.tile_points_used = 0
-          end
+          include Tracker
 
           def actions(entity)
             actions = super
@@ -113,29 +104,11 @@ module Engine
             "#{text} + #{points} (yellow lays only)"
           end
 
-          def lay_tile_action(action)
-            tile = action.tile
-            old_tile = action.hex.tile
-            points_available = remaining_tile_points(action.entity)
-            right_of_way = !@game.phase.tiles.include?(tile.color)
-            raise GameError, 'Right-of-Way is not available' if right_of_way && !right_of_way?(action.entity, action.hex)
+          def tile_points_cost(operator, action)
+            return super if @game.phase.tiles.include?(action.tile.color)
+            raise GameError, 'Right-of-Way is not available' unless right_of_way?(operator, action.hex)
 
-            points_cost = right_of_way ? points_available : @game.tile_point_cost(action.entity, old_tile: old_tile)
-            raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && points_cost > points_available
-            raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && points_cost > points_available
-
-            tile.rotate!(action.rotation)
-            action.extra_cost = cross_water_fee(action) unless @game.loading
-            lay_tile(action, extra_cost: action.extra_cost || 0)
-            @game.after_lay_tile(action.entity, old_tile, tile)
-            @game.fulfill_patronage!(action.entity, action.hex)
-            if track_upgrade?(old_tile, tile, action.hex)
-              @round.upgraded_track = true
-              @round.num_upgraded_track += 1
-            end
-            @round.num_laid_track += 1
-            @round.laid_hexes << action.hex
-            @round.tile_points_used += points_cost
+            remaining_tile_points(operator)
           end
         end
       end

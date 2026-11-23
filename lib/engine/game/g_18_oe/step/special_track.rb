@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_track'
-require_relative 'tile_point_tracker'
+require_relative 'tracker'
 
 module Engine
   module Game
     module G18OE
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
-          include TilePointTracker
+          include Tracker
 
           def actions(entity)
             return [] unless entity == @game.brandt_private
@@ -64,22 +64,9 @@ module Engine
               raise GameError, "#{hex.name} is not connected to #{operator.name}"
             end
 
-            points_cost = @game.tile_point_cost(operator, old_tile: old_tile)
-            raise GameError, 'Cannot lay a yellow now' if points_cost > remaining_tile_points(operator)
-
-            super
-            @game.after_lay_tile(operator, old_tile, tile)
-            @game.fulfill_patronage!(operator, hex)
-            @round.num_laid_track += 1
-            @round.tile_points_used += points_cost
+            lay_tile_action(action, spender: operator)
+            abilities(action.entity).use!
             @game.place_brandt_token!(hex)
-          end
-
-          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
-            operator = @round.current_operator
-            action.tile.rotate!(action.rotation)
-            action.extra_cost = cross_water_fee(action, operator) unless @game.loading
-            super(action, extra_cost: action.extra_cost || 0, entity: entity, spender: spender)
           end
         end
       end
