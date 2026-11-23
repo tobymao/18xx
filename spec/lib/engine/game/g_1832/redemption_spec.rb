@@ -94,7 +94,7 @@ module Engine
         vp_cert.transfer(game.share_pool)
         act_as(player_a)
 
-        expect(step.actions(system)).to include('buy_shares')
+        expect(step.actions(system)).to be_empty
         expect(step.redeemable_shares(system)).to be_empty
         expect(step.can_buy?(system, ShareBundle.new([vp_cert]))).to be(false)
       end
@@ -331,7 +331,7 @@ module Engine
         act_as(player_a)
 
         expect(system.shares_of(system).sum(&:percent)).to eq(35)
-        expect(step.actions(system)).to include('buy_shares')
+        expect(step.actions(system)).to be_empty
         expect(step.redeemable_shares(system)).to be_empty
       end
 

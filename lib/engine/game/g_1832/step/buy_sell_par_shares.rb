@@ -33,7 +33,9 @@ module Engine
             return [] if @round.current_actions.last&.entity&.corporation?
 
             actions = []
-            actions << 'buy_shares' if @round.current_actions.none? && entity.operated? && can_redeem_more?(entity)
+            actions << 'buy_shares' if @round.current_actions.none? &&
+                                       entity.operated? &&
+                                       !redeemable_shares(entity).empty?
 
             shares = entity.shares_of(entity)
             actions << 'sell_shares' if shares.any? && shares.none?(&:buyable)
@@ -98,10 +100,6 @@ module Engine
           def within_redemption_limits?(corporation, bundle)
             @round.redeemed_percent[corporation] + bundle.percent <= MAX_REDEMPTION_PERCENT &&
               treasury_percent(corporation) + bundle.percent <= MAX_TREASURY_PERCENT
-          end
-
-          def can_redeem_more?(entity)
-            treasury_percent(entity) < MAX_TREASURY_PERCENT && redemptions_left?(entity)
           end
 
           def treasury_percent(entity)
