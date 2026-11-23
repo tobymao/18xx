@@ -3,6 +3,33 @@
 module Lib
   module RadialSelector
     DROP_SHADOW_SIZE = 5
+    FULL_CIRCLE = 360
+
+    # Opens a fan away from whichever map edge(s) are too close for it to
+    # render at full size -- a full circle when none are, a half circle
+    # when near one edge, a quarter circle in a corner -- then rotates
+    # that fan to point back toward the center of the viewport.
+    def calc_angle_rotation(left, right, top, bottom)
+      angle = case [left, right, top, bottom].count(true)
+              when 0 # center
+                rotation = 0
+                FULL_CIRCLE
+              when 1 # side
+                180
+              else # corner
+                90
+              end
+      rotation ||= if left && !bottom
+                     -90
+                   elsif !left && top
+                     -180
+                   elsif right && !top
+                     -270
+                   else
+                     0
+                   end
+      [angle, rotation]
+    end
 
     # item -> [item,x,y]
     # angle = opening angle for tile fan

@@ -100,6 +100,7 @@ module View
               # extend toward the opposite side instead of overflowing
               # past the map's own boundary.
               h(HexChoicePopup, zoom: map_zoom,
+                                near_left_edge: left < HexChoicePopup::EDGE_MARGIN,
                                 near_right_edge: width - left < HexChoicePopup::EDGE_MARGIN,
                                 near_top_edge: top < HexChoicePopup::EDGE_MARGIN,
                                 near_bottom_edge: height - top < HexChoicePopup::BOTTOM_EDGE_MARGIN)
