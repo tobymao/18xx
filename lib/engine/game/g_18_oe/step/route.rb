@@ -14,18 +14,66 @@ module Engine
           POOL_HELP = " Port authorities and Minor H reduce the railroad's total, shared by its trains; "\
                       'the trains earning most use it first.'
 
+          ADD_ON_CHOICE_SEPARATOR = ':'
+
           def actions(entity)
-            return [] if @game.repeat_last_revenue?(entity)
+            return [] if @game.repeat_last_revenue?(entity) || @game.national?(entity)
 
             actions = super
-            return actions if actions.empty? || @game.double_head_candidates(entity).size < 2
-            return actions if !@game.loading && !@game.orient_express_reachable?(entity)
+            return actions if actions.empty?
 
-            actions + %w[double_head_trains]
+            actions += %w[double_head_trains] if combining_offered?(entity)
+            actions += %w[choose] if @game.train_add_ons(entity).any? { |type| !add_on_choices(entity, type).empty? }
+            actions
+          end
+
+          def combining_offered?(entity)
+            return false if @game.double_head_candidates(entity).size < 2
+
+            @game.loading || @game.orient_express_reachable?(entity)
+          end
+
+          def choice_name
+            'Attach to a train'
+          end
+
+          def choices
+            @game.train_add_ons(current_entity).flat_map do |type|
+              name = @game.train_add_on_name(type)
+              add_on_choices(current_entity, type).map do |train|
+                ["#{type}#{ADD_ON_CHOICE_SEPARATOR}#{train.id}", "#{name} on #{train.name} train"]
+              end
+            end.to_h
+          end
+
+          def add_on_choices(entity, type)
+            current = @game.add_on_train(type)
+            @game.route_trains(entity).reject { |train| train.operated || train == current }
+          end
+
+          def process_choose(action)
+            entity = action.entity
+            type_key, train_id = action.choice.split(ADD_ON_CHOICE_SEPARATOR, 2)
+            type = @game.train_add_ons(entity).find { |t| t.to_s == type_key }
+            raise GameError, 'Cannot attach that' unless type
+
+            name = @game.train_add_on_name(type)
+            train = add_on_choices(entity, type).find { |t| t.id == train_id }
+            raise GameError, "Cannot attach the #{name} to that train" unless train
+
+            @round.add_on_trains[type] = train
+            @log << "#{entity.name} attaches the #{name} to the #{train.name} train"
+          end
+
+          def train_name(_corporation, train)
+            names = @game.train_add_on_names(train)
+            names.empty? ? train.name : "#{train.name} (#{names.join(', ')})"
           end
 
           def log_skip(entity)
-            super unless @game.repeat_last_revenue?(entity)
+            return if @game.repeat_last_revenue?(entity) || @game.national?(entity)
+
+            super
           end
 
           def help
@@ -44,7 +92,7 @@ module Engine
           end
 
           def round_state
-            super.merge(combined_trains: {}, orient_express_revenue: nil)
+            super.merge(combined_trains: {}, orient_express_revenue: nil, add_on_trains: {})
           end
 
           def double_head_trains_title
@@ -60,6 +108,7 @@ module Engine
             super
             @round.combined_trains = {}
             @round.orient_express_revenue = nil
+            @round.add_on_trains = {}
           end
 
           def process_run_routes(action)
@@ -86,6 +135,7 @@ module Engine
             train.owner = corporation
             corporation.trains << train
             @round.combined_trains[train] = trains
+            @round.add_on_trains.each { |type, add_on_train| @round.add_on_trains[type] = train if trains.include?(add_on_train) }
 
             @log << "#{corporation.name} combines #{trains.map(&:name).sort.join(', ')} into "\
                     "#{an(train.distance[1]['pay'])} #{train.name} train for the Orient Express"
@@ -121,7 +171,8 @@ module Engine
                 { 'nodes' => ['town'], 'pay' => towns, 'visit' => 99 },
                 { 'nodes' => %w[city offboard town], 'pay' => cities, 'visit' => cities },
               ]
-              train = Engine::Train.new(name: sym, distance: distance, price: 0)
+              level = trains.map(&:level).max
+              train = G18OE::Train.new(name: sym, distance: distance, price: 0, level: level)
               train.name = "#{cities}+#{towns}C"
 
               @game.depot.add_train(train)

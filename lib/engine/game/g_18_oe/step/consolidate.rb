@@ -85,10 +85,10 @@ module Engine
               names = minors.map(&:name).join(', ')
               case requirement
               when :merge
-                "Merge into one of their majors: #{names}"
+                "Merge into one of their majors or nationals: #{names}"
               when :offer_or_merge
-                "Merge into one of their majors or offer to other players: #{names}. "\
-                'If no one offers, they choose which of their majors it merges into.'
+                "Merge into one of their majors or nationals, or offer to other players: #{names}. "\
+                'If no one offers, they choose which of their majors or nationals it merges into.'
               when :offer_or_abandon
                 "Offer to other players: #{names}. If no one offers, it is abandoned."
               when :convert

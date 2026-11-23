@@ -38,4 +38,74 @@ describe View::Game::Choose do
       end
     end
   end
+
+  context 'with 18OE port authority sales in Transfer Tokens' do
+    let(:game) { new_game }
+    let(:buyer) { start_major!(game, 'LNWR', game.players.first) }
+    let(:seller) { start_major!(game, 'GWR', game.players.first) }
+    let(:sea) { game.port_authority_seas.first }
+    let(:component) { described_class.new(nil, game: game) }
+    let(:nodes) { [] }
+
+    before do
+      fund!(game, buyer, 500)
+      game.instance_variable_get(:@port_authorities)[seller] << sea
+      station_token_round!(game, buyer, step_class: Engine::Game::G18OE::Step::TransferTokens)
+      allow(component).to receive(:h) do |tag, props = {}, children = nil|
+        nodes << [tag, props, children]
+        [tag, props, children]
+      end
+    end
+
+    it 'renders a button per port authority purchase and submits the choice' do
+      component.render
+      buttons = nodes.select { |tag, _, _| tag == 'button' }
+      expect(buttons.map(&:last)).to eq(["Buy #{game.port_authority_name(sea)} from #{seller.name} (£125)"])
+      expect(component).to receive(:process_action) do |action|
+        expect(action.choice).to eq("#{seller.id}:#{sea}")
+        act!(game.round, action)
+      end
+
+      buttons.first[1][:on][:click].call
+
+      expect(game.port_authorities(buyer)).to eq([sea])
+    end
+
+    it "asks the seller's president to consent before buying from another player" do
+      seller.owner = game.players[1]
+      component.render
+      button = nodes.find { |tag, _, _| tag == 'button' }
+      expect(component).to receive(:check_consent).with(buyer, game.players[1], an_instance_of(Proc))
+
+      button[1][:on][:click].call
+    end
+  end
+
+  context 'with national formation' do
+    let(:game) { new_game }
+    let(:player) { game.players.first }
+
+    it 'renders each convertible major and Done for the forming player, submitted as the player' do
+      lnwr = start_major!(game, 'LNWR', player)
+      start_major!(game, 'GWR', player)
+      round = enter_round!(game, game.operating_round(1)).tap(&:setup)
+      round.instance_variable_set(:@current_operator, lnwr)
+      game.start_national_formation!(player)
+      round.send(:clear_cache!)
+      nodes = []
+      component = described_class.new(nil, game: game)
+      allow(component).to receive(:h) do |tag, props = {}, children = nil|
+        nodes << [tag, props, children]
+        [tag, props, children]
+      end
+      allow(component).to receive(:process_action) { |action| round.process_action(action) }
+
+      component.render
+      buttons = nodes.select { |tag, _, _| tag == 'button' }
+      expect(buttons.map(&:last)).to eq(['Convert LNWR', 'Convert GWR', 'Done'])
+
+      buttons.first[1][:on][:click].call
+      expect(lnwr.type).to eq(:national)
+    end
+  end
 end

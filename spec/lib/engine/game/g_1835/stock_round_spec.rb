@@ -107,7 +107,7 @@ describe Engine::Game::G1835::Game do
       pass(player_3)
       pass(player_4)
       pass(player_1)
-      sell_shares(player_2, 'BY')
+      sell_shares(player_2, 'BY', 20)
       pass(player_2)
       # player 3 does not have any valid actions (BY not dumpable anymore) and is skipped
 
@@ -135,7 +135,7 @@ describe Engine::Game::G1835::Game do
       buy_shares(player_4, 'SX')
       sell_shares(player_1, 'BY')
       buy_shares(player_1, 'SX') # Last buy, PD goes to player 2
-      sell_shares(player_2, 'BY')
+      sell_shares(player_2, 'BY', 20)
       pass(player_2)
       # all other players are skipped ending the SR
 
@@ -231,6 +231,62 @@ describe Engine::Game::G1835::Game do
           Engine::Action::SellShares.new(player_1, shares: bundle.shares)
         ).maybe_raise!
       end.to_not raise_error
+    end
+  end
+
+  describe 'partial sales' do
+    let(:players) { %w[a b c d] }
+    let(:game) { Engine::Game::G1835::Game.new(players) }
+    it 'should not let players sell partial director shares' do
+      # sell the starting package
+      sell_starting_package
+
+      # player 3 could buy something in the following SR, but doesn't
+      pass(player_3)
+
+      skip_minor_actions_in_or
+      no_action_but_mandatory_train_buy(by)
+
+      buy_shares(player_3, 'BY') # Last buy, PD goes to player 4
+      pass(player_3)
+      pass(player_4)
+      pass(player_1)
+
+      # Player 2 is now director with 20%. The only option is selling the director's share whole
+      sellable_bayern_bundles = game.sellable_bundles(player_2, game.corporation_by_id('BY'))
+      expect(sellable_bayern_bundles.size).to be 1
+      expect(sellable_bayern_bundles[0].percent).to be 20
+    end
+  end
+
+  describe 'swap_to' do
+    it 'should swap the shares with the market if the president share was sold to the market' do
+      game = fixture_at_action(681)
+
+      player_1 = game.players.find { |player| player.id == 0 }
+      player_2 = game.players.find { |player| player.id == 1 }
+      player_3 = game.players.find { |player| player.id == 2 }
+      preussen = game.corporation_by_id('PR')
+
+      # assert the situation: Player 3 (director) has 35%
+      expect(game.round).to be_a(Engine::Round::Stock)
+      expect(preussen.owner).to eq(player_3)
+      expect(player_1.percent_of(preussen)).to be 10
+      expect(player_2.percent_of(preussen)).to be 25
+      expect(player_3.percent_of(preussen)).to be 35
+      expect(game.share_pool.percent_of(preussen)).to be 0
+      expect(player_3.shares_of(preussen).map(&:percent).count(5)).to be 3
+
+      # Sell 2 whole shares, one being the president share
+      bundle = game.sellable_bundles(player_3, preussen).find { |b| b.percent == 20 && b.shares.all? { |s| s.percent == 10 } }
+      game.process_action(Engine::Action::SellShares.new(player_3, shares: bundle.shares)).maybe_raise!
+
+      # Make sure non-IPO shares add up to the same as before
+      expect(preussen.owner).to eq(player_2)
+      expect(player_1.percent_of(preussen)).to be 10
+      expect(player_2.percent_of(preussen)).to be 25
+      expect(player_3.percent_of(preussen)).to be 15
+      expect(game.share_pool.percent_of(preussen)).to be 20
     end
   end
 end

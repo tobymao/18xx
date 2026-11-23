@@ -21,7 +21,7 @@ module Engine
         include G1832::Trains
 
         attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :p4_invested_in,
-                      :miami_has_been_run
+                      :miami_has_been_run, :saved_or_round
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -123,7 +123,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1832::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G1832::Step::Exchange,
             G1832::Step::BuyCompany,
@@ -157,6 +157,7 @@ module Engine
           @miami_first_run_round = nil
           @p4_invested_in = nil
           @final_merger_triggered = false
+          @saved_or_round = nil
 
           coal_company.max_price = coal_company.value
 
@@ -232,8 +233,7 @@ module Engine
         end
 
         def event_close_companies!
-          @log << '-- Event: Private companies close --'
-          company.close!
+          super
 
           @coal_company_sold_or_closed = true
         end
@@ -257,6 +257,11 @@ module Engine
 
         def final_merger_triggered?
           @final_merger_triggered
+        end
+
+        def interrupt_operating_round!(round)
+          @saved_or_round = round
+          @final_merger_triggered = false
         end
 
         def event_remove_tokens!
@@ -505,6 +510,40 @@ module Engine
           end
 
           @skip_paths
+        end
+
+        def mergers_allowed?
+          !option_no_mergers? && @phase.status.include?('mergers_allowed')
+        end
+
+        def option_no_mergers?
+          @optional_rules&.include?(:no_mergers)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              mergers_allowed? ? new_merger_round : new_operating_round
+            when G1832::Round::Merger
+              @saved_or_round || new_operating_round
+            when Engine::Round::Operating
+              # the first 6-train interrupted this OR for a merger round
+              @saved_or_round ? new_merger_round : super
+            else
+              super
+            end
+        end
+
+        def new_merger_round
+          @log << "-- #{round_description('Merger and Takeover')} --"
+          G1832::Round::Merger.new(self, [
+            G1832::Step::Merge,
+            G1832::Step::SellSharesForTakeover,
+            Engine::Step::DiscardTrain,
+          ])
         end
 
         def merge_corporations

@@ -25,6 +25,8 @@ module Engine
 
         TRAINS_NOT_TRIGGERING_SR = %w[2R 8 8E].freeze
 
+        ROCKET_TRAIN = '3+3'
+
         ASSIGNMENT_TOKENS = G1880::Game::ASSIGNMENT_TOKENS.merge(
           'P4' => '/icons/1880_romania/danube_bonus.svg'
         ).freeze
@@ -169,6 +171,10 @@ module Engine
 
         GAME_END_REASONS_TEXT = {
           final_train: 'Last 6E train sold',
+        }.freeze
+
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
+          final_train: 'Last 6E train was purchased',
         }.freeze
 
         def self.min_players(optional_rules, num_players)

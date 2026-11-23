@@ -53,7 +53,6 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
-        EXTRA_TRAINS = %w[2P P+ LP 3/2P].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP 3/2P].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
@@ -239,12 +238,14 @@ module Engine
           },
           {
             name: '2P',
+            extra: true,
             distance: 2,
             num: 1,
             price: 0,
           },
           {
             name: 'LP',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -268,6 +269,7 @@ module Engine
           },
           {
             name: 'P+',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -285,6 +287,7 @@ module Engine
           },
           {
             name: '3/2P',
+            extra: true,
             distance: 3,
             num: 1,
             price: 0,
@@ -317,7 +320,7 @@ module Engine
             G1822MX::Step::Token,
             G1822MX::Step::Route,
             G1822MX::Step::Dividend,
-            G1822::Step::BuyTrain,
+            G1822MX::Step::BuyTrain,
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822MX::Step::IssueShares,

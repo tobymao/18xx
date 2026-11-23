@@ -81,6 +81,19 @@ module Engine
                   'and other RRs\' tokens in the city do not block them. '\
                   'The token city need not be reachable but may not serve as the sole token on a route, '\
                   'nor be used to place further tokens.',
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'player',
+                when: 'owning_player_token',
+                hexes: [],
+                extra_slot: true,
+                connected: false,
+                count: 1,
+                special_only: true,
+                price: 0,
+              },
+            ],
             auction_row: 3,
           },
           {
@@ -94,6 +107,19 @@ module Engine
                   'and other RRs\' tokens in the city do not block them. '\
                   'The token city need not be reachable but may not serve as the sole token on a route, '\
                   'nor be used to place further tokens.',
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'player',
+                when: 'owning_player_token',
+                hexes: [],
+                extra_slot: true,
+                connected: false,
+                count: 1,
+                special_only: true,
+                price: 0,
+              },
+            ],
             auction_row: 3,
           },
           {
@@ -107,7 +133,8 @@ module Engine
                   'Place Token step and closes the private. Until then the ferry through Lille stays open to every RR '\
                   'even when Lille is full; afterwards only RRs with a token in Lille (or the Central Circle '\
                   'token) may take the ferry to London or pass through Lille from London. If a national\'s '\
-                  'formation removes the token, Lille is open to every RR for good. See §11.2.2 and §14.7.',
+                  'formation removes the token, the ferry through Lille is open to every RR again. See §11.2.2 and '\
+                  '§14.7.',
             abilities: [
               {
                 type: 'token',
@@ -140,6 +167,15 @@ module Engine
                   'Turn the private face-down to indicate placement. Any RR controlled by the private\'s owner may '\
                   'count the token as a town when running a route through the hex, collecting £10 (Phase 2), '\
                   '£20 (Phase 3–4), £40 (Phase 5–6) or £60 (Phase 7–8).',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: [],
+                count: 1,
+                when: 'owning_player_track',
+                owner_type: 'player',
+              },
+            ],
             auction_row: 4,
           },
           {
@@ -152,9 +188,23 @@ module Engine
                   'at no terrain cost (tile points are still spent; the tile may be immediately upgraded). '\
                   'Only the owner\'s RRs may use track on hexes bearing these tokens. '\
                   'Turn the private face-down when the last token is placed; it is removed from the game '\
-                  'when no tokens remain on the map. To remove a token, another RR must pay the original terrain '\
-                  'cost and expend one tile point (two for a metropolis), without placing track. '\
+                  'when no tokens remain on the map. To remove a token, another RR must pay the printed terrain '\
+                  'cost (shown on the tile) and expend one tile point (two for a metropolis), without placing track. '\
                   'Nationals skip the terrain cost but still expend tile points.',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                free: true,
+                reachable: true,
+                special: false,
+                count: 4,
+                count_per_or: 2,
+                tiles: [],
+                hexes: [],
+              },
+            ],
             auction_row: 4,
           },
           {
@@ -167,6 +217,15 @@ module Engine
                   'This train does not count against the train limit, cannot run on track already used by '\
                   'the RR\'s other trains in the same OR, and can never be sold. '\
                   'If held by a minor, the train transfers to the major when the minor merges.',
+            abilities: [
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                after_phase: '3',
+                choices: { preserve: 'Preserve a rusted 2+2' },
+              },
+            ],
             auction_row: 4,
           },
           # -----------------------------------------------------------------------
@@ -281,9 +340,21 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor D charter. '\
-                  'Exchange this private during a Stock Round to float Minor D.',
+                  'Exchange this private during a Stock Round to float Minor D; it then stays with the minor, '\
+                  'and with the major the minor merges into. The president may place its token in any '\
+                  'non-metropolis, non-red-zone city on the map (even unreachable) during the RR\'s lay track '\
+                  'step. Trains run to or through that city earn a +£20 bonus (Phase 2–4). At Phase 5 start, '\
+                  'the +£20 token is removed; the president may place a new token in the same or a different '\
+                  'eligible city for a +£40 bonus (Phase 5+).',
             auction_row: 6,
             abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: [],
+                count: 1,
+                when: 'track',
+                owner_type: 'corporation',
+              },
               {
                 type: 'exchange',
                 corporations: %w[D],
@@ -566,16 +637,6 @@ module Engine
             max_ownership_percent: 100,
             color: '#3CB371',
             text_color: 'black',
-            abilities: [
-              {
-                type: 'description',
-                description: 'The president may place this minor\'s token in any non-metropolis, '\
-                             'non-red-zone city on the map (even unreachable). Trains run to or through '\
-                             'that city earn a +£20 bonus (Phase 2–4). At Phase 5 start, the +£20 token '\
-                             'is removed; the president may place a new token in the same or a different '\
-                             'eligible city for a +£40 bonus (Phase 5+). Placed during the lay track step.',
-              },
-            ],
           },
           {
             name: 'Blue Coast Bridge Construction Company',

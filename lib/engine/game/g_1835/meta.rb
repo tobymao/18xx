@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_DESIGNER = 'Michael Meier-Bachl, Francis Tresham'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1835'

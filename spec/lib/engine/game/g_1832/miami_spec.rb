@@ -71,5 +71,38 @@ module Engine
         expect(game.miami_scores_zero?).to be(false)
       end
     end
+
+    describe 'Key West token availability' do
+      let(:round) { Struct.new(:routes).new([]) }
+      let(:token_step) { Game::G1832::Step::Token.new(game, round) }
+      let(:fecr) { game.fecr_corp }
+      let(:cost) { token_step.miami_token_ability(fecr).cost }
+
+      before { game.phase.next! until game.phase.status.include?('can_place_miami_token') }
+
+      def fund(corporation, amount)
+        corporation.spend(corporation.cash, game.bank) if corporation.cash.positive?
+        game.bank.spend(amount, corporation) if amount.positive?
+      end
+
+      it 'is offered to the FECR when it can afford the token' do
+        fund(fecr, cost)
+
+        expect(token_step.can_place_miami_token?(fecr)).to be(true)
+      end
+
+      it 'is not offered to the FECR when it cannot afford the token' do
+        fund(fecr, cost - 1)
+
+        expect(token_step.can_place_miami_token?(fecr)).to be(false)
+      end
+
+      it 'is not offered to another corporation' do
+        other = game.corporations.find { |c| c != fecr }
+        fund(other, cost)
+
+        expect(token_step.can_place_miami_token?(other)).to be(false)
+      end
+    end
   end
 end

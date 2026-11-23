@@ -693,10 +693,6 @@ module Engine
           @lhp_train_pending = false
         end
 
-        def extra_train?(train)
-          train == @lhp_train
-        end
-
         def crowded_corps
           @crowded_corps ||= corporations.select do |c|
             c.trains.count { |t| !extra_train?(t) } > train_limit(c)

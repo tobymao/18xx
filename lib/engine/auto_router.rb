@@ -49,6 +49,8 @@ module Engine
 
       connections = {}
 
+      @shared_track = {}
+      @max_route_stops = {}
       graph = @game.graph_for_entity(corporation)
       nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = trains
@@ -65,7 +67,7 @@ module Engine
       now = Time.now
 
       skip_paths = if @train_autoroute_group.nil?
-                     static.flat_map(&:paths).reject { |path| @game.shared_track?(path) }.to_h { |path| [path, true] }
+                     static.flat_map(&:paths).reject { |path| shared_track?(path) }.to_h { |path| [path, true] }
                    elsif @train_autoroute_group == :each_train_separate
                      # all trains have their own autoroute group so it's not possible to fill skip_paths
                      {}
@@ -105,7 +107,7 @@ module Engine
           last_right = nil
 
           complete = lambda do
-            chains << { nodes: [left, right], paths: chain, hexes: chain.map(&:hex) }
+            chains << { nodes: [left, right], paths: chain }
             last_left = left
             last_right = right
             left, right = nil
@@ -157,7 +159,8 @@ module Engine
             # of them
             id = [left]
           else
-            id = [chains.flat_map { |c| c[:paths] }.sort!, chains.filter_map { |c| c[:id] if c[:paths].empty? }]
+            paths = chains.flat_map { |c| c[:paths] }
+            id = [paths.map!(&:object_id).sort!, chains.filter_map { |c| c[:id] if c[:paths].empty? }]
           end
 
           next if connections[id]
@@ -167,12 +170,21 @@ module Engine
           end
 
           connection = connections[id]
+          bitfield = bitfield_from_connection(connection, hexside_bits)
+          stops = connection.flat_map { |conn| [conn[:left], conn[:right]] }.uniq.compact.flat_map(&:stops)
+          city_stops = stops.count { |stop| !stop.town? }
+          town_stops = stops.count(&:town?)
 
           # each train has opportunity to vote to abort a branch of this node's path-walk tree
           path_abort = trains.to_h { |train| [train, true] }
 
           # build a test route for each train, use route.revenue to check for errors, keep the good ones
           trains.each  do |train|
+            if too_many_stops?(city_stops, town_stops, train)
+              path_abort.delete(train)
+              next
+            end
+
             route = Engine::Route.new(
               @game,
               @game.phase,
@@ -181,7 +193,7 @@ module Engine
               # If we don't clone, then later route.touch_node calls will affect all routes with
               # the same connection array
               connection_data: connection.clone,
-              bitfield: bitfield_from_connection(connection, hexside_bits),
+              bitfield: bitfield,
             )
             route.routes = [route]
             # defer route combination checks until we have the full combination of routes to check
@@ -218,6 +230,28 @@ module Engine
       [train_routes, path_walk_timed_out]
     end
 
+    def too_many_stops?(city_stops, town_stops, train)
+      limit = route_stop_limit(train)
+      return false unless limit
+
+      (limit[:city] ? city_stops > limit[:city] : false) || (limit[:town] ? town_stops > limit[:town] : false)
+    end
+
+    def route_stop_limit(train)
+      @max_route_stops ||= {}
+      return @max_route_stops[train] if @max_route_stops.key?(train)
+
+      @max_route_stops[train] = @game.max_route_stops(train)
+    end
+
+    def shared_track?(path)
+      return @shared_track[path] if @shared_track&.key?(path)
+
+      value = @game.shared_track?(path)
+      @shared_track[path] = value if @shared_track
+      value
+    end
+
     # inputs:
     #   connection is a route's connection_data
     #   hexside_bits is a map of hexside_id to bit number
@@ -229,7 +263,7 @@ module Engine
       bitfield = [0]
       connection.each do |conn|
         all_paths = conn[:chain][:paths]
-        paths = all_paths.reject { |path| @game.shared_track?(path) }
+        paths = all_paths.reject { |path| shared_track?(path) }
         next if paths.empty?
 
         if paths.size == 1 && all_paths.size > 1

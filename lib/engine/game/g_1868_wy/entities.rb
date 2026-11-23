@@ -485,7 +485,7 @@ module Engine
                 when: 'owning_corp_or_turn',
                 count: 1,
                 hexes: %w[
-                  B8 B12 B14 B18 B20 B22 B24 B26
+                  B8 B14 B18 B20 B22 B24 B26
                   C13 C19 C21 C23 C25
                   D10 D14 D18 D22 D26
                   E13 E15 E19 E21 E23 E25
@@ -494,14 +494,15 @@ module Engine
                   H4 H12 H14 H16 H20 H24 H26
                   I5 I7 I11 I13 I15 I17 I19 I21 I23 I25
                   J4 J8 J10 J14 J16 J18 J22 J24
-                  K3 K5 K7 K9 K11 K13 K21 K23 K25
-                  L6 L12 L14 L20 L22 L24 L26
+                  K3 K5 K7 K9 K11 K13 K19 K21 K23 K25
+                  L6 L12 L14 L22 L24 L26
                   M3 M5 M7 M9 M11 M13 M17
                 ],
               },
             ],
             desc: 'Comes with a Boomtown token that may be placed (when owned by a Railroad) '\
-                  'during any OR anywhere track may be placed. Once it\'s a Boom City, it may '\
+                  'during any OR on any hex without a revenue location where track may be '\
+                  'placed, with no connection required. Once it\'s a Boom City, it may '\
                   'only be tokened by the owning Railroad Company. Closes at '\
                   'phase 7, removing Boomtown/City and station token, and tile '\
                   'becomes a Ghost Town.',

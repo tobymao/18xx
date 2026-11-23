@@ -107,6 +107,47 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
     expect(game.graph.sea_connectivity(dsj)).not_to equal(before)
   end
 
+  describe 'crossing both seas with port authorities (§11.1.6, §11.2.1)' do
+    let(:connectivity) { Engine::Game::G18OE::SeaConnectivity.allocate }
+    let(:edges) do
+      {
+        departure: [[:first_zone, 2, :north_sea]],
+        first_zone: [[:second_zone, 2, :north_sea]],
+        second_zone: [[:third_zone, 2, :north_sea]],
+        third_zone: [[:fourth_zone, 2, :mediterranean]],
+        fourth_zone: [[:arrival, 2, :mediterranean]],
+        arrival: [],
+      }
+    end
+
+    def crossing_cost(seas, graph = edges)
+      connectivity.instance_variable_set(:@game, game)
+      connectivity.instance_variable_set(:@corporation, dsj)
+      connectivity.instance_variable_set(:@edges, graph)
+      game.instance_variable_get(:@port_authorities)[dsj] = seas
+      connectivity.send(:reduced_costs, [:departure]).fetch(:arrival)
+    end
+
+    it 'uses up to two zones from each owned sea' do
+      expect(crossing_cost(%i[north_sea mediterranean])).to eq(2)
+    end
+
+    it 'charges for the unowned sea in full' do
+      expect(crossing_cost([:north_sea])).to eq(6)
+    end
+
+    it 'discounts the North Sea ferry and Mediterranean zone and charges the unclassified ferry' do
+      mixed_crossing = {
+        departure: [[:ferry_landing, 3, :north_sea, true]],
+        ferry_landing: [[:sea_zone, 2, :mediterranean]],
+        sea_zone: [[:arrival, 2, nil, true]],
+        arrival: [],
+      }
+
+      expect(crossing_cost(%i[north_sea mediterranean], mixed_crossing)).to eq(3)
+    end
+  end
+
   describe 'laying across water (§11.1.3, §11.1.6)' do
     let(:player) { game.players.first }
 
@@ -266,6 +307,30 @@ describe 'G18OE graph across water (§11.1.3, §11.3.6)' do
       round = or_at_token_step!
       expect { act!(round, Engine::Action::PlaceToken.new(dsj, city: christiania, slot: 0, cost: 20)) }
         .to raise_error(Engine::GameError, /Token costs £60, not £20/)
+    end
+
+    describe 'a selected charter token across a ferry' do
+      let(:gswr) { start_major!(game, 'GSWR', game.players.first) }
+      let(:round) { station_token_round!(game, gswr) }
+      let(:liverpool) { game.hex_by_id('J25').tile.cities.first }
+
+      it 'charges the selected £60 token price plus the £20 ferry fee' do
+        action = Engine::Action::PlaceToken.new(gswr, city: liverpool, slot: 0, token_index: 3, cost: 80)
+        cash = gswr.cash
+
+        act!(round, action)
+
+        expect(action.cost).to eq(80)
+        expect(gswr.cash).to eq(cash - 80)
+        expect(liverpool.tokens).to include(gswr.tokens[3])
+      end
+
+      it 'rejects a quote that omits the ferry fee' do
+        action = Engine::Action::PlaceToken.new(gswr, city: liverpool, slot: 0, token_index: 3, cost: 60)
+
+        expect { act!(round, action) }.to raise_error(Engine::GameError, /Token costs £80, not £60/)
+        expect(gswr.tokens[3]).to have_attributes(price: 60, used: false)
+      end
     end
   end
 end

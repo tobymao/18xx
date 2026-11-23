@@ -74,7 +74,7 @@ module Engine
         TRAINS = (G1867::Game::TRAINS.map do |train|
           events = TRAIN_EVENTS[train[:name]]
           events ? train.merge(events: events.map { |type| { 'type' => type } }) : train
-        end + [{ name: PULLMAN, distance: 0, price: 0, num: 1, rusts_on: '6', reserved: true }]).freeze
+        end + [{ name: PULLMAN, distance: 0, price: 0, num: 1, rusts_on: '6', reserved: true, extra: true }]).freeze
 
         EVENTS_TEXT = G1867::Game::EVENTS_TEXT.except(
           'minors_nationalized', 'nationalize_companies', 'trainless_nationalization'
@@ -331,16 +331,8 @@ module Engine
           super.reject { |train| pullman?(train) }
         end
 
-        def num_corp_trains(entity)
-          super - entity.trains.count { |train| pullman?(train) }
-        end
-
         def trainless?(corporation)
-          corporation.trains.all? { |train| pullman?(train) }
-        end
-
-        def must_buy_train?(entity)
-          trainless?(entity) && !depot.depot_trains.empty?
+          corporation.trains.all? { |train| extra_train?(train) }
         end
 
         def can_hold_above_corp_limit?(_entity)

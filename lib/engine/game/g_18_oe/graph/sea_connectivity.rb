@@ -13,6 +13,7 @@ module Engine
           @corporation = corporation
           @token_cities = game.hexes.flat_map { |hex| hex.tile.cities }
             .select { |city| game.city_tokened_by?(city, corporation) }
+            .reject { |city| game.pass_through_city?(city, corporation) }
           @token_hex_ids = @token_cities.map { |city| city.hex.id }.uniq
           @parent = {}
           @island_ids = {}
@@ -156,43 +157,49 @@ module Engine
 
         def reduced_costs(starts)
           reduction = @game.port_authority_reduction
-          best = Array.new(reduction + 1) { {} }
-          settled = Array.new(reduction + 1) { {} }
-          starts.each { |node| best[0][node] = 0 }
+          initial_allowances = Array.new(reduced_seas.size, reduction)
+          best = { initial_allowances => starts.to_h { |node| [node, 0] } }
+          settled = Hash.new { |hash, allowances| hash[allowances] = {} }
           loop do
-            used = nil
+            allowances = nil
             node = nil
             lowest = nil
-            best.each_with_index do |costs, level|
+            best.each do |available, costs|
               costs.each do |key, cost|
-                next if settled[level][key] || (lowest && cost >= lowest)
+                next if settled[available][key] || (lowest && cost >= lowest)
 
-                used = level
+                allowances = available
                 node = key
                 lowest = cost
               end
             end
             break unless node
 
-            settled[used][node] = true
+            settled[allowances][node] = true
             @edges[node].each do |other, weight, sea, ferry|
-              reducible = used < reduction && reduced_seas.include?(sea)
-              steps = if !reducible
+              sea_index = reduced_seas.index(sea)
+              available = sea_index ? allowances[sea_index] : 0
+              steps = if available.zero?
                         [[weight, 0]]
                       elsif ferry
-                        (0..[reduction - used, weight].min).map { |spent| [weight - spent, spent] }
+                        (0..[available, weight].min).map { |spent| [weight - spent, spent] }
                       else
                         [[weight, 0], [0, 1]]
                       end
               steps.each do |step_weight, spent|
-                level = used + spent
+                remaining = allowances
+                if spent.positive?
+                  remaining = allowances.dup
+                  remaining[sea_index] -= spent
+                end
                 candidate = lowest + step_weight
-                known = best[level][other]
-                best[level][other] = candidate if !settled[level][other] && (known.nil? || candidate < known)
+                costs = (best[remaining] ||= {})
+                known = costs[other]
+                costs[other] = candidate if !settled[remaining][other] && (known.nil? || candidate < known)
               end
             end
           end
-          best.each_with_object({}) do |costs, result|
+          best.values.each_with_object({}) do |costs, result|
             costs.each { |key, cost| result[key] = cost if !result.key?(key) || cost < result[key] }
           end
         end

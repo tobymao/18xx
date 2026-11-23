@@ -49,6 +49,7 @@ module Engine
         TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :owner
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_FROM_OTHERS = :always
 
         MUST_BUY_TRAIN = :always
 
@@ -195,6 +196,16 @@ module Engine
           G1835::SharePool.new(self)
         end
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['Any number of shares sold', '1 ↓ per sell action'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
+        end
+
         def init_round
           round_num = @draft_round_num || 1
           G1835::Round::Draft.new(self, [
@@ -253,9 +264,29 @@ module Engine
         end
 
         def bundles_for_corporation(share_holder, corporation, shares: nil)
-          return super if share_holder.player? && major?(corporation)
+          return [] unless corporation.ipoed
 
-          []
+          shares ||= share_holder.shares_of(corporation)
+          return [] if shares.empty?
+
+          regular_shares, other_shares = shares
+                                           .sort_by { |h| [h.president ? 1 : 0] }
+                                           .partition { |share| share.percent == corporation.share_percent }
+
+          bundles = []
+          prefixes(regular_shares).product(prefixes(other_shares)).each do |regular_bundle, other_bundle|
+            bundle_shares = regular_bundle + other_bundle
+            next if bundle_shares.empty?
+
+            bundles << Engine::ShareBundle.new(bundle_shares, bundle_shares.sum(&:percent))
+          end
+
+          # Put bundles with "other" shares further back in the array
+          bundles.sort_by { |b| [b.percent, b.shares.map { |s| s.percent != corporation.share_percent ? 1 : 0 }] }
+        end
+
+        def prefixes(array)
+          (0..array.size).map { |i| array.take(i) }
         end
 
         def shares_for_presidency_swap(shares, num_shares)
@@ -552,7 +583,18 @@ module Engine
         end
 
         def share_flags(shares)
-          'h' * shares.count { |share| share.percent == 5 }
+          'h' * shares.map(&:percent).count(5)
+        end
+
+        def bundle_annotation(bundle)
+          shares = bundle.shares
+          annotation = ''
+          annotation += share_flags(shares)
+          annotation += ('d' * shares.count(&:double_cert))
+          annotation += '*' if bundle.presidents_share
+          return '' if annotation.empty?
+
+          "[#{annotation}]"
         end
 
         def player_card_minors(player)

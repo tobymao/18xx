@@ -26,7 +26,7 @@ module Engine
             end
             return corporation.trains.select { |t| @game.pullman_train?(t) } if @game.pullman_train_count(corporation) > 1
 
-            corporation.trains.reject { |t| @game.extra_train?(t) }
+            super
           end
         end
       end

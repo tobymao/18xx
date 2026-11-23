@@ -13,7 +13,7 @@ module Engine
             opts: opts,
             block: block,
             network: sea_connectivity(corporation),
-            level: @game.largest_train_level(corporation) + @game.sea_pool_total(corporation, @game.phase),
+            level: @game.largest_city_limit(corporation) + @game.sea_pool_total(corporation, @game.phase),
             ports: ports,
             usable: ports.to_h { |anchor| [anchor, true] },
             walkers: {},
@@ -27,7 +27,8 @@ module Engine
         end
 
         def corporation_ports(corporation)
-          @game.class::PORTS.flat_map do |hex_id, exits|
+          @corporation_ports ||= {}
+          @corporation_ports[corporation] ||= @game.class::PORTS.flat_map do |hex_id, exits|
             exits.keys.select { |exit| @game.port_usable?(hex_id, exit, corporation) }.map { |exit| [hex_id, exit] }
           end
         end

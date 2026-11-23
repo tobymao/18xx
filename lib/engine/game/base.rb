@@ -1421,7 +1421,7 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        entity.trains.empty? &&
+        entity.trains.all? { |train| extra_train?(train) } &&
           !depot.depot_trains.empty? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
@@ -1587,6 +1587,13 @@ module Engine
 
       def route_train_distance(_route, train)
         train.distance
+      end
+
+      # Limits on the number of city and town stops a train can use in one
+      # route, used by the auto-router to prune path walks. Return a hash with
+      # :city and :town limits, using nil for an unlimited stop type.
+      def max_route_stops(_train)
+        { city: nil, town: nil }
       end
 
       def route_links(_start_node, _end_node, _corporation)
@@ -2152,6 +2159,10 @@ module Engine
         nil
       end
 
+      def bundle_annotation(bundle)
+        bundle.shares.any? { |s| s.last_cert || s.double_cert } ? '[d]' : ''
+      end
+
       def corporation_show_loans?(_corporation)
         true
       end
@@ -2271,8 +2282,13 @@ module Engine
         train.owner = nil
       end
 
+      def extra_train?(train)
+        train.extra
+      end
+
       def num_corp_trains(entity)
-        self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? entity.trains.size : entity.trains.count { |t| !t.obsolete }
+        trains = entity.trains.reject { |train| extra_train?(train) }
+        self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? trains.size : trains.count { |t| !t.obsolete }
       end
 
       def crowded_corps

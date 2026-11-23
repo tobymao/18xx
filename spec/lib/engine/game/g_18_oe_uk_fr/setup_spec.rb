@@ -22,6 +22,13 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
     expect([scenario(2), scenario(3)].map(&:cert_limit)).to eq([24, 16])
   end
 
+  it 'uses Aggressive Game rules in two-player games only, even if the option is supplied' do
+    three_players = new_game(klass: klass, optional_rules: [:aggressive_game])
+
+    expect(game.reserved_shares?).to be(false)
+    expect(three_players.reserved_shares?).to be(true)
+  end
+
   it 'holds £18,000 between the bank and the players' do
     expect(game.bank.cash + game.players.sum(&:cash)).to eq(18_000)
   end
@@ -52,22 +59,24 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
     player = round.current_entity
     plm = game.corporation_by_id('PLM')
     float_regionals!(game, 5, except: ['PLM'])
+    leftover = game.corporations.find { |c| c.type == :regional && !c.ipoed && c != plm }
     fund!(game, player)
     act!(round, Engine::Action::Par.new(player, corporation: plm, share_price: cell(game, 60, :par)))
 
     expect(game.corporations.count { |c| c.type == :regional }).to eq(6)
     expect(game.corporations.select { |c| c.type == :regional && !c.ipoed }).to be_empty
+    expect(game.removed_regionals).to eq([leftover])
   end
 
   it 'deals ten level 2, seven level 3, three each of levels 4 and 5, two level 6, four level 7 and three level 8 trains' do
     expect(game.depot.upcoming.map(&:name).tally)
-      .to eq('2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3)
+      .to eq('2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3, 'Pullman' => 3)
   end
 
   it 'gives each train card its variants' do
     expect(cards.transform_values { |train| train.variants.keys })
       .to eq('2+2' => ['2+2'], '3' => %w[3 3+3], '4' => %w[4 4+4], '5' => %w[5 5+5], '6' => %w[6 6+6],
-             '7+7' => %w[7+7 4D], '8+8' => %w[8+8 5D])
+             '7+7' => %w[7+7 4D], '8+8' => %w[8+8 5D], 'Pullman' => ['Pullman'])
   end
 
   it 'rusts level 3 trains on 6 and level 4 trains on 8+8' do
@@ -80,5 +89,9 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
     expected = Array.new(level_7s.size) { |i| i.zero? ? ['level_8_available'] : [] }
 
     expect(level_7s.map { |t| t.events.map { |e| e['type'] } }).to eq(expected)
+  end
+
+  it 'has no Minor D token event on the level 5 train' do
+    expect(cards['5'].events.map { |e| e['type'] }).to eq(['consolidation_triggered'])
   end
 end
