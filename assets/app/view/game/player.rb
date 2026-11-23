@@ -22,6 +22,7 @@ module View
       needs :show_hidden, default: false
       needs :hide_logo, store: true, default: false
       needs :show_companies, default: true
+      needs :game_data, default: {}, store: true
 
       def render
         card_style = {
@@ -60,7 +61,7 @@ module View
           },
         }
 
-        h('div.player.title.nowrap', props, [profile_link(@player.id, @player.name)])
+        h('div.player.title.nowrap', props, [profile_link(@player.id, @player.name, link: @game_data[:mode].to_s != 'hotseat')])
       end
 
       def render_body
