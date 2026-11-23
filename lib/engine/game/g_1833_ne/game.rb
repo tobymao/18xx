@@ -7,6 +7,7 @@ require_relative 'meta'
 require_relative 'graph'
 require_relative '../company_price_up_to_face'
 require_relative '../base'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -16,6 +17,7 @@ module Engine
         include Entities
         include Map
         include CompanyPriceUpToFace
+        include StubsAreRestricted
 
         attr_accessor :last_action, :lowell_merchants_company_activated
 
@@ -37,6 +39,10 @@ module Engine
         TILE_COST = 20
 
         SHERBROOKE_HEX = 'F5'
+        BOSTON_HEX = 'G22'
+        SPIKE_HEXES = %w[G22 I14].freeze
+        RESTRICTED_BROWN_TILES = %w[N51 N52 N53].freeze
+        FULL_BROWN_TILES = %w[N50 N54].freeze
         MONTREAL_HEX = 'B3'
         DH_COMPANY = 'P6'
         DH_HEX = 'A12'
@@ -284,6 +290,30 @@ module Engine
 
         def upgrade_cost(tile, hex, entity, spender)
           [self.class::TILE_COST, super].max
+        end
+
+        def spike_tile?(tile)
+          self.class::SPIKE_HEXES.include?(tile.hex&.id)
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return false if self.class::RESTRICTED_BROWN_TILES.include?(to.name) && full_brown_tile_fits?(from.hex)
+          return super unless spike_tile?(from)
+
+          upgrades_to_correct_color?(from, to) && upgrades_to_correct_label?(from, to)
+        end
+
+        # N50/N54 have all six exits: they fit unless an edge is blocked
+        def full_brown_tile_fits?(hex)
+          return false unless hex
+
+          hex.neighbors.size == 6 && @tiles.any? { |t| self.class::FULL_BROWN_TILES.include?(t.name) }
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          return tile.rotation.zero? if hex.id == self.class::BOSTON_HEX
+
+          super
         end
 
         def show_map_legend?
