@@ -1636,6 +1636,16 @@ module Engine
           seller_owner if seller_owner != entity.owner
         end
 
+        def consenter_for_lay_tile(entity, hex, _tile)
+          return unless hex.tile.color == :white
+          return unless (home_token = hex.tile.cities.flat_map(&:tokens).find { |t| t && t == t.corporation.tokens.first })
+
+          president = home_token.corporation.owner
+          return if !president || president == entity.player
+
+          president
+        end
+
         def orient_express_marker?(corporation)
           @orient_express_markers.include?(corporation)
         end
