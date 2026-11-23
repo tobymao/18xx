@@ -230,19 +230,24 @@ module View
               token_type: next_token
             ))
           end
-          if @actions.include?('choose') && step.choices.include?(@hex.id)
+          if @actions.include?('choose')
             # Opt-in hook: a step may offer a small popup of choices for
             # this hex instead of dispatching the bare hex-id choice
             # immediately (e.g. G2038's Explore-vs-Fly-Over decision).
             # Inert for every other game, which never defines this method.
+            # Checked before the bare-id choice below, not after -- a hex
+            # can have only a prefixed choice available (e.g. "Skip" when
+            # "Explore" is priced out of reach) with no bare entry at all.
             if step.respond_to?(:hex_choice_popup) && @entity && (popup = step.hex_choice_popup(@entity, @hex))
               return store(:tile_selector, Lib::HexChoicePopup.new(@hex, popup, coordinates, root, @entity, @role))
             end
 
-            return process_action(Engine::Action::Choose.new(
-                @entity,
-                choice: @hex.id,
-              ))
+            if step.choices.include?(@hex.id)
+              return process_action(Engine::Action::Choose.new(
+                  @entity,
+                  choice: @hex.id,
+                ))
+            end
           end
           return unless @actions.include?('lay_tile')
 
