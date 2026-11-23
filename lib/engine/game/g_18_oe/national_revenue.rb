@@ -112,8 +112,12 @@ module Engine
           nodes.product(trains).map { |node, train| node.route_base_revenue(@game.phase, train) }.max || 0
         end
 
+        def brandt_paths
+          @brandt_paths ||= @game.brandt_paths
+        end
+
         def linked?(node)
-          node.walk(converging_path: false) do |path, _, _|
+          node.walk(converging_path: false, skip_paths: brandt_paths) do |path, _, _|
             return true if path.nodes.any? { |other| other.hex != node.hex } || offshore_ferry?(path)
           end
           false

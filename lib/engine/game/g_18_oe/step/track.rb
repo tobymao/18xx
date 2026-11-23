@@ -2,6 +2,7 @@
 
 require_relative '../../../step/track'
 require_relative 'skip_abbreviated_round'
+require_relative 'tracker'
 
 module Engine
   module Game
@@ -9,47 +10,58 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include SkipAbbreviatedRound
+          include Tracker
 
-          def setup
-            super
-            @points_used = 0
+          def actions(entity)
+            actions = super
+            return actions if actions.empty? || entity != current_entity || entity.company?
+            return actions if brandt_removal_choices(entity).empty?
+
+            (actions + %w[choose]).uniq
           end
 
-          def potential_tile_colors(entity, hex)
-            colors = super
-            colors << :green if right_of_way?(entity, hex)
-            colors
+          def choice_name
+            'Brandt & Brandau tokens'
           end
 
-          def legal_tile_rotation?(entity_or_entities, hex, tile)
-            return false unless super
-            return true if @game.phase.tiles.include?(tile.color)
-
-            home_connectable?(Array(entity_or_entities).first, 0, hex => tile)
+          def choices
+            brandt_removal_choices(current_entity)
           end
 
-          def home_connectable?(entity, points, laid = {})
-            return false unless (home = entity.tokens.first&.city)
-
-            cheapest = {}
-            queue = home.exits.map { |exit| [home.hex, exit, 0] } + yellow_lay_ends(entity, home.hex, home.tile, 0, points)
-            until queue.empty?
-              hex, exit, cost = queue.shift
-              next if cheapest[[hex.id, exit]] && cheapest[[hex.id, exit]] <= cost
-
-              cheapest[[hex.id, exit]] = cost
-              crossings(hex, exit).each do |neighbor, edge|
-                tile = laid[neighbor] || neighbor.tile
-                paths = tile.paths.select { |path| path.exits.include?(edge) }.flat_map { |path| path.junction&.paths || [path] }
-                return true if paths.any? { |path| path.nodes.any? { |node| node != home } }
-
-                lay_ends = yellow_lay_ends(entity, neighbor, tile, cost, points)
-                return true if !lay_ends.empty? && !tile.city_towns.empty?
-
-                queue.concat(paths.flat_map(&:exits).map { |track_exit| [neighbor, track_exit, cost] }, lay_ends)
-              end
+          def process_choose(action)
+            entity = action.entity
+            hex = @game.hex_by_id(action.choice)
+            if !hex || !brandt_removal_choices(entity).key?(hex.id)
+              raise GameError, "No Brandt & Brandau token to remove on #{action.choice}"
             end
-            false
+
+            @game.check_reserved_train_funds!(entity, @game.brandt_removal_cost(entity, hex))
+            points = @game.brandt_removal_points(hex)
+            ability = @game.terrain_point_abilities(entity)[:green]
+            if ability
+              ability.use!
+              points -= 1
+            end
+            @round.tile_points_used += points
+            @game.remove_brandt_token!(entity, hex)
+          end
+
+          def brandt_removal_choices(entity)
+            return {} if @game.brandt_hexes.empty?
+
+            @game.brandt_hexes.each_with_object({}) do |hex, choices|
+              next unless @game.brandt_blocked?(entity, hex)
+              next unless @game.hex_within_national_region?(entity, hex)
+              next if !@game.loading && !hex_neighbors(entity, hex)
+
+              cost = @game.brandt_removal_cost(entity, hex)
+              points = @game.brandt_removal_points(hex)
+              covered = @game.terrain_point_abilities(entity).key?(:green) ? 1 : 0
+              next if points - covered > remaining_tile_points(entity)
+              next if cost > buying_power(entity)
+
+              choices[hex.id] = "Remove B&B token on #{hex.id} (#{@game.format_currency(cost)}, #{points} pt)"
+            end
           end
 
           def can_lay_tile?(entity)
@@ -65,20 +77,12 @@ module Engine
             return unless actions(entity).include?('lay_tile')
             return if remaining_tile_points(entity).positive?
             return if @game.track_token_placeable?(entity)
+            return unless brandt_removal_choices(entity).empty?
 
             hexes = @game.graph_for_entity(entity).connected_hexes(entity).keys
             return if hexes.any? { |hex| available_hex(entity, hex) }
 
             [Engine::Action::Pass.new(entity)]
-          end
-
-          def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, extra_cost)
-            @game.check_reserved_train_funds!(spender, cost)
-            super
-          end
-
-          def get_tile_lay(entity)
-            @game.tile_point_budget(entity)
           end
 
           def description
@@ -96,86 +100,11 @@ module Engine
             "#{text} + #{points} (yellow lays only)"
           end
 
-          def lay_tile_action(action)
-            tile = action.tile
-            old_tile = action.hex.tile
-            points_available = remaining_tile_points(action.entity)
-            right_of_way = !@game.phase.tiles.include?(tile.color)
-            raise GameError, 'Right-of-Way is not available' if right_of_way && !right_of_way?(action.entity, action.hex)
+          def tile_points_cost(operator, action)
+            return super if @game.phase.tiles.include?(action.tile.color)
+            raise GameError, 'Right-of-Way is not available' unless right_of_way?(operator, action.hex)
 
-            points_cost = right_of_way ? points_available : @game.tile_point_cost(action.entity, old_tile: old_tile)
-            raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && points_cost > points_available
-            raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && points_cost > points_available
-
-            tile.rotate!(action.rotation)
-            action.extra_cost = cross_water_fee(action) unless @game.loading
-            lay_tile(action, extra_cost: action.extra_cost || 0)
-            @game.after_lay_tile(action.entity, old_tile, tile)
-            @game.fulfill_patronage!(action.entity, action.hex)
-            if track_upgrade?(old_tile, tile, action.hex)
-              @round.upgraded_track = true
-              @round.num_upgraded_track += 1
-            end
-            @round.num_laid_track += 1
-            @round.laid_hexes << action.hex
-            @points_used += points_cost
-          end
-
-          def tracker_available_hex(entity, hex)
-            return nil unless @game.hex_within_national_region?(entity, hex)
-
-            connected = hex_neighbors(entity, hex)
-            return nil unless connected
-
-            return nil if hex.tile.color == :blue
-
-            points_available = remaining_tile_points(entity)
-            cost = @game.tile_point_cost(entity, old_tile: hex.tile)
-            return nil if cost > points_available && !right_of_way?(entity, hex)
-
-            connected
-          end
-
-          private
-
-          def right_of_way?(entity, hex)
-            points = remaining_tile_points(entity)
-            !@game.aggressive_game? &&
-              !@game.phase.tiles.include?(:green) &&
-              !entity.operated? &&
-              hex.tile.color == :yellow &&
-              hex.tile.cities.empty? &&
-              points.positive? &&
-              (@game.loading || !home_connectable?(entity, points))
-          end
-
-          def yellow_lay_ends(entity, hex, tile, cost, points)
-            return [] if tile.color != :white || !@game.hex_within_national_region?(entity, hex)
-
-            cost += @game.tile_point_cost(entity, old_tile: tile)
-            return [] if cost > points
-            return [] unless @game.tiles.any? { |yellow| yellow.color == :yellow && @game.upgrades_to?(tile, yellow) }
-
-            (0..5).map { |exit| [hex, exit, cost] }
-          end
-
-          def crossings(hex, exit)
-            ferries = @game.ferry_links(hex.id, exit).map { |(hex_id, edge), _distance| [@game.hex_by_id(hex_id), edge] }
-            neighbor = hex.neighbors[exit]
-            return ferries if !neighbor || @game.sea_exit?(hex.id, exit)
-
-            ferries << [neighbor, Engine::Hex.invert(exit)]
-          end
-
-          def remaining_tile_points(entity)
-            get_tile_lay(entity) - @points_used
-          end
-
-          def cross_water_fee(action)
-            fee = @game.cross_water_tile_fee(action.entity, action.hex, action.tile)
-            return fee if !action.extra_cost || action.extra_cost == fee
-
-            raise GameError, "Cross-water fee is #{@game.format_currency(fee)}, not #{@game.format_currency(action.extra_cost)}"
+            remaining_tile_points(operator)
           end
         end
       end

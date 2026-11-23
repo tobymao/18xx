@@ -204,6 +204,7 @@ describe 'G18OE Hochberg Mining and Lumber Company (§14.8)' do
     it "rejects another player's two-stop route through it" do
       route = route_for(other, '2+2', [city_a, game.hochberg_town])
       allow(route).to receive(:connection_data).and_return([{}])
+      allow(route).to receive(:paths).and_return([])
       allow(game).to receive(:check_sea_crossing_separation)
 
       expect { game.check_other(route) }.to raise_error(Engine::GameError)
@@ -212,6 +213,7 @@ describe 'G18OE Hochberg Mining and Lumber Company (§14.8)' do
     it 'accepts the same two-stop route for the owner' do
       route = route_for(rr, '2+2', [city_a, game.hochberg_town])
       allow(route).to receive(:connection_data).and_return([{}])
+      allow(route).to receive(:paths).and_return([])
       allow(game).to receive(:check_sea_crossing_separation)
 
       expect { game.check_other(route) }.not_to raise_error

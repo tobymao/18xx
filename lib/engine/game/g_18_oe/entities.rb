@@ -188,9 +188,23 @@ module Engine
                   'at no terrain cost (tile points are still spent; the tile may be immediately upgraded). '\
                   'Only the owner\'s RRs may use track on hexes bearing these tokens. '\
                   'Turn the private face-down when the last token is placed; it is removed from the game '\
-                  'when no tokens remain on the map. To remove a token, another RR must pay the original terrain '\
-                  'cost and expend one tile point (two for a metropolis), without placing track. '\
+                  'when no tokens remain on the map. To remove a token, another RR must pay the printed terrain '\
+                  'cost (shown on the tile) and expend one tile point (two for a metropolis), without placing track. '\
                   'Nationals skip the terrain cost but still expend tile points.',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                free: true,
+                reachable: true,
+                special: false,
+                count: 4,
+                count_per_or: 2,
+                tiles: [],
+                hexes: [],
+              },
+            ],
             auction_row: 4,
           },
           {

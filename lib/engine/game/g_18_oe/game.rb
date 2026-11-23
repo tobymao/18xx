@@ -483,8 +483,10 @@ module Engine
         HOCHBERG_TOKEN = 'HMLC'
         HOCHBERG_MIN_TERRAIN_COST = 45
         HOCHBERG_REVENUE = { '2' => 10, '3' => 20, '4' => 20, '5' => 40, '6' => 40, '7' => 60, '8' => 60 }.freeze
+        BRANDT_TOKEN = 'BBE'
         ASSIGNMENT_TOKENS = {
           HOCHBERG_TOKEN => '/logos/18_oe/hmlc.svg',
+          BRANDT_TOKEN => '/logos/18_oe/bbe.svg',
           MINOR_D_20_TOKEN => '/icons/18_oe/plus_twenty.svg',
           MINOR_D_40_TOKEN => '/icons/18_oe/plus_forty.svg',
         }.freeze
@@ -1057,7 +1059,7 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity, spender)
-          return 0 if national?(entity)
+          return 0 if national?(entity) || hex.assigned?(self.class::BRANDT_TOKEN)
 
           base_cost = tile.upgrades.sum(&:cost)
           return super if base_cost.zero?
@@ -1818,6 +1820,11 @@ module Engine
           ])
         end
 
+        def new_operating_round(round_num = 1)
+          clear_graph unless brandt_hexes.empty?
+          super
+        end
+
         def operating_round(round_num)
           Round::G18OE::Operating.new(self, [
             G18OE::Step::SpecialChoose,
@@ -1828,6 +1835,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18OE::Step::Assign,
+            G18OE::Step::SpecialTrack,
             G18OE::Step::Track,
             G18OE::Step::SpecialToken,
             G18OE::Step::Token,
@@ -1863,6 +1871,7 @@ module Engine
 
         def check_other(route)
           super
+          check_brandt_exclusive!(route)
 
           if counted_stops(route).size < 2 && !route.connection_data.empty? && !route.train.local?
             raise RouteTooShort, 'Route must have at least 2 stops'
@@ -1965,6 +1974,96 @@ module Engine
           !abilities(company, :assign_hexes, time: 'any').nil?
         end
 
+        def brandt_private
+          company_by_id(self.class::BRANDT_TOKEN)
+        end
+
+        def brandt_token_placeable?(corporation)
+          company = brandt_private
+          return false if !corporation || !company || !company.owner&.player?
+          return false unless corporation.owner == company.owner
+
+          !abilities(company, :tile_lay, time: 'owning_player_track').nil?
+        end
+
+        def brandt_hex?(hex)
+          hex.tile.color == :white &&
+            hex.original_tile.terrain.intersect?(self.class::GREEN_TERRAIN) &&
+            !hex.assigned?(self.class::BRANDT_TOKEN)
+        end
+
+        def brandt_hexes
+          hexes.select { |hex| hex.assigned?(self.class::BRANDT_TOKEN) }
+        end
+
+        def brandt_blocked?(corporation, hex)
+          hex.assigned?(self.class::BRANDT_TOKEN) && corporation.owner != brandt_private.owner
+        end
+
+        def brandt_paths
+          brandt_hexes.each_with_object({}) { |hex, paths| hex.tile.paths.each { |path| paths[path] = true } }
+        end
+
+        def graph_skip_paths(corporation)
+          skip_paths = super || {}
+          brandt_hexes.each do |hex|
+            hex.tile.paths.each { |path| skip_paths[path] = true } if brandt_blocked?(corporation, hex)
+          end
+          skip_paths.empty? ? nil : skip_paths
+        end
+
+        def after_buy_company(player, company, price)
+          super
+          clear_graph if company == brandt_private
+        end
+
+        def check_brandt_exclusive!(route)
+          hex = route.paths.map(&:hex).find { |h| brandt_blocked?(route.corporation, h) }
+          return unless hex
+
+          owner = brandt_private.owner
+          raise GameError, "#{hex.name} is reserved for #{owner.name}'s railroads (Brandt & Brandau)"
+        end
+
+        def place_brandt_token!(hex)
+          company = brandt_private
+          hex.assign!(self.class::BRANDT_TOKEN)
+          copy_brandt_terrain!(hex.original_tile, hex.tile)
+          flip_private!(company) if company.abilities.empty? && !face_down_private?(company)
+          clear_graph
+          @log << "#{company.owner.name} places a Brandt & Brandau token in #{hex.name}"
+        end
+
+        def copy_brandt_terrain!(from_tile, to_tile)
+          to_tile.upgrades = from_tile.upgrades.map do |upgrade|
+            copy = Engine::Part::Upgrade.new(upgrade.cost, upgrade.terrains, upgrade.size, loc: upgrade.loc)
+            copy.tile = to_tile
+            copy
+          end
+        end
+
+        def brandt_removal_cost(corporation, hex)
+          return 0 if national?(corporation)
+
+          hex.original_tile.upgrades.sum(&:cost)
+        end
+
+        def brandt_removal_points(hex)
+          metropolis_hex?(hex) ? 2 : 1
+        end
+
+        def remove_brandt_token!(corporation, hex)
+          company = brandt_private
+          cost = brandt_removal_cost(corporation, hex)
+          corporation.spend(cost, bank) if cost.positive?
+          hex.remove_assignment!(self.class::BRANDT_TOKEN)
+          hex.tile.upgrades = []
+          @log << "#{corporation.name} removes the Brandt & Brandau token from #{hex.name}" \
+                  "#{cost.positive? ? " for #{format_currency(cost)}" : ''}"
+          remove_private!(company) if face_down_private?(company) && brandt_hexes.empty?
+          clear_graph
+        end
+
         def hochberg_town
           hochberg_token_hex&.tile&.towns&.first
         end
@@ -2008,6 +2107,10 @@ module Engine
 
         def update_tile_lists(tile, old_tile)
           super
+          if old_tile.hex&.assigned?(self.class::BRANDT_TOKEN)
+            copy_brandt_terrain!(old_tile, tile)
+            old_tile.upgrades = []
+          end
           return if !hochberg_token_hex || old_tile.hex != hochberg_token_hex
 
           printed = @hochberg_printed_revenue.delete(old_tile.id)

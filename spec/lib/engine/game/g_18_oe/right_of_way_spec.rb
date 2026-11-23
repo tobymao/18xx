@@ -37,7 +37,7 @@ describe 'G18OE Right-of-Way (§11.1.9)' do
     round.instance_variable_set(:@current_operator, railroad)
     enter_round!(target, round)
     step = round_step(round, Engine::Game::G18OE::Step::Track)
-    step.instance_variable_set(:@points_used, target.tile_point_budget(railroad) - points_left) if points_left
+    step.instance_variable_get(:@round).tile_points_used = target.tile_point_budget(railroad) - points_left if points_left
     step
   end
 

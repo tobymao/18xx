@@ -124,4 +124,44 @@ describe 'G18OE national revenue (§11.3.10)' do
       expect(revenue.total).to eq(80)
     end
   end
+
+  describe 'Brandt & Brandau token (§11.3.10)' do
+    let(:bbe) { game.company_by_id('BBE') }
+
+    def linked_stops
+      game.clear_graph
+      revenue.city_stops.select { |stop| %w[J25 J27].include?(stop.first.id) }.map(&:last)
+    end
+
+    before do
+      give_company!(player, bbe)
+      allow(game).to receive(:entity_track_rights_zone).and_return('UK')
+    end
+
+    it 'links Manchester and Liverpool by printed track with no token' do
+      expect(linked_stops).to eq([true, true])
+    end
+
+    it 'unlinks a stop that is linked only across a token hex' do
+      game.hex_by_id('J25').assign!('BBE')
+
+      expect(linked_stops).to eq([false, false])
+    end
+
+    it 'links the stop again once the token is removed' do
+      hex = game.hex_by_id('J25')
+      hex.assign!('BBE')
+      hex.remove_assignment!('BBE')
+
+      expect(linked_stops).to eq([true, true])
+    end
+
+    it "unlinks even for a national presided by the private's owner" do
+      national
+      game.hex_by_id('J25').assign!('BBE')
+
+      expect(national.owner).to eq(bbe.owner)
+      expect(linked_stops).to eq([false, false])
+    end
+  end
 end
