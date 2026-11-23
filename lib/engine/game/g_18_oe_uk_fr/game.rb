@@ -17,7 +17,7 @@ module Engine
         STARTING_CASH = { 2 => 870, 3 => 580 }.freeze
         BANK_CASH = 18_000
 
-        TRAIN_COUNTS = { '2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3 }.freeze
+        TRAIN_COUNTS = { '2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3, PULLMAN => 3 }.freeze
         TRAINS = G18OE::Game::TRAINS.map do |train|
           scenario = train.merge(num: TRAIN_COUNTS.fetch(train[:name], train[:num]))
           scenario[:events] = train[:events].reject { |event| event['type'] == 'minor_d_token' } if train[:events]
@@ -33,6 +33,10 @@ module Engine
         def setup
           super
           @minor_available_regions = { 'UK' => 2, 'FR' => 2 }
+        end
+
+        def aggressive_game?
+          two_player?
         end
       end
     end

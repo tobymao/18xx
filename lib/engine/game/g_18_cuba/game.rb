@@ -203,7 +203,7 @@ module Engine
         def must_buy_train?(entity)
           # Require a buy only when a gauge-matching non-wagon train exists in the depot — else nothing is legally buyable.
           trainless?(entity) &&
-            depot.depot_trains.any? { |t| !wagon?(t) && t.track_type == gauge_for(entity) }
+            depot.depot_trains.any? { |t| !extra_train?(t) && t.track_type == gauge_for(entity) }
         end
 
         # Per rule VII.12: cross-company train purchases unlock once the first 3/3+ train is sold (phase 3+).

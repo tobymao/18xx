@@ -18,5 +18,17 @@ module Engine
         expect(game.final_merger_triggered?).to be(false)
       end
     end
+
+    describe 'close companies event' do
+      it 'closes the private companies and opens up coal token purchases' do
+        expect(game.coal_company_sold_or_closed).to be_falsey
+
+        expect { game.event_close_companies! }.not_to raise_error
+
+        expect(game.coal_company).to be_closed
+        expect(game.coal_company_sold_or_closed).to be(true)
+        expect(game.log.last.message).to include('Private companies close')
+      end
+    end
   end
 end

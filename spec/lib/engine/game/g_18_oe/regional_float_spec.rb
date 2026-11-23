@@ -77,10 +77,12 @@ describe 'G18OE regionals (§8.2, §9.2)' do
 
   it 'removes every unfloated regional when the 18th floats' do
     float_regionals!(game, 17, except: ['LNWR'])
+    leftovers = game.corporations.select { |c| c.type == :regional && !c.ipoed && c.id != 'LNWR' }
     par!('LNWR')
 
     expect(game.corporations.count { |c| c.type == :regional }).to eq(18)
     expect(game.corporations.select { |c| c.type == :regional && !c.ipoed }).to be_empty
+    expect(game.removed_regionals).to eq(leftovers)
   end
 
   it 'runs the regional closing once (§8.2)' do
@@ -185,6 +187,7 @@ describe 'G18OE regionals (§8.2, §9.2)' do
       expect(plm.closed?).to be(true)
       expect(game.corporations).not_to include(plm)
       expect(game.hex_by_id('U34').tile.cities.first.reservations).to be_empty
+      expect(game.removed_regionals).to eq([plm])
     end
 
     it "opens the removed regional's home city to minors" do

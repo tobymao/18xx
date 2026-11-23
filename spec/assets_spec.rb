@@ -228,6 +228,9 @@ TEST_CASES = [
      'stock',
      ['Stock Round 3',
       '10 receives $110 in its Treasury']]]],
+  ['1837',
+   '1837_game_end_bank',
+   [[821, 'exchange_round', 'Exchange Round before Operating Round 8.2']]],
 ].freeze
 
 AUTO_ACTIONS_TEST_CASES = [
@@ -309,6 +312,17 @@ describe 'Assets' do
       expect(render(app_route: '/login')).to include('Login')
     end
 
+    it 'renders the captcha on the login form of a game card page' do
+      html = render(
+        app_route: '/game/1',
+        turnstile_sitekey: 'site-key',
+        game_data: { id: 1, status: 'new', title: '1889', players: [], actions: [] },
+      )
+
+      expect(html).to include('You need to login before joining a game:')
+      expect(html).to include('class="turnstile"')
+    end
+
     it 'renders signup' do
       expect(render(app_route: '/signup')).to include('Signup')
     end
@@ -361,6 +375,33 @@ describe 'Assets' do
       expect(render(app_route: '/new_game', title: '1889')).to include('Shikoku 1889')
     end
 
+    it 'renders Aggressive Game on the 18OE setup form' do
+      html = render(app_route: '/new_game', title: '18OE')
+
+      expect(html).to include('Designs In Creative Entertainment, LLC.', 'Aggressive Game')
+      expect(render(app_route: '/new_game', title: '18OE UK-France Scenario')).not_to include('Aggressive Game')
+    end
+
+    it 'offers Extended Full Game for an eight-player 18OE hotseat game' do
+      script = <<~RUBY
+        standard = View::CreateGame.html(title: '18OE')
+        hotseat = { title: '18OE', mode: :hotseat, min_players: 2, max_players: 8 }
+        extended = View::CreateGame.html(**hotseat, optional_rules: [:extended_full_game])
+        without_rule = View::CreateGame.html(**hotseat)
+        two_players = View::CreateGame.html(**hotseat.merge(max_players: 2))
+        scenario = View::CreateGame.html(title: '18OE UK-France Scenario')
+        [standard, extended, without_rule, two_players, scenario]
+      RUBY
+      standard, extended, without_rule, two_players, scenario = subject.context([]).eval(Opal.compile(script))
+
+      expect(standard).to include('Extended Full Game')
+      expect(extended).to include('Player 8', 'Extended Full Game')
+      expect(extended).to match(%r{<button[^>]*disabled="false"[^>]*>Create</button>})
+      expect(without_rule).to match(%r{<button[^>]*disabled="true"[^>]*>Create</button>})
+      expect(two_players).to match(/<input[^>]*id="extended_full_game"[^>]*disabled="true"/)
+      expect(scenario).not_to include('Extended Full Game')
+    end
+
     it 'renders game' do
       needs = {
         game_data: {
@@ -389,6 +430,48 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#auto', **needs)).to include('Auto Actions')
     end
 
+    it 'shows remaining track rights chits and removed regionals in the first 18OE stock round' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        require_tree 'engine/game/g_18_oe_uk_fr'
+
+        def start_stock_round(game)
+          game.instance_variable_set(:@round, game.stock_round)
+        end
+
+        players = { 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }
+        game = Engine::Game::G18OE::Game.new(players, id: 1, seed: 1)
+        start_stock_round(game)
+        initial = View::Game::Help.html(game: game)
+        game.claim_region!(game.corporation_by_id('A'), 'UK')
+        after_claim = View::Game::Help.html(game: game)
+        %w[B C D].zip(%w[UK FR PHS]).each { |id, zone| game.claim_region!(game.corporation_by_id(id), zone) }
+        after_withdrawal = View::Game::Help.html(game: game)
+
+        scenario = Engine::Game::G18OEUKFR::Game.new(players, id: 1, seed: 1)
+        start_stock_round(scenario)
+        short_initial = View::Game::Help.html(game: scenario)
+        scenario.remove_regional!(scenario.corporation_by_id('LNWR'))
+        %w[C H K M].zip(%w[UK UK FR FR]).each { |id, zone| scenario.claim_region!(scenario.corporation_by_id(id), zone) }
+        short_after_removal = View::Game::Help.html(game: scenario)
+
+        scenario.instance_variable_set(:@turn, 2)
+        start_stock_round(scenario)
+        [initial, after_claim, after_withdrawal, short_initial, short_after_removal, View::Game::Help.html(game: scenario)]
+      RUBY
+      initial, after_claim, after_withdrawal, short_initial, short_after_removal, second_round =
+        subject.context(['18OE', '18OE UK-France Scenario']).eval(Opal.compile(script))
+
+      expect(initial).to include('Available track rights zones: UK(2), PHS(2), FR(2), AH(2), IT(2), SP(2), SC(2), RU(2).',
+                                 'Removed regionals: None.')
+      expect(after_claim).to include('Available track rights zones: UK(1), PHS(2), FR(2),')
+      expect(after_withdrawal).to include('Available track rights zones: AH(2), IT(2), SP(2), SC(2), RU(2).')
+      expect(short_initial).to include('Available track rights zones: UK(2), FR(2).')
+      expect(short_after_removal).to include('Available track rights zones: None.',
+                                             'Removed regionals: London and North Western Railway.')
+      expect(second_round).not_to include('Available track rights zones:', 'Removed regionals:')
+    end
+
     it 'renders Minor E track controls with only the blue-terrain point remaining' do
       script = <<~RUBY
         require_tree 'engine/game/g_18_oe'
@@ -405,7 +488,7 @@ describe 'Assets' do
         round.instance_variable_set(:@current_operator, entity)
         game.instance_variable_set(:@round, round)
         step = round.steps.last
-        step.instance_variable_set(:@points_used, 3)
+        step.instance_variable_get(:@round).tile_points_used = 3
         hex = game.hex_by_id('J29')
         hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0;upgrade=cost:45,terrain:river'))
         game.graph.clear
@@ -447,7 +530,7 @@ describe 'Assets' do
         round.instance_variable_set(:@current_operator, entity)
         game.instance_variable_set(:@round, round)
         step = round.steps.last
-        step.instance_variable_set(:@points_used, 3)
+        step.instance_variable_get(:@round).tile_points_used = 3
         hex = game.hex_by_id('J29')
         hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0;upgrade=cost:45,terrain:mountain'))
         game.graph.clear
@@ -471,7 +554,7 @@ describe 'Assets' do
         round.entities = [major]
         round.instance_variable_set(:@current_operator, major)
         game.instance_variable_set(:@round, round)
-        round.steps.last.instance_variable_set(:@points_used, 6)
+        round.tile_points_used = 6
         major_html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1')
         [minor_html, major_html]
       RUBY

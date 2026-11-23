@@ -17,7 +17,7 @@ module Engine
           return super unless @game.trainless?(current_entity)
 
           gauge = @game.gauge_for(current_entity)
-          depot_trains.reject { |t| @game.wagon?(t) || t.track_type != gauge }.min_by(&:price)
+          depot_trains.reject { |t| @game.extra_train?(t) || t.track_type != gauge }.min_by(&:price)
         end
 
         def min_depot_price

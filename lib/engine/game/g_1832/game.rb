@@ -123,7 +123,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1832::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G1832::Step::Exchange,
             G1832::Step::BuyCompany,
@@ -233,8 +233,7 @@ module Engine
         end
 
         def event_close_companies!
-          @log << '-- Event: Private companies close --'
-          company.close!
+          super
 
           @coal_company_sold_or_closed = true
         end
@@ -511,6 +510,40 @@ module Engine
           end
 
           @skip_paths
+        end
+
+        def mergers_allowed?
+          !option_no_mergers? && @phase.status.include?('mergers_allowed')
+        end
+
+        def option_no_mergers?
+          @optional_rules&.include?(:no_mergers)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              mergers_allowed? ? new_merger_round : new_operating_round
+            when G1832::Round::Merger
+              @saved_or_round || new_operating_round
+            when Engine::Round::Operating
+              # the first 6-train interrupted this OR for a merger round
+              @saved_or_round ? new_merger_round : super
+            else
+              super
+            end
+        end
+
+        def new_merger_round
+          @log << "-- #{round_description('Merger and Takeover')} --"
+          G1832::Round::Merger.new(self, [
+            G1832::Step::Merge,
+            G1832::Step::SellSharesForTakeover,
+            Engine::Step::DiscardTrain,
+          ])
         end
 
         def merge_corporations

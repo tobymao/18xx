@@ -10,6 +10,7 @@ module View
     include GameManager
 
     needs :user
+    needs :turnstile_sitekey, default: nil
     needs :refreshing, default: false, store: true
 
     def render
@@ -22,7 +23,7 @@ module View
         children << h(:div, [h(GameCard, gdata: @game_data, user: @user)])
       else
         children << h(:h3, 'You need to login before joining a game:')
-        children << h(View::User, type: :login)
+        children << h(View::User, type: :login, turnstile_sitekey: @turnstile_sitekey)
       end
 
       destroy = lambda do

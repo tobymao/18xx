@@ -683,8 +683,10 @@ module Engine
             # companies reserving the slot has closed, make sure that its
             # reservation is pointing to this slot. Without this the city's
             # reservations array could be [nil, company] and no reservation
-            # would be shown on the map.
-            city.reservations.compact! if city.reservations.size > city.slots
+            # would be shown on the map. A reservation pointing past the city's
+            # slots can only be moved when no token is on the city, otherwise
+            # it would take the slot of a token that is already there.
+            city.reservations.compact! if city.reservations.size > city.slots && city.tokens.compact.empty?
           end
         end
 

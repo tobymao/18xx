@@ -43,6 +43,10 @@ module Engine
         must_buy_train?(entity)
       end
 
+      def show_president_contributions?(entity, shell = nil)
+        (must_buy_train?(entity) && ebuy_president_can_contribute?(entity)) || president_may_contribute?(entity, shell)
+      end
+
       def should_buy_train?(entity); end
 
       def discountable_trains_allowed?(_entity)
@@ -158,7 +162,11 @@ module Engine
         other_trains = @game.can_buy_train_from_others? ? other_trains(entity) : []
 
         if entity.cash < @depot.min_depot_price
-          depot_trains = [@depot.min_depot_train] if ebuy_offer_only_cheapest_depot_train?
+          if ebuy_offer_only_cheapest_depot_train?
+            extra_trains = depot_trains.select { |t| @game.extra_train?(t) }
+            extra_trains = [] if !extra_trains.empty? && must_buy_train?(entity)
+            depot_trains = [@depot.min_depot_train].compact.concat(extra_trains)
+          end
 
           if @game.class::EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN
             # Don't alter the depot train list

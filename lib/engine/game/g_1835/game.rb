@@ -583,7 +583,18 @@ module Engine
         end
 
         def share_flags(shares)
-          'h' * shares.count { |share| share.percent == 5 }
+          'h' * shares.map(&:percent).count(5)
+        end
+
+        def bundle_annotation(bundle)
+          shares = bundle.shares
+          annotation = ''
+          annotation += share_flags(shares)
+          annotation += ('d' * shares.count(&:double_cert))
+          annotation += '*' if bundle.presidents_share
+          return '' if annotation.empty?
+
+          "[#{annotation}]"
         end
 
         def player_card_minors(player)

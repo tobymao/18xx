@@ -45,7 +45,7 @@ module Engine
               @log << "#{corp.name} receives a free special token in #{hex.name} (rule 6.53)"
             end
 
-            @game.graph.clear
+            @game.clear_graph
           end
         end
       end

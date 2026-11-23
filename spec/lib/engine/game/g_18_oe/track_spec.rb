@@ -454,7 +454,7 @@ describe 'G18OE lay track (§11.1)' do
       hex.lay(game.tiles.find { |t| t.name == tile_name }) if tile_name
       round = operating!
       step = round.active_step
-      step.instance_variable_set(:@points_used, game.tile_point_budget(entity) - points_left)
+      step.instance_variable_get(:@round).tile_points_used = game.tile_point_budget(entity) - points_left
       [round, step, hex]
     end
 
@@ -515,7 +515,7 @@ describe 'G18OE lay track (§11.1)' do
       round, step, hex = prepared_step(major, 'J29', '7', 1)
 
       expect(step.tracker_available_hex(major, hex)).to be_nil
-      step.instance_variable_set(:@points_used, 3)
+      step.instance_variable_get(:@round).tile_points_used = 3
       upgrade!(round, major, hex, '80')
       expect(step.help).to eq('1 track points')
     end
@@ -525,7 +525,7 @@ describe 'G18OE lay track (§11.1)' do
       round, step, hex = prepared_step(major, 'J27', nil, 1)
 
       expect(step.tracker_available_hex(major, hex)).to be_nil
-      step.instance_variable_set(:@points_used, 3)
+      step.instance_variable_get(:@round).tile_points_used = 3
       upgrade!(round, major, hex, '205')
       expect(step.help).to eq('1 track points')
     end
@@ -552,7 +552,7 @@ describe 'G18OE lay track (§11.1)' do
       _round, step, hex = prepared_step(major, 'J29', '7', 1)
 
       expect(step.tracker_available_hex(major, hex)).not_to be_nil
-      step.instance_variable_set(:@points_used, game.tile_point_budget(other) - 1)
+      step.instance_variable_get(:@round).tile_points_used = game.tile_point_budget(other) - 1
       expect(step.tracker_available_hex(other, hex)).to be_nil
     end
   end

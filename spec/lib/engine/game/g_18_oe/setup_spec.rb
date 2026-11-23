@@ -57,12 +57,36 @@ describe 'G18OE setup' do
   it 'offers Medium Start only to three or more players (PB 5.4)' do
     rule = Engine::Game::G18OE::Meta::OPTIONAL_RULES.find { |r| r[:sym] == :medium_start }
 
-    expect(rule[:players]).to eq([3, 4, 5, 6, 7])
+    expect(rule[:players]).to eq([3, 4, 5, 6, 7, 8])
   end
 
-  it 'offers Fast and Medium Start in the base game but not UK-France, and Long Endgame in both' do
-    expect(Engine::Game::G18OE::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq(%i[fast_start medium_start long_endgame])
+  it 'offers the full-game variants and only Long Endgame in UK-France' do
+    expect(Engine::Game::G18OE::Meta::OPTIONAL_RULES.map { |r| r[:sym] })
+      .to eq(%i[fast_start medium_start long_endgame aggressive_game extended_full_game])
     expect(Engine::Game::G18OEUKFR::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq([:long_endgame])
+  end
+
+  it 'offers Aggressive Game as an opt-in rule for three or more players (PB 5.5)' do
+    rule = Engine::Game::G18OE::Meta::OPTIONAL_RULES.find { |r| r[:sym] == :aggressive_game }
+
+    expect(rule).to include(short_name: 'Aggressive Game', players: [3, 4, 5, 6, 7, 8])
+    expect(rule[:default]).to be_falsey
+    expect(game.reserved_shares?).to be(true)
+  end
+
+  %i[fast_start medium_start long_endgame].each do |rule|
+    it "allows Aggressive Game with #{rule}" do
+      combined = new_game(optional_rules: [:aggressive_game, rule])
+
+      expect(combined.public_send("#{rule}?")).to be(true)
+      expect(combined.reserved_shares?).to be(false)
+    end
+  end
+
+  it 'includes concessions in a three-player Aggressive Game (PB 5.5)' do
+    aggressive = new_game(optional_rules: [:aggressive_game])
+
+    expect(aggressive.companies.count { |company| company.type == :concession }).to eq(10)
   end
 
   it "holds £54,000 between the bank and the players' starting capital (§3.1, §3.3)" do
