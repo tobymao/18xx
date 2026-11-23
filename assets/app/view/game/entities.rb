@@ -41,18 +41,19 @@ module View
 
         children.concat(h(IpoRows, game: @game, show_first: false)) if @game.show_ipo_rows?
 
+        receivership = @game.receivership_corporations
         extra_bank = []
         if @game.respond_to?(:unstarted_corporation_summary)
           others = @game.unstarted_corporation_summary.last
-          extra_bank.concat(others.map { |c| h(Corporation, corporation: c) })
+          extra_bank.concat(others.reject { |c| receivership.include?(c) }.map { |c| h(Corporation, corporation: c) })
         else
-          extra_bank.concat(bank_owned.map { |c| h(Corporation, corporation: c) })
+          extra_bank.concat(bank_owned.reject { |c| receivership.include?(c) }.map { |c| h(Corporation, corporation: c) })
         end
         children << h(:div, [
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
           *@game.unowned_purchasable_companies(@current_entity).map { |company| h(Company, company: company) },
-          *@game.receivership_corporations.map { |c| h(Corporation, corporation: c) },
+          *receivership.map { |c| h(Corporation, corporation: c) },
           *extra_bank,
         ].compact)
 
