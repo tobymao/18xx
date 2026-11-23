@@ -7,7 +7,6 @@ require_relative 'route'
 
 module Engine
   class AutoRouter
-    # How many walk steps between checks of path_timeout during a node's walk
     TIMEOUT_CHECK_INTERVAL = 256
 
     attr_accessor :running
@@ -102,7 +101,6 @@ module Engine
         walk_corporation = graph.no_blocking? ? nil : corporation
         graph.walk_token(node, corporation: walk_corporation, skip_paths: skip_paths, links: true,
                                revisit: true) do |_, vp|
-          # A single node's walk can be huge; stop it once the time is up
           next :abort if path_walk_timed_out
 
           walk_count += 1
