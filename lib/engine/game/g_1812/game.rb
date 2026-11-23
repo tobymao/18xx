@@ -166,7 +166,7 @@ module Engine
           },
           {
             name: '3D',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3, 'multiplier' => 2 },
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 99, 'multiplier' => 2 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 750,
             num: 10,
@@ -174,7 +174,7 @@ module Engine
             variants: [
               {
                 name: '2+2GD',
-                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2, 'multiplier' => 2 },
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99, 'multiplier' => 2 },
                            { 'nodes' => ['town'], 'pay' => 2, 'visit' => 99, 'multiplier' => 2 }],
                 price: 460,
               },
@@ -488,25 +488,16 @@ module Engine
         end
 
         def compute_stops(route)
-          free, towns, cities = counted_stops(route)
-          count = towns.size.downto(0).find { |n| fits?(route.train, cities + towns.take(n)) } || 0
-          free + cities + towns.combination(count).max_by { |picked| revenue_for(route, free + cities + picked) }
+          route.visited_stops.select { |s| free_stop?(s) } + Base.instance_method(:compute_stops).bind_call(self, route)
+        end
+
+        def revenue_stops(route)
+          super.reject { |s| free_stop?(s) }
         end
 
         def route_distance_str(route)
           _, towns, cities = counted_stops(route)
           towns.empty? ? cities.size.to_s : "#{cities.size}+#{towns.size}"
-        end
-
-        # Fill large cities first, then small cities, into the first row with room.
-        def fits?(train, stops)
-          rows = train.distance
-          room = rows.map { |row| row['pay'] }
-          stops.all? do |stop|
-            row = rows.each_index.find { |i| room[i].positive? && rows[i]['nodes'].include?(stop.type) }
-            room[row] -= 1 if row
-            row
-          end
         end
 
         def route_mines(route)
