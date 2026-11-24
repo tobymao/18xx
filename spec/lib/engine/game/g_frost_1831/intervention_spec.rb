@@ -161,6 +161,7 @@ module Engine
           expect(step.available_hex(cm, game.hex_by_id('G14'))).to be(true)
           expect(step.available_hex(cm, game.hex_by_id('D7'))).to be(false)
           expect(step.hex_choices(game.hex_by_id('G14'))).to eq('G14:GUA' => gua, 'G14:EXP' => exp)
+          expect(step.choices).to include('G14:GUA' => 'G14: Guardians', 'G14:EXP' => 'G14: Expansionists')
           expect(step.help).to eq(['Southern Coal Mine is being intervened.',
                                    'Choose stations to distribute between Guardians and Expansionists.'])
 

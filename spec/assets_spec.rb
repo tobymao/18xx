@@ -767,7 +767,7 @@ describe 'Assets' do
         expect(render(app_route: '/game/1', **needs)).to include(
           'New Grand Junction is being intervened.',
           'Choose which faction between Guardians and Expansionists receives the station.',
-          'Click a highlighted hex on the map.', 'map-hexes'
+          'Base: ', 'map-hexes'
         )
       end
     end

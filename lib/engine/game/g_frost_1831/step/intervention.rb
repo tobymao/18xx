@@ -48,10 +48,12 @@ module Engine
             entity == corporation
           end
 
-          def choice_name; end
+          def choice_name
+            'Base'
+          end
 
           def choices
-            {}
+            @game.intervention_choices.to_h { |choice, (token, faction)| [choice, "#{token.city.hex.id}: #{faction.full_name}"] }
           end
 
           def hex_choices(hex)
@@ -59,7 +61,7 @@ module Engine
           end
 
           def choice_view
-            :intervention_choice
+            :intervention_map if @round.stock?
           end
 
           def process_choose(action)
