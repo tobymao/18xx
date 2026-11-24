@@ -69,6 +69,10 @@ module View
       end
 
       def render_faction_support
+        render_influence_arena
+      end
+
+      def render_influence_arena
         h(GFrost1831::InfluenceArena, game: @game, scale: 0.67)
       end
 

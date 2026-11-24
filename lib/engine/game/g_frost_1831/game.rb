@@ -10,6 +10,8 @@ require_relative 'stock_market'
 require_relative 'round/stock'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/choose_factions'
+require_relative 'step/choose_influence'
+require_relative 'step/track'
 require_relative 'step/home_token'
 require_relative 'step/token'
 require_relative 'step/exchange'
@@ -286,6 +288,17 @@ module Engine
 
         NO_CERT_LIMIT_OWNERSHIP = 100
 
+        INFLUENCE_ICON = 'influence_cube'
+
+        D_TRAIN = 'D'
+
+        INFLUENCE_REASONS = {
+          blue_space: 'first to reach a blue space',
+          influence_zone: 'Influence Zone',
+          d_train: 'D-train purchase',
+          new_london_route: 'New London Route',
+        }.freeze
+
         # Track when bank breaks so D train doesn't override it
         def end_now?(after)
           @bank_broken_trigger ||= true if after == :full_or && @bank.broken?
@@ -328,6 +341,91 @@ module Engine
           return unless price.types.delete(:pays_bonus_1)
 
           @log << "#{entity.name} is first to reach #{format_currency(price.price)}"
+          grant_corporation_influence!(entity, :blue_space)
+        end
+
+        def sold_out_stock_movement(corporation)
+          previous = corporation.share_price
+          @stock_market.move_up(corporation)
+          check_influence_zone!(corporation, previous)
+        end
+
+        def log_share_price(entity, from, steps = nil, log_steps: false)
+          return check_influence_zone!(entity, from) if entity.share_price != from && entity.share_price.type == :pays_bonus
+
+          super
+          share_price_changed(entity, from)
+        end
+
+        def check_influence_zone!(corporation, previous)
+          return if corporation.share_price.type != :pays_bonus || corporation.type == :faction
+
+          @stock_market.move(corporation, previous.coordinates)
+          @log << "#{corporation.name} reaches the Influence Zone and returns to #{format_currency(previous.price)}"
+          grant_corporation_influence!(corporation, :influence_zone)
+        end
+
+        def buy_train(operator, train, price = nil)
+          d_train = train.name == self.class::D_TRAIN && train.owner == @depot
+          super
+          grant_corporation_influence!(operator, :d_train) if d_train
+        end
+
+        def after_lay_tile(hex, tile, entity)
+          return unless new_london_route_icon(hex)
+
+          edge_a, edge_b = hex.original_tile.future_paths.first.exits
+          return unless edges_connected?(tile, edge_a, edge_b)
+
+          hex.tile.icons.delete(new_london_route_icon(hex))
+          corporation = entity.company? ? entity.owner : entity
+          grant_corporation_influence!(corporation, :new_london_route, hex.name) if corporation&.corporation?
+        end
+
+        def new_london_route_icon(hex)
+          hex.tile.icons.find { |icon| icon.name == self.class::INFLUENCE_ICON }
+        end
+
+        def edges_connected?(tile, edge_a, edge_b)
+          tile.paths.any? { |path| path.exits.include?(edge_a) && path.exits.include?(edge_b) } ||
+            tile.nodes.any? do |node|
+              exits = node.paths.flat_map(&:exits)
+              exits.include?(edge_a) && exits.include?(edge_b)
+            end
+        end
+
+        def grant_corporation_influence!(corporation, reason, place = nil)
+          return if corporation_factions(corporation).empty?
+
+          available = corporation_factions(corporation).select { |f| within_influence_limit?(corporation, f) }
+          if available.empty?
+            @log << "#{corporation.name} cannot receive influence (both factions at limit — cube discarded)"
+            return
+          end
+
+          choice = { corporation: corporation, factions: available, reason: reason, place: place }
+          @log << "#{corporation.name} gains 1 Influence (#{influence_reason_text(choice)})"
+          @pending_influence_queue << choice
+          @round&.clear_cache!
+        end
+
+        def influence_reason_text(choice)
+          text = self.class::INFLUENCE_REASONS[choice[:reason]]
+          choice[:place] ? "#{text}, #{choice[:place]}" : text
+        end
+
+        def pending_influence_choice
+          @pending_influence_queue.first
+        end
+
+        def resolve_influence_choice!(faction_sym)
+          choice = @pending_influence_queue.shift
+          apply_faction_influence!(choice[:corporation], faction_sym)
+          execute_deferred_turmoil! if choice[:reason] == :d_train
+        end
+
+        def within_influence_limit?(corporation, faction_sym)
+          corporation_influence_for(corporation, faction_sym) < corporation_influence_limit
         end
 
         attr_reader :government_marker, :regulations
@@ -351,6 +449,8 @@ module Engine
           @corporation_factions = {}
           @corporation_influence = {}
           @pending_faction_choices = []
+          @pending_influence_queue = []
+          @deferred_turmoil = false
         end
 
         # Factions are not capitalized: founding one pays nothing into its Treasury
@@ -464,7 +564,7 @@ module Engine
           limit = corporation_influence_limit
           if @corporation_influence[corporation.id][faction_sym] >= limit
             @log << "#{corporation.name} has reached the limit of #{limit} Influence for "\
-                    "#{faction_display_name(faction_sym)} (cube discarded)"
+                    "#{faction_display_name(faction_sym)} (discarded)"
             return
           end
 
@@ -531,6 +631,7 @@ module Engine
           GFrost1831::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             GFrost1831::Step::ChooseFactions,
+            GFrost1831::Step::ChooseInfluence,
             GFrost1831::Step::HomeToken,
             GFrost1831::Step::Exchange,
             GFrost1831::Step::BuySellParShares,
@@ -547,9 +648,10 @@ module Engine
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             GFrost1831::Step::HomeToken,
+            GFrost1831::Step::ChooseInfluence,
             GFrost1831::Step::SpecialTrack,
             Engine::Step::BuyCompany,
-            Engine::Step::Track,
+            GFrost1831::Step::Track,
             GFrost1831::Step::Token,
             Engine::Step::Route,
             GFrost1831::Step::Dividend,
@@ -630,7 +732,7 @@ module Engine
           limit = faction_influence_limit
           if @faction_influence[faction_sym] >= limit
             @log << "#{faction_display_name(faction_sym)} has reached the limit of #{limit} "\
-                    'Influence in Parliament (cube discarded)'
+                    'Influence in Parliament (discarded)'
             return false
           end
 
@@ -678,7 +780,23 @@ module Engine
 
         def event_turmoil!
           @log << '-- Event: Turmoil! --'
+          if @pending_influence_queue.any? { |choice| choice[:reason] == :d_train }
+            @log << 'D train influence must be allocated before Turmoil consequences'
+            @deferred_turmoil = true
+            return
+          end
 
+          execute_turmoil_consequences!
+        end
+
+        def execute_deferred_turmoil!
+          return unless @deferred_turmoil
+
+          @deferred_turmoil = false
+          execute_turmoil_consequences!
+        end
+
+        def execute_turmoil_consequences!
           governing = governing_faction_sym
           unless governing
             @log << 'Government is neutral — no consequences'

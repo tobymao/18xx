@@ -649,6 +649,44 @@ describe 'Assets' do
 
         expect(render(app_route: '/game/1', **needs)).to include('Choose faction to support for', 'Influence Arena')
       end
+
+      it 'renders the Influence Arena below the Influence choice' do
+        game = frost_game_until_float
+        corporation = game.corporation_by_id('CM')
+        2.times do
+          game.process_action(Engine::Action::Choose.new(game.current_entity, choice: game.round.active_step.choices.keys.first))
+        end
+        50.times do
+          break if game.round.active_step.is_a?(Engine::Game::GFrost1831::Step::ChooseInfluence)
+
+          entity = game.current_entity
+          step = game.round.active_step
+          share = corporation.ipo_shares.first
+          game.process_action(
+            if share && step.actions(entity).include?('buy_shares') && step.can_buy?(entity, share.to_bundle)
+              Engine::Action::BuyShares.new(entity, shares: share, percent: share.percent)
+            else
+              Engine::Action::Pass.new(entity)
+            end
+          )
+        end
+        expect(game.round.active_step).to be_a(Engine::Game::GFrost1831::Step::ChooseInfluence)
+
+        player = corporation.owner
+        needs = {
+          game_data: {
+            id: 1,
+            user: { id: player.id, name: player.name },
+            players: game.players.map { |p| { id: p.id, name: p.name } },
+            title: 'Frost 1831',
+            actions: game.actions.map(&:to_h),
+            loaded: true,
+          },
+          user: { id: player.id, name: player.name, settings: { consent: true } },
+        }
+
+        expect(render(app_route: '/game/1', **needs)).to include('Allocate Influence for CM (Influence Zone)', 'Influence Arena')
+      end
     end
 
     def render_game_at_action(data, action_count, string, suffix = '')
