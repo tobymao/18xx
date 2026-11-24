@@ -1087,7 +1087,7 @@ module Engine
         def legal_tile_rotation?(entity, hex, tile)
           return true if entity.corporation? && entity.companies.find { |c| c.sym == 'SBC' }
 
-          tile.exits.none? { |edge| hex.tile.borders.any? { |border| border.edge == edge } }
+          (tile.exits - hex.tile.exits).none? { |edge| hex.tile.borders.any? { |border| border.edge == edge } }
         end
 
         def terminal_company
