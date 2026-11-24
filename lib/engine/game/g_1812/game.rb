@@ -192,7 +192,7 @@ module Engine
         def stock_round
           G1867::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
+            G1812::Step::HomeToken,
             G1867::Step::BuySellParShares,
           ])
         end
