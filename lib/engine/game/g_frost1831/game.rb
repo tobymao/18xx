@@ -9,6 +9,7 @@ require_relative 'tiles'
 require_relative 'stock_market'
 require_relative 'round/stock'
 require_relative 'step/buy_sell_par_shares'
+require_relative 'step/choose_factions'
 require_relative 'step/home_token'
 require_relative 'step/token'
 require_relative 'step/exchange'
@@ -238,6 +239,8 @@ module Engine
           'LOR' => 'Lords',
         }.freeze
 
+        FACTION_ORDER = %w[TEC LOR GUA EXP].freeze
+
         OPPOSITES = {
           'TEC' => 'GUA',
           'GUA' => 'TEC',
@@ -257,6 +260,10 @@ module Engine
         }.freeze
 
         GOVERNMENT_MIDDLE = 4
+
+        SECOND_SUPPORT_SET_FLOAT = 4
+
+        CORPORATION_INFLUENCE_LIMITS = { '2' => 3, '3' => 4, '4' => 4, '5' => 5, '6' => 5, 'D' => 5 }.freeze
 
         FACTION_INFLUENCE_LIMITS = { '2' => 6, '3' => 6, '4' => 6, '5' => 8, '6' => 8, 'D' => 10 }.freeze
 
@@ -337,6 +344,13 @@ module Engine
           @player_influence = Hash.new(0)
 
           factions.each { |faction| @bank.spend(self.class::FACTION_TREASURY, faction) }
+
+          @faction_support_pool = faction_names.keys.flat_map { |f| [f, f] }
+          @faction_support_reserve = @faction_support_pool.dup
+          @corporations_floated_count = 0
+          @corporation_factions = {}
+          @corporation_influence = {}
+          @pending_faction_choices = []
         end
 
         # Factions are not capitalized: founding one pays nothing into its Treasury
@@ -386,12 +400,102 @@ module Engine
         end
 
         def status_array(corporation)
-          return unless corporation.type == :faction
+          if corporation.type == :faction
+            return [
+              ["Influence: #{faction_influence(corporation.id)}/#{faction_influence_limit}", ''],
+              ["Tokens: #{token_string(corporation)}", ''],
+            ]
+          end
 
-          [
-            ["Influence: #{faction_influence(corporation.id)}/#{faction_influence_limit}", ''],
-            ["Tokens: #{token_string(corporation)}", ''],
-          ]
+          influence = corporation_influence(corporation)
+          corporation_factions(corporation).map do |f|
+            ["#{faction_display_name(f)}: #{influence[f] || 0}/#{corporation_influence_limit}", '']
+          end
+        end
+
+        def float_corporation(corporation)
+          super
+          return if corporation.type == :faction
+
+          @pending_faction_choices << { corporation: corporation, entity: corporation.owner, step: :first }
+        end
+
+        def parliamentary_intervention?
+          @optional_rules&.include?(:parliamentary_intervention)
+        end
+
+        def faction_support_available
+          @faction_support_pool.uniq
+        end
+
+        def faction_support_remaining(faction_sym)
+          @faction_support_pool.count(faction_sym)
+        end
+
+        def faction_support_available_for_second(first_choice)
+          @faction_support_pool.uniq - [first_choice, opposite_faction(first_choice)]
+        end
+
+        def pending_faction_choice
+          @pending_faction_choices.first
+        end
+
+        def choose_first_faction!(faction_sym)
+          pending_faction_choice[:step] = :second
+          pending_faction_choice[:first_choice] = faction_sym
+        end
+
+        def finish_faction_choice!(faction_sym)
+          choice = @pending_faction_choices.shift
+          support_factions!(choice[:corporation], [choice[:first_choice], faction_sym])
+        end
+
+        def consume_faction_support!(faction_sym)
+          @faction_support_pool.delete_at(@faction_support_pool.index(faction_sym))
+        end
+
+        def apply_faction_influence!(corporation, faction_sym)
+          @corporation_factions[corporation.id] ||= []
+          @corporation_factions[corporation.id] << faction_sym unless @corporation_factions[corporation.id].include?(faction_sym)
+
+          @corporation_influence[corporation.id] ||= {}
+          @corporation_influence[corporation.id][faction_sym] ||= 0
+
+          limit = corporation_influence_limit
+          if @corporation_influence[corporation.id][faction_sym] >= limit
+            @log << "#{corporation.name} has reached the limit of #{limit} Influence for "\
+                    "#{faction_display_name(faction_sym)} (cube discarded)"
+            return
+          end
+
+          @corporation_influence[corporation.id][faction_sym] += 1
+          faction_influence_gain(faction_sym)
+          move_government(faction_sym)
+        end
+
+        def support_factions!(corporation, factions)
+          @corporations_floated_count += 1
+          if @corporations_floated_count == self.class::SECOND_SUPPORT_SET_FLOAT
+            @faction_support_pool = @faction_support_reserve.dup
+          end
+
+          @log << "#{corporation.name} now supports #{factions.map { |f| faction_display_name(f) }.join(' and ')}"
+        end
+
+        def corporation_factions(corporation)
+          @corporation_factions[corporation.id] || []
+        end
+
+        def corporation_influence(corporation)
+          @corporation_influence[corporation.id] || {}
+        end
+
+        def corporation_influence_for(corporation, faction_sym)
+          corporation_influence(corporation).fetch(faction_sym, 0)
+        end
+
+        def corporation_influence_limit
+          self.class::CORPORATION_INFLUENCE_LIMITS[@phase.name]
         end
 
         def new_auction_round
@@ -426,6 +530,7 @@ module Engine
         def stock_round
           GFrost1831::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            GFrost1831::Step::ChooseFactions,
             GFrost1831::Step::HomeToken,
             GFrost1831::Step::Exchange,
             GFrost1831::Step::BuySellParShares,
@@ -497,8 +602,20 @@ module Engine
           available_faction_cities.include?(city.hex.id) && city.available_slots < 2
         end
 
+        def faction_names
+          self.class::FACTION_NAMES
+        end
+
+        def faction_order
+          self.class::FACTION_ORDER
+        end
+
+        def opposite_faction(faction_sym)
+          self.class::OPPOSITES[faction_sym]
+        end
+
         def faction_display_name(faction_sym)
-          self.class::FACTION_NAMES[faction_sym] || faction_sym
+          faction_names[faction_sym] || faction_sym
         end
 
         def faction_influence(faction_sym)
@@ -568,7 +685,7 @@ module Engine
             return
           end
 
-          opposition = self.class::OPPOSITES[governing]
+          opposition = opposite_faction(governing)
           level = ParliamentMovement.polarization_level(*@government_marker)
           @log << "Government: #{faction_display_name(governing)} (Level #{level})"
           @log << "Opposition: #{faction_display_name(opposition)}"
