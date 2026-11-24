@@ -353,7 +353,8 @@ module Engine
           @corporations.each { |c| c.tokens.pop(c.tokens.size - major_token_count) if c.type == :major }
           return if @players.size == 4
 
-          removed = @corporations.shift
+          removed = @corporations.select { |c| c.type == :major }.min_by { rand }
+          @corporations.delete(removed)
           @log << "#{removed.name} corporation is removed because there are fewer than 4 players"
         end
 
