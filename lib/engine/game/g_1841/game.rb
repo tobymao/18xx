@@ -2000,19 +2000,14 @@ module Engine
           placed, unplaced = old.tokens.partition(&:used)
           # First replace the tokens on the map
           placed.each do |old_token|
-            if VENETO.include?(old_token.city.hex.id)
-              next if version == 1 && newa.tokens.size > 1
-
-              # newa goes in Veneto (Austrian possesions in phase 4)
-              newa.tokens << Token.new(newa, price: 0)
-              swap_token(newa, old, old_token)
-            else
-              next if version == 1 && newb.tokens.size > 1
-
-              # newb goes in the rest
-              newb.tokens << Token.new(newb, price: 0)
-              swap_token(newb, old, old_token)
+            target = VENETO.include?(old_token.city.hex.id) ? newa : newb
+            if version == 1 && target.tokens.size > 1
+              remove_secession_token!(old, old_token)
+              next
             end
+
+            target.tokens << Token.new(target, price: 0)
+            swap_token(target, old, old_token)
           end
 
           # Now the rest
@@ -2024,6 +2019,11 @@ module Engine
           # make sure they both have at least two tokens
           newa.tokens << Token.new(newa, price: 0) if newa.tokens.size < 2
           newb.tokens << Token.new(newb, price: 0) if newb.tokens.size < 2
+        end
+
+        def remove_secession_token!(old, old_token)
+          @log << "Removed #{old.name} token in #{old_token.city.hex.id}"
+          old_token.remove!
         end
 
         def secession_move_trains(old, newa, newb)
