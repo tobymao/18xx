@@ -6,6 +6,7 @@ module Engine
   module Game
     module G18OE
       SeaPoolNeed = Struct.new(:cost, :need, :pa_eligible, :h_eligible)
+      RouterConnection = Struct.new(:connection_data, :corporation, :phase)
 
       module SeaRoutes
         def ferry_track?(path)
@@ -107,7 +108,21 @@ module Engine
         end
 
         def sea_legs(route)
-          route.connection_data.filter_map { |connection| connection[:chain][:crossing] } + ferry_legs(route)
+          route.shared_cache[:sea_legs] ||= connection_sea_legs(route.connection_data)
+        end
+
+        def connection_sea_legs(connection_data)
+          connection_data.filter_map { |connection| connection[:chain][:crossing] } +
+            ferry_legs(connection_data)
+        end
+
+        def auto_router_connection_cost(connection_data, corporation)
+          legs = connection_sea_legs(connection_data)
+          return 0 if legs.empty?
+
+          route = RouterConnection.new(connection_data, corporation, phase)
+          cost = cheapest_sea_cost(route, legs)
+          [cost - sea_pool_total(corporation, phase), 0].max
         end
 
         def sea_pool(corporation, phase)
@@ -117,14 +132,17 @@ module Engine
           pool
         end
 
-        def sea_pool_need(route, legs = sea_legs(route))
-          pool = sea_pool(route.corporation, route.phase)
-          reduction = sea_reduction(route.phase) || 0
-          needs = sea_leg_assignments(route, legs).map do |assignment, tokens|
-            assigned_sea_pool_need(route, legs, tokens, assignment, reduction, pool)
+        def sea_pool_need(route, legs = nil)
+          route.shared_cache[:sea_pool_need] ||= begin
+            legs ||= sea_legs(route)
+            pool = sea_pool(route.corporation, route.phase)
+            reduction = sea_reduction(route.phase) || 0
+            needs = sea_leg_assignments(route, legs).map do |assignment, tokens|
+              assigned_sea_pool_need(route, legs, tokens, assignment, reduction, pool)
+            end
+            coverable = needs.select { |need| sea_pool_coverable?([need], pool) }
+            (coverable.empty? ? needs : coverable).each_with_index.min_by { |need, index| [need.cost, index] }.first
           end
-          coverable = needs.select { |need| sea_pool_coverable?([need], pool) }
-          (coverable.empty? ? needs : coverable).each_with_index.min_by { |need, index| [need.cost, index] }.first
         end
 
         def sea_pool_coverable?(needs, pool)
@@ -169,20 +187,34 @@ module Engine
         def sea_distance(route)
           return 0 unless route.corporation
 
+          unless @sea_pool_covered
+            cached = route.shared_cache[:sea_distance]
+            return cached[1] if cached && cached[0].equal?(route.routes)
+          end
+
           legs = sea_legs(route)
           return 0 if legs.empty?
 
-          if @sea_pool_covered&.key?(route)
-            need = sea_pool_need(route, legs)
-            return need.cost - need.need
-          end
-          return cheapest_sea_cost(route, legs) if sea_pool_total(route.corporation, route.phase).zero?
+          pool_total = sea_pool_total(route.corporation, route.phase)
+          distance = if @sea_pool_covered&.key?(route)
+                       need = sea_pool_need(route, legs)
+                       need.cost - need.need
+                     elsif route.router_cost && pool_total.zero?
+                       route.router_cost
+                     elsif pool_total.zero?
+                       cheapest_sea_cost(route, legs)
+                     else
+                       need = sea_pool_need(route, legs)
+                       if need.need.positive?
+                         routes = route.routes.include?(route) ? route.routes : [route]
+                         sea_pool_allocation(routes)[route] ? need.cost - need.need : need.cost
+                       else
+                         need.cost
+                       end
+                     end
 
-          need = sea_pool_need(route, legs)
-          return need.cost unless need.need.positive?
-
-          routes = route.routes.include?(route) ? route.routes : [route]
-          sea_pool_allocation(routes)[route] ? need.cost - need.need : need.cost
+          route.shared_cache[:sea_distance] = [route.routes, distance] unless @sea_pool_covered
+          distance
         end
 
         def route_train_distance(route, train)
@@ -321,9 +353,9 @@ module Engine
           end
         end
 
-        def ferry_legs(route)
+        def ferry_legs(connection_data)
           legs = {}
-          land_stretches(route).each do |paths|
+          land_stretches(connection_data).each do |paths|
             ferry_runs(paths).each do |before, run, after|
               leg = ferry_leg(before, run, after)
               legs[leg[0]] ||= leg[1] if leg
@@ -332,9 +364,9 @@ module Engine
           legs.values
         end
 
-        def land_stretches(route)
+        def land_stretches(connection_data)
           stretches = [[]]
-          route.connection_data.each do |connection|
+          connection_data.each do |connection|
             if connection[:chain][:crossing]
               stretches << []
               next

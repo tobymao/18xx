@@ -47,5 +47,23 @@ module Engine
           .to eq(route.visited_stops.map(&:signature))
       end
     end
+
+    describe '#shared_cache' do
+      it 'is cleared by clear_cache!' do
+        route.shared_cache[:key] = 'value'
+
+        route.clear_cache!
+
+        expect(route.shared_cache).to be_empty
+      end
+
+      it 'is cleared when only routes are cleared' do
+        route.shared_cache[:key] = 'value'
+
+        route.clear_cache!(only_routes: true)
+
+        expect(route.shared_cache).to be_empty
+      end
+    end
   end
 end

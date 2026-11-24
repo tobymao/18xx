@@ -174,13 +174,14 @@ module Engine
           stops = connection.flat_map { |conn| [conn[:left], conn[:right]] }.uniq.compact.flat_map(&:stops)
           city_stops = stops.count { |stop| !stop.town? }
           town_stops = stops.count(&:town?)
+          connection_cost = stop_limited?(trains) ? @game.auto_router_connection_cost(connection, corporation) : nil
 
           # each train has opportunity to vote to abort a branch of this node's path-walk tree
           path_abort = trains.to_h { |train| [train, true] }
 
           # build a test route for each train, use route.revenue to check for errors, keep the good ones
           trains.each  do |train|
-            if too_many_stops?(city_stops, town_stops, train)
+            if too_many_stops?(city_stops, town_stops, train, connection_cost || 0)
               path_abort.delete(train)
               next
             end
@@ -194,6 +195,7 @@ module Engine
               # the same connection array
               connection_data: connection.clone,
               bitfield: bitfield,
+              router_cost: connection_cost,
             )
             route.routes = [route]
             # defer route combination checks until we have the full combination of routes to check
@@ -230,11 +232,19 @@ module Engine
       [train_routes, path_walk_timed_out]
     end
 
-    def too_many_stops?(city_stops, town_stops, train)
+    def too_many_stops?(city_stops, town_stops, train, connection_cost = 0)
       limit = route_stop_limit(train)
       return false unless limit
 
-      (limit[:city] ? city_stops > limit[:city] : false) || (limit[:town] ? town_stops > limit[:town] : false)
+      (limit[:city] ? city_stops + connection_cost > limit[:city] : false) ||
+        (limit[:town] ? town_stops > limit[:town] : false)
+    end
+
+    def stop_limited?(trains)
+      trains.any? do |train|
+        limit = route_stop_limit(train)
+        limit[:city] || limit[:town]
+      end
     end
 
     def route_stop_limit(train)
@@ -364,10 +374,29 @@ module Engine
 
           // TODO: I wonder if it's always true that revenue is less than
           // or equal to the sum of the revenues of trains individually
+          // Bound the remaining trains by the best route for each one that
+          // does not overlap the routes already chosen for its train group.
+          // This is tighter than always using each train's single best route,
+          // and is still an upper bound on any completion of this prefix.
+          let remaining_revenue = 0;
+          for (let train_data = current_train_data; train_data; train_data = train_data.next_train_data) {
+            const group_bits = routes_metadata.bitfield[train_data.train_group];
+            let best = 0;
+            for (const route of train_data.routes) {
+              if (!route || route.estimate_revenue <= best) {
+                continue;
+              }
+              if (js_route_bitfield_conflicts(route.bitfield, group_bits)) {
+                continue;
+              }
+              best = route.estimate_revenue;
+            }
+            remaining_revenue += best;
+          }
+
           return (
-            routes_metadata.estimate_revenue +
-              current_train_data.max_possible_revenue_for_rest_of_trains >
-              this.best_revenue_so_far
+            routes_metadata.estimate_revenue + remaining_revenue >
+            this.best_revenue_so_far
           );
         }
 
@@ -428,10 +457,6 @@ module Engine
           let train_data = null;
           let number_train_groups = 0;
           trains_to_routes.forEach((routes) => {
-            let r = train_data
-              ? train_data.max_possible_revenue_for_rest_of_trains
-              : 0;
-            r += routes[0].estimate_revenue;
             let train_group = 0;
             const game_group_rules = this.router.train_autoroute_group;
             if (game_group_rules == "each_train_separate") {
@@ -447,7 +472,6 @@ module Engine
             train_data = {
               routes,
               train_group,
-              max_possible_revenue_for_rest_of_trains: r,
               next_train_data: train_data,
             };
           });

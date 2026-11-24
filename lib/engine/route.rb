@@ -5,7 +5,7 @@ require_relative 'game_error'
 module Engine
   class Route
     attr_accessor :halts, :routes, :bitfield
-    attr_reader :last_node, :phase, :train, :abilities
+    attr_reader :last_node, :phase, :train, :abilities, :router_cost
 
     def initialize(game, phase, train, **opts)
       @game = game
@@ -30,9 +30,16 @@ module Engine
       @stops = nil
 
       @bitfield = opts[:bitfield] # array of ints used only by auto-routing algorithm
+      @router_cost = opts[:router_cost] # extra connection cost used only by auto-routing algorithm
+    end
+
+    # Scratch cache shared by callers that derive values from this route.
+    def shared_cache
+      @shared_cache ||= {}
     end
 
     def clear_cache!(all: false, only_routes: false)
+      @shared_cache&.clear
       @connection_hexes = nil if all
       @node_signatures = nil if all
       @revenue = nil

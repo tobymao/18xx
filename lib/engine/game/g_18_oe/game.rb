@@ -2306,7 +2306,7 @@ module Engine
             raise GameError, 'Route is not connected' if a[:right].blocks?(corporation)
           end
 
-          connected = land_stretches(route).all? do |paths|
+          connected = land_stretches(route.connection_data).all? do |paths|
             paths.each_cons(2).all? do |a, b|
               (wcf_restricted?(corporation) && wcf_pass?(a, b)) || a.connects_to?(b, corporation)
             end
