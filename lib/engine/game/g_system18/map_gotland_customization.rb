@@ -227,8 +227,8 @@ module Engine
                          'SGV3' => {
                            'count' => 1,
                            'color' => 'brown',
-                           'code' => 'city=revenue:70,slots:1;city=revenue:70,slots:1;'\
-                                     'path=a:0,b:_0;path=a:3,b:_0;'\
+                           'code' => 'city=revenue:70,slots:2;city=revenue:70,slots:1;'\
+                                     'path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:_0;'\
                                      'path=a:4,b:_1;path=a:3,b:_1;label=V',
                          },
                        })
