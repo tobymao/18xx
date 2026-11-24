@@ -395,11 +395,9 @@ module Engine
           @log << '--All remaining 3/2G trains in the supply will be replaced with 3+1/2G+1 trains at the end of the OR set--'
         end
 
-        def interest_unpaid!(entity, _owed)
-          current_cash = entity.cash
+        def forfeit_cash!(entity)
           old_price = entity.share_price
-
-          entity.spend(current_cash, bank) if current_cash.positive?
+          entity.spend(entity.cash, bank) if entity.cash.positive?
           @stock_market.move_left(entity)
           log_share_price(entity, old_price)
         end
