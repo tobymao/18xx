@@ -236,6 +236,7 @@ module Engine
 
         def operating_round(round_num)
           G1835::Round::Operating.new(self, [
+            G1835::Step::SwapChoice,
             Engine::Step::Bankrupt,
             G1835::Step::MinorExchange,
             Engine::Step::DiscardTrain,
@@ -264,6 +265,7 @@ module Engine
         end
 
         def bundles_for_corporation(share_holder, corporation, shares: nil)
+          return [] unless share_holder.player?
           return [] unless corporation.ipoed
 
           shares ||= share_holder.shares_of(corporation)
