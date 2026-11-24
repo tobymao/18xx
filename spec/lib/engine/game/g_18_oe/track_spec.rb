@@ -254,10 +254,29 @@ describe 'G18OE lay track (§11.1)' do
     expect(game.hex_within_national_region?(game.corporation_by_id('PLM'), nancy)).to be(true)
   end
 
-  it 'does not restrict majors to a zone (§11.1.4)' do
+  it 'restricts a major to its zone until the first merger (errata 12)' do
     major = start_major!(game, 'LNWR', player)
 
+    expect(game.hex_within_national_region?(major, game.hex_by_id('J29'))).to be(true)
+    expect(game.hex_within_national_region?(major, game.hex_by_id('Q30'))).to be(false)
+    game.minor_merged
     expect(game.hex_within_national_region?(major, game.hex_by_id('Q30'))).to be(true)
+  end
+
+  it 'keeps regionals in their zone after the release (§11.1.4)' do
+    regional = game.corporation_by_id('GWR')
+    game.minor_merged
+
+    expect(game.hex_within_national_region?(regional, game.hex_by_id('Q30'))).to be(false)
+  end
+
+  it 'keeps a national in its zone after the release (§11.1.4)' do
+    major = start_major!(game, 'PLM', player)
+    game.form_national!(major)
+    game.minor_merged
+
+    expect(game.hex_within_national_region?(major, game.hex_by_id('J29'))).to be(false)
+    expect(game.city_in_track_rights?(major, game.hex_by_id('J29'))).to be(false)
   end
 
   it 'charges full terrain cost outside the discount zones (§11.1.5)' do

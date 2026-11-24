@@ -70,6 +70,7 @@ module Engine
             price = @game.abandoned_minor_price
             entity.spend(price, @game.bank)
             @log << "#{entity.name} buys abandoned minor #{minor.name} for #{@game.format_currency(price)}"
+            @game.minor_merged
             @game.add_minor_charter!(minor, entity)
             @game.close_corporation(minor, quiet: true)
             @bought_abandoned_minor = true

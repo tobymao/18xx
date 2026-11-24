@@ -15,6 +15,9 @@ describe 'G18OE transfer tokens (§11.5)' do
   let(:liverpool) { game.hex_by_id('J25').tile.cities.first }
   let(:paris) { game.hex_by_id('Q30').tile.cities.first }
   let(:lille) { game.lille_city }
+  let(:minor_merged) { true }
+
+  before { game.minor_merged if minor_merged }
 
   def place!(corporation, city, price: nil, extra_slot: false)
     token = corporation.tokens.find { |t| !t.used && (price.nil? || t.price == price) }
@@ -32,6 +35,15 @@ describe 'G18OE transfer tokens (§11.5)' do
     it 'accepts a same-president major token that is not the home token' do
       token = place!(seller, christiania, price: 60)
       expect(game.transferable_token?(buyer, token)).to be(true)
+    end
+
+    context 'before the first merger' do
+      let(:minor_merged) { false }
+
+      it 'rejects a token outside the buyer zone (errata 13)' do
+        token = place!(seller, christiania, price: 60)
+        expect(game.transferable_token?(buyer, token)).to be(false)
+      end
     end
 
     it 'rejects the seller home token' do
@@ -310,6 +322,7 @@ describe 'G18OE transfer tokens (§11.5)' do
       step.process_place_token(action)
 
       game2 = new_game
+      game2.minor_merged
       buyer2 = start_major!(game2, 'LNWR', game2.players.first)
       seller2 = start_major!(game2, 'GWR', game2.players.first)
       fund!(game2, buyer2, 500)

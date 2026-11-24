@@ -92,6 +92,7 @@ describe View::Game::TokenSelector do
     end
 
     before do
+      game.minor_merged
       fund!(game, buyer, 500)
       round
     end

@@ -88,6 +88,7 @@ module Engine
             else
               @log << "#{minor.name} merges into #{major.name} by track connection; #{minor.owner.name} receives no share"
             end
+            @game.minor_merged
             transfer_treasury(minor, cash_recipient)
             @round.merge_trains = { corporation: major, trains: move_trains!(minor, major) }
             @game.minor_regional_order.delete(minor)
