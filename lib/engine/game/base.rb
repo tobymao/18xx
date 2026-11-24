@@ -1051,7 +1051,8 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, id: @id, pin: @pin, seed: @seed, actions: actions, optional_rules: @optional_rules)
+        self.class.new(@names, id: @id, pin: @pin, seed: @seed, actions: actions, optional_rules: @optional_rules,
+                               user: @user)
       end
 
       def trains
