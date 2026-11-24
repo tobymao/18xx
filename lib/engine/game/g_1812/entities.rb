@@ -209,7 +209,7 @@ module Engine
             value: 40,
             min_price: 30,
             revenue: 10,
-            desc: 'A corporation owning the Newcastle & Carlisle Railway gains a +£20 bonus for all runs to Hull (G16).',
+            desc: 'A corporation owning the Hull Docks Company gains a +£20 bonus for all runs to Hull (G16).',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -226,7 +226,7 @@ module Engine
             value: 40,
             min_price: 30,
             revenue: 10,
-            desc: 'A corporation owning the Hull Docks Company gains a +£20 bonus for all G-train runs to Hartlepool '\
+            desc: 'A corporation owning the Hartlepool Docks Company gains a +£20 bonus for all G-train runs to Hartlepool '\
                   'Port (G6). Additionally, the owning corporation may lay 1 extra yellow tile, in hex F7.',
             abilities: [
               {
@@ -242,7 +242,7 @@ module Engine
                 type: 'hex_bonus',
                 owner_type: 'corporation',
                 hexes: ['G6'],
-                amount: 10,
+                amount: 20,
               },
               { type: 'close', on_phase: 'never' },
             ],

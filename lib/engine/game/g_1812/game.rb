@@ -47,6 +47,7 @@ module Engine
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
+            status: %w[can_buy_companies],
           },
           {
             name: '3',
