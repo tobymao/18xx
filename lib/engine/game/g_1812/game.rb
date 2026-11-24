@@ -63,7 +63,7 @@ module Engine
             train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: %w[car_par can_buy_companies minors_can_merge cannot_open_minors],
+            status: %w[can_buy_companies minors_can_merge cannot_open_minors],
           },
           {
             name: '5',
@@ -71,7 +71,7 @@ module Engine
             train_limit: { minor: 0, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[can_par minors_can_merge cannot_open_minors],
+            status: %w[minors_can_merge cannot_open_minors],
           },
           {
             name: '6',
@@ -79,7 +79,7 @@ module Engine
             train_limit: { minor: 0, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[can_par minors_can_merge cannot_open_minors],
+            status: %w[minors_can_merge cannot_open_minors],
           },
         ].freeze
 
@@ -354,10 +354,20 @@ module Engine
         end
 
         def setup_corps
-          removed = @corporations.shift unless @players.size == 4
-          return unless removed
+          @corporations.each { |c| c.tokens.pop(c.tokens.size - major_token_count) if c.type == :major }
+          return if @players.size == 4
 
+          removed = @corporations.select { |c| c.type == :major }.min_by { rand }
+          @corporations.delete(removed)
           @log << "#{removed.name} corporation is removed because there are fewer than 4 players"
+        end
+
+        def major_token_count
+          @players.size == 4 ? 3 : 4
+        end
+
+        def fix_token_count!(corporation)
+          corporation.tokens << Engine::Token.new(corporation, price: 40) while corporation.tokens.size < major_token_count
         end
 
         def unstarted_corporation_summary
@@ -383,12 +393,6 @@ module Engine
           else
             train[:num]
           end
-        end
-
-        def can_par?(corporation, parrer)
-          @phase.status.include?('can_par')
-
-          super
         end
 
         def event_three_trains_will_convert!
