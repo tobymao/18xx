@@ -202,6 +202,7 @@ module Engine
           G1867::Round::Operating.new(self, [
             Engine::Step::BuyCompany,
             G1867::Step::RedeemShares,
+            Engine::Step::SpecialTrack,
             G1867::Step::Track,
             G1867::Step::Token,
             Engine::Step::Route,
@@ -209,9 +210,25 @@ module Engine
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
             G1812::Step::LoanOperations,
             Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
             G1812::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def action_processed(action)
+          super
+          return unless action.is_a?(Action::LayTile)
+
+          hex_id = action.hex.id
+          @companies.each do |company|
+            laid = company.all_abilities.select { |a| a.type == :tile_lay && a.hexes.include?(hex_id) && all_laid?(a.hexes) }
+            laid.each { |a| company.remove_ability(a) }
+          end
+        end
+
+        def all_laid?(hex_ids)
+          hex_ids.none? { |id| hex_by_id(id)&.tile&.color == :white }
         end
 
         EVENTS_TEXT = G1867::Game::EVENTS_TEXT.merge('three_trains_will_convert' => ['Unsold 3/2G will convert to 3+1/2G+1',

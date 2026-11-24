@@ -4,6 +4,8 @@ module Engine
   module Game
     module G1812
       module Entities
+        FREE_LAY_TILES = %w[3 4 5 6 7 8 9 57 58 201 202 621].freeze
+
         COMPANIES = [
           {
             name: '1. Tanfield Railway',
@@ -77,8 +79,9 @@ module Engine
                 hexes: %w[D15 E17],
                 special: false,
                 when: 'track',
-                tiles: [],
-                cost: 0,
+                tiles: FREE_LAY_TILES,
+                free: true,
+                connect: false,
               },
             ],
           },
@@ -96,7 +99,7 @@ module Engine
               closed_when_used_up: true,
               discount: 40,
               count: 1,
-              trains: %w[2 3 4 5],
+              trains: [],
             }],
           },
           {
@@ -120,8 +123,9 @@ module Engine
                 hexes: %w[C8 D9 E8],
                 special: false,
                 when: 'track',
-                tiles: [],
-                cost: 0,
+                tiles: FREE_LAY_TILES,
+                free: true,
+                connect: false,
               },
             ],
           },
@@ -140,8 +144,9 @@ module Engine
                 hexes: %w[C6 D7],
                 special: false,
                 when: 'track',
-                tiles: [],
-                cost: 0,
+                tiles: FREE_LAY_TILES,
+                free: true,
+                connect: false,
               },
               {
                 type: 'hex_bonus',
@@ -166,8 +171,9 @@ module Engine
                 hexes: %w[F13 G10 G12],
                 special: false,
                 when: 'track',
-                tiles: [],
-                cost: 0,
+                tiles: FREE_LAY_TILES,
+                free: true,
+                connect: false,
               },
               {
                 type: 'hex_bonus',
@@ -198,8 +204,9 @@ module Engine
                 hexes: %w[B3 C4 D3],
                 special: false,
                 when: 'track',
-                tiles: [],
-                cost: 0,
+                tiles: FREE_LAY_TILES,
+                free: true,
+                connect: false,
               },
             ],
           },
@@ -235,8 +242,9 @@ module Engine
                 hexes: ['F7'],
                 special: false,
                 when: 'track',
-                tiles: [],
-                cost: 0,
+                tiles: FREE_LAY_TILES,
+                free: true,
+                connect: false,
               },
               {
                 type: 'hex_bonus',
