@@ -90,7 +90,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 100,
             rusts_on: '4',
-            num: 8,
+            num: 20,
             variants: [
               {
                 name: '1G',
@@ -154,7 +154,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 500,
-            num: 10,
+            num: 'unlimited',
             variants: [
               {
                 name: '4+2G',
@@ -170,7 +170,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 99, 'multiplier' => 2 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 750,
-            num: 10,
+            num: 'unlimited',
             available_on: '5',
             variants: [
               {
@@ -291,6 +291,19 @@ module Engine
           @convert_3s = false
         end
 
+        def game_trains
+          trains = super
+          names = trains.map { |t| t[:name] }
+          phase_five = names.index(self.class::PHASES.find { |p| p[:name] == '5' }[:on])
+          in_service = trains.reject { |t| t[:rusts_on] && names.index(t[:rusts_on]) <= phase_five }
+          trade_in = in_service.flat_map { |t| [t, *t[:variants]] }.to_h { |t| [t[:name], (t[:price].to_f / 4).floor] }
+          trains.map do |t|
+            next t unless in_service.include?(t)
+
+            t.merge(discount: trade_in, variants: t[:variants]&.map { |v| v.merge(discount: trade_in) })
+          end
+        end
+
         def init_train_handler
           depot = super
 
@@ -391,7 +404,7 @@ module Engine
           when '4'
             num_players
           else
-            train[:num]
+            super
           end
         end
 
