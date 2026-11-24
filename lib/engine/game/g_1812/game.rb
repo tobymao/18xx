@@ -97,7 +97,7 @@ module Engine
                 distance: [{ 'nodes' => %w[city offboard town], 'pay' => 1, 'visit' => 1 },
                            { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                 price: 90,
-                no_local: true, # runs port, city and mine, not a single-city local route
+                no_local: true,
               },
             ],
           },
@@ -474,9 +474,6 @@ module Engine
           { nodes: nodes, paths: paths, hexes: paths.map(&:hex), id: paths.map { |p| p.hex.id } }
         end
 
-        # Ports and mines never use up a train's count (rule 7.3.4); Durham and
-        # Doncaster's mine is still scored when their small city is skipped.
-        # Returns [free stops, small cities, large cities and off-boards].
         def counted_stops(route)
           free, counted = route.visited_stops.partition { |s| free_stop?(s) }
           [free, *counted.partition(&:town?)]
@@ -514,6 +511,7 @@ module Engine
           else
             raise GameError, 'Only goods trains can run to ports' if port
             raise GameError, 'Only goods trains can run to mines' unless mines.empty?
+            raise GameError, 'Non-G trains need two cities or off-boards' if route.visited_stops.count { |s| !s.town? } < 2
           end
         end
 
@@ -529,15 +527,26 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          revenue = super
           train = route.train
-          revenue += @north_south_bonus.route_revenue(@phase, train) if north_south?(stops)
-          revenue += @port_mine_bonus.route_revenue(@phase, train) if g_train?(train) && route_mines(route).any?
+          revenue = super + private_bonus_extra(route, stops)
+          revenue += @north_south_bonus.route_revenue(@phase, train) if north_south?(route, stops)
+          revenue += @port_mine_bonus.route_revenue(@phase, train) if g_train?(train)
           revenue
         end
 
-        def north_south?(stops)
-          ids = stops.map { |s| s.hex.id }
+        def private_bonus_extra(route, stops)
+          bonuses = route.corporation.companies.flat_map { |c| Array(abilities(c, :hex_bonus)) }
+          stops.sum do |stop|
+            extra = stop.revenue_multiplier(route.train) - 1
+            bonuses.sum { |a| a.hexes.include?(stop.hex.id) ? a.amount * extra : 0 }
+          end
+        end
+
+        def north_south?(route, stops)
+          ends = route.visited_stops.values_at(0, -1)
+          return false unless (ends - stops).empty?
+
+          ids = ends.map { |s| s.hex.id }
           ids.intersect?(self.class::NORTH_HEXES) && ids.intersect?(self.class::SOUTH_HEXES)
         end
 
