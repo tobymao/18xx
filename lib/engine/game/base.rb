@@ -880,6 +880,8 @@ module Engine
           auto_actions = []
           until (actions = round.auto_actions || []).empty?
             actions.each { |a| process_single_action(a) }
+            return self if @exception
+
             auto_actions.concat(actions)
           end
           if validate_auto_actions
