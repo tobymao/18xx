@@ -169,7 +169,8 @@ describe 'G18OE double town tiles (§11.1)' do
 
       def stubbed(train, *nodes)
         connection_data = nodes.each_cons(2).map { |l, r| { left: l, right: r, chain: { nodes: [l, r], paths: [] } } }
-        instance_double(Engine::Route, corporation: corp, phase: game.phase, train: train, connection_data: connection_data)
+        instance_double(Engine::Route, corporation: corp, phase: game.phase, train: train,
+                                       connection_data: connection_data, shared_cache: {}, router_cost: nil, routes: [])
       end
 
       it 'visits both halves of the double town' do

@@ -1599,6 +1599,10 @@ module Engine
         { city: nil, town: nil }
       end
 
+      def auto_router_connection_cost(_connection_data, _corporation)
+        0
+      end
+
       def route_links(_start_node, _end_node, _corporation)
         []
       end

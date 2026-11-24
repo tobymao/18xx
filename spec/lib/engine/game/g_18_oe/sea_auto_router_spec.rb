@@ -17,6 +17,40 @@ describe 'G18OE auto-router over sea (§11.3.4, §11.3.8)' do
 
   before { baltic! }
 
+  describe 'auto-router connection cost' do
+    it 'adds no cost to a connection without sea legs' do
+      route = explicit_route(three, city('J63'), town('K60'))
+
+      expect(game.auto_router_connection_cost(route.connection_data, corp)).to eq(0)
+    end
+
+    it 'charges a sea connection its sea distance' do
+      token!('I50', corp)
+      token!('I52', corp)
+      route = explicit_route(three, city('I50'), city('I52'))
+
+      expect(game.auto_router_connection_cost(route.connection_data, corp)).to eq(game.sea_distance(route))
+    end
+
+    it 'reduces the cost by the port authority pool' do
+      token!('I50', corp)
+      token!('I52', corp)
+      fund!(game, corp, 250)
+      game.buy_port_authority!(corp, :north_sea)
+      game.buy_port_authority!(corp, :mediterranean)
+      route = explicit_route(three, city('I50'), city('I52'))
+
+      expect(game.auto_router_connection_cost(route.connection_data, corp)).to eq(0)
+    end
+
+    it 'counts the connection cost when pruning stops' do
+      router = Engine::AutoRouter.new(game)
+
+      expect(router.too_many_stops?(2, 0, three, 1)).to be(false)
+      expect(router.too_many_stops?(2, 0, three, 2)).to be(true)
+    end
+  end
+
   it 'turns a yielded link into a pathless chain and keeps the route (core link assembly)' do
     token!('I50', corp)
     token!('I52', corp)
