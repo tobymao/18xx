@@ -304,15 +304,9 @@ module Engine
           @buyback_done  = {}  # corp_id => player entity (director who triggered buyback)
         end
 
-        # ---------------------------------------------------------------------------
-        # Bond (Schuldschein) state helpers.
-        # One buyback per corporation — ever. Director cannot sell shares while the
-        # bond is active. Outstanding bond at game end is the director's personal
-        # liability (deducted from cash score — see game-end step, PR 10b).
-        # The "Share Buy Back" penalty cert is tracked in @buyback_done and adds 1
-        # to the director's certificate count for the rest of the game.
-        # ---------------------------------------------------------------------------
-
+        # Bond (Schuldschein): one buyback per corporation, ever. Director cannot
+        # sell shares while the bond is active; outstanding bond at game end is
+        # the director's personal liability.
         def bond?(corporation)
           bond_amount(corporation).positive?
         end
@@ -331,8 +325,6 @@ module Engine
           (corporation.share_price.price * 5).ceil(-2)
         end
 
-        # Records the bond without executing cert transformation (PR 10b).
-        # Safe to call only once per corporation — subsequent calls are no-ops.
         def record_bond!(corporation)
           return if buyback_done?(corporation)
 
@@ -360,15 +352,9 @@ module Engine
           super + (@buyback_done || {}).values.count { |director| director == entity }
         end
 
-        # ---------------------------------------------------------------------------
-        # Share buyback cert transformation (PR 10b).
-        # All outstanding certs are halved:
-        #   20% → 10%,  10% → 5%,  30% → split into 10% + 5%
-        # A non-reissuable 50% treasury cert is created.
-        # share_percent drops to 5 and price_multiplier to 0.5 so prices scale
-        # proportionally (a 5% cert costs half of the current market price).
-        # Safe to call only once — guarded by buyback_done?.
-        # ---------------------------------------------------------------------------
+        # Halves every outstanding cert (20%→10%, 10%→5%, 30%→10%+5% split) and
+        # issues a non-reissuable 50% treasury cert, so a 5% cert costs half the
+        # current market price going forward.
         def halve_shares!(corporation)
           return if corporation.shares_of(corporation).any? { |s| s.percent == 50 && !s.buyable }
 
@@ -410,8 +396,6 @@ module Engine
           @log << "#{corporation.name}: all certs halved; 50% treasury cert created (non-reissuable)"
         end
 
-        # At game end: outstanding bonds become the issuing director's personal
-        # liability — deducted from their score via player.penalty.
         def end_game!(reason = nil)
           apply_bond_penalties!
           super
