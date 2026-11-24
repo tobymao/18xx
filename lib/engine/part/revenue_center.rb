@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../game_error'
 require_relative 'node'
 
 module Engine
@@ -20,8 +21,9 @@ module Engine
         @route = (opts[:route] || :mandatory).to_sym
       end
 
-      # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90"
-      # also possible to use something like  "I/II_30+yellow+green|III_40+brown|V_50+gray"
+      # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90",
+      # or keyed by phase name with optional box colors: "I/II_30+yellow+green|III_40+brown|V_50+gray".
+      # Phase-keyed revenue must list every phase of the game; see #route_base_revenue.
       def parse_revenue(revenue, format = nil)
         @phase_styles = nil
         @revenue =
@@ -30,17 +32,19 @@ module Engine
             render = {}
             styles = []
             revenue.split('|').each do |entry|
-              keys, _, value_and_colors = entry.rpartition('_')  # split on the LAST underscore
+              keys, _, value_and_colors = entry.rpartition('_')
               value, *colors = value_and_colors.split('+')
               value = value.to_i
-              colors = colors.map { |c| c.start_with?('#') ? c : c.to_sym }
-              phases = keys.split('/')
-              phases.each { |p| rev[p.to_sym] = value }
-              render[phases.first.to_sym] = format ? format % value : value
-              styles << { phase: phases.first.to_sym, label: keys, colors: colors } unless colors.empty?
+              phases = keys.split('/').map(&:to_sym)
+              phases.each { |p| rev[p] = value }
+              render[phases.first] = format ? format % value : value
+              next if colors.empty?
+
+              colors.map! { |c| c.start_with?('#') ? c : c.to_sym }
+              styles << { phase: phases.first, label: keys, colors: colors }
             end
             @revenue_to_render = render
-            @phase_styles = styles.empty? ? nil : styles
+            @phase_styles = styles unless styles.empty?
             rev
           else
             @revenue_to_render =
@@ -51,6 +55,7 @@ module Engine
               end
             self.class::PHASES.to_h { |phase| [phase, revenue.to_i] }
           end
+        @phase_keyed = @revenue.keys.any? { |k| !self.class::PHASES.include?(k) }
         tile&.revenue_changed
         @revenue
       end
@@ -65,12 +70,15 @@ module Engine
 
       def route_base_revenue(phase, train)
         return @revenue[:diesel] if train.name.upcase == 'D' && @revenue[:diesel]
-
-        by_name = @revenue[phase.name.to_sym]
-        return by_name if by_name
+        return phase_revenue(phase) if @phase_keyed
 
         phase.tiles.reverse_each { |color| return @revenue[color] if @revenue[color] }
         0
+      end
+
+      # A missing phase is a map definition error, so fail loudly instead of quietly paying 0.
+      def phase_revenue(phase)
+        @revenue.fetch(phase.name.to_sym) { raise GameError, "#{hex&.id} has no revenue for phase #{phase.name}" }
       end
 
       def revenue_multiplier(train)

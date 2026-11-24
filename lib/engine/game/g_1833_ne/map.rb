@@ -7,6 +7,9 @@ module Engine
         LAYOUT = :flat
         MINT = '#98ff98'
         TAN = '#d2b48c'
+        EARLY = '+yellow+green'
+        MID = "+#{MINT}+brown".freeze
+        LATE = "+#{TAN}".freeze
 
         TILES = {
           # yellow:
@@ -320,18 +323,17 @@ module Engine
             ['H25'] => 'city=revenue:20;city=revenue:30;path=a:3,b:_0;path=a:1,b:_1;path=a:5,b:_1',
           },
           red: {
-            ['A6'] => "offboard=revenue:I_10+yellow+green|III_30+#{MINT}+brown|V_10+#{TAN};path=a:5,b:_0",
-            ['A12'] => "offboard=revenue:I_40+yellow+green|III_70+#{MINT}+brown|V_80+#{TAN};path=a:4,b:_0",
+            ['A6'] => "offboard=revenue:I/II_10#{EARLY}|III/IV_30#{MID}|V_10#{LATE};path=a:5,b:_0",
+            ['A12'] => "offboard=revenue:I/II_40#{EARLY}|III/IV_70#{MID}|V_80#{LATE};path=a:4,b:_0",
             ['A18'] => 'border=edge:0;border=edge:4',
-            ['A20'] => "offboard=revenue:I_40+yellow+green|III_30+#{MINT}+brown|V_0+#{TAN};path=a:5,b:_0;border=edge:3",
-            ['A24'] => "offboard=revenue:I_10+yellow+green|III_40+#{MINT}+brown|V_30+#{TAN};path=a:5,b:_0",
-            ['A28'] => "offboard=revenue:I_0+yellow+green|III_20+#{MINT}+brown|V_90+#{TAN};path=a:4,b:_0",
-            ['B17'] => "offboard=revenue:I_30+yellow+green|III_50+#{MINT}+brown|V_40+#{TAN};path=a:0,b:_0;"\
+            ['A20'] => "offboard=revenue:I/II_40#{EARLY}|III/IV_30#{MID}|V_0#{LATE};path=a:5,b:_0;border=edge:3",
+            ['A24'] => "offboard=revenue:I/II_10#{EARLY}|III/IV_40#{MID}|V_30#{LATE};path=a:5,b:_0",
+            ['A28'] => "offboard=revenue:I/II_0#{EARLY}|III/IV_20#{MID}|V_90#{LATE};path=a:4,b:_0",
+            ['B17'] => "offboard=revenue:I/II_30#{EARLY}|III/IV_50#{MID}|V_40#{LATE};path=a:0,b:_0;"\
                        'path=a:3,b:_0;path=a:5,b:_0;border=edge:1',
             ['F1'] => 'path=a:0,b:5;border=edge:5',
-            ['G2'] => "offboard=revenue:I_30+yellow+green|III_20+#{MINT}+brown|V_0+#{TAN};"\
-                      'path=a:0,b:_0;path=a:2,b:_0;border=edge:2',
-            ['J11'] => "offboard=revenue:I_20+yellow+green|III_30+#{MINT}+brown|V_20+#{TAN};path=a:2,b:_0",
+            ['G2'] => "offboard=revenue:I/II_30#{EARLY}|III/IV_20#{MID}|V_0#{LATE};path=a:0,b:_0;path=a:2,b:_0;border=edge:2",
+            ['J11'] => "offboard=revenue:I/II_20#{EARLY}|III/IV_30#{MID}|V_20#{LATE};path=a:2,b:_0",
           },
           blue: {
             ['C28'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:3,b:_0;icon=image:port',
