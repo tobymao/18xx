@@ -94,23 +94,44 @@ describe 'G18OE patronage tiles (§2.9, §3.1, §9.1, §11.1.8)' do
     end
   end
 
-  context 'when a minor places its home token on a patronage city (designer ruling over §9.1)' do
-    it 'removes the tile without paying anyone' do
+  context 'when a minor places its home token on a patronage city (§9.1)' do
+    def float_minor_at!(game, hex_id)
       round = enter_round!(game, game.stock_round)
       player = round.current_entity
       minor = game.corporation_by_id('A')
       give_company!(player, game.company_by_id('A'))
       fund!(game, minor, 120)
-      game.place_patronage_tile!('V27')
+      game.place_patronage_tile!(hex_id)
       price = round.active_step.get_par_prices(player, minor).first
       act!(round, Engine::Action::Par.new(player, corporation: minor, share_price: price))
-      city = game.hex_by_id('V27').tile.cities.first
+      [minor, round, game.hex_by_id(hex_id).tile.cities.first]
+    end
 
-      expect { act!(round, Engine::Action::PlaceToken.new(minor, city: city, slot: 0)) }.to change { minor.cash }.by(-20)
+    it 'pays the lowest printed payout to the minor and removes the tile' do
+      minor, round, city = float_minor_at!(game, 'V27')
+
+      # Toulouse pays 20; the home token costs 20, so the treasury is unchanged overall.
+      expect { act!(round, Engine::Action::PlaceToken.new(minor, city: city, slot: 0)) }.not_to(change { minor.cash })
 
       expect(patronage(game, 'V27')).to be_nil
-      expect(game.log.map(&:message)).to include('The Toulouse patronage tile is removed')
+      expect(game.log.map(&:message)).to include('A fulfills the Toulouse patronage tile and receives £20')
       expect { game.fulfill_patronage!(minor, game.hex_by_id('V27')) }.not_to(change { minor.cash })
+    end
+
+    it 'pays the lowest printed value, not the current Track Phase colour' do
+      minor, round, city = float_minor_at!(game, 'V27')
+      allow(game.phase).to receive(:tiles).and_return([:brown])
+
+      expect { act!(round, Engine::Action::PlaceToken.new(minor, city: city, slot: 0)) }.not_to(change { minor.cash })
+      expect(game.log.map(&:message)).to include('A fulfills the Toulouse patronage tile and receives £20')
+    end
+
+    it 'uses the tile’s own lowest value, which can exceed the home token cost' do
+      minor, round, city = float_minor_at!(game, 'T69')
+
+      # Klausenburg pays 60; the AH home token costs 20, so the treasury gains 40.
+      expect { act!(round, Engine::Action::PlaceToken.new(minor, city: city, slot: 0)) }.to change { minor.cash }.by(40)
+      expect(game.log.map(&:message)).to include('A fulfills the Klausenburg patronage tile and receives £60')
     end
   end
 end

@@ -780,11 +780,11 @@ module Engine
           payouts
         end
 
-        def fulfill_patronage!(entity, hex)
+        def fulfill_patronage!(entity, hex, lowest: false)
           payouts = remove_patronage!(hex)
           return unless payouts
 
-          amount = payouts[patronage_color]
+          amount = lowest ? payouts.values.min : payouts[patronage_color]
           @bank.spend(amount, entity)
           @log << "#{entity.name} fulfills the #{hex.location_name} patronage tile and receives #{format_currency(amount)}"
         end
