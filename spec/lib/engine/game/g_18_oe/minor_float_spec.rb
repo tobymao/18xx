@@ -74,6 +74,7 @@ describe 'G18OE floating minors (§9.1)' do
   end
 
   it 'charges the home token at the track rights chit cost (Table 1)' do
+    game.hexes.each { |hex| hex.tile.patronage = nil }
     costs = { 'UK' => 40, 'PHS' => 40, 'FR' => 20, 'AH' => 20, 'IT' => 10, 'SP' => 10, 'SC' => 10, 'RU' => 10 }
     paid = costs.keys.to_h { |zone| [zone, 120 - float_in!(zone).cash] }
 

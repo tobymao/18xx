@@ -21,9 +21,9 @@ module Engine
 
             super
 
-            return if !minor || !@game.remove_patronage!(hex)
+            return unless minor
 
-            @game.log << "The #{hex.location_name} patronage tile is removed"
+            @game.fulfill_patronage!(action.entity, hex, lowest: true)
           end
         end
       end
