@@ -35,6 +35,8 @@ describe 'G18OE Wien Südbahnhof (§14.3)' do
   context 'with a major' do
     let!(:lnwr) { start_major!(game, 'LNWR', owner) }
 
+    before { game.minor_merged }
+
     it "offers WS a place token action in a controlled RR's Place Token step" do
       round = token_round!(lnwr)
       expect(special_token(round).actions(ws)).to eq(['place_token'])

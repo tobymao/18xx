@@ -104,6 +104,16 @@ require_relative 'helpers'
       expect { step.process_choose(Engine::Action::Choose.new(major, choice: minor.id)) }.to raise_error(Engine::GameError)
     end
 
+    it 'releases majors when a major buys an abandoned minor (R2)' do
+      market_shares!
+      minor = abandon_minor!
+      expect(game.majors_track_rights_restricted?).to be(true)
+
+      step.process_choose(Engine::Action::Choose.new(major, choice: minor.id))
+
+      expect(game.majors_track_rights_restricted?).to be(false)
+    end
+
     it 'resets the transaction direction for the next operator' do
       market_shares!
       buy_share!

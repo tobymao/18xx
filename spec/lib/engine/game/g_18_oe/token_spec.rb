@@ -32,9 +32,11 @@ describe 'G18OE place token (§11.2)' do
     expect { check(corp('SB'), 'O52') }.to raise_error(Engine::GameError, /outside .* track rights zone/)
   end
 
-  it 'lets a major token outside its home zone' do
+  it 'keeps a major token inside its zone until the first merger (errata 13)' do
     major = start_major!(game, 'LNWR', game.players.first)
 
+    expect { check(major, 'Q30') }.to raise_error(Engine::GameError, /outside .* track rights zone/)
+    game.minor_merged
     expect { check(major, 'Q30') }.to raise_error(Engine::GameError, /not connected/)
   end
 

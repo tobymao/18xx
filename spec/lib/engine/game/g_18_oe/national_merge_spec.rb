@@ -40,6 +40,16 @@ describe 'G18OE merging a minor into a national (§10.5)' do
     city
   end
 
+  it 'releases majors when a minor merges into a national (R1)' do
+    national
+    minor
+    expect(game.majors_track_rights_restricted?).to be(true)
+
+    merge!
+
+    expect(game.majors_track_rights_restricted?).to be(false)
+  end
+
   it 'lists a national the player presides as a target (§10.5)' do
     national
     expect(game.merge_targets(player, minor)).to eq([national])

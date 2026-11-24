@@ -544,6 +544,7 @@ module Engine
           @merged_minors = Hash.new { |hash, corporation| hash[corporation] = [] }
           @minor_charter_assets = {}
           @removed_regionals = []
+          @majors_track_rights_restricted = true
           @removed_regional_zones = []
           @orient_express_markers = []
           @swift_metropolitan_train = nil
@@ -933,8 +934,19 @@ module Engine
           floated_minors_and_regionals + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
         end
 
+        def majors_track_rights_restricted?
+          @majors_track_rights_restricted
+        end
+
+        def minor_merged
+          return unless @majors_track_rights_restricted
+
+          @majors_track_rights_restricted = false
+          @log << '-- Event: Majors are no longer restricted to their track rights zones --'
+        end
+
         def hex_within_national_region?(entity, hex)
-          return true if entity.type == :major
+          return true if entity.type == :major && !majors_track_rights_restricted?
 
           region = self.class::CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
           hexes = self.class::NATIONAL_REGION_HEXES[region]
@@ -942,7 +954,7 @@ module Engine
         end
 
         def city_in_track_rights?(entity, hex)
-          return true if entity.type == :major
+          return true if entity.type == :major && !majors_track_rights_restricted?
 
           region_for_hex(hex) == entity_track_rights_zone(entity)
         end

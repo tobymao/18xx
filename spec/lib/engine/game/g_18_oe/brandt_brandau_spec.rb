@@ -12,7 +12,10 @@ describe 'G18OE Brandt & Brandau, Engineers (§14.9)' do
   let(:lnwr) { start_major!(game, 'LNWR', player) }
   let(:hex) { game.hex_by_id('J23') }
 
-  before { give_company!(player, bbe) }
+  before do
+    game.minor_merged
+    give_company!(player, bbe)
+  end
 
   def operating_round_for(entity)
     round = enter_round!(game, game.operating_round(1))

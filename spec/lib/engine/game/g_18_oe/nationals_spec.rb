@@ -67,6 +67,18 @@ describe 'G18OE Nationals' do
   describe '#form_national!' do
     let(:major) { fund!(game, start_major!(game, 'LNWR', player), 500) }
 
+    it 'keeps majors released after a national abandons their merged minors (R3)' do
+      other = start_major!(game, 'PLM', game.players.last)
+      minor = start_minor!(game, 'K', player, 'UK')
+      game.add_minor_charter!(minor, major)
+      game.minor_merged
+
+      game.form_national!(major)
+
+      expect(game.majors_track_rights_restricted?).to be(false)
+      expect(game.hex_within_national_region?(other, game.hex_by_id('J29'))).to be(true)
+    end
+
     it 'pays the treasury cash to the bank' do
       major
       bank_cash = game.bank.cash

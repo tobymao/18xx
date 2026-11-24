@@ -30,6 +30,22 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     expect(phase_two_round.active_step.can_merge_any?(phase_two_player)).to be(false)
   end
 
+  it 'releases every major from track rights on the first merger, logging once (errata 11)' do
+    major
+    minor
+    other = start_major!(game, 'PLM', game.players.last)
+    expect(game.majors_track_rights_restricted?).to be(true)
+    expect(game.hex_within_national_region?(other, game.hex_by_id('J29'))).to be(false)
+
+    act!(round, Engine::Action::Choose.new(player, choice: minor.id))
+    act!(round, Engine::Action::Merge.new(minor, corporation: major))
+
+    expect(game.hex_within_national_region?(other, game.hex_by_id('J29'))).to be(true)
+    game.minor_merged
+    event = '-- Event: Majors are no longer restricted to their track rights zones --'
+    expect(game.log.count { |e| e.message == event }).to eq(1)
+  end
+
   it 'offers to merge a minor into a major the player presides from Train Phase 3 (§10.5)' do
     major
     expect(game.merge_targets(player, minor)).to eq([major])
