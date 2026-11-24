@@ -15,6 +15,7 @@ require_relative 'step/track'
 require_relative 'step/home_token'
 require_relative 'step/token'
 require_relative 'step/exchange'
+require_relative 'step/special_choose'
 require_relative 'step/buy_cert'
 require_relative 'step/dividend'
 require_relative 'step/special_track'
@@ -44,6 +45,8 @@ module Engine
         EBUY_CAN_SELL_SHARES = false
 
         CONVOY = 'PCO'
+
+        FACTION_CHOICE = 'faction'
 
         TILE_LAYS = [
           { lay: true, upgrade: true },
@@ -451,6 +454,14 @@ module Engine
           @pending_faction_choices = []
           @pending_influence_queue = []
           @deferred_turmoil = false
+
+          setup_use_influence
+        end
+
+        def setup_use_influence
+          @use_influence = Engine::Company.new(**self.class::USE_INFLUENCE_COMPANY)
+          @companies << @use_influence
+          update_cache(:companies)
         end
 
         # Factions are not capitalized: founding one pays nothing into its Treasury
@@ -594,6 +605,11 @@ module Engine
           corporation_influence(corporation).fetch(faction_sym, 0)
         end
 
+        def add_corporation_influence!(corporation, faction_sym)
+          @corporation_influence[corporation.id] ||= {}
+          @corporation_influence[corporation.id][faction_sym] = corporation_influence_for(corporation, faction_sym) + 1
+        end
+
         def corporation_influence_limit
           self.class::CORPORATION_INFLUENCE_LIMITS[@phase.name]
         end
@@ -614,6 +630,66 @@ module Engine
 
           @player_influence[player.id] += 1
           @log << "#{player.name} receives 1 Influence from #{company.name}"
+          @use_influence.owner = player
+          player.companies << @use_influence unless player.companies.include?(@use_influence)
+        end
+
+        def use_influence?(company)
+          company == @use_influence
+        end
+
+        def use_influence_choices(player)
+          return {} unless player_influence(player).positive?
+
+          choices = {}
+          corporations.select { |c| c.owner == player && c.type != :faction }.each do |corporation|
+            corporation_factions(corporation).each do |faction|
+              next unless within_influence_limit?(corporation, faction)
+
+              choices["#{corporation.id}:#{faction}"] = "#{corporation.name} → #{faction_display_name(faction)}"
+            end
+          end
+          factions.select { |f| f.owner == player && faction_influence(f.id) < faction_influence_limit }
+                  .each { |faction| choices["#{self.class::FACTION_CHOICE}:#{faction.id}"] = faction.name }
+          choices
+        end
+
+        def use_player_influence!(player, choice)
+          target, faction = choice.split(':')
+          spend_player_influence!(player)
+
+          if target == self.class::FACTION_CHOICE
+            faction_influence_gain(faction)
+            @log << "#{player.name} allocates Influence directly to #{faction_display_name(faction)}"
+          else
+            corporation = corporation_by_id(target)
+            add_corporation_influence!(corporation, faction)
+            @log << "#{player.name} allocates Influence to #{corporation.name} (#{faction_display_name(faction)})"
+          end
+        end
+
+        def spend_player_influence!(player)
+          @player_influence[player.id] -= 1
+          return if @player_influence[player.id].positive?
+
+          @use_influence.close!
+        end
+
+        def num_certs(entity)
+          super - entity.companies.count { |c| use_influence?(c) }
+        end
+
+        def companies_sort(companies)
+          super.reject { |c| use_influence?(c) }
+        end
+
+        def entity_can_use_company?(entity, company)
+          return super unless use_influence?(company)
+
+          current = @round.current_entity
+          return false unless (current&.player? ? current : current&.owner) == company.owner
+
+          !use_influence_choices(company.owner).empty?
         end
 
         def player_influence(player)
@@ -634,6 +710,7 @@ module Engine
             GFrost1831::Step::ChooseInfluence,
             GFrost1831::Step::HomeToken,
             GFrost1831::Step::Exchange,
+            GFrost1831::Step::SpecialChoose,
             GFrost1831::Step::BuySellParShares,
           ])
         end
@@ -649,6 +726,7 @@ module Engine
             Engine::Step::Bankrupt,
             GFrost1831::Step::HomeToken,
             GFrost1831::Step::ChooseInfluence,
+            GFrost1831::Step::SpecialChoose,
             GFrost1831::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             GFrost1831::Step::Track,

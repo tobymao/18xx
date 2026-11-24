@@ -186,6 +186,18 @@ module Engine
         ].freeze
 
         # Rules 1.2
+        USE_INFLUENCE_COMPANY = {
+          sym: 'INF',
+          name: 'Use Influence',
+          value: 0,
+          revenue: 0,
+          desc: 'Allocates 1 Influence to a Corporation or Faction where the player is President, '\
+                'without moving the Government Marker.',
+          abilities: [{ type: 'choose_ability', owner_type: 'player', when: 'any', choices: %w[allocate_influence] },
+                      { type: 'no_buy' },
+                      { type: 'close', on_phase: 'never' }],
+        }.freeze
+
         FACTIONS = [
           {
             float_percent: 40,
