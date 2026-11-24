@@ -4,28 +4,14 @@ module Engine
   module Game
     module G2038
       module Map
-        # Our tiles carry no functional track: hex-to-hex adjacency is purely
-        # geometric (`Game::Base#connect_hexes` builds `hex.neighbors` from
-        # grid coordinates alone; see `Game#hexes_in_range`/`Step::Route`,
-        # which never inspect a tile's paths). A single-city tile centers
-        # itself automatically with no path at all (`Tile#compute_city_town_edges`).
-        #
-        # The one exception: a double-mine tile's two cities need a cosmetic-
-        # only link between them (no edge connection) so each city's `loc:`
-        # -- and therefore the random rotation `Game#explore_hex!` applies for
-        # visual variety -- is actually respected. Without any path at all,
-        # the engine's default path-less-multi-city placement kicks in
-        # instead, which ignores rotation entirely.
+        # Not a real track connection -- this game has none (see
+        # IMPASSABLE_HEX_COLORS). Exists only so a double-mine tile's two
+        # cities respect rotation.
         MINE_LINK = 'path=a:_0,b:_1,track:thin'
 
-        # Note that many elements here have defined color attributes, but those
-        # attributes are not actually displayed on the screen.  Instead, we have
-        # custom rendering logic in /18xx/assets/app/view/game/hex_g2038.rb which
-        # renders the custom starfield and icon images used in this game.
+        # 'color' here is not rendered -- view/game/hex_g2038.rb draws the
+        # starfield/icon art instead.
 
-        # Mine city revenue: displayed value is the UNCLAIMED value; the claimed
-        # value (paid only to the claim owner) lives in MINE_DATA and is applied
-        # by the pickup logic, not by the tile.
         TILES = {
           # Single-mine N tiles
           '2001' => {
@@ -166,8 +152,6 @@ module Engine
             # city1 unclaimed 30/claimed 60, city2 unclaimed 40/claimed 50
             'code' => "city=revenue:30,loc:0;city=revenue:40,loc:3;#{MINE_LINK}",
           },
-          # Gray base tile - placed when a corporation establishes a base on an explored asteroid.
-          # The city slot holds the base token; revenue is tracked via corporation base mechanics.
           '2023' => {
             'count' => 'unlimited',
             'color' => 'gray',
@@ -193,34 +177,10 @@ module Engine
 
         HEXES = {
           gray40: {
-            # Transshipment points -- phase-scaled dual-value revenue
-            # (§8: A13/D2/O11 go $30 -> $60, H18 goes $20 -> $70 once gray
-            # tiles unlock) rendered as a standard off-board box, one
-            # colored box per phase value, same convention every other
-            # 18xx game uses for red off-board areas -- rather than a
-            # single mine-style circle showing only the current value.
-            # H10 also doubles as the Asteroid League's home hex, so it
-            # keeps its own zero-revenue city (for AL's home token) on the
-            # same hex, alongside the offboard part that actually carries
-            # the transshipment value; the other four have no city at all.
-            # H10 pays a flat $30 that drops to $0 once gray tiles unlock
-            # at Phase 4.
-
-            # The AL is always formed by Phase 4 (asteroid_league_must_form is a
-            # Phase 4 event), and its own base replaces this transshipment
-            # point the moment AL forms (Game#transshipment_hex?'s
-            # existing @asteroid_league_formed check already stops paying
-            # it out in the revenue logic regardless of what the tile
-            # displays). Ideally this would show no gray box at all rather than a $0 one, but
-            # a bare integer (no phase-color key at all) renders through a
-            # different view component (Part::SingleRevenue, generic
-            # small-item placement) instead of Part::MultiRevenue's
-            # dedicated off-board box position, which collided with (and
-            # rendered behind) H10's own city part for AL's home token --
-            # found live in browser as the $30 box vanishing entirely. A
-            # zero-value gray key keeps the working MultiRevenue rendering
-            # path while still being accurate (nothing is ever actually
-            # paid there once gray phase arrives).
+            # H10 also holds the Asteroid League's home token city. Its
+            # `gray_0` (rather than omitting the gray key) is required --
+            # a bare integer routes through Part::SingleRevenue instead of
+            # MultiRevenue's off-board slot, colliding with that city part.
             %w[A13 D2 O11] => 'offboard=revenue:yellow_30|gray_60',
             %w[H18] => 'offboard=revenue:yellow_20|gray_70',
             %w[H10] => 'city=revenue:0;offboard=revenue:yellow_30|gray_0',
@@ -241,17 +201,9 @@ module Engine
 
         LAYOUT = :pointy
 
-        # Gray hexes that serve as delivery destinations (transshipment points).
         TRANSSHIPMENT_HEXES = %w[A13 D2 H10 O11 H18].freeze
 
-        # Maps each asteroid tile number to its mine definitions.
-        # Each entry is an array of hashes (one per mine), ordered to match
-        # the city= declarations in the tile code (city 0, city 1, ...).
-        # `claimed:` is data for the claims feature (bases/refueling/claims
-        # infrastructure), not yet implemented in this PR -- it's defined
-        # here alongside `unclaimed:` now rather than added piecemeal later,
-        # since both values are fixed game data from the same rules table,
-        # but nothing reads `claimed:` until that follow-up PR lands.
+        # Ordered to match the tile code's city= declarations.
         MINE_DATA = {
           '2001' => [{ ore: :n, unclaimed: 10, claimed: 50 }],
           '2002' => [{ ore: :n, unclaimed: 20, claimed: 60 }],

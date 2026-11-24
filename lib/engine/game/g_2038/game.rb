@@ -25,18 +25,9 @@ module Engine
         SELL_AFTER = :p_any_operate
         CURRENCY_FORMAT_STR = '$%s'
 
-        # Every tile carries no functional track at all (a single-city
-        # tile centers itself automatically with no path needed; see
-        # map.rb's own comment on MINE_LINK for the one, purely cosmetic,
-        # exception) -- hex-to-hex adjacency is purely geometric
-        # (Game::Base#connect_hexes builds hex.neighbors from grid
-        # coordinates alone; Step::Route never inspects a tile's paths).
-        # The base engine's IMPASSABLE_HEX_COLORS default (blue/gray/red)
-        # treats a hex as impassable *unless* its tile has a path pointing
-        # back at the neighbor (Hex#targeting?) -- with zero paths
-        # anywhere, every blue/gray hex would otherwise silently lose all
-        # its neighbor connections. There's no genuinely impassable
-        # terrain in this game.
+        # Without this, every blue/gray hex is impassable by default -- the
+        # base engine's check requires a tile path back at the neighbor,
+        # and tiles here carry no path data at all.
         IMPASSABLE_HEX_COLORS = [].freeze
 
         BANK_CASH = 10_000
@@ -117,9 +108,8 @@ module Engine
           },
         ].freeze
 
-        # Spaceship names are movement/cargo_holds (e.g. '3/2' = 3 MP, 2 cargo holds),
-        # matching the physical spaceship card naming. cargo_holds: is stored in
-        # Train#@opts by the base engine; a custom Train subclass will expose it properly.
+        # `cargo_holds:` lands in Train#@opts via the base engine; a custom
+        # Train subclass will expose it properly.
         TRAINS = [
           {
             name: 'probe',
@@ -378,11 +368,6 @@ module Engine
           @optional_rules&.include?(:optional_variant_start_pack)
         end
 
-        # Reset the Used Mine markers at the end of every OR -- a claimed/
-        # used distinction doesn't exist yet in this PR (no claims step),
-        # so this is currently a no-op in practice, but it's the correct,
-        # already-anticipated hook for the claims PR that adds mine[:used]
-        # tracking.
         def or_round_finished
           @mine_state.each_value do |state|
             state[:mines].each { |mine| mine[:used] = false }
@@ -415,52 +400,27 @@ module Engine
           "#{route_distance(route)}H"
         end
 
-        # A hex counts as a deliverable destination if it is a transshipment
-        # point or contains any placed base token (any company/corp).
         def deliverable_destination?(hex)
           return true if TRANSSHIPMENT_HEXES.include?(hex.id)
 
           hex_has_base?(hex)
         end
 
-        # Shared by deliverable_destination? and (the not-yet-built)
-        # can_place_station? -- both need "does this hex have a placed
-        # base token (any company/corp)." `city.tokens` is an array of
-        # token SLOTS, not placed tokens -- an unfilled slot holds `nil`
-        # rather than being absent from the array, so `!tokens.empty?`
-        # alone would be true even for an empty slot; `tokens.compact.
-        # empty?` is the real "is anything actually placed here" check.
+        # An unfilled token slot is `nil`, not absent -- `.compact` first.
         def hex_has_base?(hex)
           hex.tile.cities.any? { |c| !c.tokens.compact.empty? }
         end
 
         EXPLORATION_BONUS = 10
 
-        # `pay:` is false while G2038::Step::Route is still building a route
-        # locally, unsubmitted (see Step::Route#local_choose!/@committing) --
-        # the corp can't do anything with the bonus until the route step
-        # ends anyway, so there's no need to move real cash (and log it)
-        # for a flight that might still be discarded before it's ever
-        # submitted. The real payment happens once, when the submitted
-        # choice is actually replayed (live or on reload) with `pay: true`.
         def explore_hex!(hex_id, entity, pay: true)
           hex = hex_by_id(hex_id)
           tile_name = @hex_assignments[hex_id]
 
           mines =
             if tile_name && (tile = @tiles.find { |t| t.name == tile_name && !t.hex })
-              # Random rotation (deterministic via the engine's seeded rand,
-              # not Kernel#rand) so identically-typed mine tiles don't all
-              # look the same way round -- purely cosmetic, tiles are
-              # topologically symmetric under any rotation.
-              tile.rotate!(rand % 6)
+              tile.rotate!(rand % 6) # seeded rand, not Kernel#rand -- replay must match
               hex.lay(tile)
-              # Not update_tile_lists -- that's built for a normal upgrade
-              # (new tile drawn from the pool, old one returned to it), but
-              # a revealed mine tile never goes back into circulation. Just
-              # remove it, so the Tile Manifest's count reflects what's
-              # left un-revealed (Step::Route#rollback_local_flight!
-              # reverses this if the exploring flight gets discarded).
               @tiles.delete(tile)
               MINE_DATA.fetch(tile_name, [])
             else
@@ -473,21 +433,16 @@ module Engine
 
           return unless pay
 
-          # TODO(Probe PR): while TSI hasn't floated yet, this bonus goes
-          # to the owner of the ST private (who is flying the Probe), not
-          # to TSI's treasury (§6) -- deferred until the Probe is wired up.
+          # TODO(Probe PR): while TSI hasn't floated, this bonus should go
+          # to the ST private's owner (§6), not TSI's treasury.
           bank.spend(EXPLORATION_BONUS, entity)
           mine_count = mines.size
           @log << "#{entity.name} explores #{hex_id}: #{mine_count} #{mine_count == 1 ? 'mine' : 'mines'} found; "\
                   "#{entity.name} receives #{format_currency(EXPLORATION_BONUS)}"
         end
 
-        # Revenue for a completed run. No pickup mechanic exists yet in
-        # this PR (deferred to the claims/infrastructure PR), so the only
-        # cargo a route can ever carry is a transshipment credit --
-        # ending at a transshipment point with an EMPTY hold earns its
-        # printed value instead (§7.1). Note that trace.size == 1 means
-        # the ship has launched but not left the starting hex yet.
+        # §7.1: an empty hold ending at a transshipment point earns its
+        # printed value.
         def trace_revenue(_entity, ship, trace, cargo)
           return 0 if ship.name == 'Probe' || trace.size < 2
           return 0 unless deliverable_destination?(trace.last)
@@ -495,20 +450,7 @@ module Engine
           cargo.sum { |c| c[:value] }
         end
 
-        # A transshipment point's printed value works like a mine with
-        # unlimited availability (no "used" marker, any ship any number of
-        # times) -- but unlike an ore pickup, collecting it is never
-        # automatic: it requires an explicit click on the hex (see
-        # Step::Route#transshipment_choice/pick_up_transshipment!, the
-        # latter's own comment on why -- the rules permit ending a flight
-        # at a transshipment point without collecting there), and choosing
-        # to collect ends the ship's flight immediately.
-        # Phase-scaled values (§8): A13/D2/H10/O11 go $30 -> $60 and H18
-        # goes $20 -> $70 once gray tiles unlock at Phase 4 -- already
-        # handled for free by the standard route_revenue(phase, train)
-        # mechanism, since map.rb's tile codes for these hexes are already
-        # `yellow_X|gray_Y`. Rendered as an offboard part (not a city) so
-        # the standard off-board box display shows both values.
+        # §8 phase-scaled values.
         def transshipment_value(hex, ship)
           hex.tile.offboards.sum { |o| o.route_revenue(@phase, ship) }
         end
@@ -521,22 +463,6 @@ module Engine
           ship.distance
         end
 
-        # Plain BFS shortest-hop tree from `start`, ignoring MP entirely
-        # (1 MP per hop, unconstrained) -- memoized per source hex for the
-        # life of this game. The underlying hex-adjacency graph (which
-        # hexes are real vs. .empty, and which are neighbors) never
-        # changes over a game, only what's explored/placed on top of it
-        # does, so this exact same walk from a given source hex would
-        # otherwise get recomputed byte-for-byte identically every time
-        # it's asked for. Shared by Step::Route#plain_shortest_paths.
-        #
-        # Returns [dist, predecessor]: dist is {hex_id => hop count},
-        # predecessor is {hex_id => the hex reached just before it} for
-        # every hex reachable from start (excluding start itself).
-        # Read/write access to the seeded LCG's own state (a single integer
-        # -- see Game::Base#rand/#initialize_seed), so Step::Route can
-        # snapshot it before a local, unsubmitted flight consumes
-        # randomness and rewind precisely on discard.
         def rand_state
           @rand
         end
@@ -545,6 +471,7 @@ module Engine
           @rand = value
         end
 
+        # Memoized: the adjacency graph never changes over a game.
         def hex_bfs(start)
           @hex_bfs_cache ||= {}
           return @hex_bfs_cache[start.id] if @hex_bfs_cache.key?(start.id)
@@ -567,11 +494,6 @@ module Engine
           @hex_bfs_cache[start.id] = [dist, predecessor]
         end
 
-        # Pre-assign an asteroid tile to every blue space hex (Decision D,
-        # ROADMAP.md). Derived deterministically from the game seed via
-        # the engine's LCG rand, so every clone/undo rebuilds the identical
-        # assignment without storing it in the action history. Never
-        # revealed to clients until explored.
         def assign_exploration_tiles
           hex_ids = HEXES[:blue].keys.flatten.sort
 
@@ -580,7 +502,7 @@ module Engine
             TILES[name]['count'].times { pool << name }
           end
 
-          @hex_assignments = hex_ids.zip(pool.sort_by { rand }).to_h
+          @hex_assignments = hex_ids.zip(pool.sort_by { rand }).to_h # seeded rand -- deterministic
         end
       end
     end

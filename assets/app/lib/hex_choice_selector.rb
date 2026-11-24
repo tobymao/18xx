@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 module Lib
-  # Client-side staging object for a popup of labeled choices anchored to a
-  # hex -- the third selector alongside Lib::TileSelector and
-  # Lib::TokenSelector. A step opts in via `hex_choices(entity, hex)`.
+  # A step opts in via `hex_choices(entity, hex)`.
   class HexChoiceSelector
     attr_reader :entity, :hex, :choices, :x, :y, :role
 

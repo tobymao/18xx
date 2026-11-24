@@ -6,10 +6,7 @@ require 'view/game/actionable'
 
 module View
   module Game
-    # Hex-anchored popup of staged choices, fanned radially around the hex
-    # (Lib::RadialSelector) with Cancel at its center -- the third selector
-    # alongside TileSelector and TokenSelector. A choice value is currently
-    # always a text label; see render_choice to extend it.
+    # The third hex-anchored selector, alongside TileSelector and TokenSelector.
     class HexChoiceSelector < Snabberb::Component
       include Actionable
       include Lib::RadialSelector
@@ -25,13 +22,9 @@ module View
       EDGE_MARGIN = 260
       BOTTOM_EDGE_MARGIN = 220
 
-      # Fan radius at 1x zoom for short labels -- grows per-popup (see
-      # fan_distance) when a longer label needs more room.
       BASE_DISTANCE = 55
 
-      # Rough per-character width estimate at 1x zoom/font-size -- not real
-      # text measurement (unavailable without a DOM layout pass), just
-      # enough to keep a long label and Cancel from overlapping.
+      # Approximate -- no DOM layout pass is available to measure real text.
       CHAR_WIDTH = 7
       CANCEL_HALF_WIDTH = 15
       MIN_GAP = 10
@@ -40,19 +33,11 @@ module View
       BASE_PAD_V = 4
       BASE_PAD_H = 8
 
-      # Caps the spread between adjacent choices when the fan is already
-      # constrained to a half/quarter circle (near a map edge) -- without
-      # it, list_coordinates' own angle stretch doubles a 2-choice
-      # half-circle fan into a full circle, landing them diametrically
-      # opposite instead of together. Never applied to a full, unconstrained
-      # circle (the middle-of-map case): list_coordinates' stretch is a
-      # no-op there already (only triggers below 360), and choices should
-      # spread around the whole hex, not bunch into an arbitrary slice.
+      # Without this cap, list_coordinates' own angle-stretch would double a
+      # 2-choice half-circle fan into a full circle (see its `angle *=`
+      # line), landing choices diametrically opposite instead of together.
       MAX_ANGLE_PER_CHOICE = 70
 
-      # Estimates how far a popup's longest text label (ignoring tile/claim
-      # choices, which have their own fixed sizes) needs to sit from the
-      # hex's center so it doesn't overlap Cancel, sitting at that center.
       def fan_distance
         longest = @tile_selector.choices.values.grep(String).map(&:length).max.to_i
         return BASE_DISTANCE if longest.zero?
@@ -106,8 +91,6 @@ module View
           })
       end
 
-      # Anchored at (left, bottom), centered on that point regardless of
-      # the button's own rendered size.
       def fanned_style(left, bottom)
         {
           position: 'absolute',

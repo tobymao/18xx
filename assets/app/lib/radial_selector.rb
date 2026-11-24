@@ -5,10 +5,6 @@ module Lib
     DROP_SHADOW_SIZE = 5
     FULL_CIRCLE = 360
 
-    # Opens a fan away from whichever map edge(s) are too close for it to
-    # render at full size -- a full circle when none are, a half circle
-    # when near one edge, a quarter circle in a corner -- then rotates
-    # that fan to point back toward the center of the viewport.
     def calc_angle_rotation(left, right, top, bottom)
       angle = case [left, right, top, bottom].count(true)
               when 0 # center
@@ -31,9 +27,6 @@ module Lib
       [angle, rotation]
     end
 
-    # item -> [item,x,y]
-    # angle = opening angle for tile fan
-    # rotate counterclockwise by rotation degrees
     def list_coordinates(list, distance, offset, angle = 360, rotation = 0)
       angle = angle * list.size / (list.size - 1) if angle < 360 && list.size > 1
       theta = angle / list.size * Math::PI / 180
@@ -55,7 +48,6 @@ module Lib
         height: "#{size}px",
         filter: "drop-shadow(#{DROP_SHADOW_SIZE}px #{DROP_SHADOW_SIZE}px 2px #555)",
         pointerEvents: 'auto',
-        # set z-index to ensure that these tiles appear at the topmost level.
         'z-index': '1',
       }
     end
