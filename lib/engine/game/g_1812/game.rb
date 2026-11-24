@@ -202,8 +202,8 @@ module Engine
           G1867::Round::Operating.new(self, [
             Engine::Step::BuyCompany,
             G1867::Step::RedeemShares,
-            Engine::Step::SpecialTrack,
-            G1867::Step::Track,
+            G1812::Step::SpecialTrack,
+            G1812::Step::Track,
             G1867::Step::Token,
             Engine::Step::Route,
             G1867::Step::Dividend,
@@ -216,19 +216,10 @@ module Engine
           ], round_num: round_num)
         end
 
-        def action_processed(action)
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
+          return false if selected_company && to.color != :yellow
+
           super
-          return unless action.is_a?(Action::LayTile)
-
-          hex_id = action.hex.id
-          @companies.each do |company|
-            laid = company.all_abilities.select { |a| a.type == :tile_lay && a.hexes.include?(hex_id) && all_laid?(a.hexes) }
-            laid.each { |a| company.remove_ability(a) }
-          end
-        end
-
-        def all_laid?(hex_ids)
-          hex_ids.none? { |id| hex_by_id(id)&.tile&.color == :white }
         end
 
         EVENTS_TEXT = G1867::Game::EVENTS_TEXT.merge('three_trains_will_convert' => ['Unsold 3/2G will convert to 3+1/2G+1',
