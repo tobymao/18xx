@@ -23,7 +23,6 @@ describe Engine::Game::G18India::Game do
     end
 
     it 'returns 0 when only one city of the Delhi/Kochi pair is a paid stop' do
-      # Simulates a 4E train that visits Kochi but Kochi is not among the 4 paid cities
       stops = [make_stop('DELHI'), make_stop('ALLAHABAD')]
       expect(game.connection_bonus(nil, stops)).to eq(0)
     end
