@@ -51,6 +51,10 @@ describe 'G18OE national stops (§11.3.10)' do
     it 'keeps Nancy, Dresden and Jassy in their zones' do
       expect(%w[Q38 O52 S76].map { |id| game.region_for_hex(game.hex_by_id(id)) }).to eq(%w[FR PHS BRS])
     end
+
+    it 'puts Palma in Spain' do
+      expect(game.region_for_hex(game.hex_by_id('AB27'))).to eq('SP')
+    end
   end
 
   describe 'stops' do
