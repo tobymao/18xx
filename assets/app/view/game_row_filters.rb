@@ -2,6 +2,7 @@
 
 require 'game_manager'
 require 'lib/params'
+require 'view/game_card'
 
 module View
   class GameRowFilters < Snabberb::Component
@@ -94,63 +95,41 @@ module View
 
     def render_mode(url_search_params)
       current = url_search_params['mode'] || ''
-      options = { 'All' => '', 'Live' => 'live', 'Async' => 'async' }
-      buttons = options.map do |label, value|
-        on_click = lambda do
+      buttons = { 'All' => '', 'Live' => 'live', 'Async' => 'async' }.map do |label, value|
+        render_toggle(label, current == value) do
           url_search_params['mode'] = value
           update_filters(url_search_params.to_query_string)
         end
-        active = current == value
-        h(:button, {
-            style: {
-              padding: '4px 12px',
-              cursor: 'pointer',
-              background: active ? '#4a4a4a' : '#ddd',
-              color: active ? '#fff' : '#333',
-              border: '1px solid #888',
-              fontWeight: active ? 'bold' : 'normal',
-            },
-            on: { click: on_click },
-          }, label)
       end
-
-      hide_full_active = url_search_params['hide_full'] == 'true'
-      on_hide_full_click = lambda do
-        url_search_params['hide_full'] = hide_full_active ? '' : 'true'
-        update_filters(url_search_params.to_query_string)
-      end
-      buttons << h(:button, {
-                     attrs: { title: 'Hides new games that are already at their maximum player count' },
-                     style: {
-                       padding: '4px 12px',
-                       cursor: 'pointer',
-                       background: hide_full_active ? '#4a4a4a' : '#ddd',
-                       color: hide_full_active ? '#fff' : '#333',
-                       border: '1px solid #888',
-                       fontWeight: hide_full_active ? 'bold' : 'normal',
-                     },
-                     on: { click: on_hide_full_click },
-                   }, 'Hide Full')
-
-      truncate_active = url_search_params['truncate_desc'] == 'true'
-      on_truncate_click = lambda do
-        url_search_params['truncate_desc'] = truncate_active ? '' : 'true'
-        update_filters(url_search_params.to_query_string)
-      end
-      buttons << h(:button, {
-                     attrs: { title: 'Truncates all game descriptions to 120 characters' },
-                     style: {
-                       padding: '4px 12px',
-                       cursor: 'pointer',
-                       background: truncate_active ? '#4a4a4a' : '#ddd',
-                       color: truncate_active ? '#fff' : '#333',
-                       border: '1px solid #888',
-                       fontWeight: truncate_active ? 'bold' : 'normal',
-                     },
-                     on: { click: on_truncate_click },
-                   }, 'Short Desc.')
+      buttons << render_flag(url_search_params, 'hide_full', 'Hide Full',
+                             'Hides new games that are already at their maximum player count')
+      buttons << render_flag(url_search_params, 'truncate_desc', 'Short Desc.',
+                             "Truncates game descriptions to #{GameCard::DESCRIPTION_TRUNCATE_LENGTH} characters")
 
       h(:div, { style: { display: 'flex', margin: '6px 0' } }, buttons)
+    end
+
+    def render_flag(url_search_params, key, label, title)
+      active = url_search_params[key] == 'true'
+      render_toggle(label, active, title: title) do
+        url_search_params[key] = active ? nil : 'true'
+        update_filters(url_search_params.to_query_string)
+      end
+    end
+
+    def render_toggle(label, active, title: nil, &on_click)
+      h(:button, {
+          attrs: { title: title },
+          style: {
+            padding: '4px 12px',
+            cursor: 'pointer',
+            background: active ? '#4a4a4a' : '#ddd',
+            color: active ? '#fff' : '#333',
+            border: '1px solid #888',
+            fontWeight: active ? 'bold' : 'normal',
+          },
+          on: { click: on_click },
+        }, label)
     end
 
     def render_reset

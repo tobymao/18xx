@@ -20,6 +20,8 @@ class Game < Base
         AND (:titles IS NULL OR title = ANY(:titles))
         AND (:mode IS NULL OR COALESCE((settings->>'is_async')::boolean, true) = (:mode = 'async'))
         AND NOT (status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
+        AND NOT (:hide_full AND status = 'new'
+          AND (SELECT COUNT(*) FROM game_users gu WHERE gu.game_id = games.id) >= max_players)
       ORDER BY created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
@@ -38,6 +40,8 @@ class Game < Base
         AND (:mode IS NULL OR COALESCE((g.settings->>'is_async')::boolean, true) = (:mode = 'async'))
         AND ug.id IS NULL
         AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
+        AND NOT (:hide_full AND g.status = 'new'
+          AND (SELECT COUNT(*) FROM game_users gu WHERE gu.game_id = g.id) >= g.max_players)
       ORDER BY g.%<ordered_by>s DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
@@ -108,11 +112,12 @@ class Game < Base
 
     mode = opts['mode']&.strip
     mode = nil unless %w[live async].include?(mode)
+    hide_full = opts['hide_full'] == 'true'
 
     # Key the cache on the *normalized* query inputs so equivalent or junk params
     # (e.g. "01" vs "1", unknown titles/modes) collapse to one key instead of
     # minting an unbounded number of distinct entries.
-    key = [offsets.values, titles, mode]
+    key = [offsets.values, titles, mode, hide_full]
     Bus.cache("home_games:#{user&.id}:#{key}", ttl: 9) do
       kwargs = offsets.dup
       kwargs[:user_id] = user.id if user
@@ -120,6 +125,7 @@ class Game < Base
       # than raising IndeterminateDatatype; it just matches no rows.
       kwargs[:titles] = titles && Sequel.pg_array(titles, :text)
       kwargs[:mode] = mode
+      kwargs[:hide_full] = hide_full
       kwargs[:status] = %w[new active]
       kwargs[:limit] = 1000
       to_h_safe(fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all)
