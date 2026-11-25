@@ -7,16 +7,7 @@ require 'spec_helper'
 describe Engine::Game::G18India::Game do
   describe 'OO-Fix' do
     describe Engine::Game::G18India::Step::HomeTrack do
-      # HomeTrack is registered ahead of the generic Engine::Step::HomeToken for every
-      # corporation (not just GIPR), and Round::Base#actions_for stops at the first
-      # active + blocking step regardless of whether it returned any actions. So
-      # HomeTrack#actions must offer 'place_token' for a normal fixed-home corporation
-      # whenever its own home hex has room, even if no OTHER open city/town exists
-      # anywhere else on the board. Before the fix, HomeTrack gated 'place_token' on
-      # board-wide open_city_hexes/town_to_green_city_hexes (a check only meaningful
-      # for GIPR's "pick any open city" home rule), so a corp like KGF or WR would be
-      # left with zero legal actions late in the game once the rest of the board
-      # filled up -- see GH #11461.
+      # See HomeTrack#any_open_cities? for the GH #11461 bug this covers.
       let(:game) { fixture_at_action(37, clear_cache: true) }
       let(:kgf) { game.corporation_by_id('KGF') }
       let(:home_hex) { game.hex_by_id(kgf.coordinates) }

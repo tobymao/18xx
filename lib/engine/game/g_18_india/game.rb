@@ -755,7 +755,6 @@ module Engine
             @log << "#{corporation.name} places a token on #{hex.name}"
             city.place_token(corporation, corporation.find_token_by_type, free: true)
           else
-            # Yellow OO tile already laid: player must choose city
             return if @round.pending_tokens.any? { |p| p[:entity] == corporation }
 
             @log << "#{corporation.name} must choose city for home token"
