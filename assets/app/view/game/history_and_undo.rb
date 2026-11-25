@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/game/actionable'
+require 'view/game/bg_stats_link'
 require 'view/game/history_controls'
 require 'view/game/pass_button'
 require 'view/game/undo_button'
@@ -17,7 +18,10 @@ module View
       end
 
       def history
-        h('div#history', { style: { marginBottom: '0.5rem' } }, [h(HistoryControls, last_action_id: @last_action_id)])
+        h('div#history', { style: { marginBottom: '0.5rem' } }, [
+          h(HistoryControls, last_action_id: @last_action_id),
+          h(BgStatsLink),
+        ])
       end
 
       def undo

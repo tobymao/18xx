@@ -40,6 +40,7 @@ module Lib
       path_timeout: 30,
       route_timeout: 10,
       show_stats: false,
+      bg_stats: false,
       is_async: true,
       invite_only: false,
       auto_routing: false,

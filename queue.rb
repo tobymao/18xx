@@ -105,7 +105,13 @@ MessageBus.subscribe '/turn' do |msg|
 
   message = "#{data['type']} in #{game.title} \"#{game.description}\" " \
             "(#{game.round} #{game.turn})\n#{data['game_url']}"
-  users.each { |user| send_webhook_notification(user, message) }
+  bg_stats_url = "#{data['game_url']}?bgstats=1" if data['type'] == 'Game Finished'
+  bg_stats_url_for = ->(user) { bg_stats_url if user.settings['bg_stats'] }
+
+  users.each do |user|
+    url = bg_stats_url_for[user]
+    send_webhook_notification(user, url ? "#{message}\nLog to BG Stats: #{url}" : message)
+  end
 
   users = users.reject do |user|
     notifications = user.settings['notifications'] || 'none'
@@ -121,14 +127,12 @@ MessageBus.subscribe '/turn' do |msg|
 
   next if users.empty?
 
-  html = ASSETS.html(
-    'assets/app/mail/turn.rb',
-    game_id: game.id,
-    game_url: data['game_url'],
-  )
+  html = Hash.new do |cache, url|
+    cache[url] = ASSETS.html('assets/app/mail/turn.rb', game_id: game.id, game_url: data['game_url'], bg_stats_url: url)
+  end
 
   users.each do |user|
-    Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
+    Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html[bg_stats_url_for[user]])
     QUEUE_LOGGER.info("mail sent for game: #{game.id} to user: #{user.id}")
     user.settings['email_sent'] = Time.now.to_i
     user.save

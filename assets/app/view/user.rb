@@ -15,6 +15,7 @@ module View
   class User < Form
     include Lib::Settings
     include Lib::WhatsThis::AutoRoute
+    include Lib::WhatsThis::BgStats
     include GameManager
     include UserManager
 
@@ -108,6 +109,7 @@ module View
           render_default_game_options,
           h(:h3, 'Statistics'),
           render_checkbox('Show Individual Statistics on Profile Page', :show_stats),
+          render_checkbox('Show BG Stats Links for Finished Games', :bg_stats, siblings: [bg_stats_whats_this]),
           h(:h3, 'Display'),
           render_checkbox('Red 18xx.games Logo', :red_logo),
         ]),
@@ -354,8 +356,8 @@ module View
       h('div#profile-stats', [h(:h2, header), table, notes])
     end
 
-    def render_checkbox(label, id)
-      render_input(label, id: id, type: :checkbox, attrs: { checked: setting_for(id) })
+    def render_checkbox(label, id, siblings: [])
+      render_input(label, id: id, type: :checkbox, attrs: { checked: setting_for(id) }, siblings: siblings)
     end
 
     def render_color(label, id, hex_color, attrs: {})

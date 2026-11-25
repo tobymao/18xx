@@ -15,5 +15,11 @@ describe 'Mail' do
   it 'should render mail' do
     html = render(game_id: '1', game_url: '')
     expect(html).not_to be_nil
+    expect(html).not_to include('BG Stats')
+  end
+
+  it 'links to BG Stats when given a URL' do
+    html = render(game_id: '1', game_url: '/game/1', bg_stats_url: '/game/1?bgstats=1')
+    expect(html).to include('href="/game/1?bgstats=1"', 'Log to BG Stats')
   end
 end
