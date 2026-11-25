@@ -68,14 +68,8 @@ module Engine
       end
 
       def current_bid_amount(player, company)
-        # When only the highest bid on a company counts as committed cash
-        # (ONLY_HIGHEST_BID_COMMITTED), a player who has been outbid on
-        # this company no longer has anything committed to it, so their
-        # own stale bid must not be added back into max_bid -- otherwise
-        # a player who bid, got outbid, then tries to bid again gets a
-        # max_bid inflated by their own dead bid, letting them commit
-        # more cash than they actually have (found via a real game: a
-        # player bid $190 with only $150 cash after this exact sequence).
+        # ONLY_HIGHEST_BID_COMMITTED: an outbid player's own stale bid no
+        # longer commits any cash, so it must not count toward max_bid.
         if @game.class::ONLY_HIGHEST_BID_COMMITTED
           bid = highest_bid(company)
           bid&.entity == player ? bid.price : 0
