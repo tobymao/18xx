@@ -109,11 +109,8 @@ module Engine
             super
           end
 
-          # Added multiple yellow tile check and Yellow OO reservation check.
-          # Does not delegate to super so we can control the pass! condition:
-          # if the entity still has company tile-lay abilities (P2/P3) AND the
-          # token step would otherwise be skipped, we stay blocking so the
-          # player can use P2/P3 to create station access (fixes #11362).
+          # Doesn't delegate to super -- see #needs_special_track_for_token? for
+          # why pass! is conditional here (fixes #11362).
           def process_lay_tile(action)
             if action.tile.color == :yellow
               raise GameError, 'New yellow tiles must extend path from railhead and previously laid tiles' \
@@ -165,17 +162,10 @@ module Engine
 
           private
 
-          # True only when all three conditions hold:
-          #   (a) the entity or its owning player has an active tile-lay ability
-          #       (P2 Portuguese EIC or P3 Dutch EIC) — checked for both
-          #       corporation-owned and player-owned privates;
-          #   (b) the entity's connected network has usable target hexes:
-          #       P2 (lay_count > 0) needs a white hex; P3 (upgrade_count > 0)
-          #       needs a yellow/green/brown hex to upgrade;
-          #   (c) the Token step would currently be skipped (no accessible
-          #       station) — if a token can already be placed, Track can
-          #       auto-pass normally so the existing "Skip (Token)" pass is not
-          #       stolen by Track.
+          # Only true when a P2/P3 ability still has a usable target AND the
+          # Token step would otherwise skip itself -- a token step that can
+          # still act should auto-pass normally, not have its "Skip (Token)"
+          # pass stolen by Track.
           def needs_special_track_for_token?(entity)
             abilities = special_tile_lay_abilities(entity)
             return false if abilities.empty?
@@ -193,7 +183,6 @@ module Engine
             !token_step.can_place_token?(entity)
           end
 
-          # Returns all active tile-lay abilities for the entity or its owning player.
           # P2/P3 may be corporation-owned or still player-owned.
           def special_tile_lay_abilities(entity)
             player = entity.owner
