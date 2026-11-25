@@ -20,7 +20,7 @@ module Lib
         sourcePlayId: gdata['id'].to_s,
         playDate: Time.at(gdata['finished_at'].to_i).strftime('%F %T'),
         location: SOURCE,
-        comments: (gdata['description'] unless gdata['description'].to_s.empty?),
+        comments: comments(gdata),
         game: {
           name: meta.display_title,
           sourceGameId: meta.title,
@@ -40,7 +40,13 @@ module Lib
             startPlayer: seat.zero?,
           }
         end,
-      }.compact
+      }
+    end
+
+    def self.comments(gdata)
+      game = "18xx.games ##{gdata['id']}"
+      description = gdata['description'].to_s
+      description.empty? ? game : "#{description} (#{game})"
     end
   end
 end

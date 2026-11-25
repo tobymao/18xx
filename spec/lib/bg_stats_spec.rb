@@ -20,12 +20,12 @@ describe Lib::BgStats do
 
   it 'describes the play in local time' do
     expect(play).to include(sourceName: '18xx.games', sourcePlayId: '123', playDate: '2026-11-24 22:30:05',
-                            location: '18xx.games', comments: 'Mtl trains')
+                            location: '18xx.games', comments: 'Mtl trains (18xx.games #123)')
   end
 
-  it 'omits comments when the game has no description' do
+  it 'comments with just the game ID when the game has no description' do
     gdata['description'] = ''
-    expect(play).not_to have_key(:comments)
+    expect(play[:comments]).to eq('18xx.games #123')
   end
 
   it 'identifies the title' do
