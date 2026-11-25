@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<svg version="1.1" viewBox="-30 -30 60 60" xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-<g><clipPath id="1d4a217a-c113-4f49-b4f0-73955c63a7db"><circle cx="0" cy="0" r="30"></circle></clipPath><g clip-path="url(#1d4a217a-c113-4f49-b4f0-73955c63a7db)"><g transform="rotate(0)"><circle cx="0" cy="0" r="30" fill="#004d95" stroke="none"></circle></g><g transform="rotate(0)"><rect x="-6.25" y="-50" width="12.5" height="100" fill="#0a0a0a" clip-path="url(#1d4a217a-c113-4f49-b4f0-73955c63a7db)"></rect></g><text font-family="Arial" font-weight="bolder" font-size="16" text-anchor="middle" stroke-width="0.5" stroke="none" fill="rgb(255, 255, 255)" x="0" y="5.5">NM</text></g><circle cx="0" cy="0" r="30" fill="none" stroke="#00182f" stroke-width="1"></circle></g>
-</svg>

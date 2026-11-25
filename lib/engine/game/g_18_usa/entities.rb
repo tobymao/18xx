@@ -296,8 +296,8 @@ module Engine
             value: 60,
             revenue: 0,
             desc: 'Regional Headquarters may be used to upgrade a green or brown non-metropolis city after phase 5 begins. ' \
-                  'May be placed on any existing normal city. Three of the track segments are optional and can be placed ' \
-                  'pointing toward water or other off map areas.',
+                  'Tile #X23 may be placed on any existing normal city. Two of the track segments are optional and can ' \
+                  'be placed pointing toward water or other off map areas.',
             sym: 'P16',
             abilities: [
               {

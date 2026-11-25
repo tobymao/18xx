@@ -41,7 +41,7 @@ module Engine
             @log << "#{corporation.name} pars #{type} at #{share_price.price}"
 
             corporation.ipoed = true
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             @game.share_pool.buy_shares(action.entity, ShareBundle.new([company.treasury]), allow_president_change: false)
             @game.after_par(corporation)
 

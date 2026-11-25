@@ -23,7 +23,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '₧%d'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         IMPASSABLE_HEX_COLORS = %i[gray red blue orange].freeze
 
@@ -37,9 +37,14 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
 
+        MUST_BUY_TRAIN = :always
+
         TILE_RESERVATION_BLOCKS_OTHERS = :single_slot_cities
 
         MOUNTAIN_PASS_TOKEN_HEXES = %w[L8 J10 H12 D12].freeze
+
+        # Action types whose choice can open a mountain pass (Track choose / P4 SpecialChoose).
+        MOUNTAIN_PASS_CHOICE_ACTIONS = %w[choose choose_ability].freeze
 
         MOUNTAIN_PASS_TOKEN_COST = { 'L8' => 80, 'J10' => 80, 'H12' => 60, 'D12' => 100 }.freeze
 
@@ -161,6 +166,7 @@ module Engine
 
           {
             name: '2P',
+            extra: true,
             distance: 2,
             price: 0,
             num: 1,
@@ -272,10 +278,6 @@ module Engine
           },
           ].freeze
 
-        # These trains don't count against train limit, they also don't count as a train
-        # against the mandatory train ownership. They cant the bought by another corporation.
-        EXTRA_TRAINS = %w[2P].freeze
-
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
                 'south_majors_available' => ['South Majors Available',
                                              'Major Corporations in the south map can open'],
@@ -317,7 +319,7 @@ module Engine
         def stock_round
           G18ESP::Round::Stock.new(self, [
             G18ESP::Step::Acquire,
-            G18ESP::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
             G18ESP::Step::BuySellParShares,
           ])
         end
@@ -337,7 +339,7 @@ module Engine
             G18ESP::Step::Track,
             G18ESP::Step::Route,
             G18ESP::Step::Dividend,
-            G18ESP::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
             G18ESP::Step::Acquire,
             G18ESP::Step::BuyTrain,
             G18ESP::Step::CombinedTrains,
@@ -367,6 +369,21 @@ module Engine
 
         def madrid_hex
           @madrid_hex ||= hex_by_id(MADRID_HEX)
+        end
+
+        # Tallies each entity's mountain-pass opens from @filtered_actions; consume_mountain_pass_hint! decrements as replayed.
+        def future_mountain_pass_choose?(entity)
+          @loading_mountain_pass_remaining ||= @filtered_actions.filter_map do |action|
+            action['entity'] if action && MOUNTAIN_PASS_CHOICE_ACTIONS.include?(action['type']) &&
+                                MOUNTAIN_PASS_TOKEN_HEXES.include?(action['choice'])
+          end.tally
+          @loading_mountain_pass_remaining.fetch(entity.id, 0).positive?
+        end
+
+        def consume_mountain_pass_hint!(entity)
+          return unless @loading
+
+          @loading_mountain_pass_remaining[entity.id] -= 1 if future_mountain_pass_choose?(entity)
         end
 
         def setup
@@ -723,8 +740,11 @@ module Engine
           return false unless entity&.corporation?
           return true if entity.destination_connected?
 
+          return false unless (destination = hex_by_id(entity.destination))
+          return false if destination.tile.paths.empty?
+
           @no_blocking_graph ||= Graph.new(self, no_blocking: true)
-          @no_blocking_graph.reachable_hexes(entity).include?(hex_by_id(entity.destination))
+          @no_blocking_graph.reachable_hexes(entity).include?(destination)
         end
 
         def new_destination_connection?(entity)
@@ -880,11 +900,6 @@ module Engine
           rev_str
         end
 
-        def must_buy_train?(entity)
-          entity.trains.none? { |t| !extra_train?(t) } &&
-          !depot.depot_trains.empty?
-        end
-
         def num_corp_trains(entity)
           type_to_ignore = north_corp?(entity) ? :broad : :narrow
           entity.trains.count { |t| t.track_type != type_to_ignore }
@@ -1035,10 +1050,6 @@ module Engine
           tile.icons.reject! { |icon| icon.name == corp.name }
         end
 
-        def extra_train?(train)
-          self.class::EXTRA_TRAINS.include?(train.name)
-        end
-
         def crowded_corps
           @crowded_corps ||= corporations.select do |c|
             trains = c.trains.count { |t| !extra_train?(t) }
@@ -1143,10 +1154,6 @@ module Engine
           @corporations.dup.each do |c|
             next unless c.type == :minor
 
-            if c.operated?
-              @bank.spend(c.share_price.price, c.owner)
-              @log << "#{c.owner.name} recieves compensation of #{format_currency(c.share_price.price)} for #{c.name}"
-            end
             close_minor(c)
           end
         end

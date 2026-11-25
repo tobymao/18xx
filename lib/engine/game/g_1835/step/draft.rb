@@ -34,6 +34,7 @@ module Engine
 
           def may_purchase?(company)
             return false unless company
+            return true if @game.option_clemens?
 
             # in the vanilla draft a company can only be purchased if it is either in the top-most row or furthest to
             # the left in the second top-most row if the top-most row only has one company
@@ -70,24 +71,18 @@ module Engine
           def actions(entity)
             return [] if finished?
 
-            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
-              @log << "#{current_entity.name} has no valid actions and passes"
-              return []
-            end
+            return [] unless @companies.any? { |c| current_entity.cash >= min_bid(c) && may_purchase?(c) }
 
             entity == current_entity ? ACTIONS : []
-          end
-
-          def skip!
-            current_entity.pass!
-            @round.next_entity_index!
-            action_finalized
           end
 
           def process_bid(action)
             company = action.company
             player = action.entity
             price = action.price
+
+            raise GameError, "#{company.name} is not purchasable" unless may_purchase?(company)
+            raise GameError, "#{player.name} does not have enough money to buy #{company.name}" if price > player.cash
 
             assign_company(company, player)
             player.spend(price, @game.bank)
@@ -105,9 +100,11 @@ module Engine
             float_minor(company, minor, player, price) if minor
 
             entities.each(&:unpass!)
-            @round.last_to_act = player
-            @round.next_entity_index!
-            action_finalized
+
+            # In the rare case of no one buying anything in the first round taking place in proper player order in a
+            # Clemens variant game, the PD remains with the first player
+            @round.last_to_act = player unless @round.very_first_round_with_clemens?
+            @round.next_entity!
           end
 
           def assign_company(company, player)
@@ -125,16 +122,18 @@ module Engine
           end
 
           def process_pass(action)
-            @log << "#{action.entity.name} passes"
+            log_pass(action.entity)
             action.entity.pass!
-            @round.next_entity_index!
-            action_finalized
+            @round.next_entity!
           end
 
-          def action_finalized
-            return unless finished?
+          def log_skip(entity)
+            @log << "#{entity.name} has no valid actions and passes"
+          end
 
-            @round.next_entity_index!
+          def skip!
+            super
+            current_entity&.pass!
           end
 
           def may_choose?(_company)
@@ -171,7 +170,10 @@ module Engine
             # allow president change for SX when LD is being sold, but for BY only if the BY director has been sold,
             # which might be during the current or any earlier action
             allow_president_change = share.president || !share.corporation.shares.first.president
+            corporation = share.corporation
+            floated = corporation.floated?
             @game.share_pool.transfer_shares(ShareBundle.new(share), player, allow_president_change: allow_president_change)
+            @game.float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
 
             @game.place_home_token(share.corporation) if share.corporation.floated?
           end

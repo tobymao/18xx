@@ -191,7 +191,7 @@ module Engine
         entity = action.entity
         raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, entity)
 
-        @game.stock_market.set_par(corporation, share_price)
+        @game.par_corporation(corporation, share_price)
         share = corporation.ipo_shares.first
         @round.players_bought[entity][corporation] += share.percent
         buy_shares(entity, share.to_bundle)
@@ -301,6 +301,10 @@ module Engine
           !@game.phase.status.include?('can_buy_companies_from_other_players')
 
         @game.purchasable_companies(entity)
+      end
+
+      def price_range(entity, _target)
+        [1, entity.cash]
       end
 
       def buyable_bank_owned_companies(entity)

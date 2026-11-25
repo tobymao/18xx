@@ -2,12 +2,15 @@
 
 require_relative '../../../step/tracker'
 require_relative '../../../step/track'
+require_relative 'skip_for_national'
 
 module Engine
   module Game
     module G18Cuba
       module Step
         class Track < Engine::Step::Track
+          include SkipForNational
+
           def tracker_available_hex(entity, hex)
             # TODO: FC logic with fee payments
             corp = entity.corporation? ? entity : @game.current_entity
@@ -23,6 +26,11 @@ module Engine
                           !@game.sugar_cane_open_for_majors?
 
             super
+          end
+
+          def process_lay_tile(action)
+            super
+            @game.after_lay_tile(action.hex, action.tile)
           end
 
           def potential_tiles(entity, hex)

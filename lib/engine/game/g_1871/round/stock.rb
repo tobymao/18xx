@@ -43,7 +43,7 @@ module Engine
           end
 
           def split_active_entities
-            [@split_corporation&.owner].compact
+            [@game.acting_for_entity(@split_corporation)].compact
           end
 
           def split_choice_entity
@@ -136,7 +136,7 @@ module Engine
 
           def split_pick_par(share_price)
             @log << "Setting par of #{@split_branch.full_name} to #{@game.format_currency(share_price.price)}"
-            @game.stock_market.set_par(@split_branch, share_price)
+            @game.par_corporation(@split_branch, share_price)
             @game.after_par(@split_branch)
             @game.exchange_split_shares(@split_corporation, @split_branch)
             @split_branch.ipoed = true

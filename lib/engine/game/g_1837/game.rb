@@ -31,6 +31,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
 
         HOME_TOKEN_TIMING = :float
+        STOCK_MARKET_TOKEN_TIMING = :float
 
         EBUY_PRES_SWAP = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
@@ -330,7 +331,7 @@ module Engine
           { 'KK' => 120, 'SD' => 142, 'UG' => 175 }.each do |id, par_value|
             corporation = corporation_by_id(id)
             share_price = market_row.find { |sp| sp.price == par_value }
-            @stock_market.set_par(corporation, share_price)
+            par_corporation(corporation, share_price)
             corporation.ipoed = true
           end
         end
@@ -483,6 +484,10 @@ module Engine
         def form_national_railway!(national, merging_minors)
           @log << "#{national.id} forms"
           national.floatable = true
+          if self.class::STOCK_MARKET_TOKEN_TIMING == :float
+            national.share_price = national.par_price
+            national.share_price.corporations << national
+          end
           national.floated = true
           ipo_cash = (10 - national.num_ipo_reserved_shares) * national.par_price.price
           @bank.spend(ipo_cash, national)
@@ -639,6 +644,18 @@ module Engine
           ], round_num: round_num)
         end
 
+        def round_description(name, round_number = nil)
+          return super unless name == 'Exchange'
+
+          round_number ||= @round.round_num
+
+          if @round_after_exchange == Engine::Round::Stock
+            "Exchange Round before Stock Round #{@turn}"
+          else
+            "Exchange Round before Operating Round #{@turn}.#{round_number}"
+          end
+        end
+
         def corporation_show_individual_reserved_shares?
           false
         end
@@ -691,6 +708,10 @@ module Engine
 
         def float_corporation(corporation)
           @log << "#{corporation.name} floats"
+          if self.class::STOCK_MARKET_TOKEN_TIMING == :float
+            corporation.share_price = corporation.par_price
+            corporation.share_price.corporations << corporation
+          end
           @bank.spend(corporation.par_price.price * corporation.total_ipo_shares, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
         end

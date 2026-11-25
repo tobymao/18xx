@@ -5,7 +5,7 @@ require_relative 'game_error'
 module Engine
   class Route
     attr_accessor :halts, :routes, :bitfield
-    attr_reader :last_node, :phase, :train, :abilities
+    attr_reader :last_node, :phase, :train, :abilities, :router_cost
 
     def initialize(game, phase, train, **opts)
       @game = game
@@ -30,9 +30,16 @@ module Engine
       @stops = nil
 
       @bitfield = opts[:bitfield] # array of ints used only by auto-routing algorithm
+      @router_cost = opts[:router_cost] # extra connection cost used only by auto-routing algorithm
+    end
+
+    # Scratch cache shared by callers that derive values from this route.
+    def shared_cache
+      @shared_cache ||= {}
     end
 
     def clear_cache!(all: false, only_routes: false)
+      @shared_cache&.clear
       @connection_hexes = nil if all
       @node_signatures = nil if all
       @revenue = nil
@@ -98,6 +105,8 @@ module Engine
     end
 
     def select(node, other, keep = nil)
+      return [] if node == other
+
       other_paths = compute_other_paths
 
       connection_data.each do |c|
@@ -128,7 +137,7 @@ module Engine
               }
             end
           end
-          new_chains.sort_by { |chain| chain[:paths].size }
+          new_chains.sort_by { |chain| chain[:paths].size } + @game.route_links(start_node, end_node, corporation)
         end
     end
 
@@ -146,33 +155,32 @@ module Engine
 
     def touch_node(node)
       if !connection_data.empty? && !local_connection?
-        case node
-        when head[:left]
-          if (chain = next_chain(head[:right], head[:chain], node))
-            connection_data[0] = segment(chain, right: head[:right])
-          else
-            connection_data.shift
-            if (chain = select(tail[:right], node)[0])
-              # This node can be reached from either the head or the tail of the
-              # chain. All head connections have been offered, switch to the tail.
-              connection_data << segment(chain, left: tail[:right])
+        revisited = node.revisitable? && extend!(node)
+        unless revisited
+          case node
+          when head[:left]
+            if (chain = next_chain(head[:right], head[:chain], node))
+              connection_data[0] = segment(chain, right: head[:right])
+            else
+              connection_data.shift
+              if tail && (chain = select(tail[:right], node)[0])
+                # This node can be reached from either the head or the tail of the
+                # chain. All head connections have been offered, switch to the tail.
+                connection_data << segment(chain, left: tail[:right])
+              end
             end
-          end
-        when tail[:right]
-          if (chain = next_chain(tail[:left], tail[:chain], node))
-            connection_data[-1] = segment(chain, left: tail[:left])
-          else
+          when tail[:right]
+            if (chain = next_chain(tail[:left], tail[:chain], node))
+              connection_data[-1] = segment(chain, left: tail[:left])
+            else
+              connection_data.pop
+            end
+          when head[:right]
+            connection_data.shift
+          when tail[:left]
             connection_data.pop
-          end
-        when head[:right]
-          connection_data.shift
-        when tail[:left]
-          connection_data.pop
-        else
-          if (chain = select(head[:left], node)[0])
-            connection_data.unshift(segment(chain, right: head[:left]))
-          elsif (chain = select(tail[:right], node)[0])
-            connection_data << segment(chain, left: tail[:right])
+          else
+            extend!(node)
           end
         end
         connection_data.pop if @train.local? && connection_data.size == @local_length
@@ -268,7 +276,7 @@ module Engine
       connection_data.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
-        raise ReusesCity, "Cannot use #{right.hex.name} twice" if cycles[right]
+        raise ReusesCity, "Cannot use #{right.hex.name} twice" if cycles[right] && !right.revisitable?
 
         cycles[right] = true
       end
@@ -364,8 +372,18 @@ module Engine
       @connection_hexes ||= if @train.local? && connection_data.one? && connection_data[0][:chain][:paths].empty?
                               [['local', connection_data[0][:left].hex.id]]
                             else
-                              chains&.map { |chain| chain_id(chain[:paths]) }
+                              connection_data&.map do |c|
+                                {
+                                  'from' => c[:left].signature,
+                                  'hexes' => c[:chain][:id] || chain_id(c[:chain][:paths]),
+                                  'to' => c[:right].signature,
+                                }
+                              end
                             end
+    end
+
+    def connection_hex_ids
+      connection_hexes.flat_map { |c| hex_ids_of(c) }
     end
 
     def connection_data
@@ -384,36 +402,16 @@ module Engine
         @connection_hexes.clear
       end
 
-      possibilities = @connection_hexes.map do |hex_ids|
-        find_matching_chains(hex_ids)
-      end
-
-      other_paths = compute_other_paths
-
-      if possibilities.one?
-        @node_signatures = nil
-        chain = possibilities[0].find do |ch|
-          ch[:nodes].any? { |node| @game.city_tokened_by?(node, corporation) } && (ch[:paths] & other_paths).empty?
+      used = compute_other_paths
+      @connection_hexes.each_with_index do |saved, index|
+        segment = read_connection(saved, index, used, @connection_data.last)
+        unless segment
+          @node_signatures = nil
+          return @connection_data.clear
         end
-        return @connection_data unless chain
 
-        left, right = chain[:nodes]
-        return @connection_data if !left || !right
-
-        @connection_data << { left: left, right: right, chain: chain }
-      else
-        possibilities.each_cons(2).with_index do |pair, index|
-          a, b, left, right, middle = find_pairwise_chain(*pair, other_paths)
-          if !left&.hex || !right&.hex || !middle&.hex
-            @node_signatures = nil
-            return @connection_data.clear
-          end
-
-          @connection_data << { left: left, right: middle, chain: a } if index.zero?
-          @connection_data << { left: middle, right: right, chain: b }
-
-          other_paths.concat(a[:paths])
-        end
+        @connection_data << segment
+        used.concat(segment[:chain][:paths])
       end
 
       @node_signatures = nil
@@ -442,45 +440,92 @@ module Engine
       end
     end
 
+    def extend!(node)
+      head_track, head_pathless = select(head[:left], node).partition { |c| !c[:paths].empty? }
+      tail_track, tail_pathless = select(tail[:right], node).partition { |c| !c[:paths].empty? }
+      head_chain, tail_chain = [[head_track.first, tail_track.first], [head_pathless.first, tail_pathless.first]].find(&:any?)
+
+      if head_chain
+        connection_data.unshift(segment(head_chain, right: head[:left]))
+      elsif tail_chain
+        connection_data << segment(tail_chain, left: tail[:right])
+      end
+    end
+
     def add_single_node_connection(node)
       @connection_data << { left: node, right: node, chain: { nodes: nil, paths: [], hexes: nil, id: nil } }
     end
 
-    def find_pairwise_chain(chains_a, chains_b, other_paths)
-      chains_a = chains_a.select { |a| (a[:paths] & other_paths).empty? }
-      chains_b = chains_b.select { |b| (b[:paths] & other_paths).empty? }
-      candidates = []
-      chains_a.each do |a|
-        chains_b.each do |b|
-          next if (middle = (a[:nodes] & b[:nodes])).empty?
-          next unless (b[:paths] & a[:paths]).empty?
-          next unless middle.one?
-
-          left = (a[:nodes] - middle)[0]
-          right = (b[:nodes] - middle)[0]
-          candidates.append([a, b, left, right, middle[0]])
+    def read_connection(saved, index, used, previous)
+      hex_ids = hex_ids_of(saved)
+      if saved.is_a?(Hash)
+        from = node_by_signature(saved['from'])
+        to = node_by_signature(saved['to'])
+        if from && to
+          found = (get_node_chains(from, to) + get_node_chains(to, from)).find do |ch|
+            ch[:id] == saved['hexes'] && (ch[:paths] & used).empty?
+          end
+          return segment(found, left: from) if found
         end
       end
 
-      return [] if candidates.empty?
+      candidates = find_matching_chains(hex_ids).reject { |chain| (chain[:paths] & used).any? }
+      if previous
+        picked = prefer_saved_nodes(candidates.select { |ch| ch[:nodes].include?(previous[:right]) }) { |ch| ch[:nodes] }
+        picked && segment(picked, left: previous[:right])
+      elsif @connection_hexes.one?
+        picked = candidates.find { |ch| ch[:nodes].any? { |node| @game.city_tokened_by?(node, corporation) } }
+        return unless picked
 
-      return candidates[0] if candidates.size == 1
+        left, right = picked[:nodes]
+        return if !left || !right
 
-      # If we're reconstructing a route with multiple ways to satisfy
-      # the connection data (e.g., 457--464, IR7--8), prefer ones that
-      # pass through the most nodes associated with it.
-      return candidates[0] unless @node_signatures
-
-      candidates.max_by do |_a, _b, left, right, middle|
-        [left, right, middle].count { |n| @node_signatures.include?(n.signature) }
+        { left: left, right: right, chain: picked }
+      else
+        read_first_connection(candidates, hex_ids_of(@connection_hexes[index + 1]), used)
       end
     end
 
-    def find_matching_chains(hex_ids)
+    def read_first_connection(candidates, next_hex_ids, used)
+      next_candidates = find_matching_chains(next_hex_ids).reject { |chain| (chain[:paths] & used).any? }
+      triples = candidates.flat_map do |a|
+        next_candidates.map do |b|
+          shared = a[:nodes] & b[:nodes]
+          next if !shared.one? || (a[:paths] & b[:paths]).any?
+
+          [a, (a[:nodes] - shared)[0], shared[0], (b[:nodes] - shared)[0]]
+        end.compact
+      end
+      triple = prefer_saved_nodes(triples) { |t| t[1..] }
+      triple && { left: triple[1], right: triple[2], chain: triple[0] }
+    end
+
+    def hex_ids_of(saved)
+      saved.is_a?(Hash) ? saved['hexes'] : saved
+    end
+
+    def node_by_signature(signature)
+      return unless signature
+
+      hex_id = signature.sub(/-\d+\z/, '')
+      index = signature[/\d+\z/].to_i
+      @game.hex_by_id(hex_id)&.tile&.nodes&.find { |node| node.index == index }
+    end
+
+    def prefer_saved_nodes(options)
+      return options.first unless @node_signatures
+
+      options.max_by { |option| yield(option).count { |node| @node_signatures.include?(node.signature) } }
+    end
+
+    def find_matching_chains(saved)
+      hex_ids = hex_ids_of(saved)
       return [] if !hex_ids || hex_ids.empty?
 
       start_hex = @game.hex_by_id(hex_ids.first.split.first)
       end_hex = @game.hex_by_id(hex_ids.last.split.first)
+      return [] if start_hex.nil? || end_hex.nil?
+
       matching = []
       start_hex.tile.nodes.each do |start_node|
         end_hex.tile.nodes.each do |end_node|

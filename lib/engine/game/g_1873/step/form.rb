@@ -127,7 +127,7 @@ module Engine
             # share price is average of mine values
             average = (target_mines.sum { |m| @game.minor_info[m[:mine]][:value] } / 2).to_i
             price = @game.stock_market.market.first.select { |p| p.price <= average }.max_by(&:price)
-            @game.stock_market.set_par(buyer, price)
+            @game.par_corporation(buyer, price)
             @log << "#{buyer.id} share price is set to #{@game.format_currency(price.price)}"
 
             buyer.ipoed = true

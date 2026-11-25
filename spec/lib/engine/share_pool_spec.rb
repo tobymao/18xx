@@ -15,7 +15,7 @@ module Engine
     let(:subject) { game.share_pool }
 
     before :each do
-      game.stock_market.set_par(corporation, share_price)
+      game.par_corporation(corporation, share_price)
       game.send(:next_round!)
     end
 
@@ -188,7 +188,7 @@ module Engine
         let(:step) { game.round.active_step }
 
         before :each do
-          game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+          game.par_corporation(corporation, game.stock_market.par_prices[0])
           corporation.ipoed = true
           corporation.owner = subject
 

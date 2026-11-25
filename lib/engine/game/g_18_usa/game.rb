@@ -21,7 +21,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '$%s'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 2 => 32, 3 => 21, 4 => 16, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
@@ -297,6 +297,22 @@ module Engine
           end
         end
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < 50% of share price', 'none'],
+            ['Dividend ≥ 50% of share price', '1 →'],
+            ['Dividend ≥ share price', '2 →'],
+            ['Dividend ≥ 150% of share price', '3 →'],
+            ['Dividend ≥ 200% of share price', '4 →'],
+            ['5 or 10-share Corporation sold out at end of SR', '1 →'],
+            ['Per share in market at end of SR', '1 ←'],
+            ['Per loan taken', '2 ←'],
+            ['Per loan repaid', '2 →'],
+          ]
+        end
+
         METROPOLIS_TILE_FOR_HEX = {
           'H14' => ['X03', 0],
           'E11' => ['X04s', 0],
@@ -394,6 +410,11 @@ module Engine
           return nil unless entity.corporation?
 
           entity.tokens.first.hex
+        end
+
+        def free_home_brown_upgrade?(entity, hex)
+          phase_5_or_later? && home_hex_for(entity) == hex && !entity.operated? &&
+            %i[white yellow green].include?(hex.tile.color)
         end
 
         def phase_5_or_later?
@@ -519,12 +540,9 @@ module Engine
             return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) if from.cities.empty?
 
             # City upgrades
-            if from.color == :white
-              entity = selected_company&.owner || @round.current_entity
-              colors = [:green]
-              colors << :brown if !entity.operated? && home_hex_for(entity) == from.hex
-              return colors.include?(to.color)
-            end
+            entity = selected_company&.owner || @round.current_entity
+            return true if to.color == :brown && free_home_brown_upgrade?(entity, from.hex)
+            return to.color == :green if from.color == :white
           end
 
           super

@@ -209,7 +209,7 @@ module Engine
             value: 40,
             min_price: 30,
             revenue: 10,
-            desc: 'A corporation owning the Newcastle & Carlisle Railway gains a +£20 bonus for all runs to Hull (G16).',
+            desc: 'A corporation owning the Hull Docks Company gains a +£20 bonus for all runs to Hull (G16).',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -226,7 +226,7 @@ module Engine
             value: 40,
             min_price: 30,
             revenue: 10,
-            desc: 'A corporation owning the Hull Docks Company gains a +£20 bonus for all G-train runs to Hartlepool '\
+            desc: 'A corporation owning the Hartlepool Docks Company gains a +£20 bonus for all G-train runs to Hartlepool '\
                   'Port (G6). Additionally, the owning corporation may lay 1 extra yellow tile, in hex F7.',
             abilities: [
               {
@@ -242,7 +242,7 @@ module Engine
                 type: 'hex_bonus',
                 owner_type: 'corporation',
                 hexes: ['G6'],
-                amount: 10,
+                amount: 20,
               },
               { type: 'close', on_phase: 'never' },
             ],
@@ -256,7 +256,7 @@ module Engine
             logo: '1812/GCR',
             float_percent: 20,
             always_market_price: true,
-            tokens: [0, 40, 100, 100],
+            tokens: [0, 20, 40, 40],
             type: 'major',
             color: '#025aaa',
           },
@@ -266,7 +266,7 @@ module Engine
             logo: '1812/GNR',
             float_percent: 20,
             always_market_price: true,
-            tokens: [0, 40, 100, 100],
+            tokens: [0, 20, 40, 40],
             type: 'major',
             color: '#32763f',
           }, {
@@ -275,7 +275,7 @@ module Engine
             logo: '1812/LYR',
             float_percent: 20,
             always_market_price: true,
-            tokens: [0, 40, 100, 100],
+            tokens: [0, 20, 40, 40],
             type: 'major',
             color: '#FFFFFFF',
           },
@@ -285,7 +285,7 @@ module Engine
             logo: '1812/MR',
             float_percent: 20,
             always_market_price: true,
-            tokens: [0, 40, 100, 100],
+            tokens: [0, 20, 40, 40],
             type: 'major',
             color: '#d1232a',
           },
@@ -295,7 +295,7 @@ module Engine
             logo: '1812/NER',
             float_percent: 20,
             always_market_price: true,
-            tokens: [0, 40, 100, 100],
+            tokens: [0, 20, 40, 40],
             type: 'major',
             color: :'#FFF500',
             text_color: 'black',

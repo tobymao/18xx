@@ -341,7 +341,8 @@ module View
 
         @corporation.assignments.each do |assignment, _active|
           img = @game.assignment_tokens(assignment)
-          tokens_body << [img, true, assignment]
+          hex = @game.hexes.find { |h| h.assigned?(assignment) }
+          tokens_body << [img, true, hex ? hex.name : assignment]
         end
 
         h(:div, token_list_props, tokens_body.map do |logo, used, text|
@@ -700,6 +701,7 @@ module View
             marginBottom: '0.5rem',
             padding: '0.1rem 0.2rem',
             fontSize: '80%',
+            whiteSpace: 'pre-line',
           },
         }
         ability_props = {}

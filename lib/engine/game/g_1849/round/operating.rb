@@ -15,7 +15,10 @@ module Engine
 
           def finished?
             return false if @game.loan_choice_player
+          end
 
+          def after_process(action)
+            @game.close_afg_if_last_token_lost! if @game.pending_afg_closure
             super
           end
         end

@@ -24,20 +24,20 @@ module Engine
           end
 
           def description
-            'Choose if Major is nationalized'
+            "Choose if Major is #{@game.nationalize_verb}d"
           end
 
           def choice_name
-            'Nationalize Major?'
+            "#{@game.nationalize_verb.capitalize} Major?"
           end
 
           def choices
-            { nationalize: 'Nationalize' }
+            { nationalize: @game.nationalize_verb.capitalize }
           end
 
           def process_pass(action)
             @game.trainless_major.delete(action.entity)
-            @game.log << "#{action.entity.name} declines to nationalize"
+            @game.log << "#{action.entity.name} declines to #{@game.nationalize_verb}"
           end
 
           def process_choose(action)

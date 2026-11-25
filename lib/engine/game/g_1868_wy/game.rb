@@ -61,7 +61,7 @@ module Engine
                     :busters
 
         # overrides
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
         STARTING_CASH = { 2 => 1100, 3 => 734, 4 => 550, 5 => 440 }.freeze
         CERT_LIMIT = { 2 => 30, 3 => 20, 4 => 15, 5 => 12 }.freeze
         CAPITALIZATION = :incremental
@@ -691,10 +691,6 @@ module Engine
           @log << "#{lhp_private.name} closes without converting to a #{train.name} train"
           lhp_private.close!
           @lhp_train_pending = false
-        end
-
-        def extra_train?(train)
-          train == @lhp_train
         end
 
         def crowded_corps
@@ -2196,7 +2192,7 @@ module Engine
         end
 
         def fort_bonuses(route)
-          forts = route.connection_hexes.flatten.uniq.count { |id| @forts[id] }
+          forts = route.connection_hex_ids.uniq.count { |id| @forts[id] }
 
           if forts.positive?
             revenue = forts * (route.corporation == trabing_bros.owner ? 20 : 10)

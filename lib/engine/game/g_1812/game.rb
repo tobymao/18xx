@@ -4,6 +4,7 @@ require_relative '../g_1867/game'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'graph'
 require_relative '../base'
 require_relative '../company_price_up_to_face'
 require_relative '../../loan'
@@ -46,6 +47,7 @@ module Engine
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
+            status: %w[can_buy_companies],
           },
           {
             name: '3',
@@ -61,7 +63,7 @@ module Engine
             train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: %w[car_par can_buy_companies minors_can_merge cannot_open_minors],
+            status: %w[can_buy_companies minors_can_merge cannot_open_minors],
           },
           {
             name: '5',
@@ -69,7 +71,7 @@ module Engine
             train_limit: { minor: 0, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[can_par minors_can_merge cannot_open_minors],
+            status: %w[minors_can_merge cannot_open_minors],
           },
           {
             name: '6',
@@ -77,7 +79,7 @@ module Engine
             train_limit: { minor: 0, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[can_par minors_can_merge cannot_open_minors],
+            status: %w[minors_can_merge cannot_open_minors],
           },
         ].freeze
 
@@ -95,6 +97,7 @@ module Engine
                 distance: [{ 'nodes' => %w[city offboard town], 'pay' => 1, 'visit' => 1 },
                            { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                 price: 90,
+                no_local: true, # runs port, city and mine, not a single-city local route
               },
             ],
           },
@@ -164,7 +167,7 @@ module Engine
           },
           {
             name: '3D',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3, 'multiplier' => 2 },
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 99, 'multiplier' => 2 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 750,
             num: 10,
@@ -172,7 +175,7 @@ module Engine
             variants: [
               {
                 name: '2+2GD',
-                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2, 'multiplier' => 2 },
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99, 'multiplier' => 2 },
                            { 'nodes' => ['town'], 'pay' => 2, 'visit' => 99, 'multiplier' => 2 }],
                 price: 460,
               },
@@ -310,6 +313,7 @@ module Engine
 
           @north_south_bonus = hex_by_id(NORTH_SOUTH_BONUS_HEX).tile.offboards.first
           @port_mine_bonus = hex_by_id(PORT_MINE_BONUS_HEX).tile.offboards.first
+          self.class::MINE_ONLY_HEXES.each { |id| add_mine_node(hex_by_id(id).tile) }
         end
 
         def setup_preround
@@ -350,10 +354,20 @@ module Engine
         end
 
         def setup_corps
-          removed = @corporations.shift unless @players.size == 4
-          return unless removed
+          @corporations.each { |c| c.tokens.pop(c.tokens.size - major_token_count) if c.type == :major }
+          return if @players.size == 4
 
+          removed = @corporations.select { |c| c.type == :major }.min_by { rand }
+          @corporations.delete(removed)
           @log << "#{removed.name} corporation is removed because there are fewer than 4 players"
+        end
+
+        def major_token_count
+          @players.size == 4 ? 3 : 4
+        end
+
+        def fix_token_count!(corporation)
+          corporation.tokens << Engine::Token.new(corporation, price: 40) while corporation.tokens.size < major_token_count
         end
 
         def unstarted_corporation_summary
@@ -381,22 +395,14 @@ module Engine
           end
         end
 
-        def can_par?(corporation, parrer)
-          @phase.status.include?('can_par')
-
-          super
-        end
-
         def event_three_trains_will_convert!
           @convert_3s = true
           @log << '--All remaining 3/2G trains in the supply will be replaced with 3+1/2G+1 trains at the end of the OR set--'
         end
 
-        def interest_unpaid!(entity, _owed)
-          current_cash = entity.cash
+        def forfeit_cash!(entity)
           old_price = entity.share_price
-
-          entity.spend(current_cash, bank) if current_cash.positive?
+          entity.spend(entity.cash, bank) if entity.cash.positive?
           @stock_market.move_left(entity)
           log_share_price(entity, old_price)
         end
@@ -412,6 +418,7 @@ module Engine
         G_TRAINS = %w[1G 2G 2+1G 3+2G 4+2G 2+2GD].freeze
         PORT_HEXES = %w[F3 G4 G6 G8 H9 H17 H19].freeze
         MINE_HEXES = %w[B15 D7 D17 E2 E6].freeze
+        MINE_ONLY_HEXES = %w[B15 D7 E2].freeze
         NORTH_HEXES = %w[A4 A8 F1].freeze
         SOUTH_HEXES = %w[C20 E20 F19].freeze
         NORTH_SOUTH_BONUS_HEX = 'I1'
@@ -421,70 +428,121 @@ module Engine
           self.class::G_TRAINS.include?(train.name)
         end
 
-        def port_hexes?(route)
-          @port_hexes ||= PORT_HEXES.map { |coord| hex_by_id(coord) }
-          route.stops.map(&:hex).intersect?(@port_hexes)
+        def add_mine_node(tile)
+          mine = Part::Town.new('0', visit_cost: 0)
+          mine.tile = tile
+          mine.index = tile.nodes.size
+          tile.nodes << mine
         end
 
-        def mine_hexes?(route)
-          @mine_hexes ||= MINE_HEXES.map { |coord| hex_by_id(coord) }
-          route.stops.map(&:hex).intersect?(@mine_hexes)
+        def mine_only_hex?(hex)
+          self.class::MINE_ONLY_HEXES.include?(hex&.id)
         end
 
-        def north_hexes?(route)
-          @north_hexes ||= NORTH_HEXES.map { |coord| hex_by_id(coord) }
-          route.stops.map(&:hex).intersect?(@north_hexes)
+        def mine_node?(node)
+          node.town? && mine_only_hex?(node.hex)
         end
 
-        def south_hexes?(route)
-          @south_hexes ||= MINE_HEXES.map { |coord| hex_by_id(coord) }
-          route.stops.map(&:hex).intersect?(@south_hexes)
+        def mine_node_in(hex)
+          hex.tile.nodes.find(&:town?) if mine_only_hex?(hex)
+        end
+
+        def init_graph
+          G1812::Graph.new(self)
+        end
+
+        def update_tile_lists(tile, old_tile)
+          super
+          return unless mine_only_hex?(old_tile.hex)
+
+          old_tile.nodes.reject!(&:town?)
+          add_mine_node(tile)
+        end
+
+        def route_links(from, to, _corporation)
+          mine, other = mine_node?(to) ? [to, from] : [from, to]
+          return [] unless mine_node?(mine)
+
+          found = mine_paths(other, mine.hex)
+          (found + found.map { |paths| paths.reject { |p| p.hex == mine.hex } })
+            .map { |paths| mine_chain([from, to], paths) }
+        end
+
+        def mine_paths(node, hex)
+          found = []
+          node.paths.each { |start| start.walk { |path, visited| found << visited.keys if path.hex == hex } }
+          found
+        end
+
+        def mine_chain(nodes, paths)
+          { nodes: nodes, paths: paths, hexes: paths.map(&:hex), id: paths.map { |p| p.hex.id } }
+        end
+
+        # Ports and mines never use up a train's count (rule 7.3.4); Durham and
+        # Doncaster's mine is still scored when their small city is skipped.
+        # Returns [free stops, small cities, large cities and off-boards].
+        def counted_stops(route)
+          free, counted = route.visited_stops.partition { |s| free_stop?(s) }
+          [free, *counted.partition(&:town?)]
+        end
+
+        def free_stop?(stop)
+          mine_node?(stop) || self.class::PORT_HEXES.include?(stop.hex.id)
+        end
+
+        def compute_stops(route)
+          route.visited_stops.select { |s| free_stop?(s) } + Base.instance_method(:compute_stops).bind_call(self, route)
+        end
+
+        def revenue_stops(route)
+          super.reject { |s| free_stop?(s) }
+        end
+
+        def route_distance_str(route)
+          _, towns, cities = counted_stops(route)
+          towns.empty? ? cities.size.to_s : "#{cities.size}+#{towns.size}"
+        end
+
+        def route_mines(route)
+          route.all_hexes.map(&:id) & self.class::MINE_HEXES
         end
 
         def check_other(route)
-          raise GameError, 'All Goods Train routes must include a port and a mine' if g_train?(route.train) &&
-                                                                                      (!port_hexes?(route) ||
-                                                                                      !mine_hexes?(route))
+          hexes = route.all_hexes
+          port = hexes.map(&:id).intersect?(self.class::PORT_HEXES)
+          mines = route.visited_stops.select { |s| mine_node?(s) }
+          if g_train?(route.train)
+            raise GameError, 'Goods trains must run to a port' unless port
+            raise GameError, 'Goods trains must have a mine on the route' if route_mines(route).empty?
+            raise GameError, 'Route must use the track in the mine hex' unless mines.all? { |m| hexes.include?(m.hex) }
+          else
+            raise GameError, 'Only goods trains can run to ports' if port
+            raise GameError, 'Only goods trains can run to mines' unless mines.empty?
+          end
+        end
 
-          raise GameError, 'Only Goods Trains can run to ports' if !g_train?(route.train) && port_hexes?(route)
+        def check_route_combination(routes)
+          mine_sets = routes.select { |r| g_train?(r.train) }.map { |r| route_mines(r) }.reject(&:empty?)
+          raise GameError, 'Each goods train must use a different mine' unless distinct_mines?(mine_sets)
+        end
+
+        def distinct_mines?(mine_sets, used = [])
+          return true if mine_sets.empty?
+
+          (mine_sets.first - used).any? { |mine| distinct_mines?(mine_sets.drop(1), used + [mine]) }
         end
 
         def revenue_for(route, stops)
           revenue = super
           train = route.train
-
-          route.corporation.companies.each do |company|
-            abilities(company, :hex_bonus) do |ability|
-              revenue += ability.amount if ability.hexes.intersect?(stops.map(&:hex).map(&:id))
-            end
-          end
-
-          revenue += north_south_bonus_check(route, train)[:revenue]
-          revenue += port_mine_bonus_check(route, train)[:revenue]
-
+          revenue += @north_south_bonus.route_revenue(@phase, train) if north_south?(stops)
+          revenue += @port_mine_bonus.route_revenue(@phase, train) if g_train?(train) && route_mines(route).any?
           revenue
         end
 
-        def north_south_bonus_check(route, train)
-          bonus = { revenue: 0 }
-
-          if north_hexes?(route) && south_hexes?(route)
-            bonus[:revenue] += @north_south_bonus.route_revenue(@phase, train)
-            bonus[:description] = 'North-South'
-          end
-
-          bonus
-        end
-
-        def port_mine_bonus_check(route, train)
-          bonus = { revenue: 0 }
-
-          if port_hexes?(route) && mine_hexes?(route)
-            bonus[:revenue] += @port_mine_bonus.route_revenue(@phase, train)
-            bonus[:description] = 'Port-Mine'
-          end
-
-          bonus
+        def north_south?(stops)
+          ids = stops.map { |s| s.hex.id }
+          ids.intersect?(self.class::NORTH_HEXES) && ids.intersect?(self.class::SOUTH_HEXES)
         end
 
         def remove_some_minors?

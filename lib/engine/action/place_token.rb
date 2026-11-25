@@ -5,18 +5,19 @@ require_relative 'base'
 module Engine
   module Action
     class PlaceToken < Base
-      attr_reader :city, :slot
+      attr_reader :city, :slot, :token_index
       attr_accessor :cost, :token
 
       REQUIRED_ARGS = %i[city].freeze
 
-      def initialize(entity, city:, slot: nil, cost: nil, tokener: nil, token_type: nil)
+      def initialize(entity, city:, slot: nil, cost: nil, tokener: nil, token_type: nil, token_index: nil)
         super(entity)
         @city = city
         @slot = slot
         # Cost is optional; if present this overrides the normal cost of the token
         @cost = cost
         @tokener = tokener
+        @token_index = token_index
         # token may be nil because when you upgrade someone's 00
         # and place their token, you pretend to be them and you may not have a token
         token_owner = @tokener || (@entity.company? ? @entity.owner : @entity)
@@ -30,6 +31,7 @@ module Engine
           cost: h['cost'],
           tokener: game.corporation_by_id(h['tokener']) || game.minor_by_id(h['tokener']),
           token_type: h['token_type'],
+          token_index: h['token_index'],
         }
       end
 
@@ -40,6 +42,7 @@ module Engine
           'cost' => @cost,
           'tokener' => @tokener&.id,
           'token_type' => @token&.type == :normal ? nil : @token&.type,
+          'token_index' => @token_index,
         }
       end
     end

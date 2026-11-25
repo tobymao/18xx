@@ -397,6 +397,10 @@ module View
           @end_y += end_delta_y
         end
 
+        def should_render?
+          !@begin_edge.nil? || !@end_edge.nil?
+        end
+
         def preferred_render_locations
           return [{ region_weights: [], x: 0, y: 0 }] unless @pass == 1
 

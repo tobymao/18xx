@@ -441,12 +441,14 @@ module Engine
           },
           {
             name: '2P',
+            extra: true,
             distance: 2,
             num: 1,
             price: 0,
           },
           {
             name: 'LP',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -470,6 +472,7 @@ module Engine
           },
           {
             name: 'P+',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -587,11 +590,6 @@ module Engine
           ])
         end
 
-        def must_buy_train?(entity)
-          entity.trains.none? { |t| !extra_train?(t) } &&
-          !depot.depot_trains.empty?
-        end
-
         def corporation_from_company(company)
           corporation_by_id(company.id[1..-1])
         end
@@ -675,7 +673,7 @@ module Engine
               corp = find_corporation(company)
               corp.reservation_color = :white
 
-              stock_market.set_par(corp, par_price)
+              par_corporation(corp, par_price)
 
               share = corp.shares.first
               bundle = share.to_bundle

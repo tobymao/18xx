@@ -26,7 +26,7 @@ module Engine
             entity = action.entity
             share_price = action.share_price
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
 
             bundle = minor_starting_bundle(corporation)
             concession = exchange_concession(entity)
@@ -132,6 +132,18 @@ module Engine
             return true if minor_not_parred && discount.positive?
 
             # Fallback to default engine rules
+            super
+          end
+
+          def can_dump?(entity, bundle)
+            return true if bundle.corporation.type == :national
+
+            super
+          end
+
+          def allow_president_change?(corporation)
+            return false if corporation.type == :national
+
             super
           end
         end

@@ -17,7 +17,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '$%s'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11, 7 => 9, 8 => 8, 9 => 7, 10 => 6, 11 => 6, 12 => 5 }.freeze
 
@@ -211,6 +211,20 @@ module Engine
         include InterestOnLoans
         attr_accessor :pittsburgh_private
         attr_reader :owner_when_liquidated, :stock_prices_start_merger
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['5 or 10-share Corporation sold out at end of SR', '1 →'],
+            ['Per share in market at end of SR', '1 ←'],
+            ['Per loan taken', '1 ←'],
+            ['Per loan repaid', '1 →'],
+          ]
+        end
 
         def timeline
           @timeline = [

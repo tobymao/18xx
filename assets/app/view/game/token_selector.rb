@@ -22,7 +22,11 @@ module View
         @size = @token_size / 2
         @distance = @token_size
 
-        tokener = @game.token_owner(@game.current_entity)
+        entity = @game.current_entity
+        step = @game.round.step_for(@selected_company || entity, 'place_token')
+        return render_token_choices(step, entity) if step.respond_to?(:selectable_token_choices)
+
+        tokener = @game.token_owner(entity)
         tokens = tokener.tokens_by_type
         tokens = list_coordinates(tokens, @distance, @size).map do |token, left, bottom|
           click = lambda do
@@ -47,6 +51,42 @@ module View
           }
 
           h(:img, props)
+        end
+
+        h(:div, tokens)
+      end
+
+      private
+
+      def render_token_choices(step, entity)
+        options = step.selectable_token_choices(entity, @tile_selector.city)
+        tokens = list_coordinates(options, @distance, @size).map do |option, left, bottom|
+          token = option[:token]
+          cost = option[:cost]
+          disabled = cost > entity.cash
+          click = lambda do
+            process_action(Engine::Action::PlaceToken.new(
+              entity,
+              city: @tile_selector.city,
+              slot: @tile_selector.slot_index,
+              token_index: option[:index],
+              cost: cost,
+            ))
+          end
+          attrs = { type: 'button' }
+          attrs[:disabled] = true if disabled
+          props = {
+            attrs: attrs,
+            on: disabled ? {} : { click: click },
+            style: style(left, bottom, @token_size).merge(
+              padding: '0',
+              fontSize: "#{12 * @zoom}px",
+              opacity: disabled ? 0.6 : 1,
+            ),
+          }
+          logo = setting_for(:simple_logos, @game) ? token.simple_logo : token.logo
+          image = h(:img, attrs: { src: logo, alt: '' }, style: { display: 'block', width: '50%', margin: 'auto' })
+          h(:button, props, [image, @game.format_currency(cost)])
         end
 
         h(:div, tokens)
