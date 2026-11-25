@@ -49,6 +49,8 @@ module Engine
 
       connections = {}
 
+      @shared_track = {}
+      @max_route_stops = {}
       graph = @game.graph_for_entity(corporation)
       nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = trains
@@ -65,7 +67,7 @@ module Engine
       now = Time.now
 
       skip_paths = if @train_autoroute_group.nil?
-                     static.flat_map(&:paths).to_h { |path| [path, true] }
+                     static.flat_map(&:paths).reject { |path| shared_track?(path) }.to_h { |path| [path, true] }
                    elsif @train_autoroute_group == :each_train_separate
                      # all trains have their own autoroute group so it's not possible to fill skip_paths
                      {}
@@ -94,7 +96,8 @@ module Engine
         end
 
         walk_corporation = graph.no_blocking? ? nil : corporation
-        node.walk(corporation: walk_corporation, skip_paths: skip_paths) do |_, vp|
+        graph.walk_token(node, corporation: walk_corporation, skip_paths: skip_paths, links: true,
+                               revisit: true) do |_, vp|
           paths = vp.keys
           chains = []
           chain = []
@@ -104,7 +107,7 @@ module Engine
           last_right = nil
 
           complete = lambda do
-            chains << { nodes: [left, right], paths: chain, hexes: chain.map(&:hex) }
+            chains << { nodes: [left, right], paths: chain }
             last_left = left
             last_right = right
             left, right = nil
@@ -130,10 +133,18 @@ module Engine
           end
 
           paths.each do |path|
-            chain << path
-            a, b = path.nodes
+            if path.path?
+              chain << path
+              a, b = path.nodes
 
-            assign.call(a, b) if a || b
+              assign.call(a, b) if a || b
+            else
+              chain = []
+              left = nil
+              right = nil
+              chains << path.chain
+              last_left, last_right = path.nodes
+            end
           end
 
           # a 1-city Local train will have no chains but will have a left; route.revenue will reject if not valid for game
@@ -148,7 +159,8 @@ module Engine
             # of them
             id = [left]
           else
-            id = chains.flat_map { |c| c[:paths] }.sort!
+            paths = chains.flat_map { |c| c[:paths] }
+            id = [paths.map!(&:object_id).sort!, chains.filter_map { |c| c[:id] if c[:paths].empty? }]
           end
 
           next if connections[id]
@@ -158,12 +170,22 @@ module Engine
           end
 
           connection = connections[id]
+          bitfield = bitfield_from_connection(connection, hexside_bits)
+          stops = connection.flat_map { |conn| [conn[:left], conn[:right]] }.uniq.compact.flat_map(&:stops)
+          city_stops = stops.count { |stop| !stop.town? }
+          town_stops = stops.count(&:town?)
+          connection_cost = stop_limited?(trains) ? @game.auto_router_connection_cost(connection, corporation) : nil
 
           # each train has opportunity to vote to abort a branch of this node's path-walk tree
           path_abort = trains.to_h { |train| [train, true] }
 
           # build a test route for each train, use route.revenue to check for errors, keep the good ones
           trains.each  do |train|
+            if too_many_stops?(city_stops, town_stops, train, connection_cost || 0)
+              path_abort.delete(train)
+              next
+            end
+
             route = Engine::Route.new(
               @game,
               @game.phase,
@@ -172,7 +194,8 @@ module Engine
               # If we don't clone, then later route.touch_node calls will affect all routes with
               # the same connection array
               connection_data: connection.clone,
-              bitfield: bitfield_from_connection(connection, hexside_bits),
+              bitfield: bitfield,
+              router_cost: connection_cost,
             )
             route.routes = [route]
             # defer route combination checks until we have the full combination of routes to check
@@ -209,6 +232,36 @@ module Engine
       [train_routes, path_walk_timed_out]
     end
 
+    def too_many_stops?(city_stops, town_stops, train, connection_cost = 0)
+      limit = route_stop_limit(train)
+      return false unless limit
+
+      (limit[:city] ? city_stops + connection_cost > limit[:city] : false) ||
+        (limit[:town] ? town_stops > limit[:town] : false)
+    end
+
+    def stop_limited?(trains)
+      trains.any? do |train|
+        limit = route_stop_limit(train)
+        limit[:city] || limit[:town]
+      end
+    end
+
+    def route_stop_limit(train)
+      @max_route_stops ||= {}
+      return @max_route_stops[train] if @max_route_stops.key?(train)
+
+      @max_route_stops[train] = @game.max_route_stops(train)
+    end
+
+    def shared_track?(path)
+      return @shared_track[path] if @shared_track&.key?(path)
+
+      value = @game.shared_track?(path)
+      @shared_track[path] = value if @shared_track
+      value
+    end
+
     # inputs:
     #   connection is a route's connection_data
     #   hexside_bits is a map of hexside_id to bit number
@@ -219,8 +272,13 @@ module Engine
     def bitfield_from_connection(connection, hexside_bits)
       bitfield = [0]
       connection.each do |conn|
-        paths = conn[:chain][:paths]
-        if paths.size == 1 # special case for tiny intra-tile path like in 18NewEngland (issue #6890)
+        all_paths = conn[:chain][:paths]
+        paths = all_paths.reject { |path| shared_track?(path) }
+        next if paths.empty?
+
+        if paths.size == 1 && all_paths.size > 1
+          paths[0].edges.each { |edge| check_edge_and_set(bitfield, edge.id, hexside_bits) }
+        elsif paths.size == 1 # special case for tiny intra-tile path like in 18NewEngland (issue #6890)
           hexside_left = paths[0].nodes[0].id
           check_edge_and_set(bitfield, hexside_left, hexside_bits)
           if paths[0].nodes.size > 1 # local trains may not have a second node
@@ -316,10 +374,29 @@ module Engine
 
           // TODO: I wonder if it's always true that revenue is less than
           // or equal to the sum of the revenues of trains individually
+          // Bound the remaining trains by the best route for each one that
+          // does not overlap the routes already chosen for its train group.
+          // This is tighter than always using each train's single best route,
+          // and is still an upper bound on any completion of this prefix.
+          let remaining_revenue = 0;
+          for (let train_data = current_train_data; train_data; train_data = train_data.next_train_data) {
+            const group_bits = routes_metadata.bitfield[train_data.train_group];
+            let best = 0;
+            for (const route of train_data.routes) {
+              if (!route || route.estimate_revenue <= best) {
+                continue;
+              }
+              if (js_route_bitfield_conflicts(route.bitfield, group_bits)) {
+                continue;
+              }
+              best = route.estimate_revenue;
+            }
+            remaining_revenue += best;
+          }
+
           return (
-            routes_metadata.estimate_revenue +
-              current_train_data.max_possible_revenue_for_rest_of_trains >
-              this.best_revenue_so_far
+            routes_metadata.estimate_revenue + remaining_revenue >
+            this.best_revenue_so_far
           );
         }
 
@@ -380,10 +457,6 @@ module Engine
           let train_data = null;
           let number_train_groups = 0;
           trains_to_routes.forEach((routes) => {
-            let r = train_data
-              ? train_data.max_possible_revenue_for_rest_of_trains
-              : 0;
-            r += routes[0].estimate_revenue;
             let train_group = 0;
             const game_group_rules = this.router.train_autoroute_group;
             if (game_group_rules == "each_train_separate") {
@@ -399,7 +472,6 @@ module Engine
             train_data = {
               routes,
               train_group,
-              max_possible_revenue_for_rest_of_trains: r,
               next_train_data: train_data,
             };
           });

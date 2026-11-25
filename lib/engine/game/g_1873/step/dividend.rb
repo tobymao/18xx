@@ -25,13 +25,11 @@ module Engine
             revenue = total_revenue(current_entity)
             receivership = current_entity.corporation? && current_entity.receivership? &&
               current_entity != @game.mhe
-            process_dividend(Action::Dividend.new(
-              current_entity,
-              kind: revenue.positive? && !receivership ? 'payout' : 'withhold',
-            ))
+            kind = revenue.positive? && !receivership ? 'payout' : 'withhold'
+            process_dividend(Action::Dividend.new(current_entity, kind: kind))
 
             current_entity.operating_history[[@game.turn, @round.round_num]] =
-              OperatingInfo.new([], @game.actions.last, revenue, @round.laid_hexes)
+              OperatingInfo.new([], @game.actions.last, revenue, @round.laid_hexes, dividend_kind: kind)
           end
 
           def total_revenue(entity)

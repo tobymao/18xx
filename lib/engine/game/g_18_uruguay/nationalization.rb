@@ -124,7 +124,7 @@ module Engine
           @fce.ipoed = true
           fce_share_price = compute_merger_share_price(corps)
           @fce.floatable = true
-          @stock_market.set_par(@fce, fce_share_price)
+          par_corporation(@fce, fce_share_price)
           after_par(@fce)
           @merge_data[:corp_share_sum] = @merge_data[:holders].sum do |holder|
             (affected_shares(holder, @merge_data[:corps]).sum(&:percent) / 20).to_i * 10

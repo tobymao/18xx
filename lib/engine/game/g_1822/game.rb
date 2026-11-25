@@ -238,12 +238,14 @@ module Engine
           },
           {
             name: '2P',
+            extra: true,
             distance: 2,
             num: 2,
             price: 0,
           },
           {
             name: 'LP',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -267,6 +269,7 @@ module Engine
           },
           {
             name: 'P+',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],
@@ -371,9 +374,6 @@ module Engine
           'NER' => 3,
         }.freeze
 
-        # These trains don't count against train limit, they also don't count as a train
-        # against the mandatory train ownership. They cant the bought by another corporation.
-        EXTRA_TRAINS = %w[2P P+ LP].freeze
         EXTRA_TRAIN_PULLMAN = 'P+'
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         LOCAL_TRAINS = %w[L LP].freeze
@@ -804,8 +804,7 @@ module Engine
         end
 
         def crowded_corp?(corp)
-          trains = corp.trains.count { |t| !extra_train?(t) }
-          crowded = trains > train_limit(corp)
+          crowded = num_corp_trains(corp) > train_limit(corp)
           crowded |= extra_train_permanent_count(corp) > 1
           crowded |= pullman_train_count(corp) > 1
           crowded
@@ -1058,11 +1057,6 @@ module Engine
           else
             super
           end
-        end
-
-        def must_buy_train?(entity)
-          entity.trains.none? { |t| !extra_train?(t) } &&
-          !depot.depot_trains.empty?
         end
 
         # TODO: [1822] Make include with 1861, 1867
@@ -1364,14 +1358,14 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           # This is needed because the S tile upgrade removes the town in yellow
           if self.class::UPGRADEABLE_S_HEX_NAME == from.hex&.name && from.color == :white
             return self.class::UPGRADEABLE_S_YELLOW_CITY_TILE == to.name
           end
 
           # Special case for P2 Middleton Railway where we remove a town from a tile
-          if self.class::TRACK_TOWN.include?(from.name) && self.class::TRACK_PLAIN.include?(to.name)
+          if special && self.class::TRACK_TOWN.include?(from.name) && self.class::TRACK_PLAIN.include?(to.name)
             return Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
           end
 
@@ -1781,10 +1775,6 @@ module Engine
           return 0 unless ability
 
           ability.count
-        end
-
-        def extra_train?(train)
-          self.class::EXTRA_TRAINS.include?(train.name)
         end
 
         def extra_train_permanent?(train)

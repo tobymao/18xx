@@ -24,12 +24,12 @@ module Engine
           !wagon?(train) && !NON_WAGON_TRAINS.include?(train.name) && train.track_type == :broad
         end
 
-        def num_wagons(entity)
-          entity.trains.count { |t| wagon?(t) }
+        def plus_train?(train)
+          train.name.end_with?('+')
         end
 
-        def num_corp_trains(entity)
-          entity.trains.count { |t| !wagon?(t) }
+        def num_wagons(entity)
+          entity.trains.count { |t| wagon?(t) }
         end
 
         # The gauge of regular train an entity may run/buy: minors narrow, majors broad.
@@ -43,6 +43,7 @@ module Engine
         end
 
         # Currently variants 2p medium, 3p short setup. Further variant support to be added later.
+        # TODO: drop the '8+' entries when 8+ goes num: 'unlimited' (#12722); num_trains reads this first, else N self-cloning 8+
         TRAIN_FOR_PLAYER_COUNT = {
           2 => {
             '2': 5,
@@ -190,7 +191,7 @@ module Engine
             ],
           },
           {
-            # TODO: switch to num: 'unlimited' once #12722 merges (see PHASES below).
+            # TODO: switch to num: 'unlimited' once #12722 merges.
             name: '8+',
             distance: 8,
             price: 700,
@@ -207,9 +208,9 @@ module Engine
             ],
           },
           # Sugar Cane Wagons — distance indicates cube capacity
-          { name: '1w', distance: 1, price: 40,  available_on: '2', rusts_on: '3w' },
-          { name: '2w', distance: 2, price: 80,  available_on: '4' },
-          { name: '3w', distance: 3, price: 150, available_on: '6' },
+          { name: '1w', distance: 1, price: 40,  available_on: '2', rusts_on: '3w', extra: true },
+          { name: '2w', distance: 2, price: 80,  available_on: '4', extra: true },
+          { name: '3w', distance: 3, price: 150, available_on: '6', extra: true },
           # Narrow Gauge Trains
           {
             name: '2n',
@@ -252,6 +253,14 @@ module Engine
             track_type: :narrow,
             available_on: '5',
             discount: { '4n' => 130, '4-1n' => 65 },
+          },
+          {
+            name: '1',
+            distance: 1,
+            price: 0,
+            track_type: :broad,
+            num: 1,
+            reserved: true,
           },
           ].freeze
 

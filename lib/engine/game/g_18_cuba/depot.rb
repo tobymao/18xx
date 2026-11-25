@@ -17,7 +17,20 @@ module Engine
           return super unless @game.trainless?(current_entity)
 
           gauge = @game.gauge_for(current_entity)
-          depot_trains.reject { |t| @game.wagon?(t) || t.track_type != gauge }.min_by(&:price)
+          depot_trains.reject { |t| @game.extra_train?(t) || t.track_type != gauge }.min_by(&:price)
+        end
+
+        def min_depot_price
+          train = min_depot_train
+          return super unless train
+          return super unless train.variants.values.any? { |v| v[:event_downgrade_variant] }
+
+          train.price
+        end
+
+        # FC trains are never bought back (rule VII.16); keyed on owner, as a flip back to the base variant restores buyable.
+        def other_trains(corporation)
+          super.reject { |t| t.owner == @game.fc }
         end
       end
     end

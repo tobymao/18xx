@@ -5,7 +5,9 @@
 
 lib/engine/game/g_1817* @crericha
 lib/engine/game/g_1828* @crericha
+lib/engine/game/g_1837* @crericha
 lib/engine/game/g_1844* @crericha
+lib/engine/game/g_1864* @crericha
 lib/engine/game/g_1880* @crericha
 lib/engine/game/g_18_neb* @crericha
 lib/engine/game/g_18_ny* @crericha
@@ -53,13 +55,10 @@ lib/engine/game/g_1824* @perwestling
 lib/engine/game/g_1862_solo* @perwestling
 lib/engine/game/g_1893* @perwestling
 
-lib/engine/game/g_1807* @ollybh
 lib/engine/game/g_1858* @ollybh
 lib/engine/game/g_1861* @ollybh
 lib/engine/game/g_1867* @ollybh
 lib/engine/game/g_18_ardennes* @ollybh
-
-lib/engine/game/g_1854* @andrewzwicky
 
 lib/engine/game/g_18_nl* @philcampeau
 lib/engine/game/g_1850_jr* @philcampeau
@@ -67,3 +66,5 @@ lib/engine/game/g_18_hiawatha* @philcampeau
 lib/engine/game/g_steam_over_holland* @philcampeau
 
 lib/engine/game/g_18_zoo* @carlorusso1984
+
+lib/engine/game/g_1835* @kepakiano

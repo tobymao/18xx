@@ -55,7 +55,7 @@ module Engine
     end
 
     def min_depot_train
-      depot_trains.min_by(&:price)
+      depot_trains.reject { |train| @game.extra_train?(train) }.min_by(&:price)
     end
 
     def min_depot_price
@@ -86,8 +86,12 @@ module Engine
       deleted = @upcoming.delete(train)
       return if !index || !deleted&.unlimited || (@upcoming[index]&.name == train.name)
 
-      insert_train(train.clone_unlimited, index)
+      insert_train(train.clone_unlimited(index: next_clone_index(train)), index)
       @game.update_trains_cache
+    end
+
+    def next_clone_index(train)
+      @trains.select { |t| t.sym == train.sym }.map(&:index).max + 1
     end
 
     def add_train(train)

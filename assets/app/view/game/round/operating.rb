@@ -116,11 +116,14 @@ module View
                   verticalAlign: 'top',
                 },
               }
+              corporations = @step.assignable_corporations(company)
 
-              @step.assignable_corporations(company).each do |corporation|
-                component = View::Game::Corporation.new(@root, corporation: corporation, selected_company: company)
+              unless corporations.empty?
                 store(:selected_company, company, skip: true)
-                left << h(:div, props, [component.render])
+                corporations.each do |corporation|
+                  component = View::Game::Corporation.new(@root, corporation: corporation, selected_company: company)
+                  left << h(:div, props, [component.render])
+                end
               end
             end
           end
@@ -160,11 +163,27 @@ module View
           }
 
           children = [
+            h(:div, render_choice_corporations),
             h('div#left.inline-block', left_props, left),
             h('div#right.inline-block', right_props, right),
           ]
 
           h(:div, children)
+        end
+
+        def render_choice_corporations
+          return [] if !@current_actions.include?('choose') || !@step.respond_to?(:choice_corporations)
+
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          @step.choice_corporations(@step.current_entity).map do |corporation|
+            h(:div, props, [h(Corporation, corporation: corporation, selectable: false), h(Choose, entity: corporation)])
+          end
         end
       end
     end

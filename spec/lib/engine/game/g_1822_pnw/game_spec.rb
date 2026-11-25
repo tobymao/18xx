@@ -160,6 +160,42 @@ describe Engine::Game::G1822PNW::Game do
     end
   end
 
+  describe 'no_tokens_left' do
+    it 'P11 counts a token city lay as its tile upgrade' do
+      game = fixture_at_action(510, clear_cache: true)
+
+      p11 = game.company_by_id('P11')
+      portland = game.hex_by_id('O8')
+      special_track = game.round.steps.find { |step| step.is_a?(Engine::Game::G1822PNW::Step::SpecialTrack) }
+
+      allow(special_track).to receive(:lay_tile)
+
+      expect(game.abilities(p11).upgrade_count).to eq(1)
+
+      special_track.process_lay_tile(
+        Engine::Action::LayTile.new(p11, hex: portland, tile: game.tile_by_id('X25-0'), rotation: 0)
+      )
+
+      expect(p11.closed?).to be(true)
+    end
+
+    it 'P11 is closed after laying a yellow tile in a token city' do
+      game = fixture_at_action(510, clear_cache: true)
+
+      p11 = game.company_by_id('P11')
+      portland = game.hex_by_id('O8')
+      special_track = game.round.steps.find { |step| step.is_a?(Engine::Game::G1822PNW::Step::SpecialTrack) }
+
+      allow(special_track).to receive(:lay_tile)
+
+      special_track.process_lay_tile(
+        Engine::Action::LayTile.new(p11, hex: portland, tile: game.tile_by_id('X24-0'), rotation: 0)
+      )
+
+      expect(p11.closed?).to be(true)
+    end
+  end
+
   describe 'mill_ski_coal' do
     it 'does not allow mill or ski companies to use the coal hex' do
       # https://boardgamegeek.com/thread/3533826/article/46291488#46291488

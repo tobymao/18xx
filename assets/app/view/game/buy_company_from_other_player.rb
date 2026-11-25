@@ -7,6 +7,8 @@ module View
     class BuyCompanyFromOtherPlayer < Snabberb::Component
       include Actionable
 
+      needs :companies
+
       def render
         props = {
           style: {
@@ -16,16 +18,20 @@ module View
           },
         }
 
-        max = @game.current_entity.cash.to_s.size
+        step = @game.round.active_step
+        player = @game.current_entity
+        ranges = @companies.map { |company| step.price_range(player, company) }
+        min = ranges.map(&:first).min
+        max = ranges.map(&:last).max
         input = h(:input, style: { marginBottom: '0.5rem', marginRight: '1rem' }, props: {
-                    value: 1,
+                    value: min,
                     type: 'number',
-                    min: 1,
+                    min: min,
                     max: max,
                     size: max.to_s.size + 2,
                   })
         children = [input]
-        @game.round.active_step.purchasable_companies(@game.current_entity).each do |company|
+        @companies.each do |company|
           children << render_company_buy(input, company)
         end
         h(:div, props, children)

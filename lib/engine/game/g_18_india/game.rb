@@ -324,7 +324,7 @@ module Engine
         def assign_initial_ipo_price(corporations)
           corporations.each do |corporation|
             ipo_price = @stock_market.par_prices.find { |p| p.price == corporation.min_price }
-            @stock_market.set_par(corporation, ipo_price)
+            par_corporation(corporation, ipo_price)
             corporation.ipoed = true
             # remove marker from Marker Chart, it will be palced on chart when it Floats
             corporation.share_price.corporations.delete(corporation)
@@ -1052,6 +1052,11 @@ module Engine
           @unclaimed_commodities + corporation.commodities
         end
 
+        # Corporation currently holding the concession for a commodity, if any
+        def concession_holder(commodity)
+          @corporations.find { |corporation| corporation.commodities.any? { |claimed| claimed.start_with?(commodity) } }
+        end
+
         # Test using Ability to display Claimed Commodities on VIEW for Corporation card
         def claim_concession(corporation, commodity)
           ability = corporation.all_abilities.find { |a| a.type == :commodities }
@@ -1311,6 +1316,18 @@ module Engine
               { image: '/icons/18_india/rice.svg', props: { style: yellow_cell_style } },
               { image: '/icons/18_india/spices.svg', props: { style: yellow_cell_style } },
               { image: '/icons/18_india/tea.svg', props: { style: yellow_cell_style } },
+            ],
+            [
+              { text: 'Concession Holder', props: { style: cell_style, attrs: { colspan: 2 } } },
+              *%w[COTTON GOLD JEWELRY OIL OPIUM ORE RICE SPICES TEA].map do |commodity|
+                holder = concession_holder(commodity)
+                if holder
+                  holder_style = { **cell_style, backgroundColor: holder.color, color: holder.text_color }
+                  { text: holder.name, props: { style: holder_style } }
+                else
+                  { text: '-', props: { style: cell_style } }
+                end
+              end,
             ],
             [
               { text: 'Chennai', props: { style: cell_style } },

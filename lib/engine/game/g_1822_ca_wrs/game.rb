@@ -27,6 +27,7 @@ module Engine
         TRAINS = (G1822CA::Scenario::TRAINS + [
           {
             name: 'G',
+            extra: true,
             distance: [
               {
                 'nodes' => ['city'],

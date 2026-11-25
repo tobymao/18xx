@@ -37,6 +37,10 @@ module View
       render_broken
     end
 
+    def profile_links?
+      @gdata['mode'].to_s != 'hotseat'
+    end
+
     def new?
       @gdata['status'] == 'new'
     end
@@ -126,13 +130,22 @@ module View
       }
 
       dev_status = game.meta::DEV_STAGE
+      dev_suffix = dev_status != :production ? " (#{dev_status})" : ''
+
+      title_elm =
+        if game.meta::GAME_INFO_URL
+          link_props = {
+            attrs: { href: game.meta::GAME_INFO_URL, target: '_blank' },
+            style: { color: 'inherit', textDecoration: 'none' },
+          }
+          h(:a, link_props, game.display_title)
+        else
+          game.display_title
+        end
 
       h('div.header', div_props, [
         h(:div, text_props, [
-          h(:div, [
-            "Game: #{game.display_title}",
-            (dev_status != :production ? " (#{dev_status})" : ''),
-          ].join),
+          h(:div, ['Game: ', title_elm, dev_suffix]),
           h('div.nowrap', owner_props, "Owner: #{@gdata['user']['name']}"),
         ]),
         h(:div, buttons_props, buttons),
@@ -225,7 +238,7 @@ module View
         else
           player_props = { attrs: { title: player['name'].to_s } }
           elm = h(:span, [
-            h(acting?(player) ? :em : :span, player_props, [profile_link(player['id'], short_name)]),
+            h(acting?(player) ? :em : :span, player_props, [profile_link(player['id'], short_name, link: profile_links?)]),
             index == (players.size - 1) || (owner? && new?) ? '' : ', ',
           ])
         end
@@ -267,7 +280,7 @@ module View
         r_elm = scoring_players.map.with_index do |(player, score), index|
           player_props = { attrs: { title: player['name'] } }
           h(:span, player_props, [
-            profile_link(player['id'], player['name'].truncate),
+            profile_link(player['id'], player['name'].truncate, link: profile_links?),
             " #{score}",
             index == scoring_players.size - 1 ? '' : ', ',
           ])

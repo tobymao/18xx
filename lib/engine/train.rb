@@ -8,7 +8,7 @@ module Engine
     include Ownable
 
     attr_accessor :obsolete, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
-                  :distance, :reserved, :no_local, :multiplier, :track_type
+                  :distance, :reserved, :extra, :no_local, :multiplier, :track_type
     attr_reader :available_on, :discount, :sym, :variant, :requires_token, :ever_operated, :operated, :salvage, :unlimited
 
     attr_writer :buyable
@@ -34,20 +34,21 @@ module Engine
       @track_type = opts[:track_type] || :broad
       @events = (opts[:events] || []).select { |e| @index == (e['when'] || 1) - 1 }
       @reserved = opts[:reserved] || false
+      @extra = opts[:extra] || false
       @requires_token = opts[:requires_token].nil? ? true : opts[:requires_token]
       @unlimited = opts[:num] == 'unlimited'
       @opts = opts
       init_variants(opts[:variants])
     end
 
-    def clone_unlimited
+    def clone_unlimited(index: @index + 1)
       raise GameError, "Cannot clone #{self}, opts[:num] = #{@opts[:num]}" unless @unlimited
 
       # If there are multiple variants of this rank of train we need to clone
       # the base variant, which is always at the head of the @variants array.
       base = @variants.values.first
       Train.new(name: base[:name], distance: base[:distance],
-                price: base[:price], index: @index + 1, **@opts)
+                price: base[:price], index: index, **@opts)
     end
 
     def operated=(value)

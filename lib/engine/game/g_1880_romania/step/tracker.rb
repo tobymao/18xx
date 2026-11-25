@@ -26,12 +26,7 @@ module Engine
 
           hex.tile.borders.each do |border|
             next unless border.type == :impassable
-
-            neighbor = hex.all_neighbors[border.edge]
-            next unless neighbor
-
-            inv_edge = Engine::Hex.invert(border.edge)
-            next if neighbor.paths[inv_edge].empty?
+            next unless hex.all_neighbors[border.edge]
 
             connected_edges |= [border.edge]
           end

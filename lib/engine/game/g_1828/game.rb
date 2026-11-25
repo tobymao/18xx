@@ -549,7 +549,7 @@ module Engine
             @log << "#{system.name} cannot have two coal markers, returning one to Virginia Coalfields"
           end
 
-          @stock_market.set_par(system, system_market_price(corporations))
+          par_corporation(system, system_market_price(corporations))
           system.ipoed = true
 
           system
@@ -874,7 +874,7 @@ module Engine
         end
 
         def route_includes_coalfields?(route)
-          route.connection_hexes.flatten.include?(self.class::VA_COALFIELDS_HEX)
+          route.connection_hex_ids.include?(self.class::VA_COALFIELDS_HEX)
         end
 
         def route_uses_tile_lay(route)

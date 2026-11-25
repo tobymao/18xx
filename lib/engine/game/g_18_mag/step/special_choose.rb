@@ -58,18 +58,11 @@ module Engine
               city_distance_value = distance.find { |n| n['nodes'].include?('city') }['pay']
               town_distance_value = town_distance['pay'] + 1
             end
+
             @round.ma_plus_train.distance = [
-                {
-                  nodes: %w[town],
-                  pay: town_distance_value,
-                  visit: town_distance_value,
-                },
-                {
-                  nodes: %w[city offboard town],
-                  pay: city_distance_value,
-                  visit: city_distance_value,
-                },
-              ]
+              { 'nodes' => %w[town], 'pay' => town_distance_value, 'visit' => town_distance_value },
+              { 'nodes' => %w[city offboard town], 'pay' => city_distance_value, 'visit' => city_distance_value },
+            ]
           end
         end
       end

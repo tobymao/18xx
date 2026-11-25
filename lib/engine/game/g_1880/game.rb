@@ -57,6 +57,8 @@ module Engine
 
         TRAINS_NOT_TRIGGERING_SR = %w[2R 8E 10].freeze
 
+        ROCKET_TRAIN = '4'
+
         GAME_END_REASONS_TEXT = {
           final_train: 'Last 8 train sold',
         }.freeze
@@ -351,8 +353,12 @@ module Engine
           @can_cross_buy = true
         end
 
+        def rocket_train_name
+          self.class::ROCKET_TRAIN
+        end
+
         def force_exchange_rocket
-          return if rocket.closed?
+          return if rocket.nil? || rocket.closed?
 
           player_corps = @corporations.select { |c| c.owner == rocket.owner }
 
@@ -623,10 +629,10 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company.owner
+          revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company&.owner
 
           stop_hexes = stops.map(&:hex)
-          revenue += 20 if route.corporation.owner == taiwan_company.owner && stop_hexes.include?(taiwan_hex)
+          revenue += 20 if route.corporation.owner == taiwan_company&.owner && stop_hexes.include?(taiwan_hex)
           revenue += 50 if trans_siberian_bonus?(stops)
 
           revenue
@@ -742,7 +748,8 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          if train.name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
+          if train.name == rocket_train_name && rocket && !rocket.closed? &&
+             @depot.upcoming.first.name != train.name
             @rocket_train = train
             return
           end

@@ -118,8 +118,8 @@ module Engine
           mainline.full_name = mainline.full_name[0..-2] + 'ML'
           mainline.float_percent = 50
           shortline.full_name = shortline.full_name[0..-2] + 'SL'
-          stock_market.set_par(mainline, stock_market.share_price([1, 1]))
-          stock_market.set_par(shortline, stock_market.share_price([2, 1]))
+          par_corporation(mainline, stock_market.share_price([1, 1]))
+          par_corporation(shortline, stock_market.share_price([2, 1]))
 
           # Mainline and Shortline tokens start on the board
           @hexes.each do |hex|
@@ -495,6 +495,17 @@ module Engine
           super
         end
 
+        def value_for_dumpable(player, corporation)
+          max_bundle = bundles_for_corporation(player, corporation)
+            .select do |bundle|
+              bundle.percent <= self.class::TURN_SELL_LIMIT &&
+                can_dump?(player, bundle) &&
+                @share_pool&.fit_in_bank?(bundle)
+            end
+            .max_by(&:price)
+          max_bundle&.price || 0
+        end
+
         def can_go_bankrupt?(player, corporation)
           return false if player == @union_bank
 
@@ -577,17 +588,17 @@ module Engine
         end
 
         # Allow a company to split, if the owner has >= 40 percent, at least two
-        # tokens out and there is a tranch available
-        def can_split?(corporation, spliter)
+        # tokens out and there is a tranch available. The UB owner splits for the UB.
+        def can_split?(corporation, splitter)
           return false unless tranch_available?
           return false if corporation.name == 'PEIR'
           return false unless corporation.ipoed
 
-          # Have to own the company in question
-          return false unless corporation.owner == spliter
+          # Have to control the corp in question
+          return false unless acting_for_entity(corporation) == splitter
 
           # Have to own at least 40 percent
-          return false unless spliter.percent_of(corporation) >= 40
+          return false unless corporation.owner.percent_of(corporation) >= 40
 
           # Have to have two tokens of this corporation out on the map
           corporation.placed_tokens.size >= 2

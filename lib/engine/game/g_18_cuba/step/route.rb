@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/route'
+require_relative 'skip_for_national'
 
 module Engine
   module Game
@@ -8,6 +9,8 @@ module Engine
       module Step
         # 18Uruguay-style: while routing, a major attaches wagons and loads on-route sugar cubes (rule VII.9/VII.10/VII.11).
         class Route < Engine::Step::Route
+          include SkipForNational
+
           # setup runs per corporation (next_entity!), so reset both hashes between corps within an OR.
           def setup
             super
@@ -25,6 +28,18 @@ module Engine
 
             actions += %w[choose] if choosing?(entity)
             actions
+          end
+
+          def process_run_routes(action)
+            super
+            @game.pay_fc_rent!(action.entity, action.routes)
+          end
+
+          def available_hex(entity, hex)
+            return true if super
+            return false if entity.type == :minor
+
+            @game.fc_bypass_graph.reachable_hexes(entity)[hex]
           end
 
           def choosing?(entity)

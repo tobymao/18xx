@@ -228,6 +228,9 @@ TEST_CASES = [
      'stock',
      ['Stock Round 3',
       '10 receives $110 in its Treasury']]]],
+  ['1837',
+   '1837_game_end_bank',
+   [[821, 'exchange_round', 'Exchange Round before Operating Round 8.2']]],
 ].freeze
 
 AUTO_ACTIONS_TEST_CASES = [
@@ -247,12 +250,21 @@ AUTO_ACTIONS_TEST_CASES = [
 ].freeze
 
 describe 'Assets' do
-  before(:all) { @subject = Assets.new }
+  before(:all) do
+    @subject = Assets.new
+    @assets_by_titles = {}
+  end
 
   subject { @subject }
 
-  def render(**needs)
-    subject.html('assets/app/app.rb', **needs)
+  def assets_for(titles)
+    return subject if @assets_by_titles.key?(:all)
+
+    @assets_by_titles[titles] ||= titles == :all ? subject : Assets.new
+  end
+
+  def render(titles: :all, **needs)
+    assets_for(titles).html('assets/app/app.rb', titles: titles, **needs)
   end
 
   describe '#html' do
@@ -309,6 +321,17 @@ describe 'Assets' do
       expect(render(app_route: '/login')).to include('Login')
     end
 
+    it 'renders the captcha on the login form of a game card page' do
+      html = render(
+        app_route: '/game/1',
+        turnstile_sitekey: 'site-key',
+        game_data: { id: 1, status: 'new', title: '1889', players: [], actions: [] },
+      )
+
+      expect(html).to include('You need to login before joining a game:')
+      expect(html).to include('class="turnstile"')
+    end
+
     it 'renders signup' do
       expect(render(app_route: '/signup')).to include('Signup')
     end
@@ -346,7 +369,7 @@ describe 'Assets' do
       }.each do |game_title, expected_strings|
         context game_title do
           it 'renders map' do
-            rendered = render(app_route: "/map/#{game_title}")
+            rendered = render(titles: [game_title], app_route: "/map/#{game_title}")
 
             aggregate_failures 'expected strings' do
               expected_strings.each { |s| expect(rendered).to include(s) }
@@ -359,6 +382,33 @@ describe 'Assets' do
     it 'renders new_game' do
       expect(render(app_route: '/new_game')).to include('Create New Game')
       expect(render(app_route: '/new_game', title: '1889')).to include('Shikoku 1889')
+    end
+
+    it 'renders Aggressive Game on the 18OE setup form' do
+      html = render(app_route: '/new_game', title: '18OE')
+
+      expect(html).to include('Designs In Creative Entertainment, LLC.', 'Aggressive Game')
+      expect(render(app_route: '/new_game', title: '18OE UK-France Scenario')).not_to include('Aggressive Game')
+    end
+
+    it 'offers Extended Full Game for an eight-player 18OE hotseat game' do
+      script = <<~RUBY
+        standard = View::CreateGame.html(title: '18OE')
+        hotseat = { title: '18OE', mode: :hotseat, min_players: 2, max_players: 8 }
+        extended = View::CreateGame.html(**hotseat, optional_rules: [:extended_full_game])
+        without_rule = View::CreateGame.html(**hotseat)
+        two_players = View::CreateGame.html(**hotseat.merge(max_players: 2))
+        scenario = View::CreateGame.html(title: '18OE UK-France Scenario')
+        [standard, extended, without_rule, two_players, scenario]
+      RUBY
+      standard, extended, without_rule, two_players, scenario = subject.context([]).eval(Opal.compile(script))
+
+      expect(standard).to include('Extended Full Game')
+      expect(extended).to include('Player 8', 'Extended Full Game')
+      expect(extended).to match(%r{<button[^>]*disabled="false"[^>]*>Create</button>})
+      expect(without_rule).to match(%r{<button[^>]*disabled="true"[^>]*>Create</button>})
+      expect(two_players).to match(/<input[^>]*id="extended_full_game"[^>]*disabled="true"/)
+      expect(scenario).not_to include('Extended Full Game')
     end
 
     it 'renders game' do
@@ -389,6 +439,265 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#auto', **needs)).to include('Auto Actions')
     end
 
+    it 'shows remaining track rights chits and removed regionals in the first 18OE stock round' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        require_tree 'engine/game/g_18_oe_uk_fr'
+
+        def start_stock_round(game)
+          game.instance_variable_set(:@round, game.stock_round)
+        end
+
+        players = { 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }
+        game = Engine::Game::G18OE::Game.new(players, id: 1, seed: 1)
+        start_stock_round(game)
+        initial = View::Game::Help.html(game: game)
+        game.claim_region!(game.corporation_by_id('A'), 'UK')
+        after_claim = View::Game::Help.html(game: game)
+        %w[B C D].zip(%w[UK FR PHS]).each { |id, zone| game.claim_region!(game.corporation_by_id(id), zone) }
+        after_withdrawal = View::Game::Help.html(game: game)
+
+        scenario = Engine::Game::G18OEUKFR::Game.new(players, id: 1, seed: 1)
+        start_stock_round(scenario)
+        short_initial = View::Game::Help.html(game: scenario)
+        scenario.remove_regional!(scenario.corporation_by_id('LNWR'))
+        %w[C H K M].zip(%w[UK UK FR FR]).each { |id, zone| scenario.claim_region!(scenario.corporation_by_id(id), zone) }
+        short_after_removal = View::Game::Help.html(game: scenario)
+
+        scenario.instance_variable_set(:@turn, 2)
+        start_stock_round(scenario)
+        [initial, after_claim, after_withdrawal, short_initial, short_after_removal, View::Game::Help.html(game: scenario)]
+      RUBY
+      initial, after_claim, after_withdrawal, short_initial, short_after_removal, second_round =
+        subject.context(['18OE', '18OE UK-France Scenario']).eval(Opal.compile(script))
+
+      expect(initial).to include('Available track rights zones: UK(2), PHS(2), FR(2), AH(2), IT(2), SP(2), SC(2), RU(2).',
+                                 'Removed regionals: None.')
+      expect(after_claim).to include('Available track rights zones: UK(1), PHS(2), FR(2),')
+      expect(after_withdrawal).to include('Available track rights zones: AH(2), IT(2), SP(2), SC(2), RU(2).')
+      expect(short_initial).to include('Available track rights zones: UK(2), FR(2).')
+      expect(short_after_removal).to include('Available track rights zones: None.',
+                                             'Removed regionals: London and North Western Railway.')
+      expect(second_round).not_to include('Available track rights zones:', 'Removed regionals:')
+    end
+
+    it 'renders Minor E track controls with only the blue-terrain point remaining' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        game = Engine::Game::G18OE::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 1, seed: 1)
+        entity = game.corporation_by_id('E')
+        entity.owner = game.players.first
+        game.bank.spend(120, entity)
+        game.minor_floated_regions['E'] = 'UK'
+        city = game.hex_by_id('J27').tile.cities.first
+        city.remove_all_reservations!
+        city.place_token(entity, entity.tokens.first, free: true)
+        round = Engine::Round::Operating.new(game, [Engine::Game::G18OE::Step::Track], round_num: 1)
+        round.entities = [entity]
+        round.instance_variable_set(:@current_operator, entity)
+        game.instance_variable_set(:@round, round)
+        step = round.steps.last
+        step.instance_variable_get(:@round).tile_points_used = 3
+        hex = game.hex_by_id('J29')
+        hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0;upgrade=cost:45,terrain:river'))
+        game.graph.clear
+        raise 'Eligible zero-point hex should keep Track active' unless step.auto_actions(entity).nil?
+        tile = step.upgradeable_tiles(entity, hex).first
+        selector = Lib::TileSelector.new(hex, tile, [0, 0], nil, entity, :map)
+        user = { 'id' => 1, 'name' => 'Player 1', 'settings' => { 'consent' => true } }
+        data = { 'id' => 1, 'title' => '18OE', 'actions' => [], 'loaded' => true,
+                 'status' => 'active', 'user' => user, 'players' => game.players.map { |p| { 'id' => p.id, 'name' => p.name } } }
+        html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1', tile_selector: selector)
+        hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0'))
+        game.graph.clear
+        auto_actions = step.auto_actions(entity)
+        unless auto_actions&.map { |action| [action.type, action.entity] } == [['pass', entity]]
+          raise 'Expected one automatic Pass for E when no zero-point candidate remains'
+        end
+        html
+      RUBY
+      html = subject.context(['18OE']).eval(Opal.compile(script))
+
+      expect(html).to include('Lay Track', '0 track points + 1 blue-terrain point (yellow lays only)',
+                              'Skip (Track)', '✔', '✖')
+      expect(html).not_to include('cannot be continued')
+    end
+
+    it 'renders Minor F track controls and independent E/F points on an acquiring major' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        game = Engine::Game::G18OE::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 1, seed: 1)
+        entity = game.corporation_by_id('F')
+        entity.owner = game.players.first
+        game.bank.spend(120, entity)
+        game.minor_floated_regions['F'] = 'UK'
+        city = game.hex_by_id('J27').tile.cities.first
+        city.remove_all_reservations!
+        city.place_token(entity, entity.tokens.first, free: true)
+        round = Engine::Round::Operating.new(game, [Engine::Game::G18OE::Step::Track], round_num: 1)
+        round.entities = [entity]
+        round.instance_variable_set(:@current_operator, entity)
+        game.instance_variable_set(:@round, round)
+        step = round.steps.last
+        step.instance_variable_get(:@round).tile_points_used = 3
+        hex = game.hex_by_id('J29')
+        hex.lay(Engine::Tile.from_code('J29', :white, 'double_town=revenue:0;upgrade=cost:45,terrain:mountain'))
+        game.graph.clear
+        raise 'Eligible green zero-point hex should keep Track active' unless step.auto_actions(entity).nil?
+        tile = step.upgradeable_tiles(entity, hex).first
+        selector = Lib::TileSelector.new(hex, tile, [0, 0], nil, entity, :map)
+        user = { 'id' => 1, 'name' => 'Player 1', 'settings' => { 'consent' => true } }
+        data = { 'id' => 1, 'title' => '18OE', 'actions' => [], 'loaded' => true,
+                 'status' => 'active', 'user' => user, 'players' => game.players.map { |p| { 'id' => p.id, 'name' => p.name } } }
+        minor_html = View::GamePage.html(game: game, game_data: data, user: user,
+                                        app_route: '/game/1', tile_selector: selector)
+        major = game.corporation_by_id('LNWR')
+        major.type = :major
+        major.owner = game.players.first
+        game.add_minor_charter!(game.corporation_by_id('E'), major)
+        game.add_minor_charter!(entity, major)
+        city.remove_tokens!
+        city.place_token(major, major.tokens.first, free: true)
+        game.graph.clear
+        round = Engine::Round::Operating.new(game, [Engine::Game::G18OE::Step::Track], round_num: 1)
+        round.entities = [major]
+        round.instance_variable_set(:@current_operator, major)
+        game.instance_variable_set(:@round, round)
+        round.tile_points_used = 6
+        major_html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1')
+        [minor_html, major_html]
+      RUBY
+      minor_html, major_html = subject.context(['18OE']).eval(Opal.compile(script))
+
+      expect(minor_html).to include('Lay Track', '0 track points + 1 green-terrain point (yellow lays only)',
+                                    'Skip (Track)', '✔', '✖')
+      expect(major_html).to include('0 track points + 1 blue-terrain point + 1 green-terrain point (yellow lays only)',
+                                    'Skip (Track)')
+      expect(minor_html + major_html).not_to include('cannot be continued')
+    end
+
+    it 'renders the 18OE Minor D bonus tokens on the map' do
+      script = <<~RUBY
+        require_tree 'engine/game/g_18_oe'
+        game = Engine::Game::G18OE::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 1, seed: 1)
+        game.minor_d_private.owner = game.corporation_by_id('D')
+        hex = game.hex_by_id('N31')
+        user = { 'id' => 1, 'name' => 'Player 1', 'settings' => { 'consent' => true } }
+        data = { 'id' => 1, 'title' => '18OE', 'actions' => [], 'loaded' => true,
+                 'status' => 'active', 'user' => user, 'players' => game.players.map { |p| { 'id' => p.id, 'name' => p.name } } }
+        game.place_minor_d_token!(hex)
+        early_html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1#map')
+        game.event_minor_d_token!
+        game.place_minor_d_token!(hex)
+        late_html = View::GamePage.html(game: game, game_data: data, user: user, app_route: '/game/1#map')
+        [early_html, late_html]
+      RUBY
+      early_html, late_html = subject.context(['18OE']).eval(Opal.compile(script))
+
+      expect(early_html).to include('href="/icons/18_oe/plus_twenty.svg"')
+      expect(late_html).to include('href="/icons/18_oe/plus_forty.svg"')
+      expect(late_html).not_to include('href="/icons/18_oe/plus_twenty.svg"')
+    end
+
+    describe 'Frost 1831' do
+      def frost_game_until_float
+        game = Engine::Game::GFrost1831::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 1)
+        100.times do
+          break unless game.round.is_a?(Engine::Round::Auction)
+
+          entity = game.current_entity
+          step = game.round.active_step
+          auctioning = step.auctioning
+          company = step.available.find(&:company?)
+          game.process_action(
+            if auctioning.is_a?(Engine::Corporation)
+              Engine::Action::Par.new(entity, corporation: auctioning,
+                                              share_price: step.get_par_prices(entity, auctioning).first)
+            elsif !auctioning && company
+              Engine::Action::Bid.new(entity, company: company, price: company.value)
+            else
+              Engine::Action::Pass.new(entity)
+            end
+          )
+        end
+        corporation = game.corporation_by_id('CM')
+        player = game.current_entity
+        game.process_action(Engine::Action::Par.new(player, corporation: corporation,
+                                                            share_price: game.stock_market.par_prices.first))
+        20.times do
+          break if corporation.floated?
+
+          entity = game.current_entity
+          game.process_action(
+            if entity == player
+              Engine::Action::BuyShares.new(entity, shares: corporation.ipo_shares.first, percent: 10)
+            else
+              Engine::Action::Pass.new(entity)
+            end
+          )
+        end
+        game
+      end
+
+      it 'renders the Influence Arena below the Faction choice' do
+        game = frost_game_until_float
+        expect(game.round.active_step).to be_a(Engine::Game::GFrost1831::Step::ChooseFactions)
+
+        player = game.current_entity
+        needs = {
+          game_data: {
+            id: 1,
+            user: { id: player.id, name: player.name },
+            players: game.players.map { |p| { id: p.id, name: p.name } },
+            title: 'Frost 1831',
+            actions: game.actions.map(&:to_h),
+            loaded: true,
+          },
+          user: { id: player.id, name: player.name, settings: { consent: true } },
+        }
+
+        expect(render(app_route: '/game/1', **needs)).to include('Choose faction to support for', 'Influence Arena')
+      end
+
+      it 'renders the Influence Arena below the Influence choice' do
+        game = frost_game_until_float
+        corporation = game.corporation_by_id('CM')
+        2.times do
+          game.process_action(Engine::Action::Choose.new(game.current_entity, choice: game.round.active_step.choices.keys.first))
+        end
+        50.times do
+          break if game.round.active_step.is_a?(Engine::Game::GFrost1831::Step::ChooseInfluence)
+
+          entity = game.current_entity
+          step = game.round.active_step
+          share = corporation.ipo_shares.first
+          game.process_action(
+            if share && step.actions(entity).include?('buy_shares') && step.can_buy?(entity, share.to_bundle)
+              Engine::Action::BuyShares.new(entity, shares: share, percent: share.percent)
+            else
+              Engine::Action::Pass.new(entity)
+            end
+          )
+        end
+        expect(game.round.active_step).to be_a(Engine::Game::GFrost1831::Step::ChooseInfluence)
+
+        player = corporation.owner
+        needs = {
+          game_data: {
+            id: 1,
+            user: { id: player.id, name: player.name },
+            players: game.players.map { |p| { id: p.id, name: p.name } },
+            title: 'Frost 1831',
+            actions: game.actions.map(&:to_h),
+            loaded: true,
+          },
+          user: { id: player.id, name: player.name, settings: { consent: true } },
+        }
+
+        expect(render(app_route: '/game/1', **needs)).to include('Allocate Influence for CM (Influence Zone)', 'Influence Arena')
+      end
+    end
+
     def render_game_at_action(data, action_count, string, suffix = '')
       data['actions'] = data['actions'].take(action_count) if action_count
       data[:loaded] = true
@@ -397,7 +706,7 @@ describe 'Assets' do
         user: data['user'].merge(settings: { consent: true }),
       }
 
-      html = render(app_route: "/game/#{needs[:game_data]['id']}#{suffix}", **needs)
+      html = render(titles: [data['title']], app_route: "/game/#{needs[:game_data]['id']}#{suffix}", **needs)
       strings = Array(string)
       strings.each do |str|
         if /^!!/.match?(str)

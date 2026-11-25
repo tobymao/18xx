@@ -383,6 +383,7 @@ module Engine
           'D13' => 'Cienfuegos',
           'D15' => 'Sancti Spiritus',
           'D19' => 'Camagüey',
+          'E4' => 'Isla de Tesoros',
           'E22' => 'Las Tunas',
           'E24' => 'Holguin',
           'F21' => 'Bayamo',
@@ -415,13 +416,13 @@ module Engine
             %w[B3 A6] => 'offboard=revenue:10;path=a:5,b:_0;icon=image:anchor',
             %w[A12 C20 D25] => 'offboard=revenue:10;path=a:0,b:_0;icon=image:anchor',
             %w[A8 A10 D23] => 'offboard=revenue:10;path=a:0,b:_0;path=a:5,b:_0;icon=image:anchor',
-            %w[E4 H27] => 'offboard=revenue:10;path=a:2,b:_0;icon=image:anchor',
+            ['E4'] => 'offboard=revenue:yellow_20|brown_40;path=a:2,b:_0;icon=image:anchor',
+            ['H27'] => 'offboard=revenue:10;path=a:2,b:_0;icon=image:anchor',
             %w[E12 H23] => 'offboard=revenue:10;path=a:3,b:_0;icon=image:anchor',
             %w[E14 H25] => 'offboard=revenue:10;path=a:2,b:_0;path=a:3,b:_0;icon=image:anchor',
           },
         }.freeze
 
-        FC_HEX = %w[B9 B11 C14 D15 D19 E22 G24].freeze
         SUGAR_CANE_HEXES = %w[D1 C2 E2 D5 D11 B13 C16 C18 E16 E18 G22 H21 D21 F29 G28
                               D9 G20 F27 F19 E26].freeze
 

@@ -42,7 +42,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
 
         TILE_LAYS = ([{ lay: true, upgrade: true, cost: 0 }] * 6).freeze
-        MUST_BUY_TRAIN = :always
+        MUST_BUY_TRAIN = :route
         CAPITALIZATION = :incremental
         ESTABLISHED = {
           'KP' => 1869,
@@ -573,7 +573,7 @@ module Engine
           corporation.ipoed = true
           corporation.floated = true
           price = @stock_market.share_price([0, 3])
-          @stock_market.set_par(corporation, price)
+          par_corporation(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
           corporation.set_cash(50, @bank)
@@ -975,7 +975,7 @@ module Engine
           corporation.floated = true
           price = @stock_market.share_price([0, 6])
           corporation.set_cash(price.price, @bank)
-          @stock_market.set_par(corporation, price)
+          par_corporation(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
           corporation
