@@ -7,13 +7,9 @@ module Engine
     module G18India
       module Step
         class SpecialToken < Engine::Step::SpecialToken
-          # P5 (Danish EIC) has when: ['token', 'special_token'], which routes
-          # through ability_blocking_step to find the active step type.  That
-          # check fails when the Token step is inactive (e.g. Nepal city is fully
-          # reserved, so can_token? returns false for regular tokens).  P5's
-          # availability should depend only on whether it's the owning corp's OR
-          # turn and P5 hasn't been used — not on whether a regular token slot
-          # exists.  Override ability() to check that directly.
+          # Base ability() routes through ability_blocking_step, which fails
+          # when the Token step is inactive (e.g. Nepal fully reserved) even
+          # though P5 itself should still be usable. Check directly instead.
           def ability(entity)
             return unless entity&.company?
             return unless @round.operating?

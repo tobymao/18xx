@@ -766,10 +766,8 @@ module Engine
           super
         end
 
-        # When a non-cheater token is placed in one Nepal city, move TR's tile-level
-        # reservation to a city-level reservation on the other Nepal city.  This protects
-        # TR's slot so that even a subsequent cheater token cannot consume it (the cheater
-        # machinery expands the city into a new slot instead of taking the reserved one).
+        # Moves TR's tile-level reservation to a city-level one on the other
+        # Nepal city, so a later cheater token can't consume it instead.
         def protect_tr_home_reservation(city, cheater: false)
           return if cheater
 
