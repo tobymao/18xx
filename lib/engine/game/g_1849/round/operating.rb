@@ -14,7 +14,7 @@ module Engine
           end
 
           def finished?
-            return false if @game.loan_choice_player
+            !@game.loan_choice_player && super
           end
 
           def after_process(action)
