@@ -60,6 +60,21 @@ module Engine
           ['21', 'Bellingham Bay and Eastern', 'M15', 0],
         ].freeze
 
+        # [id, name, kind, home hex]
+        INDUSTRIES = [
+          ['1', 'Bob White Lumber', :lumber, 'B6'],
+          ['5', 'St. Paul and Tacoma', :lumber, 'C13'],
+          ['6', 'Yakima Valley', :orchard, 'C19'],
+          ['8', 'Simpson', :lumber, 'D4'],
+          ['10', 'Snoqualmie Falls', :lumber, 'E17'],
+          ['15', 'Wenatchee Valley', :orchard, 'H20'],
+          ['16', 'Historical Accuracy', :orchard, 'I5'],
+          ['17', 'Charles R. McCormick', :lumber, 'I9'],
+          ['20', 'Skagit River', :lumber, 'K17'],
+          ['22', 'Okanagan', :orchard, 'M19'],
+        ].freeze
+        INDUSTRY_COLOR = { lumber: '#90c26f', orchard: '#e06666' }.freeze
+
         # [sym, name, color, text color, home hex, home city index, destination hex]
         MAJORS = [
           ['CPS', 'Columbia and Puget Sound', '#e05297', 'white', 'G13', 0, 'E21'],
@@ -84,6 +99,18 @@ module Engine
               desc: "A 50% director’s certificate in the associated minor company. Starting location is #{hex}.",
               abilities: [],
               color: '#ffffff',
+              text_color: 'black',
+            }
+          end,
+          *INDUSTRIES.map do |id, name, kind, hex|
+            {
+              name: "#{kind == :lumber ? 'LUMBER MILL' : 'ORCHARD'}: #{id}. #{name}",
+              sym: "I#{id}",
+              value: 60,
+              revenue: 0,
+              desc: "The 100% director’s certificate of the industry. Home industry tile is #{hex}.",
+              abilities: [],
+              color: INDUSTRY_COLOR[kind],
               text_color: 'black',
             }
           end,
@@ -117,6 +144,23 @@ module Engine
               coordinates: hex,
               city: city,
               color: '#ffffff',
+              text_color: 'black',
+            }
+          end,
+          *INDUSTRIES.map do |id, name, kind, hex|
+            {
+              sym: id,
+              name: name,
+              logo: "1887/#{id}",
+              tokens: [],
+              type: 'minor',
+              always_market_price: true,
+              float_percent: 100,
+              hide_shares: true,
+              shares: [100],
+              max_ownership_percent: 100,
+              coordinates: hex,
+              color: INDUSTRY_COLOR[kind],
               text_color: 'black',
             }
           end,
