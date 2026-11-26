@@ -43,3 +43,6 @@ validate/
 MAINLINE 1864 Forty-Niner Rules.pdf
 /map/
 /cards/
+
+# Claude Code local settings
+.claude/settings.local.json
