@@ -67,7 +67,7 @@ module Engine
 
       path_walk_timed_out = false
       walk_count = 0
-      now = Time.now
+      start = Time.now
 
       skip_paths = if @train_autoroute_group.nil?
                      static.flat_map(&:paths).reject { |path| shared_track?(path) }.to_h { |path| [path, true] }
@@ -90,7 +90,7 @@ module Engine
       @next_hexside_bit = 0
 
       nodes.each do |node|
-        if Time.now - now > path_timeout
+        if Time.now - start > path_timeout
           LOGGER.debug('Path timeout reached')
           path_walk_timed_out = true
           break
@@ -104,7 +104,7 @@ module Engine
           next :abort if path_walk_timed_out
 
           walk_count += 1
-          if (walk_count % TIMEOUT_CHECK_INTERVAL).zero? && Time.now - now > path_timeout
+          if (walk_count % TIMEOUT_CHECK_INTERVAL).zero? && Time.now - start > path_timeout
             LOGGER.debug('Path timeout reached during a node walk')
             path_walk_timed_out = true
             next :abort
@@ -226,7 +226,7 @@ module Engine
       # Check that there are no duplicate hexside bits (algorithm error)
       LOGGER.debug do
         "Evaluated #{connections.size} paths, found #{@next_hexside_bit} unique hexsides, and found valid routes "\
-          "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
+          "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - start}"
       end
 
       static.each do |route|
