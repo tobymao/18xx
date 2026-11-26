@@ -36,7 +36,7 @@ module Engine
       @reserved = opts[:reserved] || false
       @extra = opts[:extra] || false
       @requires_token = opts[:requires_token].nil? ? true : opts[:requires_token]
-      @unlimited = opts[:num] == 'unlimited'
+      @unlimited = opts[:unlimited]
       @opts = opts
       init_variants(opts[:variants])
     end
