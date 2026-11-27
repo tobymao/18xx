@@ -21,7 +21,7 @@ module View
                  ])
       end
 
-      players = Array.new(game::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
+      players = Array.new(game.max_players([], nil)) { |n| "Player #{n + 1}" }
       h(Game::StockMarket, game: game.new(players), explain_colors: true)
     end
   end

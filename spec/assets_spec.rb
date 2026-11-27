@@ -347,6 +347,7 @@ describe 'Assets' do
           20 30 40 50 60 80 15 10 B Asia
         ],
         '1846' => %w[Chicago],
+        '18OE' => %w[Belfast Constantinople],
 
         # games with full implementation; verify every string on the map
         '1889' => %w[
