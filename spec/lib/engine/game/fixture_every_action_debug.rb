@@ -9,8 +9,8 @@ fixture = '18Uruguay/18Uruguay_game_end_bankrupt.json'
 # best use is to identify exactly at which action something breaks in a
 # particular fixture.
 #
-# It sould be run with:
-#     `rspec spec/lib/engine/game/fixture_every_action.rb --fail-fast`
+# It should be run with:
+#     `rspec spec/lib/engine/game/fixture_every_action_debug.rb --fail-fast`
 #
 # This file is excluded from the default test suite since its name intentionally
 # does not end in `_spec.rb

@@ -57,7 +57,7 @@ Related docs:
 | --- | --- | --- |
 | Full suite (compile, specs, rubocop) | `docker compose exec rack rake` | `bundle exec rake` |
 | One spec file | `docker compose exec rack rspec <path>` | `bundle exec rspec <path>` |
-| One title's fixtures | `docker compose exec rack rspec spec/lib/engine/game/fixtures_spec.rb -e '<title>'` | `bundle exec rspec spec/lib/engine/game/fixtures_spec.rb -e '<title>'` |
+| One title's fixtures | `docker compose exec rack rspec spec/lib/engine/game/fixtures -e '<title>'` | `bundle exec rspec spec/lib/engine/game/fixtures -e '<title>'` |
 | One fixture | `... -e '<title> <fixture id>'` | `... -e '<title> <fixture id>'` |
 | Lint and autocorrect | `docker compose exec rack rubocop -a` | `bundle exec rubocop -a` |
 
@@ -144,7 +144,7 @@ When a change affects what the UI renders, render the page headlessly (above) at
 - Title specs live in `spec/lib/engine/game/g_<title>/`. View specs live in `spec/assets/app/view/`, and rendered-page
   assertions against fixtures go in `spec/assets_spec.rb`.
 - Fixtures live in `public/fixtures/<fixture dir>/` (`spec/fixtures` is a symlink) and run automatically in
-  `spec/lib/engine/game/fixtures_spec.rb`. See `public/fixtures/README.md` for the required fields and formatting
+  the shards under `spec/lib/engine/game/fixtures/`. See `public/fixtures/README.md` for the required fields and formatting
   (`make fixture_format`).
 
 ## Investigating a reported game
