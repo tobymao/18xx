@@ -240,6 +240,15 @@ module Engine
           end
         end
 
+        def merger_round
+          G1867::Round::Merger.new(self, [
+            G1867::Step::ReduceTokens,
+            G1867::Step::PostMergerShares,
+            Engine::Step::DiscardTrain,
+            G1812::Step::Merge,
+          ], round_num: @round.round_num)
+        end
+
         def next_round!
           clear_interest_paid
           @round =
@@ -253,12 +262,7 @@ module Engine
               if phase.name.to_i == 2
                 new_or!
               else
-                @log << "-- #{round_description('Merger', @round.round_num)} --"
-                G1867::Round::Merger.new(self, [
-                G1867::Step::ReduceTokens,
-                Engine::Step::DiscardTrain,
-                G1867::Step::Merge,
-              ], round_num: @round.round_num)
+                new_merger_round
               end
             when G1867::Round::Merger
               new_or!
