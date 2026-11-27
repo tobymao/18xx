@@ -109,6 +109,8 @@ module Engine
           },
         ].freeze
 
+        NAV_BAR_COLORS = { 'III' => MINT, 'V' => TAN }.freeze
+
         TRAINS = [
           {
             name: '2',
@@ -200,6 +202,10 @@ module Engine
 
         def ipo_name(_entity = nil)
           'Treasury'
+        end
+
+        def nav_bar_color
+          self.class::NAV_BAR_COLORS[@phase.name] || super
         end
 
         def new_auction_round

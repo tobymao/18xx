@@ -328,6 +328,9 @@ module View
     end
 
     def menu
+      nav_bar_color = @game.nav_bar_color
+      nav_bar_color = color_for(nav_bar_color) unless nav_bar_color.to_s.start_with?('#')
+
       bg_color =
         if @game_data['mode'] == :hotseat
           color_for(:hotseat_game)
@@ -349,7 +352,7 @@ module View
           top: '0',
           borderBottom: "1px solid #{color_for(:font2)}",
           borderTop: "1px solid #{color_for(:font2)}",
-          boxShadow: "0 5px 0 0 #{color_for(@game.nav_bar_color)}, 0 6px 0 0 #{color_for(:bg)}",
+          boxShadow: "0 5px 0 0 #{nav_bar_color}, 0 6px 0 0 #{color_for(:bg)}",
           backgroundColor: bg_color,
           color: active_player ? contrast_on(bg_color) : color_for(:font2),
           fontSize: 'large',
