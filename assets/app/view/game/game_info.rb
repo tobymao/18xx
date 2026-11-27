@@ -235,7 +235,7 @@ module View
 
           remaining =
             if trains.first.unlimited
-              '∞'
+              remaining.empty? ? '0' : '∞'
             else
               "#{remaining.size} / #{trains.size}"
             end
