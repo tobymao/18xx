@@ -446,6 +446,10 @@ module Engine
           redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: 0 }])
           redef_const(:EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST, true)
           redef_const(:REMOVE_UNUSED_RESERVATIONS, false)
+          redef_const(:HOME_TOKEN_TIMING, :operate)
+          redef_const(:STATUS_TEXT, {}.freeze)
+          redef_const(:CERT_LIMIT_INCLUDES_PRIVATES, true)
+          redef_const(:TILE_UPGRADES_MUST_USE_MAX_EXITS, [].freeze)
 
           if game_capitalization == :incremental
             ######################################################
