@@ -135,11 +135,11 @@ describe 'G18OE Right-of-Way (§11.1.9)' do
       expect(step.home_connectable?(entity, 2)).to be(true)
     end
 
-    it 'finds Barcelona a yellow route to the town next to it' do
+    it 'finds Barcelona a yellow route to the town next to it and to Palma' do
       barcelona = game.corporation_by_id('CHN')
       place_token!(barcelona, game.hex_by_id('Z27'))
 
-      expect(step.home_connectable?(barcelona, 1)).to be(false)
+      expect(step.home_connectable?(barcelona, 1)).to be(true)
       expect(step.home_connectable?(barcelona, 2)).to be(true)
     end
 

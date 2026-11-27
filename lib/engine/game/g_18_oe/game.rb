@@ -432,7 +432,7 @@ module Engine
                      Y2 Y4 Y6 Y8 Y10 Y12 Y14 Y16 Y18 Y20 Y22 Y24 Y26 Y28
                      Z1 Z3 Z5 Z7 Z9 Z11 Z13 Z15 Z17 Z19 Z21 Z23 Z25 Z27
                      AA2 AA4 AA6 AA8 AA10 AA12 AA14 AA16 AA18 AA20 AA22
-                     AB1 AB3 AB5 AB7 AB9 AB11 AB13 AB15 AB17 AB19
+                     AB1 AB3 AB5 AB7 AB9 AB11 AB13 AB15 AB17 AB19 AB27
                      AC6 AC8 AC10 AC12 AC14 AC16 AC18 AC20
                      AD1 AD5 AD7 AD9 AD11 AD13 AD15 AD17 AF5 AF11],
           # Russia
