@@ -116,6 +116,13 @@ module Engine
         def mangaged_company?
           presidents_share.percent.zero?
         end
+
+        def percent_to_float
+          return 0 if floated?
+
+          non_ipo_pct = share_holders.sum { |holder, pct| holder == ipo_owner ? 0 : pct }
+          [@float_percent - non_ipo_pct, 0].max
+        end
       end
     end
   end
