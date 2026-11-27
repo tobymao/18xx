@@ -4,6 +4,11 @@ require_relative '../g_1822/game'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'round/industry_auction'
+require_relative 'step/buy_train'
+require_relative 'step/first_turn_housekeeping'
+require_relative 'step/industry_auction'
+require_relative 'step/minor_acquisition'
 
 module Engine
   module Game
@@ -31,10 +36,22 @@ module Engine
         STARTING_COMPANIES = [
           *PRIVATES.map(&:first),
           *RAILROAD_MINORS.map { |id, *| "M#{id}" },
+          *INDUSTRIES.map { |id, *| "I#{id}" },
           *MAJORS.each_index.map { |i| "C#{i + 1}" },
         ].freeze
 
-        STARTING_CORPORATIONS = [*RAILROAD_MINORS.map(&:first), *MAJORS.map(&:first)].freeze
+        STARTING_CORPORATIONS = [
+          *RAILROAD_MINORS.map(&:first),
+          *INDUSTRIES.map(&:first),
+          *MAJORS.map(&:first),
+        ].freeze
+
+        COMPANY_INDUSTRY_PREFIX = 'I'
+        INDUSTRY_IDS = INDUSTRIES.map(&:first).freeze
+        INDUSTRIES_IN_AUCTION = 6
+        INDUSTRY_BID_INCREMENT = 5
+        INDUSTRY_PAR_PRICE = 30
+        INDUSTRY_FLOAT_CASH = 60
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par_1: :blue,
@@ -189,6 +206,16 @@ module Engine
         PENDING_HOME_TOKENERS = [].freeze
         UPGRADEABLE_S_HEX_NAME = nil
 
+        # Industries are already running, so an empty first stock round
+        # doesn't stall the game the way it would in 1822
+        GAME_END_ON_NOTHING_SOLD_IN_SR1 = false
+
+        def company_header(company)
+          return 'INDUSTRY' if company.id[0] == self.class::COMPANY_INDUSTRY_PREFIX
+
+          super
+        end
+
         def setup_game_specific; end
 
         def company_tax_haven_bundle(choice); end
@@ -198,6 +225,93 @@ module Engine
         def num_certs_modification(_entity) = 0
 
         def set_private_revenues; end
+
+        def init_round
+          @log << "-- Industry auction: #{@auction_industries.map(&:name).join(', ')}"
+          G1887::Round::IndustryAuction.new(self, [G1887::Step::IndustryAuction])
+        end
+
+        def next_round!
+          return super unless @round.is_a?(G1887::Round::IndustryAuction)
+
+          init_round_finished
+          reorder_players_least_cash
+          @round = new_stock_round
+        end
+
+        # After the industry auction, the player with the least cash goes first.
+        def reorder_players_least_cash
+          current_order = @players.dup
+          @players.sort_by! { |p| [p.cash, current_order.index(p)] }
+          @log << "-- New player order: #{@players.map { |p| "#{p.name} (#{format_currency(p.cash)})" }.join(', ')}"
+        end
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            G1822::Step::DiscardTrain,
+            G1822::Step::PendingToken,
+            G1887::Step::FirstTurnHousekeeping,
+            G1822::Step::AcquireCompany,
+            G1822::Step::SpecialChoose,
+            G1822::Step::SpecialTrack,
+            G1822::Step::SpecialToken,
+            G1822::Step::Track,
+            G1822::Step::DestinationToken,
+            G1822::Step::Token,
+            G1822::Step::Route,
+            G1822::Step::Dividend,
+            G1887::Step::BuyTrain,
+            G1887::Step::MinorAcquisition,
+            G1822::Step::PendingToken,
+            G1822::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
+        def must_buy_train?(entity)
+          return false if industry?(entity)
+
+          super
+        end
+
+        def industry?(entity)
+          entity&.corporation? && self.class::INDUSTRY_IDS.include?(entity.id)
+        end
+
+        def lumber?(entity)
+          industry?(entity) && INDUSTRIES.find { |id, *| id == entity.id }[2] == :lumber
+        end
+
+        def orchard?(entity)
+          industry?(entity) && INDUSTRIES.find { |id, *| id == entity.id }[2] == :orchard
+        end
+
+        # The winner pays the bid to the bank; the industry is parred at $30 and
+        # starts with $60 in its treasury.
+        def float_industry(company, player, price)
+          industry = find_corporation(company)
+          share_price = @stock_market.market.first.find { |sp| sp&.price == self.class::INDUSTRY_PAR_PRICE }
+          par_corporation(industry, share_price)
+          @share_pool.buy_shares(player, industry.shares.first.to_bundle, allow_president_change: true)
+          # Buying the certificate paid its price into the treasury; route that
+          # to the bank too, so the player pays exactly the bid.
+          paid = industry.cash
+          industry.spend(paid, @bank) if paid.positive?
+          player.spend(price - paid, @bank) if price > paid
+          @bank.spend(self.class::INDUSTRY_FLOAT_CASH, industry)
+          company.close!
+          @companies.delete(company)
+          @log << "#{player.name} wins #{industry.name} for #{format_currency(price)}; "\
+                  "#{industry.name} starts with #{format_currency(self.class::INDUSTRY_FLOAT_CASH)}"
+        end
+
+        def remove_industry(company, auctioned: true)
+          # Also called from setup_preround, before the id lookup cache exists
+          industry = @corporations.find { |c| c.id == company.id[1..] }
+          company.close!
+          @companies.delete(company)
+          @corporations.delete(industry)
+          @log << "#{industry.name} is not in this game" unless auctioned
+        end
 
         def starting_companies
           self.class::STARTING_COMPANIES
@@ -215,14 +329,25 @@ module Engine
         # Minors, concessions and privates are each shuffled into public stacks;
         # unlike 1822 nothing is fixed into the first bidbox. Five privates are
         # discarded unseen.
+        attr_reader :auction_industries
+
+        # Six random industries go up for auction before the first stock
+        # round; the other four leave the game. This runs before init_round.
+        def setup_preround
+          industries = @companies.select { |c| c.id[0] == self.class::COMPANY_INDUSTRY_PREFIX }.sort_by { rand }
+          @auction_industries = industries.first(self.class::INDUSTRIES_IN_AUCTION)
+          industries.drop(self.class::INDUSTRIES_IN_AUCTION).each { |c| remove_industry(c, auctioned: false) }
+        end
+
         def setup_companies
           @companies.sort_by! { rand }
-          minors, rest = @companies.partition { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
+          rest = @companies.reject { |c| c.id[0] == self.class::COMPANY_INDUSTRY_PREFIX }
+          minors, rest = rest.partition { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
           concessions, privates = rest.partition { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
           privates.pop(privates.size - self.class::PRIVATES_IN_GAME).each(&:close!)
 
           @companies.clear
-          @companies.concat(minors, concessions, privates)
+          @companies.concat(minors, concessions, privates, @auction_industries)
           @companies.each do |c|
             c.min_price = c.id[0] == self.class::COMPANY_PRIVATE_PREFIX ? self.class::PRIVATE_MIN_BID : c.value
             c.max_price = 10_000
