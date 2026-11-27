@@ -44,7 +44,7 @@ module Engine
           end
 
           def miami_token_ability(entity)
-            entity.all_abilities.find { |a| a.type == :assign_hexes && a.hexes == [@game.MIAMI_HEX_ID] }
+            entity.all_abilities.find { |a| a.type == :assign_hexes && a.hexes == [@game.class::MIAMI_HEX_ID] }
           end
 
           def can_place_miami_token?(entity)
@@ -55,7 +55,7 @@ module Engine
             ability = miami_token_ability(entity)
             return false unless ability
 
-            return false unless corporation.cash >= ability.cost
+            return false unless entity.cash >= ability.cost
 
             true
           end

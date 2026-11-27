@@ -37,6 +37,10 @@ module View
       render_broken
     end
 
+    def profile_links?
+      @gdata['mode'].to_s != 'hotseat'
+    end
+
     def new?
       @gdata['status'] == 'new'
     end
@@ -234,7 +238,7 @@ module View
         else
           player_props = { attrs: { title: player['name'].to_s } }
           elm = h(:span, [
-            h(acting?(player) ? :em : :span, player_props, [profile_link(player['id'], short_name)]),
+            h(acting?(player) ? :em : :span, player_props, [profile_link(player['id'], short_name, link: profile_links?)]),
             index == (players.size - 1) || (owner? && new?) ? '' : ', ',
           ])
         end
@@ -276,7 +280,7 @@ module View
         r_elm = scoring_players.map.with_index do |(player, score), index|
           player_props = { attrs: { title: player['name'] } }
           h(:span, player_props, [
-            profile_link(player['id'], player['name'].truncate),
+            profile_link(player['id'], player['name'].truncate, link: profile_links?),
             " #{score}",
             index == scoring_players.size - 1 ? '' : ', ',
           ])

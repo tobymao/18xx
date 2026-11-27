@@ -18,6 +18,16 @@ module Engine
         @loc = opts[:loc]
         @rows = (opts[:rows] || 1).to_i
         @route = (opts[:route] || :mandatory).to_sym
+        @routable = [true, '1', 'true'].include?(opts[:routable])
+        @revisitable = opts[:revisitable] || false
+      end
+
+      def routable?
+        @routable
+      end
+
+      def revisitable?
+        @revisitable
       end
 
       # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90"

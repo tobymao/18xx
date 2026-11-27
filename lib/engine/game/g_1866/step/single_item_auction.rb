@@ -108,8 +108,8 @@ module Engine
             passing.each do |player|
               @game.log << "#{player.name} cannot bid, buy a stock turn token or par a corporation"\
                            " and is out of the auction for #{auctioning.name}"
-              remove_from_auction(player)
               player.pass!
+              remove_from_auction(player)
             end
           end
 

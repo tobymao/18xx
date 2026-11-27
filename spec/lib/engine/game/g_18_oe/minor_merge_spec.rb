@@ -30,6 +30,22 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     expect(phase_two_round.active_step.can_merge_any?(phase_two_player)).to be(false)
   end
 
+  it 'releases every major from track rights on the first merger, logging once (errata 11)' do
+    major
+    minor
+    other = start_major!(game, 'PLM', game.players.last)
+    expect(game.majors_track_rights_restricted?).to be(true)
+    expect(game.hex_within_national_region?(other, game.hex_by_id('J29'))).to be(false)
+
+    act!(round, Engine::Action::Choose.new(player, choice: minor.id))
+    act!(round, Engine::Action::Merge.new(minor, corporation: major))
+
+    expect(game.hex_within_national_region?(other, game.hex_by_id('J29'))).to be(true)
+    game.minor_merged
+    event = '-- Event: Majors are no longer restricted to their track rights zones --'
+    expect(game.log.count { |e| e.message == event }).to eq(1)
+  end
+
   it 'offers to merge a minor into a major the player presides from Train Phase 3 (§10.5)' do
     major
     expect(game.merge_targets(player, minor)).to eq([major])
@@ -221,6 +237,24 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     expect(minor).to be_closed
   end
 
+  it 'drops the memoized sea network when a minor token is replaced (§10.5)' do
+    major
+    city = place_minor_token!('Q38')
+    merge!
+    before = game.graph.sea_connectivity(major)
+    act!(round, Engine::Action::PlaceToken.new(major, city: city, slot: 0))
+    expect(game.graph.sea_connectivity(major)).not_to equal(before)
+  end
+
+  it 'drops the memoized sea network when a minor token is declined (§10.5)' do
+    major
+    place_minor_token!('Q38')
+    merge!
+    before = game.graph.sea_connectivity(major)
+    act!(round, Engine::Action::Pass.new(major))
+    expect(game.graph.sea_connectivity(major)).not_to equal(before)
+  end
+
   it 'rejects replacing a minor token in another city (§10.5)' do
     major
     place_minor_token!('Q38')
@@ -406,6 +440,56 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     expect(taken.owner).to eq(major)
   end
 
+  describe 'minor A payment (§15.1)' do
+    let(:minor) { start_minor!(game, 'A', player, 'SP') }
+
+    it 'pays the major the current share value from the bank, besides the minor cash, on a treasury-share merge' do
+      major
+      minor
+      cash_before = major.cash
+      bank_before = game.bank.cash
+      merge!
+      expect(major.cash).to eq(cash_before + 120 + major.share_price.price)
+      expect(game.bank.cash).to eq(bank_before - major.share_price.price)
+    end
+
+    it 'pays the major with the bank keeping the minor cash on an Open Market-share merge' do
+      major
+      minor
+      empty_treasury_into_pool!
+      cash_before = major.cash
+      bank_before = game.bank.cash
+      merge!
+      expect(major.cash).to eq(cash_before + major.share_price.price)
+      expect(game.bank.cash).to eq(bank_before + 120 - major.share_price.price)
+    end
+
+    it 'pays the current share value rather than the par price' do
+      major
+      minor
+      major.share_price = cell(game, 90)
+      cash_before = major.cash
+      merge!
+      expect(major.cash).to eq(cash_before + 120 + 90)
+    end
+
+    it 'logs the payment' do
+      major
+      minor
+      merge!
+      amount = game.format_currency(major.share_price.price)
+      expect(game.log.map(&:message)).to include("#{major.name} receives #{amount} from the bank for A")
+    end
+
+    it 'pays nothing for another minor' do
+      major
+      other = start_minor!(game, 'B', player, 'SP')
+      cash_before = major.cash
+      merge!(merging: other)
+      expect(major.cash).to eq(cash_before + 120)
+    end
+  end
+
   describe 'with no share available (§10.5)' do
     before do
       take_treasury_shares!(game, player, major, major.treasury_shares.size)
@@ -472,7 +556,8 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
     end
 
     def stub_other_options_off!(target = step)
-      %i[can_buy_any? can_ipo_any? can_float_minor? can_sell_any? can_remove_any_corporation? can_reserve_any?].each do |name|
+      %i[can_buy_any? can_ipo_any? can_float_minor? can_sell_any? can_remove_any_corporation? can_reserve_any?
+         can_convert_any?].each do |name|
         allow(target).to receive(name).and_return(false)
       end
       allow(target).to receive(:purchasable_companies).and_return([])
@@ -552,6 +637,21 @@ describe 'G18OE merging a minor into a major in a Stock Round (§10.5)' do
       expect(game.bank.cash).to eq(bank_cash + minor_cash)
       expect(train.owner).to eq(major)
       expect(game.merged_minors[major]).to eq([minor])
+    end
+
+    context 'with minor A' do
+      let(:minor) { start_minor!(game, 'A', player, 'SP') }
+
+      it 'still pays the major the current share value from the bank (§15.1)' do
+        place_minor_token!('N31')
+        place_major_token!('M28')
+        major_cash = major.cash
+        bank_cash = game.bank.cash
+        price = major.share_price.price
+        merge!
+        expect(major.cash).to eq(major_cash + price)
+        expect(game.bank.cash).to eq(bank_cash + 120 - price)
+      end
     end
 
     it 'closes the minor after a no-share merge (§10.5)' do

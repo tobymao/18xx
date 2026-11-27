@@ -148,7 +148,9 @@ describe 'G18OE Lille ferry passage (§11.2.2)' do
 
     describe 'routes' do
       def route_through(*paths)
-        instance_double(Engine::Route, ordered_paths: paths)
+        chain = { paths: paths, crossing: nil }
+        segment = { left: paths.first.nodes.first, right: paths.last.nodes.first, chain: chain }
+        instance_double(Engine::Route, connection_data: [segment])
       end
 
       it 'rejects entering and leaving Lille by land' do
@@ -181,6 +183,129 @@ describe 'G18OE Lille ferry passage (§11.2.2)' do
         route = route_through(lille_path(0), lille_path(5))
 
         expect { game.check_connected(route, corp) }.to raise_error(Engine::GameError, 'Route is not connected')
+      end
+    end
+  end
+
+  describe 'when the WCF position token is removed by national formation' do
+    let(:alice) { game.players.first }
+    let(:holder) { start_major!(game, 'GWR', alice) }
+
+    before do
+      lay_tile!('N31', 'OE33', 0)
+      lay_tile!('O30', '57', 0)
+      lay_tile!('O32', '9', 2)
+      fill_lille!
+    end
+
+    def take_wcf_position!(corporation)
+      game.remove_wcf_placeholder!
+      lille.place_token(corporation, corporation.next_token, free: true, check_tokenable: false, extra_slot: true)
+    end
+
+    def route_through(*paths)
+      chain = { paths: paths, crossing: nil }
+      segment = { left: paths.first.nodes.first, right: paths.last.nodes.first, chain: chain }
+      instance_double(Engine::Route, connection_data: [segment])
+    end
+
+    it 'puts the placeholder back in the extra position and removes the RR token' do
+      take_wcf_position!(holder)
+
+      game.form_national!(holder)
+
+      expect(game.wcf_placeholder).not_to be_nil
+      expect(lille.extra_tokens).to eq([game.wcf_placeholder])
+      expect(game.log.map(&:message)).to include("Lille's White Cliffs Ferry position is open again (§11.2.2)")
+    end
+
+    it 'lets a tokenless RR pass between London and the land side of a full Lille' do
+      token!(west, corp)
+      take_wcf_position!(holder)
+      game.form_national!(holder)
+
+      expect(reachable('M28')).to be(true)
+      expect(reachable('O32')).to be_nil
+      expect { game.check_connected(route_through(lille_path(1), lille_path(5)), corp) }.not_to raise_error
+    end
+
+    it 'still rejects entering and leaving a full Lille by land' do
+      take_wcf_position!(holder)
+      game.form_national!(holder)
+
+      expect { game.check_connected(route_through(lille_path(0), lille_path(5)), corp) }
+        .to raise_error(Engine::GameError, 'Route is not connected')
+    end
+
+    it 'does not reopen the position when the RR only held a normal Lille position' do
+      lille.tokens.last.remove!
+      token!(lille, holder)
+      game.remove_wcf_placeholder!
+
+      game.form_national!(holder)
+
+      expect(game.wcf_placeholder).to be_nil
+      expect(lille.extra_tokens).to be_empty
+    end
+
+    it 'does not reopen the position when the RR only held the Central Circle token' do
+      game.remove_wcf_placeholder!
+      company = game.company_by_id('CCTC')
+      game.place_pass_through_token!(company, holder, lille)
+
+      game.form_national!(holder)
+
+      expect(game.wcf_placeholder).to be_nil
+    end
+
+    it 'reopens the position for the RR holding a transferred WCF token' do
+      buyer = start_major!(game, 'LNWR', alice)
+      take_wcf_position!(holder)
+      old = lille.extra_tokens.first
+      fund!(game, buyer, 100)
+      game.transfer_token!(buyer, buyer.next_token, old, 10)
+
+      game.form_national!(buyer)
+
+      expect(game.wcf_placeholder).not_to be_nil
+      expect(lille.extra_tokens).to eq([game.wcf_placeholder])
+    end
+  end
+
+  context 'with a second Channel crossing' do
+    let(:p27_code) { 'path=a:4,b:1' }
+
+    def lay_code!(hex_id, code)
+      game.hex_by_id(hex_id).lay(Engine::Tile.from_code("X#{hex_id}", :yellow, code,
+                                                        revisitable_nodes: game.class::REVISITABLE_NODES))
+    end
+
+    before do
+      lay_tile!('N31', 'OE33', 0)
+      lay_code!('O30', 'city=revenue:20;path=a:3,b:_0;path=a:0,b:_0')
+      lay_code!('P29', 'path=a:3,b:1')
+      lay_code!('P27', p27_code)
+      lay_code!('P25', 'path=a:4,b:2')
+      lay_code!('O24', 'town=revenue:10;path=a:5,b:_0;path=a:3,b:_0')
+      lay_code!('M26', 'town=revenue:10;path=a:0,b:_0;path=a:4,b:_0')
+      lay_code!('M28', 'city=revenue:30;path=a:1,b:_0;path=a:5,b:_0')
+      lay_code!('O32', 'path=a:2,b:4')
+      fill_lille!
+      token!(west, corp)
+      game.graph.clear
+    end
+
+    it 'passes from London through Lille onto its land sides after reaching Lille overland' do
+      expect(reachable('M28')).to be(true)
+      expect(reachable('O32')).to be(true)
+    end
+
+    context 'when the way back to London crosses a converging exit' do
+      let(:p27_code) { 'path=a:4,b:1;path=a:0,b:1' }
+
+      it 'still opens its land sides after reaching Lille overland' do
+        expect(reachable('M28')).to be(true)
+        expect(reachable('O32')).to be(true)
       end
     end
   end

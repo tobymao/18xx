@@ -39,6 +39,45 @@ describe 'G18OE buy trains (§11.6)' do
     expect(game.fulfilled_train_obligation?(minor)).to be(true)
   end
 
+  context 'when a regional converts to a major' do
+    let(:regional) { start_regional!(game, 'LNWR', player) }
+    let(:conversion_step) { Engine::Game::G18OE::Step::BuySellParShares.new(game, []) }
+    let(:round) do
+      regional
+      enter_round!(game, game.operating_round(1))
+    end
+
+    it 'requires the reserved 2+2 after conversion before the first OR (§11.6.1)' do
+      conversion_step.float_major(regional)
+
+      expect(regional.type).to eq(:major)
+      expect(game.fulfilled_train_obligation?(regional)).to be(false)
+      expect(step.must_buy_train?(regional)).to be(true)
+      expect(step.buyable_trains(regional).map(&:name).uniq).to eq(['2+2'])
+      expect(step.buyable_trains(regional)).to all(be_from_depot)
+
+      fund!(game, regional, 100)
+      buy!(regional, card('2+2'), 100)
+
+      expect(game.fulfilled_train_obligation?(regional)).to be(true)
+      expect(step.must_buy_train?(regional)).to be(false)
+      expect(step.buyable_trains(regional)).to be_empty
+    end
+
+    it "preserves a regional's fulfilled obligation on conversion (§11.6.1)" do
+      fund!(game, regional, 100)
+      train = card('2+2')
+      buy!(regional, train, 100)
+      conversion_step.float_major(regional)
+
+      expect(regional.type).to eq(:major)
+      expect(game.fulfilled_train_obligation?(regional)).to be(true)
+      expect(regional.trains).to eq([train])
+      expect(step.must_buy_train?(regional)).to be(false)
+      expect(step.buyable_trains(regional)).to be_empty
+    end
+  end
+
   it 'sells no level 3 before the Major RR Phase (§8.2)' do
     game.fulfill_train_obligation!(minor)
     after_first_or!

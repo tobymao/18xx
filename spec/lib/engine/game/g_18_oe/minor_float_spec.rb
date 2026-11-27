@@ -57,6 +57,15 @@ describe 'G18OE floating minors (§9.1)' do
     expect(minor).to be_floated
   end
 
+  it "keeps private D on Minor D's charter (§15.4)" do
+    minor = par_minor!(game.corporation_by_id('D'))
+    private_d = game.company_by_id('D')
+
+    expect(private_d).not_to be_closed
+    expect(private_d.owner).to eq(minor)
+    expect(minor.companies).to include(private_d)
+  end
+
   it 'has the minor place its home token next' do
     minor = par_minor!
 
@@ -65,6 +74,7 @@ describe 'G18OE floating minors (§9.1)' do
   end
 
   it 'charges the home token at the track rights chit cost (Table 1)' do
+    game.hexes.each { |hex| hex.tile.patronage = nil }
     costs = { 'UK' => 40, 'PHS' => 40, 'FR' => 20, 'AH' => 20, 'IT' => 10, 'SP' => 10, 'SC' => 10, 'RU' => 10 }
     paid = costs.keys.to_h { |zone| [zone, 120 - float_in!(zone).cash] }
 
@@ -146,5 +156,36 @@ describe 'G18OE floating minors (§9.1)' do
     minor = float_in!('SP')
 
     expect(minor.tokens.reject(&:used).map(&:price)).to eq([20])
+  end
+
+  it 'leaves the minor without a par, share price or stock market token (§6.2)' do
+    minor = par_minor!
+
+    expect(minor.par_price).to be_nil
+    expect(minor.share_price).to be_nil
+    expect(game.stock_market.market.flatten.compact.flat_map(&:corporations)).not_to include(minor)
+  end
+
+  it 'values the minor charter at its face value of £120 (§6.2)' do
+    player = round.current_entity
+    minor = unused_minor
+    give_company!(player, game.company_by_id(minor.id))
+    before = player.value
+    par_minor!(minor)
+
+    expect(minor.presidents_share.price).to eq(120)
+    expect(player.value).to eq(before - game.company_by_id(minor.id).value + 120)
+  end
+
+  it 'ignores a par price carried by the Float action (§6.2)' do
+    player = round.current_entity
+    minor = unused_minor
+    give_company!(player, game.company_by_id(minor.id))
+    fund!(game, minor, 120)
+    act!(round, Engine::Action::Par.new(player, corporation: minor, share_price: cell(game, 90, :par)))
+
+    expect(minor.par_price).to be_nil
+    expect(minor.share_price).to be_nil
+    expect(minor.presidents_share.price).to eq(120)
   end
 end

@@ -18,7 +18,7 @@ module Engine
                   :name, :opposite, :reservations, :upgrades, :color, :future_label, :future_paths, :halts, :patronage
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
                 :offboards, :blockers, :city_towns, :double_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes,
-                :hidden, :hidden_blockers, :code
+                :hidden, :hidden_blockers, :code, :revisitable_nodes
     attr_writer :revenue_to_render
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
@@ -66,7 +66,7 @@ module Engine
       from_code(name, color, code, **opts)
     end
 
-    def self.decode(code)
+    def self.decode(code, **opts)
       cache = []
 
       code.split(';').map do |part_code|
@@ -75,15 +75,17 @@ module Engine
 
         params = params.split(',').to_h { |param| param.split(':') } if params.include?(':')
 
-        part(type, params, cache)
+        part(type, params, cache, **opts)
       end
     end
 
     def self.from_code(name, color, code, **opts)
-      Tile.new(name, code: code, color: color, parts: decode(code), **opts)
+      Tile.new(name, code: code, color: color, parts: decode(code, **opts), **opts)
     end
 
-    def self.part(type, params, cache)
+    def self.part(type, params, cache, **opts)
+      revisitable = (opts[:revisitable_nodes] || []).include?(type)
+
       case type
       when 'path'
         params = params.to_h do |k, v|
@@ -104,19 +106,12 @@ module Engine
           end
         end
 
-        ends = [params['a'], params['b']]
-        double_town = ends.find(&:double_town?)
-        variants = [ends]
-        variants = double_town.towns.map { |town| ends.map { |e| e == double_town ? town : e } } if double_town
-
-        variants.map do |a, b|
-          Part::Path.make_lanes(a, b, terminal: params['terminal'],
-                                      lanes: params['lanes'], a_lane: params['a_lane'],
-                                      b_lane: params['b_lane'],
-                                      track: params['track'],
-                                      ignore: params['ignore'],
-                                      color: params['color'])
-        end
+        Part::Path.make_lanes(params['a'], params['b'], terminal: params['terminal'],
+                                                        lanes: params['lanes'], a_lane: params['a_lane'],
+                                                        b_lane: params['b_lane'],
+                                                        track: params['track'],
+                                                        ignore: params['ignore'],
+                                                        color: params['color'])
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
@@ -127,7 +122,9 @@ module Engine
                               format: params['format'],
                               boom: params['boom'],
                               outline: params['outline'],
-                              loc: params['loc'])
+                              routable: params['routable'],
+                              loc: params['loc'],
+                              revisitable: revisitable)
         cache << city
         city
       when 'pass'
@@ -140,8 +137,10 @@ module Engine
                               format: params['format'],
                               boom: params['boom'],
                               loc: params['loc'],
+                              routable: params['routable'],
                               color: params['color'],
-                              size: params['size'])
+                              size: params['size'],
+                              revisitable: revisitable)
         cache << pass
         pass
       when 'town'
@@ -154,7 +153,9 @@ module Engine
                               loc: params['loc'],
                               boom: params['boom'],
                               style: params['style'],
-                              to_city: params['to_city'])
+                              routable: params['routable'],
+                              to_city: params['to_city'],
+                              revisitable: revisitable)
         cache << town
         town
       when 'double_town'
@@ -165,10 +166,10 @@ module Engine
                                            hide: params['hide'],
                                            visit_cost: params['visit_cost'],
                                            route: params['route'],
-                                           format: params['format'])
+                                           format: params['format'],
+                                           revisitable: revisitable)
         cache << double_town
-        towns = double_town.towns
-        [double_town, *towns, Part::Path.new(*towns)]
+        double_town
       when 'halt'
         halt = Part::Halt.new(params['symbol'],
                               revenue: params['revenue'],
@@ -177,7 +178,8 @@ module Engine
                               visit_cost: params['visit_cost'],
                               route: params['route'],
                               format: params['format'],
-                              loc: params['loc'])
+                              loc: params['loc'],
+                              revisitable: revisitable)
         cache << halt
         halt
       when 'offboard'
@@ -187,7 +189,8 @@ module Engine
                                       visit_cost: params['visit_cost'],
                                       route: params['route'],
                                       format: params['format'],
-                                      rows: params['rows'])
+                                      rows: params['rows'],
+                                      revisitable: revisitable)
         cache << offboard
         offboard
       when 'label'
@@ -261,6 +264,7 @@ module Engine
       @index = index
       @blocks_lay = nil
       @reservation_blocks = opts[:reservation_blocks] || :never
+      @revisitable_nodes = opts[:revisitable_nodes] || []
       @unlimited = opts[:unlimited] || false
       @labels = []
       @future_label = nil
@@ -278,12 +282,13 @@ module Engine
       Tile.new(@name,
                code: @code,
                color: @color,
-               parts: Tile.decode(@code),
+               parts: Tile.decode(@code, revisitable_nodes: @revisitable_nodes),
                rotation: @rotation,
                preprinted: @preprinted,
                index: @index + 1,
                location_name: @location_name,
                reservation_blocks: @reservation_blocks,
+               revisitable_nodes: @revisitable_nodes,
                unlimited: @unlimited,
                hidden: @hidden)
     end
@@ -686,12 +691,11 @@ module Engine
           else
             @paths << part
           end
-        elsif part.double_town?
-          @double_towns << part
         elsif part.town?
           @towns << part
           @city_towns << part
           @halts << part if part.halt?
+          @double_towns << part if part.double_town?
         elsif part.upgrade?
           @upgrades << part
         elsif part.offboard?
@@ -723,7 +727,7 @@ module Engine
         part.tile = self
       end
 
-      @nodes = @paths.flat_map(&:nodes).uniq
+      @nodes = (@paths.flat_map(&:nodes) + (@cities + @towns).select(&:routable?)).uniq
       @stops = @paths.flat_map(&:stops).uniq
       @edges = @paths.flat_map(&:edges).uniq
 

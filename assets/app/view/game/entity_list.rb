@@ -15,8 +15,13 @@ module View
       needs :user, default: nil, store: true
       needs :acting_entity, default: nil
       needs :game, store: true
+      needs :game_data, default: {}, store: true
 
       TOKEN_SIZES = { small: 1.2, medium: 1.4, large: 1.8 }.freeze
+
+      def profile_links?
+        @game_data[:mode].to_s != 'hotseat'
+      end
 
       def render
         items = @entities.map.with_index do |entity, index|
@@ -71,7 +76,7 @@ module View
             if entity.company?
               entity.sym
             elsif entity.player?
-              profile_link(entity.id, entity.name)
+              profile_link(entity.id, entity.name, link: profile_links?)
             else
               entity.name
             end
@@ -82,7 +87,7 @@ module View
             elsif entity.player? || !entity.owner
               ''
             elsif acting_owner.player?
-              h(:span, [' (', profile_link(acting_owner.id, acting_owner.name.truncate), ')'])
+              h(:span, [' (', profile_link(acting_owner.id, acting_owner.name.truncate, link: profile_links?), ')'])
             else
               " (#{acting_owner.name.truncate})"
             end

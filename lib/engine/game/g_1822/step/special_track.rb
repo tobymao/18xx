@@ -70,7 +70,7 @@ module Engine
 
             active_abilities = [ability, *action.combo_entities.map { |e| e.all_abilities.find { |a| a.type == :tile_lay } }]
             active_abilities.each do |ability_|
-              ability_.use!(upgrade: %i[green brown gray].include?(action.tile.color))
+              ability_.use!(upgrade: track_upgrade?(old_tile, action.tile, action.hex))
               ability_.use! if minor_single_use
 
               next unless ability_.type == :tile_lay

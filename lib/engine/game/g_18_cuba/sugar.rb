@@ -5,6 +5,7 @@ module Engine
     module G18Cuba
       module Sugar
         CUBE_VALUE = 30
+        UNSHIPPED_CUBE_VALUE = 10
 
         ASSIGNMENT_TOKENS = {
           'SUGAR0' => '/icons/18_cuba/sugar-cube.svg',
@@ -117,9 +118,21 @@ module Engine
           self.class::SUGAR_CANE_HEXES.include?(hex.id)
         end
 
-        # TODO: Isla de Tesoros (20/40) special case
         def harbor?(stop)
           stop.hex.tile.icons.any? { |icon| icon.name == 'anchor' }
+        end
+
+        def unshipped_cubes_revenue
+          @sugar_cubes.values.sum * self.class::UNSHIPPED_CUBE_VALUE
+        end
+
+        def return_unshipped_cubes
+          cubes = @sugar_cubes.values.sum
+          return if cubes.zero?
+
+          @sugar_cubes.each_key { |corp| update_sugar_cube_icons(corp, 0) }
+          @sugar_cubes.clear
+          @log << "#{cubes} unshipped sugar cube(s) return to the supply"
         end
 
         private
@@ -133,8 +146,6 @@ module Engine
           return 0 unless stops.sum(&:visit_cost) > route.train.distance
 
           # The wagon-extended harbor scores zero (rule VII.10); with two harbors zero the cheaper.
-          # TODO: .min nulls the wrong harbor once harbor values differ (Isla de Tesoros 20/40);
-          # today all harbors are 10, so .min is correct. Belongs in the Isla follow-up PR.
           stops.select { |s| harbor?(s) }.map { |s| s.route_revenue(route.phase, route.train) }.min || 0
         end
 

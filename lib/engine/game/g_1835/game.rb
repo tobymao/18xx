@@ -49,6 +49,7 @@ module Engine
         TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :owner
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_FROM_OTHERS = :always
 
         MUST_BUY_TRAIN = :always
 
@@ -140,11 +141,19 @@ module Engine
         SELL_AFTER = :operate
 
         HOME_TOKEN_TIMING = :float
+        STOCK_MARKET_TOKEN_TIMING = :float
+
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: "Par values (#{PAR_PRICES
+          .group_by { |_, price| price }
+          .map { |price, corporations| "#{price} → #{corporations.map(&:first).join(', ')}" }
+          .join('; ')})")
 
         CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
 
         LAY_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
         TWO_LAYS = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
+
+        ALSACE_HEXES = %w[N4 M5].freeze
 
         def setup
           prussian.shares.last(7).each { |s| s.buyable = false }
@@ -158,7 +167,7 @@ module Engine
           @preussen_may_float = false
 
           @corporations.select { |corp| major?(corp) }.each do |corp|
-            par_corporation(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
+            corp.par_price = @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] }
           end
 
           corporation_by_id('BY').ipoed = true
@@ -187,10 +196,22 @@ module Engine
           G1835::SharePool.new(self)
         end
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['Any number of shares sold', '1 ↓ per sell action'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
+        end
+
         def init_round
           round_num = @draft_round_num || 1
-          G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
+          G1835::Round::Draft.new(self, [
+            G1835::Step::SwapChoice, # we don't actually swap during Draft, but need the round state to be set
+            G1835::Step::Draft,
+            ], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
         end
 
         def new_draft_round
@@ -233,6 +254,7 @@ module Engine
           G1835::Round::Stock.new(self, [
             Engine::Step::HomeToken,
             G1835::Step::MinorExchange,
+            G1835::Step::SwapChoice,
             G1835::Step::BuySellParShares,
           ])
         end
@@ -242,9 +264,47 @@ module Engine
         end
 
         def bundles_for_corporation(share_holder, corporation, shares: nil)
-          return super if share_holder.player? && major?(corporation)
+          return [] unless corporation.ipoed
 
-          []
+          shares ||= share_holder.shares_of(corporation)
+          return [] if shares.empty?
+
+          regular_shares, other_shares = shares
+                                           .sort_by { |h| [h.president ? 1 : 0] }
+                                           .partition { |share| share.percent == corporation.share_percent }
+
+          bundles = []
+          prefixes(regular_shares).product(prefixes(other_shares)).each do |regular_bundle, other_bundle|
+            bundle_shares = regular_bundle + other_bundle
+            next if bundle_shares.empty?
+
+            bundles << Engine::ShareBundle.new(bundle_shares, bundle_shares.sum(&:percent))
+          end
+
+          # Put bundles with "other" shares further back in the array
+          bundles.sort_by { |b| [b.percent, b.shares.map { |s| s.percent != corporation.share_percent ? 1 : 0 }] }
+        end
+
+        def prefixes(array)
+          (0..array.size).map { |i| array.take(i) }
+        end
+
+        def shares_for_presidency_swap(shares, num_shares)
+          shares_taken = []
+          num_shares_taken = 0
+
+          shares.each do |share|
+            break if num_shares_taken >= num_shares
+
+            shares_taken << share
+            num_shares_taken += share.num_shares(ceil: false)
+          end
+
+          if num_shares_taken != num_shares
+            raise GameError, "Could not find exactly #{num_shares} while searching for shares to swap. Found #{num_shares_taken}."
+          end
+
+          shares_taken
         end
 
         def maybe_ipo_next_block(corporation)
@@ -369,6 +429,22 @@ module Engine
           end
         end
 
+        def check_other(route)
+          check_alsace(route)
+        end
+
+        def check_alsace(route)
+          return if phase.name.to_i == 2
+          return unless intersects_alsace_hexes?(route)
+
+          raise GameError, 'Cannot visit Elsaß-Lothringen in yellow or brown phase'
+        end
+
+        def intersects_alsace_hexes?(route)
+          @alsace_hexes ||= ALSACE_HEXES.map { |coord| hex_by_id(coord) }
+          route.stops.map(&:hex).intersect?(@alsace_hexes)
+        end
+
         def payout_companies
           # omit paying out companies if any Prussian conversion could happen. Payout is then handled by MinorExchange
           # after all choices have been made
@@ -434,6 +510,7 @@ module Engine
           @log << "#{prussian.id} forms"
           prussian.floatable = true
           prussian.floated = true
+          float_corporation(prussian)
 
           merge_minor!(berlin_potsdamer_bahn)
         end
@@ -466,10 +543,14 @@ module Engine
           unless minor.id == '5'
             token = minor.tokens.first
 
-            # make sure the first token (= home token) gets used or other methods might behave unexpectedly later, e.g.
-            # "maybe_place_home_token" called when buying shares
-            new_token = minor.id == '2' ? prussian.tokens.first : Token.new(prussian)
-            prussian.tokens << new_token
+            # make sure the first token (= home token) gets used during formation or other methods might behave
+            # unexpectedly later, e.g. "maybe_place_home_token" called when buying shares
+            if minor == berlin_potsdamer_bahn
+              new_token = prussian.tokens.first
+            else
+              new_token = Token.new(prussian)
+              prussian.tokens << new_token
+            end
 
             token.swap!(new_token, check_tokenable: false)
 
@@ -502,7 +583,18 @@ module Engine
         end
 
         def share_flags(shares)
-          'h' * shares.count { |share| share.percent == 5 }
+          'h' * shares.map(&:percent).count(5)
+        end
+
+        def bundle_annotation(bundle)
+          shares = bundle.shares
+          annotation = ''
+          annotation += share_flags(shares)
+          annotation += ('d' * shares.count(&:double_cert))
+          annotation += '*' if bundle.presidents_share
+          return '' if annotation.empty?
+
+          "[#{annotation}]"
         end
 
         def player_card_minors(player)

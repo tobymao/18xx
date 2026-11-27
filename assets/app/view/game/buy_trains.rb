@@ -276,8 +276,15 @@ module View
               )
             end
 
+            source = if @depot.discarded.include?(discount_train)
+                       'The Discard'
+                     elsif discount_train.owned_by_corporation? && discount_train.owner != @corporation
+                       discount_train.owner.name
+                     end
+            source_text = source ? "from #{source} " : ''
+            price_text = price.zero? ? '' : "#{@game.format_currency(price)} "
             children << h(:div, [
-              "#{train.name} -> #{variant} #{@game.format_currency(price)} ",
+              "#{train.name} -> #{variant} #{source_text}#{price_text}",
               h('button.no_margin', { on: { click: exchange_train } }, 'Exchange'),
             ])
           end
@@ -305,10 +312,7 @@ module View
           children << h(:div, text)
         end
 
-        if (@must_buy_train && @step.ebuy_president_can_contribute?(@corporation)) ||
-           @step.president_may_contribute?(@corporation, @active_shell)
-          children.concat(render_president_contributions)
-        end
+        children.concat(render_president_contributions) if @step.show_president_contributions?(@corporation, @active_shell)
 
         if @must_buy_train && @step.respond_to?(:must_take_loan?) && @step.must_take_loan?(@corporation)
           issue_str = "#{@corporation.name} must take loans until it is able to buy a train"

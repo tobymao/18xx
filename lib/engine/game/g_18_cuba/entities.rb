@@ -278,6 +278,7 @@ module Engine
             color: :white,
             text_color: :black,
             type: :national,
+            floatable: false,
           },
           {
             float_percent: 60,

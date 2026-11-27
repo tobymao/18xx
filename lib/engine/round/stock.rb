@@ -88,6 +88,7 @@ module Engine
           end
 
           @game.log_share_price(corp, old_price)
+          @game.share_price_changed(corp, old_price)
         end
       end
 

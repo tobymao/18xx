@@ -2,10 +2,10 @@
 
 module Lib
   module ProfileLink
-    def profile_link(id, name)
+    def profile_link(id, name, link: true)
       # Negative ID values are used for dummy players, these do not have
       # profile pages.
-      return h(:span, name) if id.to_i.negative?
+      return h(:span, name) if !link || id.to_i.negative?
 
       props = {
         attrs: {

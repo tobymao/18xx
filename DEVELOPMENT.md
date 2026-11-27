@@ -161,12 +161,16 @@ Run `docker compose exec rack rake` while a docker instance is running to run ru
 
 Run a specific set of test fixtures using the `-e` flag to `rspec`. This is useful when testing a specific bug or reproducing an issue.
 
-`docker compose exec rack rspec spec/lib/engine/game/fixtures -e '<folder_name> <fixture_name>' [...]`
+`docker compose exec rack rspec spec/lib/engine/game/fixtures -e '<title> <fixture_name>' [...]`
 
 e.g. `docker compose exec rack rspec spec/lib/engine/game/fixtures -e '1860 19354'`
 
 The fixture tests are split across `spec/lib/engine/game/fixtures/shard_NN_spec.rb` so
 `rake spec_parallel` can run them on every worker; passing the directory runs all shards.
+
+`<title>` is the game's title, which is not always its fixture folder name; fixtures in `public/fixtures/18ZOOMapA/`
+need `-e '18ZOO - Map A <fixture_name>'`. Passing the folder name instead matches no tests, or only the one that
+checks the folder name.
 
 See also `public/fixtures/README.md` for more details on fixture tests and debugging.
 

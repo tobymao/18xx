@@ -24,13 +24,6 @@ module Engine
             return nil unless @round.pending_tokens.empty? # by placed yellow OO tile
             return [] if @round.laid_yellow_hexes.empty?
 
-            # check simple case of only one or two 'white' neighbor connected to prior tile => return without walking
-            last_tile = @round.laid_yellow_hexes.last.tile
-            unless [1, 6].include?(last_tile.exits.size) # exclude triple town tiles (6 exits) and OO tiles (1 exit)
-              empty_neighbors = empty_neighbors(last_tile.hex, last_tile.exits)
-              return empty_neighbors if [1, 2].include?(empty_neighbors.size)
-            end
-
             corp = @round.current_operator
             railheads = corp.placed_tokens.map(&:city)
             placed_paths = @round.laid_yellow_hexes.map(&:tile).map(&:paths) # paths on all previously laid yellow hexes

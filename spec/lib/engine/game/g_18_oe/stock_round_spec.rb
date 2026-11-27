@@ -28,6 +28,15 @@ describe 'G18OE stock round (§4, §10)' do
     market.share_price(market.send(direction, major, coordinates)).price
   end
 
+  it 'lets a broke regional president convert instead of auto-skipping them' do
+    allow(game).to receive(:removable_regional?).and_return(false)
+    regional = start_regional!(game, 'LNWR', president)
+    president.set_cash(0, game.bank)
+
+    expect(step.actions(president)).to include('pass')
+    expect(step.actions(regional)).to include('convert')
+  end
+
   it 'moves a major DOWN for a share sold (§4.4)' do
     take_treasury_shares!(game, president, major, 1)
     sell_one!(president, major)

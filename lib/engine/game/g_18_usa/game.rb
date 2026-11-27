@@ -297,6 +297,22 @@ module Engine
           end
         end
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < 50% of share price', 'none'],
+            ['Dividend ≥ 50% of share price', '1 →'],
+            ['Dividend ≥ share price', '2 →'],
+            ['Dividend ≥ 150% of share price', '3 →'],
+            ['Dividend ≥ 200% of share price', '4 →'],
+            ['5 or 10-share Corporation sold out at end of SR', '1 →'],
+            ['Per share in market at end of SR', '1 ←'],
+            ['Per loan taken', '2 ←'],
+            ['Per loan repaid', '2 →'],
+          ]
+        end
+
         METROPOLIS_TILE_FOR_HEX = {
           'H14' => ['X03', 0],
           'E11' => ['X04s', 0],

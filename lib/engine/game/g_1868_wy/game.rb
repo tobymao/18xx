@@ -693,10 +693,6 @@ module Engine
           @lhp_train_pending = false
         end
 
-        def extra_train?(train)
-          train == @lhp_train
-        end
-
         def crowded_corps
           @crowded_corps ||= corporations.select do |c|
             c.trains.count { |t| !extra_train?(t) } > train_limit(c)
@@ -2196,7 +2192,7 @@ module Engine
         end
 
         def fort_bonuses(route)
-          forts = route.connection_hexes.flatten.uniq.count { |id| @forts[id] }
+          forts = route.connection_hex_ids.uniq.count { |id| @forts[id] }
 
           if forts.positive?
             revenue = forts * (route.corporation == trabing_bros.owner ? 20 : 10)

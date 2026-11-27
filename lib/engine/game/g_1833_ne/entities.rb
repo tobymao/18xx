@@ -75,8 +75,10 @@ module Engine
             name: 'P6. Delaware & Hudson Railroad',
             value: 80,
             revenue: 30,
-            desc: 'May use D&H RR (hex A12) as a token to lay track and run a route (only).'\
-                  'Purchasing corporation must pay an additional $40 to the bank when buying this in.',
+            desc: 'May use D&H RR (hex A12) as a token to lay track and run a route (only). '\
+                  'Purchasing corporation must pay an additional $40 to the bank when buying this in. '\
+                  'This ability is permanent. Other corporations may not run to A12. A12 is worth $0 '\
+                  'unless the route goes to or through Montreal (B3).',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }], # still more todo
             sym: 'P6',
           },
@@ -98,8 +100,8 @@ module Engine
             float_percent: 20,
             sym: 'FRR',
             name: 'Fitchburg Railroad',
-            logo: '1833_ne/PRR',
-            simple_logo: '1833_ne/PRR.alt',
+            logo: '1833_ne/FRR',
+            simple_logo: '1833_ne/FRR.alt',
             tokens: [0, 80, 80, 80],
             coordinates: 'E20',
             color: :'#D1E088',

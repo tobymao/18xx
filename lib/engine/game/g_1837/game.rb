@@ -644,6 +644,18 @@ module Engine
           ], round_num: round_num)
         end
 
+        def round_description(name, round_number = nil)
+          return super unless name == 'Exchange'
+
+          round_number ||= @round.round_num
+
+          if @round_after_exchange == Engine::Round::Stock
+            "Exchange Round before Stock Round #{@turn}"
+          else
+            "Exchange Round before Operating Round #{@turn}.#{round_number}"
+          end
+        end
+
         def corporation_show_individual_reserved_shares?
           false
         end

@@ -170,7 +170,10 @@ module Engine
             # allow president change for SX when LD is being sold, but for BY only if the BY director has been sold,
             # which might be during the current or any earlier action
             allow_president_change = share.president || !share.corporation.shares.first.president
+            corporation = share.corporation
+            floated = corporation.floated?
             @game.share_pool.transfer_shares(ShareBundle.new(share), player, allow_president_change: allow_president_change)
+            @game.float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
 
             @game.place_home_token(share.corporation) if share.corporation.floated?
           end

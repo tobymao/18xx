@@ -75,6 +75,30 @@ describe 'G18OE reserved shares (§8.4)' do
     expect(two.can_reserve_regional?(two.players[0], regional)).to be(false)
   end
 
+  context 'in an Aggressive Game' do
+    let(:game) { new_game(optional_rules: [:aggressive_game]) }
+
+    it 'does not let a president reserve a share' do
+      lnwr
+      pass_until!(round, president)
+      action = Engine::Action::Choose.new(president, choice: 'reserve', target: lnwr)
+
+      expect(step.entity_choices(lnwr)).not_to include('reserve')
+      expect { step.process_choose(action) }.to raise_error(Engine::GameError, /Cannot reserve/)
+      expect(game.reserved_share(lnwr)).to be_nil
+    end
+
+    it 'completes the first secondary share purchase without prompting the president' do
+      stub_major_phase!
+      buyer = round.current_entity
+
+      buy!(buyer, lnwr)
+
+      expect(round.pending_share_buy).to be_nil
+      expect(buyer.percent_of(lnwr)).to eq(25)
+    end
+  end
+
   it 'is free on the president\'s own turn' do
     lnwr
     pass_until!(round, president)
