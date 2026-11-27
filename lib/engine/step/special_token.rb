@@ -33,7 +33,7 @@ module Engine
       end
 
       def round_state
-        state = @round.respond_to?(:teleported) ? {} : { teleported: nil, teleport_tokener: nil }
+        state = @round.respond_to?(:teleported) ? {} : { teleported: nil }
         state.merge(super)
       end
 

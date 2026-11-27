@@ -26,6 +26,8 @@ module Engine
         TREASURY_SHARE_LIMIT = 50
         EBUY_FROM_OTHERS = :never
         DISCARDED_TRAINS = :remove
+        TELEPORT_COMPANY_BY_HEX = { 'I14' => 'GRRRC', 'J5' => 'NOPR' }.freeze
+        RESERVED_TOKEN_CORP_BY_HEX = { 'I14' => 'SP', 'J5' => 'SAA' }.freeze
 
         TOKEN_FEE = {
           'T&P' => 140,
@@ -183,9 +185,9 @@ module Engine
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G18Texas::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
-            Engine::Step::Track,
-            Engine::Step::Token,
+            G18Texas::Step::SpecialToken,
+            G18Texas::Step::Track,
+            G18Texas::Step::Token,
             Engine::Step::Route,
             G18Texas::Step::Dividend,
             G18Texas::Step::DiscardTrain,
@@ -240,13 +242,11 @@ module Engine
         end
 
         def token_owner(entity)
-          if entity.company? && entity.owner&.player?
-            @round.teleport_tokener
-          elsif entity.company?
-            entity.owner
-          else
-            entity
-          end
+          return entity unless entity&.company?
+          return entity.owner unless entity.owner&.player?
+
+          operator = @round.current_operator if @round.operating?
+          operator if operator&.owner == entity.owner
         end
       end
     end
