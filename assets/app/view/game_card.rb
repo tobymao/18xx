@@ -2,6 +2,7 @@
 
 # backtick_javascript: true
 
+require 'lib/params'
 require 'lib/settings'
 require 'lib/truncate'
 require 'lib/profile_link'
@@ -22,6 +23,7 @@ module View
     needs :confirm_kick, store: true, default: nil
     needs :flash_opts, default: {}, store: true
 
+    DESCRIPTION_TRUNCATE_LENGTH = 120
     BUTTON_STYLE = {
       margin: '0',
       padding: '0.2rem 0',
@@ -258,7 +260,15 @@ module View
         children << h(:div, [h(:i, ['Auto Routing', auto_route_whats_this])]) if @gdata.dig('settings', 'auto_routing')
         children << h(:div, [h(:i, ['Engine V2', engine_v2_whats_this])]) if @gdata.dig('settings', 'use_engine_v2')
       end
-      children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
+      desc = @gdata['description']
+      unless desc.empty?
+        short = desc
+        if Lib::Params['truncate_desc'] == 'true'
+          short = desc.truncate(DESCRIPTION_TRUNCATE_LENGTH, separator: ' ', omission: '…')
+        end
+        props = short == desc ? {} : { attrs: { title: desc } }
+        children << h(:div, props, [h(:strong, 'Description: '), short])
+      end
 
       optional = render_optional_rules
       children << optional if optional
