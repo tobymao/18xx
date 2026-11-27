@@ -25,6 +25,7 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :left_block_pres
+        CLOSED_CORP_TRAINS_REMOVED = false
 
         BANK_CASH = { 2 => 4000, 3 => 6000, 4 => 8000 }.freeze
 
@@ -38,7 +39,7 @@ module Engine
         GAME_END_CHECK = { bank: :current_or }.freeze
 
         COLUMN_MARKET = [
-          %w[40 45 50x 55x 60x 65p 70p 80p 90p 100pC 110zC 120zC 135zC 150m 165 180 200 220 245 270 300 330 360 400],
+          %w[0c 40 45 50x 55x 60x 65p 70p 80p 90p 100pC 110zC 120zC 135zC 150m 165 180 200 220 245 270 300 330 360 400],
         ].freeze
 
         PHASES = [
@@ -358,12 +359,30 @@ module Engine
         end
 
         def setup_corps
-          @corporations.each { |c| c.tokens.pop(c.tokens.size - major_token_count) if c.type == :major }
-          return if @players.size == 4
+          if @players.size == 4
+            @corporations.each { |c| c.tokens.pop if c.type == :major }
+            return
+          end
 
           removed = @corporations.select { |c| c.type == :major }.min_by { rand }
           @corporations.delete(removed)
           @log << "#{removed.name} corporation is removed because there are fewer than 4 players"
+        end
+
+        def close_corporation(corporation, quiet: false)
+          @loans.concat(corporation.loans)
+          corporation.loans.clear
+          super
+          return unless corporation.type == :major
+
+          @corporations << reset_corporation(corporation)
+        end
+
+        def reset_corporation(corporation)
+          corp = super
+          corp.max_ownership_percent = corporation.max_ownership_percent
+          corp.tokens.pop if @players.size == 4
+          corp
         end
 
         def major_token_count
