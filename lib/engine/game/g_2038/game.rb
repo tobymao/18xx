@@ -7,6 +7,7 @@ require_relative '../base'
 require_relative 'round/operating'
 require_relative 'step/waterfall_auction'
 require_relative 'step/buy_train'
+require_relative 'step/route'
 
 module Engine
   module Game
@@ -16,11 +17,18 @@ module Engine
         include Map
         include Entities
 
+        attr_reader :mine_state
+
         TILE_TYPE = :lawson
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :p_any_operate
         CURRENCY_FORMAT_STR = '$%s'
+
+        # Without this, every blue/gray hex is impassable by default -- the
+        # base engine's check requires a tile path back at the neighbor,
+        # and tiles here carry no path data at all.
+        IMPASSABLE_HEX_COLORS = [].freeze
 
         BANK_CASH = 10_000
 
@@ -100,9 +108,8 @@ module Engine
           },
         ].freeze
 
-        # Spaceship names are movement/cargo_holds (e.g. '3/2' = 3 MP, 2 cargo holds),
-        # matching the physical spaceship card naming. cargo_holds: is stored in
-        # Train#@opts by the base engine; a custom Train subclass will expose it properly.
+        # `cargo_holds:` lands in Train#@opts via the base engine; a custom
+        # Train subclass will expose it properly.
         TRAINS = [
           {
             name: 'probe',
@@ -233,6 +240,7 @@ module Engine
           G2038::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
+            G2038::Step::Route,
             G2038::Step::BuyTrain,
             Engine::Step::BuyCompany,
           ], round_num: round_num)
@@ -271,6 +279,12 @@ module Engine
           @al_corporation.capitalization = :incremental
 
           @corporations.reject! { |c| c.id == 'AL' }
+
+          @log << '2038 is a game of exploration, involving reveals of hidden tiles. Using Undo to revert '\
+                  'a revealed tile to its hidden state could give a player an unfair benefit. Please exercise '\
+                  'care in exploration, and refrain from undoing actions that have revealed tiles.'
+          @mine_state = {}
+          assign_exploration_tiles
 
           return if optional_variant_start_pack
 
@@ -352,6 +366,143 @@ module Engine
 
         def optional_variant_start_pack
           @optional_rules&.include?(:optional_variant_start_pack)
+        end
+
+        def or_round_finished
+          @mine_state.each_value do |state|
+            state[:mines].each { |mine| mine[:used] = false }
+          end
+        end
+
+        def cargo_holds_for_ship(ship)
+          return 0 if ship.name == 'Probe'
+
+          ship.name.split('/').last.to_i
+        end
+
+        def route_trains(entity)
+          entity.runnable_trains
+        end
+
+        def can_run_route?(entity)
+          !route_trains(entity).empty?
+        end
+
+        def revenue_str(route)
+          route.hexes.map(&:id).join(' - ')
+        end
+
+        def route_distance(route)
+          [route.hexes.size - 1, 0].max
+        end
+
+        def route_distance_str(route)
+          "#{route_distance(route)}H"
+        end
+
+        def deliverable_destination?(hex)
+          return true if TRANSSHIPMENT_HEXES.include?(hex.id)
+
+          hex_has_base?(hex)
+        end
+
+        # An unfilled token slot is `nil`, not absent -- `.compact` first.
+        def hex_has_base?(hex)
+          hex.tile.cities.any? { |c| !c.tokens.compact.empty? }
+        end
+
+        EXPLORATION_BONUS = 10
+
+        def explore_hex!(hex_id, entity, pay: true)
+          hex = hex_by_id(hex_id)
+          tile_name = @hex_assignments[hex_id]
+
+          mines =
+            if tile_name && (tile = @tiles.find { |t| t.name == tile_name && !t.hex })
+              tile.rotate!(rand % 6) # seeded rand, not Kernel#rand -- replay must match
+              hex.lay(tile)
+              @tiles.delete(tile)
+              MINE_DATA.fetch(tile_name, [])
+            else
+              []
+            end
+
+          @mine_state[hex_id] = {
+            mines: mines.map { |m| m.merge(owner: nil, used: false) },
+          }
+
+          return unless pay
+
+          # TODO(Probe PR): while TSI hasn't floated, this bonus should go
+          # to the ST private's owner (§6), not TSI's treasury.
+          bank.spend(EXPLORATION_BONUS, entity)
+          mine_count = mines.size
+          @log << "#{entity.name} explores #{hex_id}: #{mine_count} #{mine_count == 1 ? 'mine' : 'mines'} found; "\
+                  "#{entity.name} receives #{format_currency(EXPLORATION_BONUS)}"
+        end
+
+        # §7.1: an empty hold ending at a transshipment point earns its
+        # printed value.
+        def trace_revenue(_entity, ship, trace, cargo)
+          return 0 if ship.name == 'Probe' || trace.size < 2
+          return 0 unless deliverable_destination?(trace.last)
+
+          cargo.sum { |c| c[:value] }
+        end
+
+        # §8 phase-scaled values.
+        def transshipment_value(hex, ship)
+          hex.tile.offboards.sum { |o| o.route_revenue(@phase, ship) }
+        end
+
+        def transshipment_hex?(hex_id)
+          TRANSSHIPMENT_HEXES.include?(hex_id)
+        end
+
+        def ship_distance(_entity, ship)
+          ship.distance
+        end
+
+        def rand_state
+          @rand
+        end
+
+        def rand_state=(value)
+          @rand = value
+        end
+
+        # Memoized: the adjacency graph never changes over a game.
+        def hex_bfs(start)
+          @hex_bfs_cache ||= {}
+          return @hex_bfs_cache[start.id] if @hex_bfs_cache.key?(start.id)
+
+          dist = { start.id => 0 }
+          predecessor = {}
+          queue = [start]
+
+          until queue.empty?
+            hex = queue.shift
+            hex.neighbors.each_value do |neighbor|
+              next if neighbor.empty || dist.key?(neighbor.id)
+
+              dist[neighbor.id] = dist[hex.id] + 1
+              predecessor[neighbor.id] = hex
+              queue << neighbor
+            end
+          end
+
+          @hex_bfs_cache[start.id] = [dist, predecessor]
+        end
+
+        def assign_exploration_tiles
+          hex_ids = HEXES[:blue].keys.flatten.sort
+
+          pool = []
+          ('2001'..'2022').each do |name|
+            TILES[name]['count'].times { pool << name }
+          end
+
+          @hex_assignments = hex_ids.zip(pool.sort_by { rand }).to_h # seeded rand -- deterministic
         end
       end
     end
