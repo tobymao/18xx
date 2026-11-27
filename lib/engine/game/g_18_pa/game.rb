@@ -129,7 +129,6 @@ module Engine
         SCRANTON_MARKER_ICON = 'mine'
         SCRANTON_MARKER_COST = 40
         DOUBLING_TOKEN_CORPS = %w[B&A ERIE PRR].freeze
-        MINOR_UPGRADES = %w[yellow green].freeze
 
         def new_auction_round
           Engine::Round::Auction.new(self, [

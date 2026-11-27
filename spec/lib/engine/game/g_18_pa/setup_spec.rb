@@ -86,7 +86,7 @@ module Engine
       game.phase.instance_variable_set(:@tiles, %i[yellow green brown])
       hex = game.hex_by_id('D17')
 
-      expect(step.potential_tile_colors(game.minor_by_id('1'), hex)).to eq(%w[yellow green])
+      expect(step.potential_tile_colors(game.minor_by_id('1'), hex)).to eq(%i[yellow green])
       expect(step.potential_tile_colors(game.corporation_by_id('PRR'), hex)).to eq(%i[yellow green brown])
     end
 
