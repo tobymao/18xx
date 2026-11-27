@@ -27,6 +27,7 @@ module Engine
       GAME_DESIGNER = nil
       GAME_IMPLEMENTER = nil
       GAME_INFO_URL = nil
+      BGG_ID = nil
       GAME_LOCATION = nil
       GAME_PUBLISHER = nil
       GAME_RULES_URL = nil

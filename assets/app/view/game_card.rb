@@ -2,6 +2,7 @@
 
 # backtick_javascript: true
 
+require 'lib/bg_stats'
 require 'lib/settings'
 require 'lib/truncate'
 require 'lib/profile_link'
@@ -97,6 +98,7 @@ module View
       end
 
       game = Engine.meta_by_title(@gdata['title'])
+      buttons << render_bg_stats_link(game) if bg_stats?
 
       can_start = owner? && new? && players.size >= @gdata['min_players']
       buttons << render_button('Start', -> { start_game(@gdata) }) if can_start
@@ -176,6 +178,14 @@ module View
         },
         class: '.button_link'
       )
+    end
+
+    def bg_stats?
+      setting_for(:bg_stats) && player? && profile_links? && %w[finished archived].include?(@gdata['status'])
+    end
+
+    def render_bg_stats_link(game)
+      h('a.button_link', { attrs: { href: Lib::BgStats.url(@gdata, game), target: '_blank' }, style: BUTTON_STYLE }, 'BGStats')
     end
 
     def render_time_or_date(ts_key)

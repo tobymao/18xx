@@ -9,10 +9,11 @@
 class Turn < Snabberb::Component
   needs :game_url
   needs :game_id
+  needs :bg_stats_url, default: nil
 
   def render
-    h(:div, [
-      h(:a, { attrs: { href: @game_url } }, "Go To Game #{@game_id}"),
-    ])
+    links = [h(:a, { attrs: { href: @game_url } }, "Go To Game #{@game_id}")]
+    links << h(:a, { attrs: { href: @bg_stats_url } }, 'Log to BG Stats') if @bg_stats_url
+    h(:div, links.map { |link| h(:div, [link]) })
   end
 end

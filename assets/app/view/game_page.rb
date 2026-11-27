@@ -3,6 +3,7 @@
 # backtick_javascript: true
 
 require 'game_manager'
+require 'lib/bg_stats'
 require 'lib/connection'
 require 'lib/params'
 require 'lib/settings'
@@ -54,6 +55,11 @@ module View
                  allow_clone: false,
                  allow_delete: @game_data[:mode] == :hotseat)
       h(:div, { style: { 'margin-bottom': '25px' } }, inner)
+    end
+
+    def open_bg_stats
+      `window.location.replace(#{Lib::BgStats.url(@game_data, @game.meta)})`
+      h('div.padded', 'Opening BG Stats...')
     end
 
     def render_bad_options(s)
@@ -112,6 +118,7 @@ module View
       end
 
       return h('div.padded', 'Loading game...') unless @game
+      return open_bg_stats if @game.finished && Lib::Params['bgstats']
 
       LOGGER.debug do
         @_logger ||= {}

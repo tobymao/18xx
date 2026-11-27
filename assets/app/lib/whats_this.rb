@@ -18,6 +18,14 @@ module Lib
       end
     end
 
+    module BgStats
+      def bg_stats_whats_this
+        h(Component,
+          tooltip: 'Adds a link to finished games and game-end notifications that imports the play into the BG Stats app.',
+          url: 'https://www.bgstatsapp.com/')
+      end
+    end
+
     class Component < Snabberb::Component
       needs :tooltip
       needs :url
