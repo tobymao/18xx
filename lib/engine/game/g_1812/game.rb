@@ -354,12 +354,11 @@ module Engine
           @log << msg.sub(/, $/, '.')
         end
 
-        def game_corporations
-          super.map { |c| c[:type] == 'major' ? c.merge(tokens: c[:tokens].take(major_token_count)) : c }
-        end
-
         def setup_corps
-          return if @players.size == 4
+          if @players.size == 4
+            @corporations.each { |c| c.tokens.pop if c.type == :major }
+            return
+          end
 
           removed = @corporations.select { |c| c.type == :major }.min_by { rand }
           @corporations.delete(removed)
@@ -373,6 +372,13 @@ module Engine
           return unless corporation.type == :major
 
           @corporations << reset_corporation(corporation)
+        end
+
+        def reset_corporation(corporation)
+          corp = super
+          corp.max_ownership_percent = corporation.max_ownership_percent
+          corp.tokens.pop if @players.size == 4
+          corp
         end
 
         def major_token_count
