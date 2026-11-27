@@ -271,8 +271,7 @@ class Assets
       file
     end.join("\n")
 
-    opal_load = game ? "engine/game/#{game}" : name
-    source += "\nOpal.load('#{opal_load}')"
+    source += "\nOpal.load('#{name}')" unless game
 
     File.write(output, source)
     File.write(output + '.map', source_map.to_json) if @source_maps
