@@ -63,13 +63,13 @@ module Engine
         expect(round.post_merge_entity).to eq(system)
       end
 
-      it 'takes over the other corporation when that is chosen' do
+      it 'takes over the other corporation when that is chosen, without giving the buyer another turn' do
         step.process_merge(Action::Merge.new(acl, corporation: salr))
         step.process_choose(Action::Choose.new(acl, choice: 'takeover'))
 
         expect(salr).to be_closed
         expect(acl).not_to be_closed
-        expect(round.post_merge_entity).to eq(acl)
+        expect(round.post_merge_entity).to be_nil
       end
     end
 

@@ -426,7 +426,7 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          @sell_queue << [bundle, bundle.corporation.owner]
+          @sell_queue << [bundle, bundle.corporation.owner, bundle.owner]
 
           @share_pool.sell_shares(bundle)
         end
@@ -553,6 +553,7 @@ module Engine
         def new_merger_round
           @log << "-- #{round_description('Merger and Takeover')} --"
           G1832::Round::Merger.new(self, [
+            G1832::Step::MergerPriceProtection,
             G1832::Step::Merge,
             G1832::Step::SellSharesForTakeover,
             Engine::Step::DiscardTrain,
@@ -637,17 +638,28 @@ module Engine
         end
 
         def can_afford_takeover?(buyer, target)
-          president = buyer.owner
-          cost = takeover_cost(target)
+          buyer.cash + buyer.owner.cash + takeover_sale_proceeds(buyer, target) >= takeover_cost(target)
+        end
 
-          # Compute president's max liquidity directly: avoids sellable_bundles →
-          # active_step recursion that occurs during merger-round blocking? checks.
-          president_liquidity = president.cash + president.shares.sum do |s|
-            next 0 unless (price = s.corporation.share_price&.price)
-
-            (s.percent.to_f / 10.0 * price).floor
+        def takeover_sale_proceeds(buyer, target)
+          @corporations.sum do |corporation|
+            bundles = takeover_sellable_bundles(buyer, target, corporation)
+            bundles.empty? ? 0 : bundles.max_by(&:percent).price
           end
-          buyer.cash + president_liquidity >= cost
+        end
+
+        def takeover_sellable_bundles(buyer, target, corporation)
+          bundles_for_corporation(buyer.owner, corporation).select { |bundle| takeover_sellable?(buyer, target, bundle) }
+        end
+
+        def takeover_sellable?(buyer, target, bundle)
+          president = buyer.owner
+
+          bundle.owner == president &&
+            bundle.corporation != target &&
+            @share_pool.fit_in_bank?(bundle) &&
+            can_dump?(president, bundle) &&
+            (bundle.corporation != buyer || keeps_presidency_after_sale?(president, bundle))
         end
 
         # ── System formation (§11.6) ──────────────────────────────────
