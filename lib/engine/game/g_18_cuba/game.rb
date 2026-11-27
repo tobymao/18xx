@@ -7,6 +7,7 @@ require_relative '../base'
 require_relative '../double_sided_tiles'
 require_relative 'trains'
 require_relative 'sugar'
+require_relative 'machines'
 
 module Engine
   module Game
@@ -19,6 +20,7 @@ module Engine
         include Map
         include Trains
         include Sugar
+        include Machines
 
         include DoubleSidedTiles
 
@@ -121,6 +123,7 @@ module Engine
             G18Cuba::Step::Dividend,
             G18Cuba::Step::DiscardTrain,
             G18Cuba::Step::BuyTrain,
+            G18Cuba::Step::BuyMachine,
             [G18Cuba::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -227,6 +230,7 @@ module Engine
           initialize_tile_opposites!
           @unused_tiles = []
           sugar_setup
+          machines_setup
           fc_setup
           @minor_graph = Graph.new(self, skip_track: :broad)
           @fc_bypass_graph = Graph.new(self, skip_track: :narrow, no_blocking: true)
