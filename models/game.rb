@@ -135,6 +135,17 @@ class Game < Base
     end
   end
 
+  def self.next_for_user(user)
+    return unless user
+
+    where(status: 'active')
+      .where(Sequel.lit('acting @> ARRAY[?]::integer[]', user.id))
+      .all
+      .filter_map { |game| next_for_user_candidate(game) }
+      .min_by { |candidate| [candidate[:waiting_since], candidate[:game].id] }
+      &.fetch(:game)
+  end
+
   def self.to_h_safe(games)
     games.filter_map do |game|
       game.to_h
@@ -142,6 +153,18 @@ class Game < Base
       warn "Skipping unloadable game #{game.id}: #{e}"
       nil
     end
+  end
+
+  def self.next_for_user_candidate(game)
+    engine = Engine::Game.load(game)
+    turn_start_action_id = engine.turn_start_action_id
+    waiting_since =
+      (Action.where(game_id: game.id, action_id: turn_start_action_id).get(:created_at) if turn_start_action_id&.positive?)
+
+    { game: game, waiting_since: waiting_since || game.updated_at || game.created_at }
+  rescue StandardError => e
+    warn "Skipping unloadable game #{game.id}: #{e}"
+    nil
   end
 
   SETTINGS = %w[
