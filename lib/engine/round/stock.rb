@@ -37,6 +37,7 @@ module Engine
           # Need to move entity round once more to be back to the priority deal player
           next_entity_index!
 
+          @game.log.indent_group = nil
           finish_round
           return
         end
@@ -49,6 +50,7 @@ module Engine
         @steps.each(&:unpass!)
         @steps.each(&:setup)
 
+        @game.log.indent_group = @entities[@entity_index]&.id&.to_s
         skip_steps
         next_entity! unless active_step
       end

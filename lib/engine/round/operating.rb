@@ -85,7 +85,8 @@ module Engine
 
         @current_operator = entity
         @current_operator_acted = false
-        @log << "#{@game.acting_for_entity(entity).name} operates #{entity.name}" unless finished?
+        @game.log.indent_group = entity&.id&.to_s
+        @log << "-- #{@game.acting_for_entity(entity).name} operates #{entity.name} --" unless finished?
         @game.place_home_token(entity) if @home_token_timing == :operate
         skip_steps
         return unless finished?
@@ -97,6 +98,10 @@ module Engine
       def recalculate_order
         unsorted_corps = @entities.pop(@entities.size - @entity_index - 1)
         @entities.concat(@game.operating_order.select { |e| unsorted_corps.include?(e) })
+      end
+
+      def indent_group_for_action(_action)
+        @current_operator&.id&.to_s || super
       end
 
       def operating?
