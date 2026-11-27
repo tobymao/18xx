@@ -8,6 +8,8 @@ require_relative 'map'
 require_relative '../base'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/dividend'
+require_relative 'step/repay_bond'
+require_relative 'step/stock_buyback'
 
 module Engine
   module Game
@@ -300,6 +302,147 @@ module Engine
           end
           @slc_connected = {}
           @slc_bonus_paid = false
+          @corp_bonds   = {}  # corp_id => Integer (outstanding bond amount)
+          @buyback_done = {}  # corp_id => player entity (director who triggered buyback)
+        end
+
+        # Bond (Schuldschein): one buyback per corporation, ever. Director cannot
+        # sell shares while the bond is active; outstanding bond at game end is
+        # the director's personal liability.
+        def bond?(corporation)
+          bond_amount(corporation).positive?
+        end
+
+        def bond_amount(corporation)
+          @corp_bonds[corporation.id] || 0
+        end
+
+        def buyback_done?(corporation)
+          @buyback_done.key?(corporation.id)
+        end
+
+        # Bond = 50% of full market capitalisation (10x market price),
+        # rounded up to the nearest $100.
+        def buyback_bond_amount(corporation)
+          (corporation.share_price.price * 5).ceil(-2)
+        end
+
+        # Funds the corporation for the buyback and records the bond liability.
+        def record_bond!(corporation)
+          return if buyback_done?(corporation)
+
+          amount   = buyback_bond_amount(corporation)
+          director = corporation.owner
+          @bank.spend(amount, corporation)
+          @corp_bonds[corporation.id]   = amount
+          @buyback_done[corporation.id] = director
+          @log << "#{corporation.name} takes #{format_currency(amount)} bond (Schuldschein) — " \
+                  "#{director.name} receives a non-reissuable cert limit marker"
+        end
+
+        # Pays each shareholder 50% of the current market price per cert-unit,
+        # then halves all certs. Called by Step::StockBuyback after record_bond!.
+        def execute_buyback_payout!(corporation)
+          half_price = corporation.share_price.price / 2
+          corporation.share_holders.each do |entity, percent|
+            next if entity == corporation
+            next if percent.zero?
+
+            payment = (percent / 10) * half_price
+            corporation.spend(payment, entity)
+            @log << "#{entity.name} receives #{format_currency(payment)} " \
+                    "(#{percent}% -> halved certs)"
+          end
+          halve_shares!(corporation)
+        end
+
+        # Full repayment only; no-op if corp cash is insufficient.
+        def repay_bond!(corporation)
+          owed = bond_amount(corporation)
+          return unless owed.positive?
+          return unless corporation.cash >= owed
+
+          corporation.spend(owed, @bank)
+          @corp_bonds[corporation.id] = 0
+          @log << "#{corporation.name} repays #{format_currency(owed)} bond"
+        end
+
+        # Include the buyback penalty cert in the director's cert count.
+        def num_certs(entity)
+          super + (@buyback_done || {}).values.count { |director| director == entity }
+        end
+
+        def monopoly_threshold
+          60
+        end
+
+        # Fee per newly-over-threshold 10%-cert = 20% of par (face) value.
+        def monopoly_fee(share)
+          par = share.corporation.par_price&.price || 0
+          (par * 0.2).ceil
+        end
+
+        # Halves every outstanding cert (20%->10%, 10%->5%, 30%->10%+5% split) and
+        # issues a non-reissuable 50% treasury cert, so a 5% cert costs half the
+        # current market price going forward.
+        def halve_shares!(corporation)
+          return if corporation.shares_of(corporation).any? { |s| s.percent == 50 && !s.buyable }
+
+          all_shares = @_shares.values.select { |s| s.corporation == corporation }
+          corporation.share_holders.clear
+
+          next_idx = all_shares.map(&:index).max + 1
+          split_certs = []
+
+          all_shares.each do |share|
+            if share.percent == 30
+              share.percent = 10
+              extra = Share.new(corporation, owner: share.owner, percent: 5, index: next_idx)
+              next_idx += 1
+              split_certs << extra
+            else
+              share.percent /= 2 # 20->10, 10->5
+            end
+            corporation.share_holders[share.owner] += share.percent
+          end
+
+          split_certs.each do |cert|
+            cert.owner.shares_by_corporation[corporation] << cert
+            corporation.share_holders[cert.owner] += cert.percent
+            @_shares[cert.id] = cert
+          end
+
+          corporation.forced_share_percent = 5
+          corporation.instance_variable_set(:@price_multiplier, 0.5)
+
+          treasury_cert = Share.new(corporation, owner: corporation, percent: 50, index: next_idx)
+          treasury_cert.buyable = false
+          treasury_cert.counts_for_limit = false
+          corporation.share_holders[corporation] += 50
+          corporation.shares_by_corporation[corporation] << treasury_cert
+          @_shares[treasury_cert.id] = treasury_cert
+
+          update_cache(:shares)
+          @log << "#{corporation.name}: all certs halved; 50% treasury cert created (non-reissuable)"
+        end
+
+        def end_game!(reason = nil)
+          apply_bond_penalties!
+          super
+        end
+
+        def apply_bond_penalties!
+          @corp_bonds.each do |corp_id, amount|
+            next unless amount.positive?
+
+            director = @buyback_done[corp_id]
+            next unless director.respond_to?(:penalty)
+
+            director.penalty = (director.penalty || 0) + amount
+            corp = corporation_by_id(corp_id)
+            @log << "#{director.name} owes #{format_currency(amount)} bond on #{corp.name} " \
+                    '(deducted from final score)'
+          end
         end
 
         # ---------------------------------------------------------------------------
@@ -455,6 +598,14 @@ module Engine
           group_available?(corp_group(corporation))
         end
 
+        # A sell of 10% or more of a corporation's shares drops the market price
+        # a full block, matching the buyback/monopoly-fee cert-size rules.
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
+          effective_percent = bundle.percent - (swap&.percent || 0)
+          movement ||= effective_percent >= 10 ? :down_block : :none
+          super(bundle, allow_president_change: allow_president_change, swap: swap, movement: movement)
+        end
+
         # ---------------------------------------------------------------------------
         # Round definitions — engine defaults only; custom steps added in later PRs.
         # ---------------------------------------------------------------------------
@@ -471,12 +622,14 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
+            G1862UsaCanada::Step::StockBuyback,
             Engine::Step::SpecialTrack,
             Engine::Step::HomeToken,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1862UsaCanada::Step::Dividend,
+            G1862UsaCanada::Step::RepayBond,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
