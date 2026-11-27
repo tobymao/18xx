@@ -63,7 +63,7 @@ module Engine
             min_price: 30,
             revenue: 10,
             desc: 'A corporation owning the Leeds & Selby Railway gains a +£10 bonus for all runs to York (E14). '\
-                  'Additionally, the owning corporation may lay 2 extra yellow tiles, in hexes D15 and E17.',
+                  'Additionally, the owning corporation may lay 2 extra yellow tiles, in hexes D15 and E16.',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -74,11 +74,11 @@ module Engine
               {
                 type: 'tile_lay',
                 owner_type: 'corporation',
-                hexes: %w[D15 E17],
+                hexes: %w[D15 E16],
                 special: false,
                 when: 'track',
                 tiles: [],
-                cost: 0,
+                free: true,
               },
             ],
           },
@@ -96,7 +96,7 @@ module Engine
               closed_when_used_up: true,
               discount: 40,
               count: 1,
-              trains: %w[2 3 4 5],
+              trains: [],
             }],
           },
           {
@@ -121,7 +121,7 @@ module Engine
                 special: false,
                 when: 'track',
                 tiles: [],
-                cost: 0,
+                free: true,
               },
             ],
           },
@@ -141,7 +141,7 @@ module Engine
                 special: false,
                 when: 'track',
                 tiles: [],
-                cost: 0,
+                free: true,
               },
               {
                 type: 'hex_bonus',
@@ -167,7 +167,7 @@ module Engine
                 special: false,
                 when: 'track',
                 tiles: [],
-                cost: 0,
+                free: true,
               },
               {
                 type: 'hex_bonus',
@@ -199,7 +199,7 @@ module Engine
                 special: false,
                 when: 'track',
                 tiles: [],
-                cost: 0,
+                free: true,
               },
             ],
           },
@@ -236,7 +236,7 @@ module Engine
                 special: false,
                 when: 'track',
                 tiles: [],
-                cost: 0,
+                free: true,
               },
               {
                 type: 'hex_bonus',

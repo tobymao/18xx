@@ -202,16 +202,24 @@ module Engine
           G1867::Round::Operating.new(self, [
             Engine::Step::BuyCompany,
             G1867::Step::RedeemShares,
-            G1867::Step::Track,
+            G1812::Step::SpecialTrack,
+            G1812::Step::Track,
             G1867::Step::Token,
             Engine::Step::Route,
             G1867::Step::Dividend,
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
             G1812::Step::LoanOperations,
             Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
             G1812::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
+          return false if selected_company && to.color != :yellow
+
+          super
         end
 
         EVENTS_TEXT = G1867::Game::EVENTS_TEXT.merge('three_trains_will_convert' => ['Unsold 3/2G will convert to 3+1/2G+1',
