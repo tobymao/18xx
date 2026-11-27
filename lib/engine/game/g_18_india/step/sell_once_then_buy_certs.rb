@@ -170,7 +170,8 @@ module Engine
             return false if @game.in_ipo?(company) && !can_buy_from_ipo?(entity, company)
             return false if current_entity.hand.include?(company) && !can_buy_from_hand?(entity, company)
 
-            (available_cash(entity) >= company.value)
+            price = current_entity.hand.include?(company) ? hand_price(company) : company.value
+            (available_cash(entity) >= price)
           end
 
           def can_buy_from_market?(entity, company)
@@ -196,8 +197,18 @@ module Engine
                 prior.name == company.name
               end
             else
-              (available_cash(entity) >= company.value)
+              (available_cash(entity) >= hand_price(company))
             end
+          end
+
+          def hand_price(company)
+            return company.value unless %i[share president].include?(company.type)
+
+            share = company.treasury
+            par = share.corporation.par_price
+            return company.value unless par
+
+            (par.price * share.num_shares(ceil: false)).ceil
           end
 
           def can_buy_from_ipo?(entity, company)
