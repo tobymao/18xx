@@ -86,7 +86,7 @@ module View
             hex_or_tile_ids = hexes_or_tiles.split('+')
 
             if (game_class = load_game_class(game_title))
-              players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
+              players = Array.new(game_class.max_players([], nil)) { |n| "Player #{n + 1}" }
               game = game_class.new(players)
 
               [
@@ -148,7 +148,7 @@ module View
     end
 
     def map_hexes_and_tile_manifest_for(game_class)
-      players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
+      players = Array.new(game_class.max_players([], nil)) { |n| "Player #{n + 1}" }
       game = game_class.new(players)
 
       # map_tiles: hash; key is hex ID, value is the Tile there
@@ -348,7 +348,7 @@ module View
             end
 
           else
-            players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
+            players = Array.new(game_class.max_players([], nil)) { |n| "Player #{n + 1}" }
             game = game_class.new(players)
             actions[nil].each do |hex_or_tile, opts|
               rendered_test_tiles.concat(
