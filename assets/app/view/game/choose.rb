@@ -76,6 +76,10 @@ module View
         h(GFrost1831::InfluenceArena, game: @game, scale: 0.67)
       end
 
+      def render_intervention_map
+        h(Map, game: @game)
+      end
+
       def render_choice_amount(amounts)
         min, max = amounts
 

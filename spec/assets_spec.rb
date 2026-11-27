@@ -696,6 +696,89 @@ describe 'Assets' do
 
         expect(render(app_route: '/game/1', **needs)).to include('Allocate Influence for CM (Influence Zone)', 'Influence Arena')
       end
+
+      def frost_bot_action(game, step, entity, actions)
+        if actions.include?('choose')
+          choice = step.choices.keys.first
+          choice = game.intervention_choices.keys.first if step.is_a?(Engine::Game::GFrost1831::Step::Intervention)
+          Engine::Action::Choose.new(entity, choice: choice)
+        elsif actions.include?('place_token')
+          hex = game.hexes.find { |h| step.available_hex(entity, h) }
+          Engine::Action::PlaceToken.new(entity, city: hex.tile.cities.first, slot: 0)
+        elsif actions.include?('buy_shares')
+          frost_bot_buy(game, step, entity)
+        elsif actions.include?('run_routes')
+          Engine::Action::RunRoutes.new(entity, routes: [])
+        elsif actions.include?('dividend')
+          Engine::Action::Dividend.new(entity, kind: 'withhold')
+        elsif actions.include?('buy_train') && frost_bot_train(game, step, entity)
+          train = game.depot.min_depot_train
+          Engine::Action::BuyTrain.new(entity, train: train, price: train.price)
+        else
+          Engine::Action::Pass.new(entity)
+        end
+      end
+
+      def frost_bot_buy(game, step, player)
+        cm = game.corporation_by_id('CM')
+        intervening = game.corporation_factions(cm).map { |f| game.corporation_by_id(game.opposite_faction(f)) }
+        faction = intervening.find do |f|
+          !f.floated? && game.players.none? { |p| p != player && p.percent_of(f).positive? } &&
+            step.can_buy?(player, f.ipo_shares.first.to_bundle)
+        end
+        return Engine::Action::BuyShares.new(player, shares: faction.ipo_shares.first, percent: 10) if faction
+
+        corporations = game.corporations.reject { |c| c.type == :faction }
+        unless corporations.any? { |c| c.owner == player }
+          corporation = corporations.find { |c| game.can_par?(c, player) }
+          price = game.stock_market.par_prices.find { |p| p.price == 100 }
+          return Engine::Action::Par.new(player, corporation: corporation, share_price: price)
+        end
+
+        corporation = corporations.find { |c| c.owner == player && !c.floated? }
+        share = corporation&.ipo_shares&.first
+        return Engine::Action::Pass.new(player) if !share || !step.can_buy?(player, share.to_bundle)
+
+        Engine::Action::BuyShares.new(player, shares: share, percent: 10)
+      end
+
+      def frost_bot_train(game, step, corporation)
+        train = game.depot.min_depot_train
+        wanted = train.name == '2' || (train.name == '3' && !game.parliament_open?)
+        wanted &&= corporation.id != 'CM' || corporation.trains.empty?
+        wanted && corporation.cash >= train.price && step.room?(corporation)
+      end
+
+      it 'renders the map to choose the stations of an Intervention' do
+        game = frost_game_until_float
+        200.times do
+          step = game.round.active_step
+          break if step.is_a?(Engine::Game::GFrost1831::Step::Intervention)
+
+          entity = game.current_entity
+          game.process_action(frost_bot_action(game, step, entity, step.actions(entity)))
+        end
+        expect(game.round.active_step).to be_a(Engine::Game::GFrost1831::Step::Intervention)
+
+        player = game.current_entity.owner
+        needs = {
+          game_data: {
+            id: 1,
+            user: { id: player.id, name: player.name },
+            players: game.players.sort_by(&:id).map { |p| { id: p.id, name: p.name } },
+            title: 'Frost 1831',
+            actions: game.actions.map(&:to_h),
+            loaded: true,
+          },
+          user: { id: player.id, name: player.name, settings: { consent: true } },
+        }
+
+        expect(render(app_route: '/game/1', **needs)).to include(
+          'New Grand Junction is being intervened.',
+          'Choose which faction between Guardians and Expansionists receives the station.',
+          'Base: ', 'map-hexes'
+        )
+      end
     end
 
     def render_game_at_action(data, action_count, string, suffix = '')

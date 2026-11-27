@@ -14,6 +14,7 @@ require_relative 'step/choose_influence'
 require_relative 'step/track'
 require_relative 'step/home_token'
 require_relative 'step/token'
+require_relative 'step/intervention'
 require_relative 'step/exchange'
 require_relative 'step/special_choose'
 require_relative 'step/buy_cert'
@@ -293,6 +294,8 @@ module Engine
 
         INFLUENCE_ICON = 'influence_cube'
 
+        INTERVENTION_CARDS = { 2 => 2, 3 => 2, 4 => 1, 5 => 1 }.freeze
+
         D_TRAIN = 'D'
 
         INFLUENCE_REASONS = {
@@ -431,7 +434,7 @@ module Engine
           corporation_influence_for(corporation, faction_sym) < corporation_influence_limit
         end
 
-        attr_reader :government_marker, :regulations
+        attr_reader :government_marker, :intervention, :regulations
 
         FACTION_TREASURY = 500
 
@@ -454,6 +457,10 @@ module Engine
           @pending_faction_choices = []
           @pending_influence_queue = []
           @deferred_turmoil = false
+          @intervention = nil
+          @intervention_certificates = Hash.new(0)
+          @intervention_cards_given = 0
+          @corporations_removed = 0
 
           setup_use_influence
         end
@@ -512,10 +519,13 @@ module Engine
 
         def status_array(corporation)
           if corporation.type == :faction
-            return [
+            rows = [
               ["Influence: #{faction_influence(corporation.id)}/#{faction_influence_limit}", ''],
               ["Tokens: #{token_string(corporation)}", ''],
             ]
+            certificates = intervention_certificates(corporation)
+            rows << ["Intervention Certificates: #{certificates}", ''] if certificates.positive?
+            return rows
           end
 
           influence = corporation_influence(corporation)
@@ -706,6 +716,7 @@ module Engine
         def stock_round
           GFrost1831::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            GFrost1831::Step::Intervention,
             GFrost1831::Step::ChooseFactions,
             GFrost1831::Step::ChooseInfluence,
             GFrost1831::Step::HomeToken,
@@ -725,6 +736,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             GFrost1831::Step::HomeToken,
+            GFrost1831::Step::Intervention,
             GFrost1831::Step::ChooseInfluence,
             GFrost1831::Step::SpecialChoose,
             GFrost1831::Step::SpecialTrack,
@@ -737,6 +749,162 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def close_corporations_in_close_cell!
+          return if @intervention
+
+          corporation = @corporations.find { |c| c.type != :faction && !c.closed? && c.share_price&.type == :close }
+          return unless corporation
+
+          start_intervention!(corporation)
+          true
+        end
+
+        def start_intervention!(corporation)
+          @log << "-- #{corporation.name} enters Intervention Zone! --"
+          factions = intervening_factions(corporation)
+          give_intervention_certificates!(corporation, factions)
+          compensate_certificates!(corporation)
+          @intervention = { corporation: corporation, factions: factions }
+          @round.clear_cache!
+          finish_intervention! if intervention_replacements.empty?
+        end
+
+        def intervening_factions(corporation)
+          corporation_factions(corporation).map { |f| faction_by_id(opposite_faction(f)) }.select(&:floated?)
+        end
+
+        def intervention_certificates(faction)
+          @intervention_certificates[faction.id]
+        end
+
+        def give_intervention_certificates!(corporation, factions)
+          factions.each do |faction|
+            @intervention_certificates[faction.id] += 1
+            @log << "#{faction.full_name} receives 1 certificate of #{corporation.name}"
+          end
+        end
+
+        def compensate_certificates!(corporation)
+          president = corporation.owner
+          corporation.player_share_holders.each do |player, percent|
+            next if player == president || !percent.positive?
+
+            amount = corporation.par_price.price * (percent.to_f / corporation.share_percent).floor
+            from_treasury = [corporation.cash, amount].min
+            corporation.spend(from_treasury, player) if from_treasury.positive?
+            pay_compensation_shortfall!(president, player, amount - from_treasury) if amount > from_treasury
+            @log << "#{player.name} receives #{format_currency(amount)} compensation for #{corporation.name} shares"
+          end
+        end
+
+        def pay_compensation_shortfall!(president, player, amount)
+          loan = amount - president.cash
+          if loan.positive?
+            president.take_cash_loan(loan, @bank)
+            @log << "#{president.name} takes on #{format_currency(loan)} loan"
+          end
+          president.spend(amount, player)
+        end
+
+        def action_processed(action)
+          repay_player_loans!
+          super
+        end
+
+        def repay_player_loans!
+          @players.each { |player| payoff_player_loan(player) if player.debt.positive? && player.cash.positive? }
+        end
+
+        def intervention_choices
+          return {} unless @intervention
+
+          intervention_replacements.to_h { |token, faction| ["#{token.city.hex.id}:#{faction.id}", [token, faction]] }
+        end
+
+        def replace_station!(token, faction)
+          corporation = @intervention[:corporation]
+          city = token.city
+          token.remove!
+          city.remove_reservation!(corporation)
+          city.place_token(faction, faction.next_base, check_tokenable: false)
+          from = faction.share_price
+          @stock_market.move_right(faction)
+          @log << "#{faction.full_name} replaces the station of #{corporation.name} in #{city.hex.name} with a base"
+          log_share_price(faction, from)
+          clear_graph
+          @intervention[:factions].delete(faction)
+          replacements = intervention_replacements
+          return finish_intervention! if replacements.empty?
+
+          replace_station!(*replacements.first) if replacements.one?
+        end
+
+        def intervention_replacements
+          stations = @intervention[:corporation].tokens.select(&:used)
+          factions = @intervention[:factions]
+          most = max_replacements(stations, factions)
+          return [] if most.zero?
+
+          stations.product(factions).select do |token, faction|
+            base_allowed?(faction, token) &&
+              max_replacements(stations - [token], factions - [faction]) == most - 1
+          end
+        end
+
+        def max_replacements(stations, factions)
+          return 0 if stations.empty? || factions.empty?
+
+          faction, *others = factions
+          with_faction = stations.select { |token| base_allowed?(faction, token) }
+                                 .map { |token| 1 + max_replacements(stations - [token], others) }
+          [max_replacements(stations, others), *with_faction].max
+        end
+
+        def base_allowed?(faction, token)
+          faction.tokens_available.positive? && !faction_base_in_hex?(faction, token.city.hex)
+        end
+
+        def faction_base_in_hex?(faction, hex)
+          hex.tile.cities.any? { |city| city.tokens.any? { |t| t&.corporation == faction } }
+        end
+
+        def finish_intervention!
+          corporation = @intervention[:corporation]
+          @intervention = nil
+          give_intervention_cards!(corporation.owner)
+          @corporation_influence.delete(corporation.id)
+          @corporation_factions.delete(corporation.id)
+          @log << "#{corporation.name} is removed from the game"
+          close_corporation(corporation, quiet: true)
+          corporation_removed!
+        end
+
+        def give_intervention_cards!(player)
+          count = self.class::INTERVENTION_CARDS[@players.size]
+          count.times do
+            @intervention_cards_given += 1
+            card = Engine::Company.new(**self.class::INTERVENTION_CARD_COMPANY,
+                                       sym: "#{self.class::INTERVENTION_CARD_COMPANY[:sym]}#{@intervention_cards_given}")
+            card.owner = player
+            player.companies << card
+            @companies << card
+          end
+          update_cache(:companies)
+          @log << "#{player.name} receives #{count} Intervention Card(s)"
+        end
+
+        def corporation_removed!
+          @corporations_removed += 1
+          return if @corporations_removed < 2
+
+          train = @depot.min_depot_train
+          return unless train
+
+          @depot.remove_train(train)
+          @log << "-- #{train.name} train removed from the game (#{@corporations_removed}th+ corporation eliminated) --"
+          @phase.buying_train!(nil, train, @depot)
         end
 
         def parliament_open?
