@@ -11,6 +11,11 @@ module Engine
           def can_place_token?(entity)
             super || @game.abilities(entity, :token)
           end
+
+          def process_place_token(action)
+            super
+            @game.protect_tr_home_reservation(action.city)
+          end
         end
       end
     end
