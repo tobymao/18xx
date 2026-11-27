@@ -68,7 +68,14 @@ module Engine
       end
 
       def current_bid_amount(player, company)
-        bids[company]&.find { |b| b.entity == player }&.price || 0
+        # ONLY_HIGHEST_BID_COMMITTED: an outbid player's own stale bid no
+        # longer commits any cash, so it must not count toward max_bid.
+        if @game.class::ONLY_HIGHEST_BID_COMMITTED
+          bid = highest_bid(company)
+          bid&.entity == player ? bid.price : 0
+        else
+          bids[company]&.find { |b| b.entity == player }&.price || 0
+        end
       end
 
       def may_bid?(_company)
