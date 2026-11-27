@@ -86,7 +86,10 @@ module Engine
     def delete_from_upcoming(train)
       index = @upcoming.index(train)
       deleted = @upcoming.delete(train)
-      return if !index || !deleted&.unlimited || @exported_unlimited.include?(train.name) || (@upcoming[index]&.name == train.name)
+      return if !index ||
+                  !deleted&.unlimited ||
+                  @exported_unlimited.include?(train.name) ||
+                  (@upcoming[index]&.name == train.name)
 
       insert_train(train.clone_unlimited(index: next_clone_index(train)), index)
       @game.update_trains_cache
