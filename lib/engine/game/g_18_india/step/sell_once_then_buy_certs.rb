@@ -247,9 +247,10 @@ module Engine
               corp = share.corporation
               old_pres = corp.owner
               log_purchase("a share of #{company.name}", location, price)
+              # Snapshot before make_manager -- see #process_buy_shares.
+              already_floated = corp.floated?
               corp.make_manager(entity) if corp.owner.nil?
               share.buyable = true
-              already_floated = corp.floated?
               # use transfer share to send payment to corporation
               bundle = ShareBundle.new(share)
               @game.share_pool.transfer_shares(bundle, entity, spender: entity, receiver: corp, price: price)
@@ -301,8 +302,16 @@ module Engine
           def process_buy_shares(action)
             # Assign Manager if none yet
             corp = action.bundle.corporation
+            # Snapshot before make_manager: once a company pushes IPO percent past the
+            # float threshold but the corp still has no Manager, Corporation#make_manager
+            # flips floatable to true, which would make the floated? check below always
+            # true and hide a real first-time float from the code that reacts to it.
+            already_floated = corp.floated?
             corp.make_manager(action.entity) if corp.owner.nil?
             super
+            if corp.floatable && corp.floated? && !already_floated && !corp.share_price&.corporations&.include?(corp)
+              @game.float_corporation(corp)
+            end
             @round.bought_from_market = true
           end
 
