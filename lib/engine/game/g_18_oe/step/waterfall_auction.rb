@@ -79,6 +79,8 @@ module Engine
             return unless @game.company_becomes_minor?(company)
 
             treasury_amount = [price, @game.class::MINOR_MAX_TREASURY].min
+            return unless treasury_amount.positive?
+
             @game.bank.spend(treasury_amount, @game.corporations.find { |minor| minor.name == company.sym })
           end
 

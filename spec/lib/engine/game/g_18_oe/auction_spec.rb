@@ -322,4 +322,14 @@ describe 'G18OE auction (§7)' do
 
     expect(company('A').owner).to eq(a)
   end
+
+  it 'gives a top-row minor reduced to £0 to the next player with an empty treasury (§7.1)' do
+    expose_minor_row!
+    first = game.current_entity
+    company('A').discount = company('A').value
+    pass_all!
+
+    expect(game.exception).to be_nil
+    expect([company('A').owner, game.corporation_by_id('A').cash]).to eq([first, 0])
+  end
 end
