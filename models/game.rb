@@ -165,6 +165,14 @@ class Game < Base
     finished_at&.to_i
   end
 
+  def update_state_from_engine(engine, users = ordered_players)
+    acting_users = users.select { |u| engine.active_players_id.include?(u.id) }
+    self.round = engine.round.name
+    self.turn = engine.turn
+    self.acting = acting_users.map(&:id)
+    acting_users
+  end
+
   def archive!
     Action.where(game: self).delete
     settings.delete('pin')
