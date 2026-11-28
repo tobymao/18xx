@@ -123,6 +123,39 @@ describe 'G18OE buy trains (§11.6)' do
     expect(cash - minor.cash).to eq(200)
   end
 
+  context 'when a reserved 2+2 is still in the depot after the first OR' do
+    def keep_one_reserved_2_2!
+      allow(game).to receive(:major_phase?).and_return(true)
+      game.fulfill_train_obligation!(minor)
+      game.instance_variable_set(:@first_or_complete, true)
+      game.depot.upcoming.select { |t| t.name == '2+2' }.drop(1).each { |t| game.depot.remove_train(t) }
+      game.depot.depot_trains(clear: true)
+    end
+
+    it 'sells level 3 trains beside it (§8.3, §11.6)' do
+      keep_one_reserved_2_2!
+      names = step.buyable_trains(minor).map(&:name)
+
+      expect(names).to include('3')
+      expect(names).not_to include('2+2')
+    end
+
+    it 'keeps the 2+2 for a railroad that still owes it (§11.6.1)' do
+      keep_one_reserved_2_2!
+      owing = start_regional!(game, 'LNWR', game.players.last)
+
+      expect(step.buyable_trains(owing).map(&:name).uniq).to eq(['2+2'])
+    end
+
+    it 'starts phase 3 with the first level 3 train bought beside it (§5.2)' do
+      keep_one_reserved_2_2!
+      fund!(game, minor, 300)
+      buy!(minor, card('3'), 200)
+
+      expect(game.phase.name).to eq('3')
+    end
+  end
+
   it 'sells the 3+3 side for £225 (§11.6.4)' do
     allow(game).to receive(:major_phase?).and_return(true)
     game.fulfill_train_obligation!(minor)
