@@ -177,10 +177,16 @@ module Engine
           pool = sea_pool(needy.first.corporation, needy.first.phase)
           return routes.to_h { |route| [route, true] } if sea_pool_coverable?(needy.map { |route| needs[route] }, pool)
 
-          values = needy.to_h { |route| [route, covered_sea_pool_revenue(route, needs[route])] }
-          best = (0..needy.size).flat_map { |size| needy.combination(size).to_a }
+          covered = (0..needy.size).flat_map { |size| needy.combination(size).to_a }
             .select { |subset| sea_pool_coverable?(subset.map { |route| needs[route] }, pool) }
-            .min_by { |subset| [-subset.sum { |route| values[route] }, -subset.size, subset.map { |route| needy.index(route) }] }
+          largest = maximal_sets(covered)
+          best = largest.first
+          if largest.size > 1
+            values = largest.flatten.uniq.to_h { |route| [route, covered_sea_pool_revenue(route, needs[route])] }
+            best = largest.min_by do |subset|
+              [-subset.sum { |route| values[route] }, -subset.size, subset.map { |route| needy.index(route) }]
+            end
+          end
           routes.to_h { |route| [route, !needy.include?(route) || best.include?(route)] }
         end
 
@@ -283,6 +289,10 @@ module Engine
         end
 
         private
+
+        def maximal_sets(sets)
+          sets.reject { |set| sets.any? { |other| other.size > set.size && (set - other).empty? } }
+        end
 
         def covered_sea_pool_revenue(route, need)
           previous = @sea_pool_covered
