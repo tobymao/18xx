@@ -103,6 +103,7 @@ module View
     end
 
     def render
+      `window.__18xx_refresh_extensions = #{lambda { update }}`
       @pin = @game_data.dig('settings', 'pin')
 
       begin
@@ -138,6 +139,11 @@ module View
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
         when 'auto'
           h(Game::Auto, game: @game, game_data: @game_data, user: @user)
+        else
+          extensions = Native(`window.__18xx_extensions || {}`)
+          extension = extensions[route_anchor]
+          component = extension && extension[:component]
+          component ? h(component, game: @game, game_data: @game_data, user: @user) : render_game
         end
       LOGGER.debug do
         "Done rendering game view: #{Time.now - @_logger[:render]} seconds"
@@ -367,6 +373,11 @@ module View
       menu_items << item('T|iles', '#tiles') unless @game.layout == :none
       menu_items << item('S|preadsheet', '#spreadsheet')
       menu_items << item("To|ols#{' 📝' if note}", '#tools')
+      extensions = Native(`window.__18xx_extensions || {}`)
+      Native(`Object.keys(window.__18xx_extensions || {})`).each do |id|
+        extension = extensions[id]
+        menu_items << item(extension[:label], "##{id}") if extension[:component]
+      end
 
       enabled = !@game.programmed_actions[@game.player_by_id(@user['id'])].empty? if @user
       menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
