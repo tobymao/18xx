@@ -103,6 +103,7 @@ module View
     end
 
     def render
+      # Allow extensions to refresh the UI after registration.
       `window.__18xx_refresh_extensions = #{lambda { update }}`
       @pin = @game_data.dig('settings', 'pin')
 
@@ -140,7 +141,9 @@ module View
         when 'auto'
           h(Game::Auto, game: @game, game_data: @game_data, user: @user)
         else
-          extensions = Native(`window.__18xx_extensions || {}`)
+          # Render registered extensions using the existing game state.
+          # Add navigation tabs for registered extensions.
+      extensions = Native(`window.__18xx_extensions || {}`)
           extension = extensions[route_anchor]
           component = extension && extension[:component]
           component ? h(component, game: @game, game_data: @game_data, user: @user) : render_game
