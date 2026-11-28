@@ -51,6 +51,19 @@ describe 'G18OE ending the game (§13)' do
     expect(game.round).to be_a(Engine::Round::Stock)
   end
 
+  it 'names the players in the game over line when their ids are names' do
+    game.end_game!(:bank)
+
+    expect(game.log.last.message).to match(/\A-- Game over: [abc] \(£\d+\), [abc] \(£\d+\), [abc] \(£\d+\) --\z/)
+  end
+
+  it 'names the players in the game over line when their ids are integers' do
+    numbered = Engine::Game::G18OE::Game.new({ 1 => 'a', 2 => 'b', 3 => 'c' }, seed: 1)
+    numbered.end_game!(:bank)
+
+    expect(numbered.log.last.message).to match(/\A-- Game over: [abc] \(£\d+\), [abc] \(£\d+\), [abc] \(£\d+\) --\z/)
+  end
+
   it 'adds the remainder cash once, on the first level 8 train' do
     bank = game.bank.cash
     2.times { game.event_remainder_cash_added! }

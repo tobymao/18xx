@@ -1451,7 +1451,7 @@ module Engine
         @manually_ended = @game_end_reason == :manually_ended
         store_player_info
         @round_counter += 1
-        scores = result.map { |id, value| "#{@players.find { |p| p.id == id.to_i }&.name} (#{format_currency(value)})" }
+        scores = result.map { |id, value| "#{@players.find { |p| p.id.to_s == id.to_s }&.name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
       end
 
